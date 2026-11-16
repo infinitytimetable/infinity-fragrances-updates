@@ -1,19 +1,19 @@
 {
- "version": "2.9.2",
+ "version": "2.10.0",
  "date": "2026-11-16",
  "notes": [
-  "The activity log now records online actions too: online orders, request approvals and declines, stock counts, applications and logins, with who did them."
+  "Lists show as cards on phones; raised buttons; rider details and a live order page for online customers; a sales till for resellers; app download page."
  ],
  "android": {
-  "file": "android-2.9.2.html",
-  "sig": "oor4GkR4MlVK3OqBoCOO7qqVhcEbbLEWAb9KBKSjgVe+FNjurDRIJWXSBEVyodohLghbWoRsVnLol5/g038OqA==",
-  "size": 1854880,
+  "file": "android-2.10.0.html",
+  "sig": "9IP2parn+aqCh5nkAGDNTAAlERou10LNY5WUC3fJNlmhSejPm/x404L6JUxT9rTpV8XE9tjc1grYD+VVVcnbcQ==",
+  "size": 1866211,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.9.2.html",
-  "sig": "GnvGq8bTmV9EdEZK+8RooPqPk7W25ut26HBUW8LDjMefqYKDKyr5mRjT1UURREBbmWk0ibwtdHavnvA7A9NV4A==",
-  "size": 1851147,
+  "file": "desktop-2.10.0.html",
+  "sig": "zdwRgdyQigb379oVI4mK0w3KjMdjc1OZbjT0h45jNrgvlTwe7JmshUbjVXStS+bn0oGR3FfUpf6hudrkdxDkFw==",
+  "size": 1862478,
   "minShell": "2.5.0"
  },
  "apk": {
