@@ -1,0 +1,19 @@
+{
+ "version": "2.5.0",
+ "date": "2026-11-16",
+ "notes": [
+  "Automatic, signed updates"
+ ],
+ "android": {
+  "file": "android-2.5.0.html",
+  "sig": "TKZlFgBdETd9Bgp+UfzXhnEqDQXucToR7WqwJHuQ0uVwSKTQrhP73jtZvrBE/1lXhDgoukAE9P2WLaU6Pd+D3g==",
+  "size": 857223,
+  "minShell": "2.5.0"
+ },
+ "desktop": {
+  "file": "desktop-2.5.0.html",
+  "sig": "BSr9hyvU/fR6t647wIFptf1qngapUyYKqXN2okmJ0Xc8ZpBqJfUCr9JFkT+odj268OpftaVDeNqBkWbzhieuyg==",
+  "size": 853722,
+  "minShell": "2.5.0"
+ }
+}
