@@ -1,19 +1,19 @@
 {
- "version": "2.11.0",
+ "version": "2.11.1",
  "date": "2026-11-16",
  "notes": [
-  "New Company profile page: keep your registration, tax and bank details and download a print-quality company profile at any time."
+  "Company profile: choose between three cover designs."
  ],
  "android": {
-  "file": "android-2.11.0.html",
-  "sig": "V0hKrmJmL65OAn8Wn8O9+SQ2W6HJpHXSptuoi5GgYjgdQdffkAsHdJHcM6ObOKBDwGTy/BwE9QGdq8k/6U8tdQ==",
-  "size": 2096557,
+  "file": "android-2.11.1.html",
+  "sig": "rBaxfRaCkfCPHw4yZBJ1Ql/FDIwpt5x7eC18lai+Vu8ZmQYoxlECYxvmfJTP3w3q5+aCgfbbnGlxJ98VEM9Myg==",
+  "size": 2237866,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.11.0.html",
-  "sig": "l3eHhvNvrwFXfs5rFqm9HGmcfQZykl+alKMguWkGvuvPiG+ySpENLp76b+9ZgrYGJl6JX2xvJ9WfHE3ZQP0tyw==",
-  "size": 2092824,
+  "file": "desktop-2.11.1.html",
+  "sig": "y/L9r9P20aoJh0njEeUt6/JR80pcxfEMOO+tRFhAhG/QrGmUMAuFFcVb7ejXZSFdYNDJu9zFJrCQ4ygJT0qL0A==",
+  "size": 2234133,
   "minShell": "2.5.0"
  },
  "apk": {
