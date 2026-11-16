@@ -1,19 +1,19 @@
 {
- "version": "2.10.0",
+ "version": "2.10.1",
  "date": "2026-11-16",
  "notes": [
-  "Lists show as cards on phones; raised buttons; rider details and a live order page for online customers; a sales till for resellers; app download page."
+  "The page buttons under each menu are now raised and all visible at once."
  ],
  "android": {
-  "file": "android-2.10.0.html",
-  "sig": "9IP2parn+aqCh5nkAGDNTAAlERou10LNY5WUC3fJNlmhSejPm/x404L6JUxT9rTpV8XE9tjc1grYD+VVVcnbcQ==",
-  "size": 1866211,
+  "file": "android-2.10.1.html",
+  "sig": "vFgSqmQhEwtsvjveZN9ruRdVM7K9n+3rY8RK726kHwdg95AWplNKt8vLBW6/spktbi2j19bIr14XGqTP+bQcIg==",
+  "size": 1867904,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.10.0.html",
-  "sig": "zdwRgdyQigb379oVI4mK0w3KjMdjc1OZbjT0h45jNrgvlTwe7JmshUbjVXStS+bn0oGR3FfUpf6hudrkdxDkFw==",
-  "size": 1862478,
+  "file": "desktop-2.10.1.html",
+  "sig": "dEEba+XUVACWD6waMoKhzXxZmCpZi61VWYnMqMzf9kh/ZPZOWRzL2M4dlMBA85gBYZe9BrsBqyQa2GPa29a0RQ==",
+  "size": 1864171,
   "minShell": "2.5.0"
  },
  "apk": {
