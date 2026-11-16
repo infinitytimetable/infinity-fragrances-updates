@@ -1,21 +1,20 @@
 {
- "version": "2.7.0",
+ "version": "2.7.1",
  "date": "2026-11-16",
  "notes": [
-  "Digital receipts by WhatsApp, SMS, link or print",
-  "Shops with a shopkeeper app",
-  "Online shop link for customers"
+  "Live barcode scanner with the camera",
+  "Scanning works offline"
  ],
  "android": {
-  "file": "android-2.7.0.html",
-  "sig": "mi1XvUVQRUXLGyhm8WFd3tGdMAxJDdpp9PON6mhxFpe3gYVfDSI26157mrBHoC2OfCxYFiyWrDvGsZEGLIgURw==",
-  "size": 909316,
+  "file": "android-2.7.1.html",
+  "sig": "jrqVx2geXiX/OlGijoy83Hvi7raJ/gk1ZO2XzJFFU+lLGxmAyHK93ytuxgl4s901HE8tqABBjcC51t3tsryemA==",
+  "size": 1251785,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.7.0.html",
-  "sig": "o5gJjkuDUJX8yBppRTa373dS97FwD0p2GxzHcDUm3VzVH1/Hn/tJa5KgEfG8sVmEfrkHBlf5SLDXbCBXFah+1g==",
-  "size": 905815,
+  "file": "desktop-2.7.1.html",
+  "sig": "j2KnBvWICZR2X3QBXzslmH8hX5Vig0GX0cpzP+UDhrPLOg6dtDJ+F2cklz0RAnUCJfa4X3w7/u81lOyFq/k8kw==",
+  "size": 1248284,
   "minShell": "2.5.0"
  }
 }
