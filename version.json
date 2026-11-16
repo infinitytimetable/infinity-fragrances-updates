@@ -1,19 +1,20 @@
 {
- "version": "2.5.0",
+ "version": "2.6.0",
  "date": "2026-11-16",
  "notes": [
-  "Automatic, signed updates"
+  "iPhone app (Add to Home Screen from Safari)",
+  "Fix: Settings on a brand-new install"
  ],
  "android": {
-  "file": "android-2.5.0.html",
-  "sig": "TKZlFgBdETd9Bgp+UfzXhnEqDQXucToR7WqwJHuQ0uVwSKTQrhP73jtZvrBE/1lXhDgoukAE9P2WLaU6Pd+D3g==",
-  "size": 857223,
+  "file": "android-2.6.0.html",
+  "sig": "Ynv5bRj100225GbIuExJ6UCVzo9UGXSWbpo6uJVvgP9UDGsaKuWdKPYCu5WxsWR34FkznAmGBPn32v+BllNVKw==",
+  "size": 859660,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.5.0.html",
-  "sig": "BSr9hyvU/fR6t647wIFptf1qngapUyYKqXN2okmJ0Xc8ZpBqJfUCr9JFkT+odj268OpftaVDeNqBkWbzhieuyg==",
-  "size": 853722,
+  "file": "desktop-2.6.0.html",
+  "sig": "5pfO3YxstHVVRZM1MzOi0ZzB4yRGkre+WaN8HFj5MdkPKBwOIX0dlHe0l7NrrgxyAwbLVcoXupHWviOU5fWFjg==",
+  "size": 856159,
   "minShell": "2.5.0"
  }
 }
