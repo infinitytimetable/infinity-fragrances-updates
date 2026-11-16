@@ -1,20 +1,20 @@
 {
- "version": "2.7.1",
+ "version": "2.7.2",
  "date": "2026-11-16",
  "notes": [
-  "Live barcode scanner with the camera",
-  "Scanning works offline"
+  "Send stock to shops by courier with notes and waybill",
+  "New 3D app icon"
  ],
  "android": {
-  "file": "android-2.7.1.html",
-  "sig": "jrqVx2geXiX/OlGijoy83Hvi7raJ/gk1ZO2XzJFFU+lLGxmAyHK93ytuxgl4s901HE8tqABBjcC51t3tsryemA==",
-  "size": 1251785,
+  "file": "android-2.7.2.html",
+  "sig": "vZY923r7GgdFAdkulNUupIUV7wpgm8egGQ47W9cFZqjC2K0Nzd0CF76uuJJfq1NArqHm1b0pkHZVeDcoqFyV8g==",
+  "size": 1260557,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.7.1.html",
-  "sig": "j2KnBvWICZR2X3QBXzslmH8hX5Vig0GX0cpzP+UDhrPLOg6dtDJ+F2cklz0RAnUCJfa4X3w7/u81lOyFq/k8kw==",
-  "size": 1248284,
+  "file": "desktop-2.7.2.html",
+  "sig": "WJK7jERcBAIbrOn4M3IoUAds+mx60tNPMHThAF9OjtlNQYv+xREfh6LfcytCxK3/L/BSEc0udTxKkI/H5oAqJQ==",
+  "size": 1257056,
   "minShell": "2.5.0"
  }
 }

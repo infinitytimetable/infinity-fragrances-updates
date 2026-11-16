@@ -1741,8 +1741,9 @@ function fixNumbers(o){
 }
 
 /* ======================= Version 2.0 ======================= */
-const APP_VERSION = '2.7.1';
+const APP_VERSION = '2.7.2';
 const CHANGELOG = [
+  ['2.7.2', '16 Nov 2026', ['Send stock to shops by courier: dispatch and delivery notes, waybill, courier charge in Expenses', 'Stock sent to a shop shows as on the way until the shopkeeper confirms it arrived', 'New 3D app icon']],
   ['2.7.1', '16 Nov 2026', ['Live barcode scanner: point the camera at a barcode, it beeps and adds the perfume', 'Keep scanning mode on the till for several perfumes in a row; light button where the phone allows', 'Barcode reader now built in, so scanning works offline']],
   ['2.7.0', '16 Nov 2026', ['Digital receipts: send by WhatsApp, SMS, link or print from the till, shops and resellers', 'Shops: each shop has its own stock and a shopkeeper app; sales, receipts and cash arrive automatically', 'Online shop link for customers: order and pay on delivery or by mobile money', 'Change my PIN button; resellers confirm their current PIN to change it']],
   ['2.6.1', '16 Nov 2026', ['Reseller app: phone layout with a bottom menu (Home, Sell, Order, Pay, More)', 'Reseller app always uses the Rose Quartz look, including the PIN screen', '"Owner" is now called "Admin" in the app']],
@@ -1831,7 +1832,7 @@ function docSummary(col, d){
   if (col === 'moves') return `${MOVE_LABEL[d.kind] || d.kind} ${num(d.qty)} × ${pName(d.productId)}${d.resellerId ? ' · ' + rName(d.resellerId) : ''}${d.customer ? ' · ' + d.customer : ''}${d.unitPrice ? ' @ ' + money(d.unitPrice) : ''}`;
   if (col === 'cash') return `${d.category || d.kind} ${money(d.amount)}${d.resellerId ? ' · ' + rName(d.resellerId) : ''}${d.description ? ' · ' + d.description : ''}`;
   if (col === 'receipts') return `${d.no} · ${money(d.total)}`;
-  if (col === 'dispatches') return `${d.no} to ${rName(d.resellerId)}`;
+  if (col === 'dispatches') return `${d.no} to ${dnTo(d)}`;
   if (col === 'invoices') return `${d.no} · ${d.customer || ''}`;
   if (col === 'images') return `Photo for ${pName(d.id)}`;
   return d.name || d.no || d.id || '';
@@ -2279,7 +2280,7 @@ function ownerListen(){
     appsPrimed = true; if (route() === 'portal') render(true); else updatePortalBadge(); }));
   OWN.shopReqs = {}; locs().filter(l => l.keeperUid).forEach(l => {
     OWN.unsubs.push(FB.listen(`shops/${l.id}/sales`, 'status', 'new', list => list.forEach(q => shopSaleImport(l.id, q))));
-    OWN.unsubs.push(FB.listen(`shops/${l.id}/requests`, 'status', 'pending', list => { const old = new Set((OWN.shopReqs[l.id] || []).map(x => x.id)); OWN.shopReqs[l.id] = list.map(q => ({...q, sid:l.id})); list.filter(q => !old.has(q.id) && OWN.shopPrimed?.[l.id]).forEach(q => { appNotify('Shop stock request', l.name); toast(`${l.name} asks for stock`); }); (OWN.shopPrimed = OWN.shopPrimed || {})[l.id] = true; if (route() === 'shops') render(true); else updatePortalBadge(); }));
+    OWN.unsubs.push(FB.listen(`shops/${l.id}/requests`, 'status', 'pending', async list => { for (const q of list.filter(x => x.type === 'received')) { try { await dnReceive(q.dispatchId, q.date || today(), q.byName || l.keeper || ''); await FB.update(`shops/${l.id}/requests/${q.id}`, {status:'approved', decidedAt:FB.now()}); toast(`${l.name} received parcel ${S.dispatches[q.dispatchId]?.no || ''}`); } catch(e) {} } list = list.filter(x => x.type !== 'received'); const old = new Set((OWN.shopReqs[l.id] || []).map(x => x.id)); OWN.shopReqs[l.id] = list.map(q => ({...q, sid:l.id})); list.filter(q => !old.has(q.id) && OWN.shopPrimed?.[l.id]).forEach(q => { appNotify('Shop stock request', l.name); toast(`${l.name} asks for stock`); }); (OWN.shopPrimed = OWN.shopPrimed || {})[l.id] = true; if (route() === 'shops') render(true); else updatePortalBadge(); }));
   });
   let ordPrimed = false;
   OWN.unsubs.push(FB.listen('orders', null, null, list => { const old = new Set((OWN.orders || []).map(o => o.id)), cut = iso(addDays(new Date(), -60)); OWN.orders = list.filter(o => (o.at || '') >= cut || o.status === 'new' || o.status === 'confirmed');
@@ -3189,11 +3190,11 @@ function shopStats(sid, C){
 }
 PAGES.shops = C => {
   const list = locs(), pend = Object.values(OWN.shopReqs || {}).flat();
-  return head('Shops', 'Each shop has its own stock. Give a shopkeeper a login and they sell from their own phone: their sales, receipts and cash appear here straight away, and the shop’s stock goes down.', btn('+ Add shop', 'shopNew', {}, 'pri') + btn('Move stock to a shop', 'stockMove'))
+  return head('Shops', 'Each shop has its own stock. Give a shopkeeper a login and they sell from their own phone: their sales, receipts and cash appear here straight away, and the shop’s stock goes down.', btn('Send stock (courier)', 'shopDn', {}, 'pri') + btn('+ Add shop', 'shopNew') + btn('Quick move', 'stockMove', {}, 'ghost'))
     + (pend.length ? `<div class="card"><h2>Shop stock requests <span class="pill warn">${pend.length}</span></h2><ul class="list">${pend.map(q => `<li><span><b>${esc(shopOf(q.sid)?.name || '')}</b> asks for ${(q.lines || []).map(l => `${l.qty} × ${esc(l.name)}`).join(', ')}${q.note ? `<div class="small mut">“${esc(q.note)}”</div>` : ''}</span><span class="actions">${btn('Send stock', 'shopReqOk', {sid:q.sid, id:q.id}, 'sm pri')}${btn('Decline', 'shopReqNo', {sid:q.sid, id:q.id}, 'sm ghost')}</span></li>`).join('')}</ul></div>` : '')
     + `<div class="shop-grid">${list.map(l => { const s = shopStats(l.id, C); return `<div class="card shop-card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div><h2 style="margin:0">${esc(l.name)}</h2><div class="small mut">${esc([l.town, l.address].filter(Boolean).join(' · ') || (l.id === 'main' ? 'Your main store' : ''))}</div></div>${l.keeperUid ? '<span class="pill good">Shopkeeper app on</span>' : ''}</div>
-      <div class="kv" style="margin:10px 0"><dt>Shopkeeper</dt><dd>${esc(l.keeper || '—')}${l.phone ? ` · ${esc(l.phone)}` : ''}</dd><dt>Stock</dt><dd>${int(s.bottles)} bottles · ${money(s.value)}</dd><dt>Sales today</dt><dd><b>${money(s.today)}</b>${Object.keys(s.by).length ? ` <span class="small mut">(${Object.entries(s.by).map(([k, v]) => `${PAYL[k] || k} ${money(v)}`).join(', ')})</span>` : ''}</dd><dt>This month</dt><dd>${money(s.month)}</dd>${l.keeperLogin ? `<dt>Login ID</dt><dd>${esc(l.keeperLogin)}</dd>` : ''}</div>
-      <div class="actions">${btn('Edit', 'shopEdit', {id:l.id}, 'sm')}${btn('Sales', 'shopSales', {id:l.id}, 'sm ghost')}${FB_ROLE === 'owner' ? (l.keeperUid ? btn('New PIN', 'shopAcc', {id:l.id, reset:1}, 'sm ghost') : btn('Make shopkeeper login', 'shopAcc', {id:l.id}, 'sm pri')) : ''}</div></div>`; }).join('')}</div>`
+      <div class="kv" style="margin:10px 0"><dt>Shopkeeper</dt><dd>${esc(l.keeper || '—')}${l.phone ? ` · ${esc(l.phone)}` : ''}</dd><dt>Stock</dt><dd>${int(s.bottles)} bottles · ${money(s.value)}${(t => t ? ` <span class="pill warn">${t} on the way</span>` : '')(Object.values(C.storeLoc[TRANSIT(l.id)] || {}).reduce((a, q) => a + Math.max(0, q), 0))}</dd><dt>Sales today</dt><dd><b>${money(s.today)}</b>${Object.keys(s.by).length ? ` <span class="small mut">(${Object.entries(s.by).map(([k, v]) => `${PAYL[k] || k} ${money(v)}`).join(', ')})</span>` : ''}</dd><dt>This month</dt><dd>${money(s.month)}</dd>${l.keeperLogin ? `<dt>Login ID</dt><dd>${esc(l.keeperLogin)}</dd>` : ''}</div>
+      <div class="actions">${l.id !== 'main' ? btn('Send stock', 'shopDn', {id:l.id}, 'sm pri') : ''}${btn('Edit', 'shopEdit', {id:l.id}, 'sm')}${btn('Sales', 'shopSales', {id:l.id}, 'sm ghost')}${FB_ROLE === 'owner' ? (l.keeperUid ? btn('New PIN', 'shopAcc', {id:l.id, reset:1}, 'sm ghost') : btn('Make shopkeeper login', 'shopAcc', {id:l.id}, 'sm pri')) : ''}</div></div>`; }).join('')}</div>`
     + (FB_ROLE === 'owner' ? '' : `<p class="hint">To give shopkeepers their own app, first sign in under Resellers → Online accounts.</p>`);
 };
 function shopForm(l = {}){
@@ -3221,7 +3222,8 @@ function shopSnapshot(sid){
   const t = today(), recent = Object.values(S.receipts).filter(r => r.shop === sid && r.date >= iso(addDays(new Date(), -2))).sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time)).slice(0, 60)
     .map(r => ({id:r.id, no:r.no, date:r.date, time:r.time, total:num(r.total), pay:r.pay, customer:r.customer || '', bottles:(r.lines || []).reduce((s2, x) => s2 + num(x.qty), 0), token:r.token || ''}));
   const lastNo = Object.values(S.receipts).filter(r => r.shop === sid).reduce((m, r) => Math.max(m, parseInt(String(r.no).split('-').pop()) || 0), 0);
-  return {name:l.name, town:l.town || '', address:l.address || '', code:shopCode(l), keeper:l.keeper || '', stock, recent, lastNo, today:t, business:bizName(), businessPhone:S.settings.phone || '', tagline:S.settings.tagline || '', updatedAt:nowISO()};
+  const parcels = Object.values(S.dispatches).filter(d => d.toLoc === sid).sort((a, b) => (b.date || '').localeCompare(a.date || '') || (b.no || '').localeCompare(a.no || '')).slice(0, 15).map(d => ({id:d.id, no:d.no, date:d.date, courier:d.courier || '', waybill:d.waybill || '', status:d.status, deliveredDate:d.deliveredDate || '', items:(d.lines || []).map(x => ({name:pName(x.productId), qty:num(x.qty)}))}));
+  return {name:l.name, town:l.town || '', address:l.address || '', code:shopCode(l), keeper:l.keeper || '', stock, recent, parcels, lastNo, today:t, business:bizName(), businessPhone:S.settings.phone || '', tagline:S.settings.tagline || '', updatedAt:nowISO()};
 }
 async function publishShop(sid){ const l = shopOf(sid); if (!l || !l.keeperUid || FB_ROLE !== 'owner') return; try { await FB.set('shops/' + sid, shopSnapshot(sid)); } catch(e) {} }
 const publishShops = () => locs().filter(l => l.keeperUid).forEach(l => publishShop(l.id));
@@ -3270,7 +3272,8 @@ function shopUI(){
     body = `<div class="tiles">${tile('Sales today', money(tot), `${mine.length} receipt${mine.length === 1 ? '' : 's'}`)}${tile('Bottles sold', int(mine.reduce((x, r) => x + (r.lines || []).reduce((y, l) => y + num(l.qty), 0), 0)))}${Object.entries(by).map(([k, v]) => tile(PAYL[k] || k, money(v))).join('')}</div>
       <div class="card"><h2>Today's receipts</h2>${mine.length ? `<ul class="list">${mine.map(r => `<li><span><b>${esc(r.no)}</b> · ${esc(r.time || '')}${r.customer ? ' · ' + esc(r.customer) : ''}<div class="small mut">${(r.lines || []).map(l => `${l.qty} × ${esc(l.name)}`).join(', ')} · ${esc(PAYL[r.pay] || r.pay)}${r.status === 'new' ? ' · <span class="pill warn">sending…</span>' : ''}</div></span><span class="actions"><b>${money(r.total)}</b>${btn('Receipt', 'shopRc', {id:r.id}, 'sm ghost')}</span></li>`).join('')}</ul>` : '<p class="mut">No sales yet today.</p>'}</div>`;
   } else if (SHOP.tab === 'stock') {
-    body = `<div class="card"><h2>Stock in ${esc(s.name)}</h2><div class="tw"><table class="t"><thead><tr><th>Perfume</th><th class="n">In shop</th><th class="n">Price</th></tr></thead><tbody>${av.map(p => `<tr><td>${esc(p.name)}${p.size ? ` <span class="small mut">${esc(p.size)}ml</span>` : ''}</td><td class="n">${p.avail}</td><td class="n">${money(p.unit)}</td></tr>`).join('')}</tbody></table></div><p class="small mut">Updated ${esc(fmtDateTime(s.updatedAt))}</p></div>`;
+    const ps = s.parcels || [], sent = new Set(SHOP.reqs.filter(q => q.type === 'received' && q.status !== 'rejected').map(q => q.dispatchId));
+    body = (ps.length ? `<div class="card"><h2>Parcels</h2>${ps.map(d => `<div style="border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><b>${esc(d.no)} · ${fmtDate(d.date)}</b>${d.status === 'delivered' ? `<span class="pill good">Received ${fmtDate(d.deliveredDate)}</span>` : sent.has(d.id) ? '<span class="pill warn">Confirmation sent</span>' : '<span class="pill acc">On the way</span>'}</div><div class="small mut">${esc(d.courier)}${d.waybill ? ' · waybill ' + esc(d.waybill) : ''}</div><div class="small">${d.items.map(x => `${x.qty} × ${esc(x.name)}`).join(', ')}</div>${d.status !== 'delivered' && !sent.has(d.id) ? `<div style="margin-top:6px">${btn('I received this parcel', 'shopGot', {id:d.id}, 'sm pri')}</div>` : ''}</div>`).join('')}</div>` : '') + `<div class="card"><h2>Stock in ${esc(s.name)}</h2><div class="tw"><table class="t"><thead><tr><th>Perfume</th><th class="n">In shop</th><th class="n">Price</th></tr></thead><tbody>${av.map(p => `<tr><td>${esc(p.name)}${p.size ? ` <span class="small mut">${esc(p.size)}ml</span>` : ''}</td><td class="n">${p.avail}</td><td class="n">${money(p.unit)}</td></tr>`).join('')}</tbody></table></div><p class="small mut">Updated ${esc(fmtDateTime(s.updatedAt))}</p></div>`;
   } else if (SHOP.tab === 'order') {
     body = `<div class="card"><h2>Ask for stock</h2><form id="shop-ord"><div class="tw"><table class="t"><thead><tr><th>Perfume</th><th class="n">In shop</th><th class="n">Want</th></tr></thead><tbody>${av.map(p => `<tr><td>${esc(p.name)}</td><td class="n">${p.avail}</td><td class="n"><input type="number" min="0" name="o_${p.id}" placeholder="0" style="width:70px;text-align:right"></td></tr>`).join('')}</tbody></table></div>
       <label for="so-n">Note (optional)<input id="so-n" name="note"></label><div class="actions" style="margin-top:10px">${btn('Send request', 'shopOrder', {}, 'pri')}</div></form></div>
@@ -3302,7 +3305,7 @@ async function shopSell(){
 /* ---- online shop (customers order from a web link) ---- */
 async function publishStore(){
   if (FB_ROLE !== 'owner') return; const st = S.settings, C = compute();
-  const avail = pid => Object.values(C.storeLoc).reduce((t, o) => t + Math.max(0, o[pid] || 0), 0);
+  const avail = pid => Object.entries(C.storeLoc).filter(([k]) => !k.startsWith('transit:')).reduce((t, [, o]) => t + Math.max(0, o[pid] || 0), 0);
   const list = sortedProds().filter(p => (p.status || 'active') !== 'inactive' && avail(p.id) > 0).map(p => { const bp = bestPromo(p.id, num(p.sellPrice), 'pos'); return {id:p.id, name:p.name, size:p.size || '', category:p.category || '', price:num(p.sellPrice), promo:bp && bp.price < num(p.sellPrice) ? {price:r2(bp.price), badge:promoBadge(bp.pr)} : null, stock:Math.min(avail(p.id), 20)}; });
   const doc = {open:st.storeOpen !== false, biz:bizName(), tagline:st.tagline || '', phone:st.phone || '', whatsapp:st.storeWhatsapp || st.phone || '', momo:st.storeMomo || '', momoName:st.storeMomoName || '', delivery:st.storeDelivery || 'Delivery fee depends on your area; we will confirm it on WhatsApp.', shops:locs().filter(l => l.online !== false).map(l => ({id:l.id, name:l.name, town:l.town || '', address:l.address || ''})), list, updatedAt:nowISO()};
   try { await FB.set('store/catalog', doc); const cat = await catalogOps('if-storesig'); for (const op of cat.ops) { if (op[1].startsWith('public/cat_')) await FB.set(op[1].replace('public/', 'store/'), op[2]); if (op[1] === 'public/catalog') await FB.set('store/images', op[2]); } if (cat.ops.length) localStorage.setItem('if-storesig', cat.sig); } catch(e) {}
@@ -3336,6 +3339,52 @@ function ordDone(id){
     await put('receipts', rc); await FB.update('orders/' + o.id, {status:'done', receiptNo:rc.no, doneAt:nowISO()}); publishStore(); if (rc.shop) publishShop(rc.shop);
     setTimeout(() => { const p = rcptPublic(rc); rcptModal(p, {phone:o.phone, onToken:t => put('receipts', {...S.receipts[rc.id], token:t})}); }, 200);
   }, {label:'Book the sale'});
+}
+
+
+/* ---- dispatching stock to shops (courier, waybill, on-the-way stock) ---- */
+const TRANSIT = sid => 'transit:' + sid;
+const dnTo = d => d.toLoc ? (shopOf(d.toLoc)?.name || locName(d.toLoc)) : rName(d.resellerId);
+const dnParty = d => { if (d.toLoc) { const l = shopOf(d.toLoc) || {name:locName(d.toLoc)}; return {name:l.name + (l.keeper ? ' · ' + l.keeper : ''), phone:l.phone || '', townId:'', _town:[l.town, l.address].filter(Boolean).join(', ')}; } return S.resellers[d.resellerId] || {}; };
+function shopDispatchForm(sid){
+  const shops = locs(); if (shops.length < 2) return toast('Add a shop first (Stock → Shops → Add shop).', true);
+  const st = S.settings, to = sid || (shops.find(l => l.id !== 'main') || shops[1]).id;
+  modal('Send stock to a shop', `<div class="grid2">${fDate()}<label for="f-sdt">To shop<select id="f-sdt" name="toLoc" required>${shops.map(l => `<option value="${l.id}" ${l.id === to ? 'selected' : ''}>${esc(l.name)}${l.town ? ' · ' + esc(l.town) : ''}</option>`).join('')}</select></label>${locSelect('main', 'loc', 'Send from')}</div>
+    ${linesBlock('qty')}
+    <fieldset><legend>Delivery</legend><div class="grid2">
+      <label for="f-show">Sent by<select id="f-show" name="method"><option value="courier">Courier / bus</option><option value="hand">Hand delivery</option></select></label>
+      <div data-when="method=courier"><label for="f-scour">Courier<input id="f-scour" name="courier" value="${esc(st.courier || 'Platinum')}"></label></div>
+      <div data-when="method=courier"><label for="f-swb">Waybill / tracking no.<input id="f-swb" name="waybill"></label></div>
+      <div data-when="method=courier"><label for="f-schg">Courier charge<input id="f-schg" name="charge" type="number" min="0" step="0.01" placeholder="0.00"></label></div>
+      <div data-when="method=courier"><label for="f-schv">Charge paid by<select id="f-schv" name="chargeVia">${chOptions('momo')}</select></label></div>
+    </div></fieldset>
+    <div class="grid2"><label for="f-sdby">Dispatched by<input id="f-sdby" name="dispatchedBy" value="${esc(st.ownerName || '')}"></label><label for="f-sdn">Note<input id="f-sdn" name="note"></label></div>
+    <p class="hint">The bottles show as <b>on the way</b> and the shop can sell them once the shopkeeper confirms they arrived (or you mark the parcel delivered).</p>`,
+  async (d, f) => {
+    const from = d.loc || 'main'; if (from === d.toLoc) throw Error('Choose a different shop from the one you send from.');
+    const lines = readLines(f); if (!lines.length) throw Error('Add at least one perfume.');
+    const have = compute().storeLoc[from] || {}, need = {}; lines.forEach(l => need[l.productId] = (need[l.productId] || 0) + l.qty);
+    for (const p in need) if (need[p] > (have[p] || 0)) throw Error(`Only ${have[p] || 0} × ${pName(p)} at ${locName(from)}.`);
+    const dn = {id:uid(), no:nextDispatchNo(), date:d.date, toLoc:d.toLoc, fromLoc:from, method:d.method, courier:d.method === 'courier' ? (d.courier || '').trim() || 'Courier' : 'Hand delivery', waybill:(d.waybill || '').trim(), charge:d.method === 'courier' ? num(d.charge) : 0, note:(d.note || '').trim(), dispatchedBy:(d.dispatchedBy || '').trim(), status:'dispatched',
+      lines:lines.map(l => ({productId:l.productId, qty:l.qty, unitPrice:num(S.products[l.productId]?.sellPrice)})), moveIds:[]};
+    for (const l of lines) { const mv = await put('moves', {kind:'transfer', date:d.date, productId:l.productId, qty:l.qty, from, to:TRANSIT(d.toLoc), dispatchId:dn.id, note:`${dn.no} ${locName(from)} → ${dnTo(dn)} (on the way)`}); dn.moveIds.push(mv.id); }
+    if (dn.charge > 0) { const c = await put('cash', {kind:'out', date:d.date, channel:d.chargeVia, amount:dn.charge, category:'Expense', expType:'Courier charges', description:`${dn.courier} · ${dn.no} to ${dnTo(dn)}${dn.waybill ? ' · ' + dn.waybill : ''}`, dispatchId:dn.id}); dn.cashId = c.id; }
+    await put('dispatches', dn);
+    const l = shopOf(d.toLoc); if (l?.keeperUid && FB_ROLE === 'owner') { publishShop(d.toLoc); fbNotify(l.keeperUid, `Parcel ${dn.no} is on the way: ${lines.reduce((t, x) => t + x.qty, 0)} bottles${dn.courier ? ' by ' + dn.courier : ''}${dn.waybill ? ' (waybill ' + dn.waybill + ')' : ''}.`); }
+    toast(`${dn.no} saved. Open Dispatch & delivery for the notes.`); setTimeout(() => showDispatchDoc(dn.id, 'dispatch'), 200);
+  }, {label:'Send stock', wide:true});
+}
+async function dnReceive(id, date, by){
+  const d = S.dispatches[id]; if (!d || d.status === 'delivered') return;
+  const ids = [...(d.moveIds || [])];
+  if (d.toLoc) for (const l of d.lines || []) { const mv = await put('moves', {kind:'transfer', date, productId:l.productId, qty:num(l.qty), from:TRANSIT(d.toLoc), to:d.toLoc, dispatchId:d.id, note:`${d.no} arrived at ${dnTo(d)}`}); ids.push(mv.id); }
+  await put('dispatches', {...S.dispatches[id], status:'delivered', deliveredDate:date, receivedBy:by || '', moveIds:ids});
+  if (d.toLoc) publishShop(d.toLoc);
+}
+function shopDnEdit(id){
+  const d = S.dispatches[id]; if (!d) return;
+  modal(`Edit ${d.no}`, `<div class="grid2"><label for="f-se1">Courier<input id="f-se1" name="courier" value="${esc(d.courier || '')}"></label><label for="f-se2">Waybill<input id="f-se2" name="waybill" value="${esc(d.waybill || '')}"></label><label for="f-se3">Note<input id="f-se3" name="note" value="${esc(d.note || '')}"></label></div><p class="hint">To change the perfumes, delete this parcel and send it again.</p>`,
+    async v => { await put('dispatches', {...d, courier:v.courier.trim(), waybill:v.waybill.trim(), note:v.note.trim()}); if (d.toLoc) publishShop(d.toLoc); toast('Saved'); }, {label:'Save'});
 }
 
 /* ---------- images, documents & export ---------- */
@@ -3393,12 +3442,12 @@ PAGES.dispatch = C => {
   const m = UI.month, list = Object.values(S.dispatches).filter(d => d.date?.startsWith(m)).sort(byDate).reverse();
   const bottles = d => (d.lines || []).reduce((t, l) => t + num(l.qty), 0);
   const waiting = Object.values(S.dispatches).filter(d => d.status !== 'delivered');
-  return head('Dispatch &amp; delivery', `Every parcel sent to a reseller gets a dispatch note for your records and a delivery note for the reseller to sign. Courier charges go into Expenses automatically.`,
-      btn('Dispatch stock', 'issue', {}, 'pri'))
+  return head('Dispatch &amp; delivery', `Every parcel sent to a reseller or a shop gets a dispatch note for your records and a delivery note for the reseller to sign. Courier charges go into Expenses automatically.`,
+      btn('Dispatch stock', 'issue', {}, 'pri') + btn('Send to a shop', 'shopDn'))
     + `<div class="filters">${monthFilter()}</div>
     <div class="tiles">${tile('Parcels sent', int(list.length), monthLabel(m), true)}${tile('Bottles sent', int(list.reduce((t, d) => t + bottles(d), 0)), monthLabel(m))}${tile('Courier charges', money(list.reduce((t, d) => t + num(d.charge), 0)), monthLabel(m))}${tile('Awaiting delivery', int(waiting.length), 'not yet confirmed received')}</div>
-    <div class="card">${list.length ? `<div class="tw"><table class="t"><thead><tr><th>No.</th><th>Date</th><th>Reseller</th><th>Sent by</th><th class="n">Bottles</th><th class="n">Charge</th><th>Status</th><th></th></tr></thead><tbody>
-      ${list.map(d => `<tr><td style="white-space:nowrap"><b>${esc(d.no)}</b></td><td>${fmtDate(d.date)}</td><td><button class="link" data-act="resView" data-id="${d.resellerId}">${esc(rName(d.resellerId))}</button><div class="small mut">${esc(rTown(d.resellerId))}</div></td>
+    <div class="card">${list.length ? `<div class="tw"><table class="t"><thead><tr><th>No.</th><th>Date</th><th>To</th><th>Sent by</th><th class="n">Bottles</th><th class="n">Charge</th><th>Status</th><th></th></tr></thead><tbody>
+      ${list.map(d => `<tr><td style="white-space:nowrap"><b>${esc(d.no)}</b></td><td>${fmtDate(d.date)}</td><td>${d.toLoc ? `<b>${esc(dnTo(d))}</b><div class="small mut">Shop${shopOf(d.toLoc)?.town ? ' · ' + esc(shopOf(d.toLoc).town) : ''}</div>` : `<button class="link" data-act="resView" data-id="${d.resellerId}">${esc(rName(d.resellerId))}</button><div class="small mut">${esc(rTown(d.resellerId))}</div>`}</td>
         <td>${esc(d.courier)}${d.waybill ? `<div class="small mut">${esc(d.waybill)}</div>` : ''}</td><td class="n">${int(bottles(d))}</td><td class="n">${d.charge ? money(d.charge) : '—'}</td>
         <td>${d.status === 'delivered' ? `<span class="pill good">Delivered ${fmtDate(d.deliveredDate)}</span>${d.receivedBy ? `<div class="small mut">by ${esc(d.receivedBy)}</div>` : ''}` : '<span class="pill warn">On the way</span>'}</td>
         <td><div class="actions">${btn('Dispatch note', 'docDN', {id:d.id}, 'sm')}${btn('Delivery note', 'docDel', {id:d.id}, 'sm')}${d.status !== 'delivered' ? btn('Mark delivered', 'delivered', {id:d.id}, 'sm ghost') : ''}${btn('Edit', 'editDispatch', {id:d.id}, 'sm ghost')}${btn('Delete', 'delDispatch', {id:d.id}, 'sm ghost danger')}</div></td></tr>`).join('')}
@@ -3429,7 +3478,7 @@ function stampSVG(word, date, color = '#1f3a8a', size = 170){
 /* A dispatch or delivery note as one or more A4 pages: rows run on to the next page and
    the totals, terms, signatures and stamp always sit together on the last page. */
 function dispatchPages(d, type){
-  const r = S.resellers[d.resellerId] || {}, lines = d.lines || [];
+  const r = dnParty(d), lines = d.lines || [];
   const tq = lines.reduce((t, l) => t + num(l.qty), 0), tv = lines.reduce((t, l) => t + num(l.qty) * num(l.unitPrice), 0);
   const isDel = type === 'delivery', title = isDel ? 'DELIVERY NOTE' : 'DISPATCH NOTE', delivered = d.status === 'delivered';
   const by = d.dispatchedBy || S.settings.ownerName || '';
@@ -3460,7 +3509,7 @@ function dispatchPages(d, type){
         <div class="serif" style="font-size:40px;letter-spacing:.04em">${title}</div>
         <div style="text-align:right;font-size:14px"><div><b>No.</b> ${esc(d.no)}</div><div><b>Date sent</b> ${fmtDate(d.date)}</div>${isDel && delivered && d.deliveredDate ? `<div><b>Received</b> ${fmtDate(d.deliveredDate)}</div>` : ''}</div></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:20px 44px;font-size:14px;line-height:1.6">
-        <div><div style="font-size:11px;letter-spacing:.1em;color:#6e675c;font-weight:700">${isDel ? 'DELIVERED TO' : 'SENT TO'}</div><b style="font-size:17px">${esc(r.name || '')}</b><br>${esc(tName(r.townId))}${S.towns[r.townId]?.province ? ', ' + esc(S.towns[r.townId].province) + ' Province' : ''}<br>${esc(r.phone || '')}</div>
+        <div><div style="font-size:11px;letter-spacing:.1em;color:#6e675c;font-weight:700">${isDel ? 'DELIVERED TO' : 'SENT TO'}</div><b style="font-size:17px">${esc(r.name || '')}</b><br>${esc((r._town ?? tName(r.townId)))}${S.towns[r.townId]?.province ? ', ' + esc(S.towns[r.townId].province) + ' Province' : ''}<br>${esc(r.phone || '')}</div>
         <div><div style="font-size:11px;letter-spacing:.1em;color:#6e675c;font-weight:700">DELIVERY</div>${esc(d.courier)}${d.waybill ? `<br>Waybill: ${esc(d.waybill)}` : ''}${!isDel && d.charge ? `<br>Courier charge: ${money(d.charge)}` : ''}</div></div>`
       : `<div style="display:flex;align-items:center;gap:14px;padding:34px 44px 16px"><img src="${LOGO}" style="width:48px;height:48px" alt="">
           <div style="flex:1"><div class="serif" style="font-size:24px;line-height:1">${title} <span style="font-family:Manrope,Arial,sans-serif;font-size:15px;font-weight:700">${esc(d.no)}</span></div><div style="font-size:12.5px;color:#6e675c;margin-top:4px">continued · ${esc(r.name || '')} · sent ${fmtDate(d.date)}</div></div></div>
@@ -3494,17 +3543,17 @@ function dispatchEditForm(id){
 }
 function showDispatchDoc(id, type){
   const d = S.dispatches[id]; if (!d) return;
-  const r = S.resellers[d.resellerId] || {};
+  const r = dnParty(d);
   const tq = (d.lines || []).reduce((t, l) => t + num(l.qty), 0);
-  const msg = `Hello ${r.name || ''}, your parcel ${d.no} with ${tq} bottle${tq === 1 ? '' : 's'} was sent on ${fmtDate(d.date)} by ${d.courier}${d.waybill ? ' (waybill ' + d.waybill + ')' : ''}.\n` + (d.lines || []).map(l => `- ${pName(l.productId)} × ${l.qty}`).join('\n') + `\nPlease confirm when you receive it. Payment for bottles sold is due on the ${sDay()}th. Thank you!`;
-  modal(`${type === 'delivery' ? 'Delivery' : 'Dispatch'} note ${d.no}`, `<div class="actions" style="margin-bottom:12px">${btn('Download PDF', 'expDoc', {fmt:'pdf', name:`${d.no}-${type}`}, 'pri sm')}${btn('Download image', 'expDoc', {fmt:'png', name:`${d.no}-${type}`}, 'sm')}<a class="btn sm" href="${waLink(r.phone, msg)}" target="_blank" rel="noopener">Message ${esc(r.name || 'reseller')} on WhatsApp</a>${type === 'dispatch' ? btn('Delivery note', 'docDel', {id}, 'sm ghost') : btn('Dispatch note', 'docDN', {id}, 'sm ghost')}</div>
+  const msg = `Hello ${r.name || ''}, your parcel ${d.no} with ${tq} bottle${tq === 1 ? '' : 's'} was sent on ${fmtDate(d.date)} by ${d.courier}${d.waybill ? ' (waybill ' + d.waybill + ')' : ''}.\n` + (d.lines || []).map(l => `- ${pName(l.productId)} × ${l.qty}`).join('\n') + `\nPlease confirm when you receive it.${d.toLoc ? ' Tap "I received this parcel" in the shop app.' : ` Payment for bottles sold is due on the ${sDay()}th.`} Thank you!`;
+  modal(`${type === 'delivery' ? 'Delivery' : 'Dispatch'} note ${d.no}`, `<div class="actions" style="margin-bottom:12px">${btn('Download PDF', 'expDoc', {fmt:'pdf', name:`${d.no}-${type}`}, 'pri sm')}${btn('Download image', 'expDoc', {fmt:'png', name:`${d.no}-${type}`}, 'sm')}<a class="btn sm" href="${waLink(r.phone, msg)}" target="_blank" rel="noopener">Message ${esc(d.toLoc ? (shopOf(d.toLoc)?.keeper || 'the shop') : (r.name || 'reseller'))} on WhatsApp</a>${type === 'dispatch' ? btn('Delivery note', 'docDel', {id}, 'sm ghost') : btn('Dispatch note', 'docDN', {id}, 'sm ghost')}</div>
     <div class="preview" id="doc-prev">${dispatchPages(d, type).map(pg => `<div class="docwrap">${pg}</div>`).join('')}</div><p class="hint">${dispatchPages(d, type).length > 1 ? 'This note has ' + dispatchPages(d, type).length + ' pages. The PDF keeps them together; the image download saves one picture per page.' : 'Download the image to send it on WhatsApp, or the PDF to print it.'}</p>`, null, {wide:true, nofocus:true});
   requestAnimationFrame(() => fitDocs($('#doc-prev')));
 }
 function deliveredForm(id){
   const d = S.dispatches[id]; if (!d) return;
-  modal(`Mark ${d.no} delivered`, `<label for="f-dd">Date received<input id="f-dd" type="date" name="date" value="${today()}" required></label><label for="f-rb">Received by<input id="f-rb" name="by" value="${esc(rName(d.resellerId))}"></label>`,
-    async v => { await put('dispatches', {...d, status:'delivered', deliveredDate:v.date, receivedBy:v.by.trim()}); toast(`${d.no} marked delivered`); });
+  modal(`Mark ${d.no} delivered`, `<label for="f-dd">Date received<input id="f-dd" type="date" name="date" value="${today()}" required></label><label for="f-rb">Received by<input id="f-rb" name="by" value="${esc(d.toLoc ? (shopOf(d.toLoc)?.keeper || '') : rName(d.resellerId))}"></label>`,
+    async v => { if (d.toLoc) await dnReceive(d.id, v.date, v.by.trim()); else await put('dispatches', {...d, status:'delivered', deliveredDate:v.date, receivedBy:v.by.trim()}); toast(`${d.no} marked delivered`); });
 }
 
 /* Catalogue maker */
@@ -5112,7 +5161,7 @@ const ACT = {
   shopNew: () => shopForm(), shopEdit: d => shopForm(shopOf(d.id)), shopAcc: d => shopAccCreate(d.id, !!d.reset),
   shopSales: d => { const l = shopOf(d.id), cut = iso(addDays(new Date(), -30)), list = Object.values(S.receipts).filter(r => (r.shop || (r.seller ? '' : (r.loc || 'main'))) === d.id && r.date >= cut).sort((a, b) => (b.date + (b.time || '')).localeCompare(a.date + (a.time || '')));
     modal(`${l?.name || 'Shop'}: last 30 days`, list.length ? `<p><b>${money(list.reduce((t, r) => t + num(r.total), 0))}</b> from ${list.length} sale${list.length === 1 ? '' : 's'}</p><div class="tw"><table class="t"><thead><tr><th>Receipt</th><th>When</th><th>Customer</th><th class="n">Total</th><th>Paid</th><th></th></tr></thead><tbody>${list.map(r => `<tr><td><b>${esc(r.no)}</b></td><td class="small">${fmtDate(r.date)} ${esc(r.time || '')}</td><td>${esc(r.customer || '')}</td><td class="n">${money(r.total)}</td><td class="small">${esc(PAYL[r.pay] || r.pay)}</td><td>${btn('Receipt', 'rcptView', {id:r.id}, 'sm ghost')}</td></tr>`).join('')}</tbody></table></div>` : '<p class="mut">No sales in the last 30 days.</p>', null, {wide:true, nofocus:true}); },
-  shopReqOk: async d => { const q = (OWN.shopReqs[d.sid] || []).find(x => x.id === d.id); if (!q) return; try { await FB.update(`shops/${d.sid}/requests/${d.id}`, {status:'approved', decidedAt:FB.now()}); } catch(e) { return toast(fbMsg(e), true); } ACT.stockMove(); setTimeout(() => { const t = document.querySelector('#m-form [name=to]'); if (t) t.value = d.sid; }, 50); toast(`Choose the perfumes to send to ${shopOf(d.sid)?.name}: ${(q.lines || []).map(l => l.qty + ' × ' + l.name).join(', ')}`); },
+  shopReqOk: async d => { const q = (OWN.shopReqs[d.sid] || []).find(x => x.id === d.id); if (!q) return; try { await FB.update(`shops/${d.sid}/requests/${d.id}`, {status:'approved', decidedAt:FB.now()}); } catch(e) { return toast(fbMsg(e), true); } shopDispatchForm(d.sid); toast(`Choose the perfumes to send to ${shopOf(d.sid)?.name}: ${(q.lines || []).map(l => l.qty + ' × ' + l.name).join(', ')}`); },
   shopReqNo: d => modal('Decline the request', `<label for="f-srr">Reason<input id="f-srr" name="why" required></label>`, async x => { await FB.update(`shops/${d.sid}/requests/${d.id}`, {status:'rejected', reason:x.why.trim(), decidedAt:FB.now()}); toast('Declined'); }, {label:'Decline'}),
   shopTab: d => { closeModal(); SHOP.tab = d.k; window.scrollTo(0, 0); render(true); },
   shopPlus: d => { const p = shopAvail().find(x => x.id === d.id); const q = (SHOP.cart[d.id] || 0) + 1; if (p && q > p.avail) return toast(`Only ${p.avail} in the shop.`, true); SHOP.cart[d.id] = q; $('#sq-' + d.id).textContent = q; $('#shop-cart').innerHTML = shopCartBar(); },
@@ -5120,6 +5169,8 @@ const ACT = {
   shopCat: d => { document.querySelectorAll('[data-act=shopCat]').forEach(b => b.classList.toggle('on', b.dataset.k === d.k)); document.querySelectorAll('.cat-card').forEach(c => c.hidden = !!d.k && c.dataset.cat !== d.k); },
   shopPay: d => { SHOP.pay = d.k; document.querySelectorAll('[data-act=shopPay]').forEach(b => b.classList.toggle('on', b.dataset.k === d.k)); },
   shopSell: () => shopSell(),
+  shopGot: async d => { try { await FB.add(`shops/${FB_ME.shopId}/requests`, {type:'received', dispatchId:d.id, status:'pending', by:FB_USER.uid, byName:FB_ME?.name || '', date:today(), at:FB.now()}); fbNotify('owner', `${SHOP.snap?.name || 'A shop'} received a parcel`); toast('Thank you. The bottles will be added to your shop.'); render(true); } catch(e) { toast(fbMsg(e), true); } },
+  shopDn: d => shopDispatchForm(d.id),
   shopRc: d => { const r = SHOP.sales.find(x => x.id === d.id); if (!r) return; const s0 = SHOP.snap; rcptModal({...rcptPublic(r), biz:s0.business, phone:s0.businessPhone, seller:s0.name}, {token:r.token, phone:r.phone || ''}); },
   shopOrder: async () => { const f = $('#shop-ord'), d = Object.fromEntries(new FormData(f)), lines = shopAvail().map(p => ({productId:p.id, name:p.name, qty:Math.round(num(d['o_' + p.id]))})).filter(l => l.qty > 0); if (!lines.length) return toast('Type how many bottles you need.', true);
     try { await FB.add(`shops/${FB_ME.shopId}/requests`, {type:'order', lines, note:(d.note || '').trim(), status:'pending', by:FB_USER.uid, at:FB.now()}); fbNotify('owner', `${SHOP.snap?.name || 'A shop'} asks for stock`); toast('Request sent'); render(true); } catch(e) { toast(fbMsg(e), true); } },
@@ -5210,7 +5261,7 @@ const ACT = {
   calcKey: d => calcKey(d.k),
   calcUse: () => { const v = calcEval(CALC); if (!isFinite(v) || v <= 0) return toast('Work out an amount first.', true); POS.pay = 'cash'; POS.tendered = String(r2(v)); POS.renderCart(); },
   settle: d => settleForm(d.id),
-  docDN: d => showDispatchDoc(d.id, 'dispatch'), docDel: d => showDispatchDoc(d.id, 'delivery'), delivered: d => deliveredForm(d.id), editDispatch: d => dispatchEditForm(d.id),
+  docDN: d => showDispatchDoc(d.id, 'dispatch'), docDel: d => showDispatchDoc(d.id, 'delivery'), delivered: d => deliveredForm(d.id), editDispatch: d => S.dispatches[d.id]?.toLoc ? shopDnEdit(d.id) : dispatchEditForm(d.id),
   delDispatch: d => { const x = S.dispatches[d.id]; if (!x) return; confirmBox(`Delete ${esc(x.no)}? Its bottles go back to the store${x.cashId ? ' and its courier charge is removed from Expenses' : ''}.`, async () => { for (const id of (x.moveIds || [])) await del('moves', id); if (x.cashId) await del('cash', x.cashId); await del('dispatches', d.id); toast('Dispatch deleted'); }); },
   expDoc: d => { const nodes = [...document.querySelectorAll('#doc-prev .doc')]; d.fmt === 'pdf' ? exportPDF(nodes, d.name + '.pdf') : exportPNG(nodes, d.name); },
   catAll: () => { UI.cat.off = []; TOOLS.catalogue.picks(); TOOLS.catalogue.draw(); },
