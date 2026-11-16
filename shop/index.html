@@ -75,12 +75,15 @@ input,select,textarea{font:inherit;font-size:16px;padding:11px 12px;border:1px s
   var money = function (n) { return 'K ' + (Math.round(Number(n || 0) * 100) / 100).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); };
   var fmtDate = function (d) { if (!d) return ''; var x = new Date(String(d).length <= 10 ? d + 'T12:00:00' : d); return x.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'}); };
   var wa = function (phone, text) { var p = String(phone || '').replace(/\D/g, ''); if (p.startsWith('0')) p = '260' + p.slice(1); return 'https://wa.me/' + p + '?text=' + encodeURIComponent(text); };
-  var db = null, CAT = null, IMGS = {}, cart = {}, cat = '', q = '', step = 'shop', method = 'delivery', payBy = 'cod', shopId = '';
+  var db = null, CAT = null, IMGS = {}, cart = {}, cat = '', q = '', step = 'shop', method = 'delivery', payBy = 'cod', shopId = '', zone = '';
+  var FEST = {christmas:['#0f3d26','#c8323a','#e8c15a','🎄'], newyear:['#141b3a','#c79a1c','#f2c84b','🎆'], valentine:['#a8164a','#d6336c','#ffc2d3','💝'], women:['#5b1f7a','#8a3fb0','#e3b7f2','🌸'], easter:['#6a4fb5','#7a5cc4','#c9f0dd','🐣'], mothers:['#8f2c55','#c2477a','#ffd1e0','💐'], africa:['#1d5e2b','#2e8540','#f2b544','🌍'], blackfriday:['#000000','#b8232c','#f2c94c','🛍️'], independence:['#198a00','#de2010','#ef7d00','🇿🇲']};
+  var feeOf = function () { if (method !== 'delivery' || !CAT || !(CAT.zones || []).length) return 0; var z = CAT.zones.find(function (x) { return x.area === zone; }); return z ? Number(z.fee) || 0 : 0; };
   try { cart = JSON.parse(localStorage.getItem('if-cart') || '{}') || {}; } catch (e) {}
   var saveCart = function () { try { localStorage.setItem('if-cart', JSON.stringify(cart)); } catch (e) {} };
   try { firebase.initializeApp(CFG); db = firebase.firestore(); } catch (e) { $('#app').innerHTML = '<div class="card"><p>Could not connect. Check your internet and refresh.</p></div>'; return; }
   var get = function (p) { return db.doc(p).get().then(function (s) { return s.exists ? s.data() : null; }); };
-  function head(sub) { return '<header><img src="' + LOGO + '" alt=""><div><h1>' + esc(CAT ? CAT.biz : 'Infinity Fragrances') + '</h1><div class="sub">' + esc(sub || (CAT && CAT.tagline) || 'Original long-lasting perfumes') + '</div></div></header>'; }
+  function festBar() { var f = CAT && CAT.fest && FEST[CAT.fest]; return f ? '<div class="card" style="background:linear-gradient(110deg,' + f[0] + ',' + f[1] + ');color:#fff;text-align:center;font-weight:800">' + f[3] + ' ' + esc(CAT.festGreet || '') + ' ' + f[3] + '</div>' : ''; }
+  function head(sub) { return festBar() + '<header><img src="' + LOGO + '" alt=""><div><h1>' + esc(CAT ? CAT.biz : 'Infinity Fragrances') + '</h1><div class="sub">' + esc(sub || (CAT && CAT.tagline) || 'Original long-lasting perfumes') + '</div></div></header>'; }
   function items() { return (CAT && CAT.list || []).filter(function (p) { return cart[p.id] > 0; }); }
   var unit = function (p) { return p.promo ? p.promo.price : p.price; };
   function totals() { var n = 0, t = 0; items().forEach(function (p) { n += cart[p.id]; t += cart[p.id] * unit(p); }); return {n: n, t: Math.round(t * 100) / 100}; }
@@ -112,16 +115,17 @@ input,select,textarea{font:inherit;font-size:16px;padding:11px 12px;border:1px s
     } else if (step === 'checkout') {
       var x = totals(), shops = CAT.shops || [];
       if (!shopId && shops[0]) shopId = shops[0].id;
-      A.innerHTML = head('Your order') + '<div class="card"><ul class="list">' + items().map(function (p) { return '<li><span>' + cart[p.id] + ' × ' + esc(p.name) + (p.size ? ' ' + esc(p.size) + 'ml' : '') + '</span><b>' + money(cart[p.id] * unit(p)) + '</b></li>'; }).join('') + '</ul><div class="tot"><span>Total</span><span>' + money(x.t) + '</span></div><p class="small mut">' + esc(CAT.delivery || '') + '</p><button class="btn" id="back">← Change order</button></div>' +
+      var fee = feeOf();
+      A.innerHTML = head('Your order') + '<div class="card"><ul class="list">' + items().map(function (p) { return '<li><span>' + cart[p.id] + ' × ' + esc(p.name) + (p.size ? ' ' + esc(p.size) + 'ml' : '') + '</span><b>' + money(cart[p.id] * unit(p)) + '</b></li>'; }).join('') + (fee ? '<li><span>Delivery to ' + esc(zone) + '</span><b>' + money(fee) + '</b></li>' : '') + '</ul><div class="tot"><span>Total</span><span>' + money(x.t + fee) + '</span></div><p class="small mut">' + esc(CAT.delivery || '') + '</p><button class="btn" id="back">← Change order</button></div>' +
         '<div class="card"><h2 style="margin-top:0">Your details</h2><div class="row2"><label>Full name<input id="o-n" autocomplete="name"></label><label>Phone / WhatsApp<input id="o-p" type="tel" autocomplete="tel" placeholder="0977 123456"></label></div>' +
         '<h3>How do you want it?</h3><div class="seg"><button data-meth="delivery" class="' + (method === 'delivery' ? 'on' : '') + '">Delivery<small>We bring it to you</small></button>' + (shops.length ? '<button data-meth="pickup" class="' + (method === 'pickup' ? 'on' : '') + '">Collect<small>From one of our shops</small></button>' : '') + '</div>' +
-        (method === 'delivery' ? '<div class="row2"><label>Town<input id="o-t"></label><label>Area / street / landmark<input id="o-a"></label></div>' : '<label>Collect from<select id="o-s">' + shops.map(function (s) { return '<option value="' + esc(s.id) + '"' + (s.id === shopId ? ' selected' : '') + '>' + esc(s.name) + (s.town ? ' · ' + esc(s.town) : '') + (s.address ? ' (' + esc(s.address) + ')' : '') + '</option>'; }).join('') + '</select></label>') +
+        (method === 'delivery' ? ((CAT.zones || []).length ? '<label>Delivery area<select id="o-z"><option value="">Choose your area…</option>' + CAT.zones.map(function (z) { return '<option value="' + esc(z.area) + '"' + (z.area === zone ? ' selected' : '') + '>' + esc(z.area) + ' · ' + money(z.fee) + '</option>'; }).join('') + '<option value="__other"' + (zone === '__other' ? ' selected' : '') + '>Other area (we confirm the fee on WhatsApp)</option></select></label>' : '') + '<div class="row2"><label>Town<input id="o-t"></label><label>Area / street / landmark<input id="o-a"></label></div>' : '<label>Collect from<select id="o-s">' + shops.map(function (s) { return '<option value="' + esc(s.id) + '"' + (s.id === shopId ? ' selected' : '') + '>' + esc(s.name) + (s.town ? ' · ' + esc(s.town) : '') + (s.address ? ' (' + esc(s.address) + ')' : '') + '</option>'; }).join('') + '</select></label>') +
         '<h3>How will you pay?</h3><div class="seg"><button data-pay="cod" class="' + (payBy === 'cod' ? 'on' : '') + '">' + (method === 'pickup' ? 'Pay when I collect' : 'Cash on delivery') + '<small>Pay when you get your perfume</small></button>' + (CAT.momo ? '<button data-pay="momo" class="' + (payBy === 'momo' ? 'on' : '') + '">Mobile money<small>To ' + esc(CAT.momo) + (CAT.momoName ? ' · ' + esc(CAT.momoName) : '') + '</small></button>' : '') + '</div>' +
         '<label>Note (optional)<input id="o-x" placeholder="e.g. call me when you arrive"></label><p class="err" id="err"></p><button class="btn pri" id="send" style="width:100%">Send my order</button><p class="small mut center">We will confirm your order on WhatsApp.</p></div>';
       $('#back').onclick = function () { step = 'shop'; render(); };
       document.querySelectorAll('[data-meth]').forEach(function (b) { b.onclick = function () { keep(); method = b.dataset.meth; render(); restore(); }; });
       document.querySelectorAll('[data-pay]').forEach(function (b) { b.onclick = function () { keep(); payBy = b.dataset.pay; render(); restore(); }; });
-      $('#send').onclick = send;
+      $('#send').onclick = send; var oz = $('#o-z'); if (oz) oz.onchange = function () { keep(); zone = oz.value; render(); restore(); };
     } else if (step === 'done') {
       var o = window.__lastOrder;
       A.innerHTML = head() + '<div class="card center"><p style="font-size:44px;margin:4px 0">🎉</p><h2>Thank you, ' + esc(o.name.split(' ')[0]) + '!</h2><p>Your order <b>' + esc(o.no) + '</b> for <b>' + money(o.total) + '</b> has been sent.</p><p class="mut">We will confirm it on WhatsApp' + (o.payBy === 'momo' && CAT.momo ? '. Pay by mobile money to <b>' + esc(CAT.momo) + '</b>' + (CAT.momoName ? ' (' + esc(CAT.momoName) + ')' : '') + ' and send us the reference' : '') + '.</p>' +
@@ -131,16 +135,17 @@ input,select,textarea{font:inherit;font-size:16px;padding:11px 12px;border:1px s
     bar();
   }
   var form = {};
-  function keep() { ['o-n', 'o-p', 'o-t', 'o-a', 'o-x', 'o-s'].forEach(function (id) { var el = $('#' + id); if (el) form[id] = el.value; }); }
+  function keep() { ['o-n', 'o-p', 'o-t', 'o-a', 'o-x', 'o-s', 'o-z'].forEach(function (id) { var el = $('#' + id); if (el) form[id] = el.value; }); }
   function restore() { Object.keys(form).forEach(function (id) { var el = $('#' + id); if (el) el.value = form[id]; }); }
   function send() {
     keep(); var e = $('#err'), name = (form['o-n'] || '').trim(), phone = (form['o-p'] || '').trim();
     if (name.length < 2) { e.textContent = 'Please type your name.'; return; }
     if (phone.replace(/\D/g, '').length < 9) { e.textContent = 'Please type your phone number.'; return; }
     if (method === 'delivery' && !(form['o-t'] || '').trim()) { e.textContent = 'Please type your town.'; return; }
+    if (method === 'delivery' && (CAT.zones || []).length && !zone) { e.textContent = 'Please choose your delivery area.'; return; }
     var lines = items().map(function (p) { return {productId: p.id, name: p.name + (p.size ? ' ' + p.size + 'ml' : ''), qty: cart[p.id], price: unit(p)}; }), x = totals();
     if (!lines.length) { e.textContent = 'Your order is empty.'; return; }
-    var o = {no: 'W-' + Date.now().toString(36).toUpperCase().slice(-6), name: name.slice(0, 79), phone: phone.slice(0, 29), town: (form['o-t'] || '').trim().slice(0, 60), address: (form['o-a'] || '').trim().slice(0, 120), method: method, shopId: method === 'pickup' ? (form['o-s'] || shopId) : '', payBy: payBy, note: (form['o-x'] || '').trim().slice(0, 300), lines: lines, total: x.t, status: 'new', at: new Date().toISOString()};
+    var o = {no: 'W-' + Date.now().toString(36).toUpperCase().slice(-6), name: name.slice(0, 79), phone: phone.slice(0, 29), town: (form['o-t'] || '').trim().slice(0, 60), address: (form['o-a'] || '').trim().slice(0, 120), method: method, shopId: method === 'pickup' ? (form['o-s'] || shopId) : '', payBy: payBy, note: (form['o-x'] || '').trim().slice(0, 300), lines: lines, area: method === 'delivery' && zone && zone !== '__other' ? zone : '', deliveryFee: feeOf(), total: Math.round((x.t + feeOf()) * 100) / 100, status: 'new', at: new Date().toISOString()};
     $('#send').disabled = true; e.textContent = '';
     db.collection('orders').add(o).then(function (ref) {
       o.id = ref.id; window.__lastOrder = o; cart = {}; saveCart(); step = 'done';
@@ -162,8 +167,9 @@ input,select,textarea{font:inherit;font-size:16px;padding:11px 12px;border:1px s
   function showOrder(id) {
     get('orders/' + id).then(function (o) {
       if (!o) { $('#app').innerHTML = '<div class="card center"><p>Order not found.</p></div>'; return; }
-      var st = {new: ['Received, waiting for confirmation', ''], confirmed: ['Confirmed, on its way to you', ''], done: ['Delivered. Thank you!', 'good'], cancelled: ['Cancelled', '']}[o.status] || ['', ''];
-      $('#app').innerHTML = head('Your order') + '<div class="card"><h2 style="margin-top:0">Order ' + esc(o.no) + '</h2><p><span class="pill ' + st[1] + '">' + st[0] + '</span></p><ul class="list">' + (o.lines || []).map(function (l) { return '<li><span>' + l.qty + ' × ' + esc(l.name) + '</span><b>' + money(l.qty * l.price) + '</b></li>'; }).join('') + '</ul><div class="tot"><span>Total</span><span>' + money(o.total) + '</span></div><p class="small mut">Placed ' + fmtDate(o.at) + '</p><a class="btn" href="./">Back to the shop</a></div>';
+      var steps = [['new', 'Received'], ['confirmed', 'Confirmed'], ['shipped', o.method === 'pickup' ? 'Ready to collect' : 'On the way'], ['done', o.method === 'pickup' ? 'Collected' : 'Delivered']], at = o.status === 'cancelled' ? -1 : steps.findIndex(function (x) { return x[0] === o.status; });
+      var tl = o.status === 'cancelled' ? '<p><span class="pill">This order was cancelled</span></p>' : '<div style="display:flex;gap:6px;margin:10px 0 14px">' + steps.map(function (x, i) { return '<div style="flex:1;text-align:center"><div style="height:8px;border-radius:8px;background:' + (i <= at ? 'var(--acc)' : 'var(--line)') + '"></div><div class="small" style="margin-top:6px;font-weight:' + (i === at ? '800' : '500') + ';color:' + (i <= at ? 'var(--ink)' : 'var(--muted)') + '">' + x[1] + '</div></div>'; }).join('') + '</div>';
+      $('#app').innerHTML = head('Your order') + '<div class="card"><h2 style="margin-top:0">Order ' + esc(o.no) + '</h2>' + tl + '<ul class="list">' + (o.lines || []).map(function (l) { return '<li><span>' + l.qty + ' × ' + esc(l.name) + '</span><b>' + money(l.qty * l.price) + '</b></li>'; }).join('') + (o.deliveryFee ? '<li><span>Delivery' + (o.area ? ' to ' + esc(o.area) : '') + '</span><b>' + money(o.deliveryFee) + '</b></li>' : '') + '</ul><div class="tot"><span>Total</span><span>' + money(o.total) + '</span></div><p class="small mut">Placed ' + fmtDate(o.at) + '</p><a class="btn" href="./">Back to the shop</a></div>';
     }).catch(function () { $('#app').innerHTML = '<div class="card center"><p>Could not open the order. Check your internet.</p></div>'; });
   }
   function route() {

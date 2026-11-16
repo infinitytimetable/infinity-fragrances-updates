@@ -1,20 +1,25 @@
 {
- "version": "2.7.2",
+ "version": "2.8.0",
  "date": "2026-11-16",
  "notes": [
-  "Send stock to shops by courier with notes and waybill",
-  "New 3D app icon"
+  "Review and export requested orders with bottle photos; daily cash-up; stock-take with the scanner; loyalty points and birthdays; reseller credit limits; holiday themes across the whole app; delivery areas and order tracking in the online shop; monthly report; tidier menus; one-tap app updates."
  ],
  "android": {
-  "file": "android-2.7.2.html",
-  "sig": "vZY923r7GgdFAdkulNUupIUV7wpgm8egGQ47W9cFZqjC2K0Nzd0CF76uuJJfq1NArqHm1b0pkHZVeDcoqFyV8g==",
-  "size": 1260557,
+  "file": "android-2.8.0.html",
+  "sig": "JzDw+bgC2rl65iEEuO04+EdslJ/AL5WfZX+7+zVQ/PhsON9I8QGEXMpfFG4m/FpauozthdFlqjyfp+lcLaT+Fw==",
+  "size": 1834145,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.7.2.html",
-  "sig": "WJK7jERcBAIbrOn4M3IoUAds+mx60tNPMHThAF9OjtlNQYv+xREfh6LfcytCxK3/L/BSEc0udTxKkI/H5oAqJQ==",
-  "size": 1257056,
+  "file": "desktop-2.8.0.html",
+  "sig": "y/5/ADwt+cv9rIvUzv9UfrXMBoDD98iNVx2kprcN8yTmo/e5WqaOYhXRX2U+M3oLddo8MVnXlMcjfpwAcFSCYA==",
+  "size": 1830412,
   "minShell": "2.5.0"
+ },
+ "apk": {
+  "version": "2.8.0",
+  "file": "apk/infinity-fragrances-2.8.0.apk",
+  "sha256": "6b41964929d6a17de355bc7655a684f50e88e2035d54ab466a1df09bdfcf2730",
+  "size": 4726018
  }
 }
