@@ -690,7 +690,7 @@ async function boot(){
       if (d.base) { try { BASE = JSON.parse(d.base); } catch(e) { BASE = null; } } UI.deskInfo = d.info || {}; } catch(e) { UI.banner = 'Could not open the records file: ' + (e.message || e); }
     try { DCFG = (await window.IFDesktop.getConfig()) || {}; APP_ROLE = DCFG.appRole || ''; } catch(e) {}
     SESSION = null; try { sessionStorage.removeItem('if-session'); } catch(e) {}
-    if (APP_ROLE !== 'reseller') LIC = await licCheck(); setStatus('Saved on this ' + DEV_NAME);
+    if (APP_ROLE !== 'reseller' && APP_ROLE !== 'manager') LIC = await licCheck(); setStatus('Saved on this ' + DEV_NAME);
     if (APP_ROLE === 'reseller') resSkinOn(true); if (APP_ROLE) fbStart(); render(true); updSchedule();
     window.addEventListener('beforeunload', () => { if (DESK_T) { clearTimeout(DESK_T); window.IFDesktop.saveSync && window.IFDesktop.saveSync(JSON.stringify({...snapshotData(), savedAt:nowISO()})); } });
     return;
@@ -754,8 +754,8 @@ function schedule(){ if (pending) return; pending = true; requestAnimationFrame(
 
 const clean = o => JSON.parse(JSON.stringify(o));
 async function put(col, obj){
-  obj = {...obj}; if (!obj.id) obj.id = uid(); if (!obj.createdAt) obj.createdAt = nowISO();
-  const before = S[col][obj.id]; S[col][obj.id] = obj; schedule(); logWrite(before ? 'edit' : 'add', col, before, obj);
+  obj = {...obj}; if (!obj.id) obj.id = uid(); if (!obj.createdAt) obj.createdAt = nowISO(); obj.updatedAt = nowISO();
+  const before = S[col][obj.id]; S[col][obj.id] = obj; schedule(); logWrite(before ? 'edit' : 'add', col, before, obj); syncPush(col, obj);
   if (DB) {
     const {id, ...body} = obj;
     try { await DB.collection(col).doc(id).set(clean(body)); }
@@ -764,16 +764,130 @@ async function put(col, obj){
   return obj;
 }
 async function del(col, id){
-  logWrite('delete', col, S[col][id], null); delete S[col][id]; schedule();
+  logWrite('delete', col, S[col][id], null); delete S[col][id]; schedule(); syncPush(col, {id}, true);
   if (DB) { try { await DB.collection(col).doc(id).delete(); } catch(e) { toast('Not deleted: ' + (e.message || e.code), true); } }
   else saveLocal();
 }
 async function putSettings(patch){
   const ks = Object.keys(patch).filter(k => !['appliedUpdates', 'mergedOffline', 'users', 'recoveryHash'].includes(k) && JSON.stringify(S.settings[k]) !== JSON.stringify(patch[k]));
-  if (ks.length) { const e = {id:uid(), at:nowISO(), user:SESSION?.name || (lockOn() ? 'Unknown' : (S.settings.ownerName || 'Admin')), action:'settings', col:'settings', docId:'', summary:'Changed ' + ks.join(', ')}; S.logs[e.id] = e; if (DB) { const {id, ...b} = e; DB.collection('logs').doc(id).set(b).catch(() => {}); } }
-  if ('users' in patch && JSON.stringify(S.settings.users) !== JSON.stringify(patch.users)) { const e = {id:uid(), at:nowISO(), user:SESSION?.name || 'Admin', action:'settings', col:'settings', docId:'', summary:'Changed users and PINs'}; S.logs[e.id] = e; if (DB) { const {id, ...b} = e; DB.collection('logs').doc(id).set(b).catch(() => {}); } }
-  S.settings = {...S.settings, ...patch}; schedule();
+  if (ks.length) { const e = {id:uid(), at:nowISO(), user:SESSION?.name || (lockOn() ? 'Unknown' : (S.settings.ownerName || 'Admin')), action:'settings', col:'settings', docId:'', summary:'Changed ' + ks.join(', ')}; S.logs[e.id] = e; syncPush('logs', e); if (DB) { const {id, ...b} = e; DB.collection('logs').doc(id).set(b).catch(() => {}); } }
+  if ('users' in patch && JSON.stringify(S.settings.users) !== JSON.stringify(patch.users)) { const e = {id:uid(), at:nowISO(), user:SESSION?.name || 'Admin', action:'settings', col:'settings', docId:'', summary:'Changed users and PINs'}; S.logs[e.id] = e; syncPush('logs', e); if (DB) { const {id, ...b} = e; DB.collection('logs').doc(id).set(b).catch(() => {}); } }
+  S.settings = {...S.settings, ...patch, updatedAt:nowISO()}; schedule(); syncPush('settings', S.settings);
   if (DB) await DB.doc('settings/main').set(clean(S.settings)); else saveLocal();
+}
+
+/* ---------- shared records: all admin devices and managers' phones keep one copy in step ---------- */
+const SYNC = {on:false, unsub:null, q:[], t:0, last:0, busy:false, at:'', err:'', sig:''};
+const ADM = () => FB_ROLE === 'owner' || FB_ROLE === 'manager';
+const syncCfg = () => { if (DESK && MODE === 'desktop') return DCFG.sync || {}; try { return JSON.parse(localStorage.getItem('if-sync') || '{}'); } catch(e) { return {}; } };
+function syncCfgSet(p){ const v = {...syncCfg(), ...p}; if (DESK && MODE === 'desktop') { setCfg({sync:v}); return; } try { localStorage.setItem('if-sync', JSON.stringify(v)); } catch(e) {} }
+function devId(){ let d = syncCfg().dev; if (!d) { d = uid() + uid(); syncCfgSet({dev:d}); } return d; }
+const recStamp = r => (r && (r.updatedAt || r.createdAt)) || '';
+function syncItem(c, rec, x){
+  if (c === 'settings') { const {users, recoveryHash, ...rest} = rec; return {c, i:'main', j:JSON.stringify(rest), uj:JSON.stringify({users:users || [], recoveryHash:recoveryHash || ''}), x:false, dev:devId()}; }
+  return {c, i:rec.id, j:x ? '' : JSON.stringify(rec), x:!!x, dev:devId()};
+}
+function syncPush(c, rec, x){
+  if (!SYNC.on || !rec) return; const it = syncItem(c, rec, x);
+  SYNC.q = SYNC.q.filter(o => !(o.c === it.c && o.i === it.i)).concat(it);
+  clearTimeout(SYNC.t); SYNC.t = setTimeout(syncFlush, 250);
+}
+function syncFlush(){ const q = SYNC.q.splice(0); if (!q.length) return; try { FB.syncWrite(q, e => { SYNC.err = fbMsg(e); syncStatus(); }); } catch(e) { SYNC.err = e.message || String(e); SYNC.q = q.concat(SYNC.q); } }
+const syncParse = it => { try { return it.j ? JSON.parse(it.j) : null; } catch(e) { return null; } };
+const listenSig = () => Object.values(S.resellers).map(r => r.portalUid || '').join(',') + '|' + locs().map(l => l.keeperUid || '').join(',');
+function syncApply(items, opts = {}){
+  let ch = 0; const me = devId();
+  for (const it of items) {
+    if ((it.u || 0) > SYNC.last) SYNC.last = it.u;
+    if (it.dev === me && !opts.all) continue;
+    if (it.c === 'settings') { const d = syncParse(it); if (!d) continue; if (!opts.force && (S.settings.updatedAt || '') > (d.updatedAt || '')) continue;
+      let u = {}; try { u = JSON.parse(it.uj || '{}'); } catch(e) {} S.settings = {...DEFAULT_SETTINGS, ...d, users:u.users || [], recoveryHash:u.recoveryHash || ''}; ch++; continue; }
+    if (!COLS.includes(it.c) || !it.i) continue;
+    const cur = S[it.c][it.i];
+    if (it.x) { if (cur) { delete S[it.c][it.i]; ch++; } continue; }
+    const d = syncParse(it); if (!d) continue;
+    if (cur && !opts.force && recStamp(cur) > recStamp(d)) continue;
+    S[it.c][it.i] = {...d, id:it.i}; ch++;
+  }
+  if (SYNC.last) syncCfgSet({last:SYNC.last});
+  if (ch) { saveLocal(); SYNC.at = nowISO(); schedule(); const sg = listenSig(); if (sg !== SYNC.sig) { SYNC.sig = sg; clearTimeout(SYNC.ol); SYNC.ol = setTimeout(() => { if (ADM()) ownerListen(); }, 1200); } }
+  return ch;
+}
+function syncStatus(){ if (!SYNC.on) return; setStatus(SYNC.err ? 'Sharing problem: ' + SYNC.err : navigator.onLine === false ? 'Offline: changes send when back online' : 'Shared records: in step'); }
+window.addEventListener('online', () => { SYNC.err = ''; syncStatus(); }); window.addEventListener('offline', syncStatus);
+function syncListenStart(){
+  try { SYNC.unsub && SYNC.unsub(); } catch(e) {}
+  SYNC.unsub = FB.syncListen(SYNC.last, (items, cache) => { syncApply(items); if (!cache) { SYNC.err = ''; syncStatus(); } }, e => { SYNC.err = fbMsg(e); syncStatus(); });
+}
+async function syncStart(){
+  if (!FB || !FB_USER || !ADM() || MODE === 'live' || SYNC.on || SYNC.busy) return;
+  const cfg = syncCfg();
+  if (FB_ROLE === 'manager' && (!cfg.joined || cfg.uid !== FB_USER.uid)) return syncJoin('replace');
+  if (!cfg.on || cfg.uid !== FB_USER.uid) return;
+  SYNC.on = true; SYNC.last = num(cfg.last); SYNC.sig = listenSig(); syncListenStart(); syncStatus();
+}
+async function syncJoin(how){
+  SYNC.busy = true; render(true);
+  try {
+    const remote = await FB.syncAll();
+    const items = remote.filter(r => !r.x && r.c !== 'settings').length;
+    if (FB_ROLE === 'manager' && !items) throw Error('The admin has not turned on shared records yet. Ask them to open Settings and tap Turn on shared records.');
+    SYNC.last = Math.max(0, ...remote.map(r => r.u || 0));
+    if (how === 'replace') { COLS.forEach(c => S[c] = {}); syncApply(remote, {all:true, force:true}); }
+    else {
+      const rmap = new Map(remote.map(r => [r.c + '~' + r.i, r])), up = [];
+      for (const c of COLS) for (const rec of Object.values(S[c])) { const r = rmap.get(c + '~' + rec.id); if (!r) up.push(syncItem(c, rec)); else if (!r.x && recStamp(rec) > recStamp(syncParse(r))) up.push(syncItem(c, rec)); }
+      const rs = rmap.get('settings~main'); if (!rs) { S.settings.updatedAt = nowISO(); up.push(syncItem('settings', S.settings)); } else if ((S.settings.updatedAt || '') > (syncParse(rs)?.updatedAt || '')) up.push(syncItem('settings', S.settings));
+      syncApply(remote, {all:true});
+      if (up.length) FB.syncWrite(up, e => { SYNC.err = fbMsg(e); syncStatus(); });
+    }
+    syncCfgSet({on:true, joined:true, uid:FB_USER.uid, last:SYNC.last});
+    SYNC.on = true; SYNC.err = ''; saveLocal(); SYNC.sig = listenSig(); syncListenStart(); syncStatus(); if (ADM()) ownerListen();
+    return true;
+  } catch(e) { SYNC.err = e.message && !e.code ? e.message : fbMsg(e); toast(SYNC.err, true); return false; }
+  finally { SYNC.busy = false; render(true); }
+}
+function syncStop(){ try { SYNC.unsub && SYNC.unsub(); } catch(e) {} SYNC.unsub = null; SYNC.on = false; SYNC.q = []; }
+async function claimDoc(path, from){ if (!FB.claim) return true; try { return await FB.claim(path, from); } catch(e) { return null; } }
+function syncCard(){
+  if (MODE === 'live') return `<div class="card"><h2>Shared records</h2><p class="hint">Shared records work in the Android, iPhone and Windows apps: open the app and turn them on there.</p></div>`;
+  const on = SYNC.on, mgr = APP_ROLE === 'manager';
+  return `<div class="card" id="sync-card"><h2>Shared records ${on ? '<span class="pill good">On</span>' : '<span class="pill">Off</span>'}</h2>
+    <p class="hint">One set of records on all your admin devices and on your managers' phones. Every device still keeps everything on itself and works offline; changes are sent when there is internet and appear on the others within seconds.</p>
+    ${on ? `<dl class="kv"><dt>Status</dt><dd>${SYNC.err ? '<span class="neg">' + esc(SYNC.err) + '</span>' : navigator.onLine === false ? 'Offline. Changes are kept and sent when the internet is back.' : 'In step'}</dd><dt>Last change from another device</dt><dd>${SYNC.at ? esc(fmtDateTime(SYNC.at)) : '—'}</dd></dl>` : SYNC.busy ? '<p><b>Connecting…</b></p>' : ''}
+    ${mgr ? '' : `<div class="actions">${on ? btn('Turn off on this ' + DEV_NAME, 'syncOff', {}, 'ghost') : FB_ROLE !== 'owner' ? '<span class="small mut">Sign in to your admin account first (Resellers → Requests &amp; logins).</span>' : btn('Turn on shared records', 'syncOn', {}, 'pri')}</div>
+    <p class="hint">Turn it on first on the ${DEV_NAME === 'phone' ? 'device' : 'device'} with your main records, then on your other admin devices. Managers get their own phone login under Users &amp; PINs below.</p>`}</div>`;
+}
+async function mgrAccCreate(id){
+  const u = users().find(x => x.id === id); if (!u) return;
+  if (FB_ROLE !== 'owner') return toast('Sign in to your admin account first (Resellers → Requests & logins).', true);
+  if (!SYNC.on) return toast('Turn on Shared records first (in this Settings page), so the manager can see your records.', true);
+  const base = String(u.name.split(' ')[0]).toLowerCase().replace(/[^a-z]/g, '') || 'manager';
+  const login = base + String(1000 + Math.floor(Math.random() * 9000)), pin = String(100000 + Math.floor(Math.random() * 900000));
+  try {
+    const fuid = await FB.createUser(`${login}@${RES_DOMAIN}`, pin), ops = [['set', `users/${fuid}`, {role:'manager', staffId:u.id, name:u.name, login, createdAt:FB.now()}]];
+    if (u.loginUid) ops.push(['del', `users/${u.loginUid}`]);
+    await FB.batch(ops); logNote('login', 'logins', `Phone login ${u.loginUid ? 'PIN reset' : 'created'} for manager ${u.name} (${login})`); await putSettings({users:users().map(x => x.id === id ? {...x, loginUid:fuid, login} : x)});
+    const msg = `Hello ${u.name.split(' ')[0]}! Your ${bizName()} manager login is ready.\n\n1. Install the Infinity Fragrances app.\n2. Open it and sign in under "Team login".\n3. Login ID: ${login}\n   PIN: ${pin}\n\nYou can change the PIN in Settings after signing in.`;
+    modal(`${esc(u.name)}: phone login created`, `<p>Send these details to ${esc(u.name)}. The PIN is shown only now.</p><div style="font-size:20px;padding:14px;border:2px dashed var(--gold);border-radius:12px;line-height:1.7">Login ID: <b>${login}</b><br>PIN: <b>${pin}</b></div><div class="actions" style="margin-top:12px"><a class="btn pri" href="https://wa.me/?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">Send on WhatsApp</a>${btn('Copy', 'copyText', {text:msg}, '')}</div>`, null, {nofocus:true});
+  } catch(e) { toast(fbMsg(e), true); }
+}
+async function mgrAccOff(id){
+  const u = users().find(x => x.id === id); if (!u || !u.loginUid) return;
+  try { await FB.del(`users/${u.loginUid}`); } catch(e) { return toast(fbMsg(e), true); } logNote('login', 'logins', `Phone login turned off for manager ${u.name}`);
+  await putSettings({users:users().map(x => x.id === id ? (({loginUid, login, ...r}) => r)(x) : x)}); toast(`${u.name}'s phone login is turned off`); render(true);
+}
+async function mgrStart(){
+  APP_ROLE = 'manager'; resSkinOn(false); document.body.classList.remove('res-mode'); LIC = {ok:true};
+  const name = FB_ME?.name || DCFG.resName || 'Manager', sid = FB_ME?.staffId || DCFG.mgrId || FB_USER.uid;
+  SESSION = {id:sid, name, role:'manager'};
+  if (DCFG.appRole !== 'manager' || DCFG.mgrId !== sid || DCFG.resName !== name) await setCfg({appRole:'manager', mgrId:sid, resName:name});
+  await syncStart(); if (SYNC.on) ownerListen(); render(true);
+}
+function mgrSetup(){
+  return head('My account', `Signed in as ${esc(SESSION?.name || DCFG.resName || '')}, manager at ${esc(bizName())}.`) + syncCard()
+    + `<div class="card"><h2>Change my PIN</h2><div class="grid2"><label for="ra-o">Current PIN${pwField('ra-o', 'current-password', 'numeric')}</label><span></span><label for="ra-p">New PIN (at least 6 digits)${pwField('ra-p', 'new-password', 'numeric')}</label><label for="ra-p2">Repeat new PIN<input id="ra-p2" type="password" inputmode="numeric" autocomplete="new-password"></label></div><div class="actions">${btn('Change PIN', 'resPin', {}, 'pri')}</div></div>`
+    + deviceCard() + lookCard() + updCard();
 }
 
 /* ---------- lookups ---------- */
@@ -914,7 +1028,7 @@ function render(force){
   if (DESK && MODE === 'desktop' && APP_ROLE !== 'reseller') { const g = gateHTML(); if (g) { document.body.classList.remove('res-mode'); navOff(); $('#main').dataset.page = ''; $('#main').innerHTML = g; return; } }
   if (APP_ROLE === 'reseller') { document.body.classList.add('res-mode'); navOff(); $('#main').dataset.page = ''; $('#main').innerHTML = !FB_USER ? (FB_AUTH_SEEN || FB_ERR || !FB_AUTH_STARTED ? signInScreen() : '<div class="lockwrap"><p class="mut">Opening…</p></div>') : FB_ROLE === 'reseller' ? (RES_UNLOCKED ? resUI() : resUnlockScreen()) : FB_ROLE === 'shop' ? (RES_UNLOCKED ? shopUI() : resUnlockScreen()) : FB_ROLE === null ? '<div class="lockwrap"><p class="mut">Signing in…</p></div>' : `<div class="lockwrap"><div class="lockcard"><p>${(FB.providers?.() || []).includes('google.com') ? 'This Google account is not linked to a reseller login yet. Sign in once with your login ID and PIN, then open Account and tap <b>Link Google account</b>.' : 'This login is not a reseller account.'}</p>${btn('Sign out', 'fbOut', {}, 'pri')}</div></div>`; if (document.querySelector('.res-wrap')) (FB_ROLE === 'shop' ? shopBottomBar() : resBottomBar()); return; }
   if (lockOn() && !SESSION) { document.body.classList.remove('res-mode'); navOff(); $('#main').innerHTML = lockScreen(); $('#main').dataset.page = ''; setTimeout(() => $('#lock-pin')?.focus(), 30); return; }
-  if (DESK && MODE === 'desktop' && (!LIC.ok || (LIC.trial && !UI.licSeen))) { navOff(); $('#main').innerHTML = licScreen(); $('#main').dataset.page = ''; return; }
+  if (DESK && MODE === 'desktop' && APP_ROLE !== 'manager' && (!LIC.ok || (LIC.trial && !UI.licSeen))) { navOff(); $('#main').innerHTML = licScreen(); $('#main').dataset.page = ''; return; }
   if (!allowed(route())) { location.hash = firstAllowed(); return; }
   const r = route();
   if (!force && TOOL_PAGES.has(r) && $('#main').dataset.page === r) { TOOLS[r]?.refresh?.(); return; }
@@ -926,7 +1040,7 @@ function render(force){
   let html = `<div class="mobile-brand"><img src="${LOGO}" alt="">Infinity Fragrances</div><div class="banner" id="banner">${esc(UI.banner || '')}</div>`;
   const ready = !(MODE === 'live' && !allLoaded());
   if (MODE === 'desktop' && !Object.keys(S.products).length && !Object.keys(S.resellers).length) html += `<div class="card" style="border-color:var(--gold)"><h2>Welcome to the ${DEV_LABEL} version</h2><p>Bring your records from the online hub: in the online hub open Settings &amp; backup and tap <b>Download offline copy</b>, then choose that file here.</p><div class="actions"><label class="btn pri" for="f-import" style="display:inline-block;color:var(--accent-ink)">Get records from online hub…<input id="f-import" type="file" accept=".html,.htm,.json" hidden></label>${btn('Start with an empty hub', 'deskFresh', {}, 'ghost')}</div></div>`;
-  else if (MODE === 'desktop' && BASE && r !== 'pos') { const x = offlineChanges(); if (x.n) html += `<div class="card" style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px 16px;border-color:var(--gold)"><span class="small"><b>${x.n} change${x.n === 1 ? '' : 's'}</b> on this ${DEV_NAME} not yet sent to the online hub.</span>${btn('Send changes', 'saveOffline', {}, 'sm')}</div>`; }
+  else if (MODE === 'desktop' && BASE && r !== 'pos' && !SYNC.on && !syncCfg().on) { const x = offlineChanges(); if (x.n) html += `<div class="card" style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px 16px;border-color:var(--gold)"><span class="small"><b>${x.n} change${x.n === 1 ? '' : 's'}</b> on this ${DEV_NAME} not yet sent to the online hub.</span>${btn('Send changes', 'saveOffline', {}, 'sm')}</div>`; }
   if (EMBED) { const x = offlineChanges(); html += `<div class="card" style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:12px 16px;border-color:var(--gold)"><div><b>Offline copy</b> <span class="small mut">${x.n ? `${x.n} change${x.n === 1 ? '' : 's'} made here. Save them to a file, then merge the file in your online hub (Settings &amp; backup → Merge offline changes) or send it to Claude.` : 'Anything you record here is kept on this device. Save your changes to a file before closing.'}</span></div>${x.n ? btn('Save my changes to a file', 'saveOffline', {}, 'pri sm') : ''}</div>`; }
   html += festiveBanner() + tabsHTML(r);
   if (!ready) html += `<div class="empty">Loading your records…</div>`;
@@ -1304,6 +1418,7 @@ PAGES.reports = C => {
 
 /* Settings */
 PAGES.setup = C => {
+  if (APP_ROLE === 'manager') return mgrSetup();
   const st = S.settings, o = st.opening || {};
   const counts = COLS.map(c => `${Object.keys(S[c]).length} ${c === 'moves' ? 'stock & sales entries' : c === 'cash' ? 'cash book entries' : c === 'images' ? 'product photos' : c}`).join(' · ');
   return head('Settings &amp; backup', 'Commission rules, opening balances and backups.')
@@ -1557,7 +1672,7 @@ function issueForm(rid){
     for (const l of lines.filter(x => !x.gift)) { const mv = await put('moves', {kind:'issue', date:d.date, resellerId:d.resellerId, productId:l.productId, qty:l.qty, unitPrice:num(S.products[l.productId]?.sellPrice), note:d.note, dispatchId:dn.id, loc:d.loc || 'main'}); dn.moveIds.push(mv.id); }
     if (dn.charge > 0) { const c = await put('cash', {kind:'out', date:d.date, channel:d.chargeVia, amount:dn.charge, category:'Expense', expType:'Courier charges', description:`${dn.courier} · ${dn.no} to ${rName(d.resellerId)}${dn.waybill ? ' · ' + dn.waybill : ''}`, dispatchId:dn.id}); dn.cashId = c.id; }
     await put('dispatches', dn);
-    const rr = S.resellers[d.resellerId]; if (rr?.portalUid && FB_ROLE === 'owner') { publishOne(d.resellerId); fbNotify(rr.portalUid, `Parcel ${dn.no} is on the way: ${lines.reduce((t, l) => t + l.qty, 0)} bottles${dn.courier ? ' by ' + dn.courier : ''}.`); }
+    const rr = S.resellers[d.resellerId]; if (rr?.portalUid && ADM()) { publishOne(d.resellerId); fbNotify(rr.portalUid, `Parcel ${dn.no} is on the way: ${lines.reduce((t, l) => t + l.qty, 0)} bottles${dn.courier ? ' by ' + dn.courier : ''}.`); }
     toast(`${dn.no} saved. Open Dispatch & delivery for the notes.`);
   }, {label:'Dispatch stock'});
 }
@@ -1820,8 +1935,11 @@ function fixNumbers(o){
 }
 
 /* ======================= Version 2.0 ======================= */
-const APP_VERSION = '2.8.0';
+const APP_VERSION = '2.9.2';
 const CHANGELOG = [
+  ['2.9.2', '16 Nov 2026', ['Activity log now also records online actions with who did them: online orders confirmed, sent, delivered or cancelled; reseller and shop requests approved or declined; stock counts; applications; app logins']],
+  ['2.9.1', '16 Nov 2026', ['The "changes not yet sent to the online hub" note is hidden once shared records are on']],
+  ['2.9.0', '16 Nov 2026', ['Shared records: your admin phone, computer and iPhone, and your managers\' phones, keep one set of records in step, offline first', 'Managers can have their own phone login (Settings → Users & PINs)', 'Shop sales, cash-ups and parcels are booked once even when several admin devices are online', 'Sign-in tab renamed Team login for resellers, shopkeepers and managers']],
   ['2.8.0', '16 Nov 2026', ['One-tap app updates on Android', 'Holiday themes recolour the whole app, icons, receipts, posters and the online shop, automatically by date', 'Review orders: tick what is available, change quantities, export with bottle photos, approve and dispatch', 'Close the day: cash-ups for shops and the till', 'Stock-take with the scanner, for the store and the shops', 'Shop and reseller sales work offline and send later', 'Reseller credit limits', 'Customer loyalty points, birthdays and anniversaries', 'Online orders: delivery fees by area and On the way tracking', 'Monthly business report', 'Menus reorganised']],
   ['2.7.2', '16 Nov 2026', ['Send stock to shops by courier: dispatch and delivery notes, waybill, courier charge in Expenses', 'Stock sent to a shop shows as on the way until the shopkeeper confirms it arrived', 'New 3D app icon']],
   ['2.7.1', '16 Nov 2026', ['Live barcode scanner: point the camera at a barcode, it beeps and adds the perfume', 'Keep scanning mode on the till for several perfumes in a row; light button where the phone allows', 'Barcode reader now built in, so scanning works offline']],
@@ -1850,12 +1968,13 @@ const locSelect = (sel, name = 'loc', label = 'Stock location') => multiLoc() ? 
 
 /* ---------- users, PIN and roles ---------- */
 const ROLES = {owner:'Admin', manager:'Manager', cashier:'Cashier'};
-const ROLE_HELP = {owner:'Everything, including settings, users, backups and the activity log.', manager:'Everything except settings, users and the activity log.', cashier:'Point of sale and customers only.'};
+const ROLE_HELP = {owner:'Everything, including settings, users, backups and the activity log.', manager:'Everything except business settings, users and the activity log. Can have their own phone login.', cashier:'Point of sale and customers only.'};
 let SESSION = null; try { SESSION = JSON.parse(sessionStorage.getItem('if-session') || 'null'); } catch(e) {}
 const users = () => S.settings.users || [];
-const lockOn = () => users().length > 0;
+const lockOn = () => APP_ROLE !== 'manager' && users().length > 0;
 async function sha(s){ const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
 function allowed(r){
+  if (APP_ROLE === 'manager') return !!SESSION && r !== 'activity';
   if (!lockOn()) return true; if (!SESSION) return false;
   if (SESSION.role === 'owner') return true;
   if (SESSION.role === 'manager') return !['setup', 'activity'].includes(r);
@@ -1905,7 +2024,12 @@ function userForm(u = {}){
 
 /* ---------- activity log ---------- */
 const LOG_SKIP = new Set(['logs']);
-const COL_LABEL = {towns:'Town', resellers:'Reseller', products:'Product', moves:'Stock / sale', cash:'Cash book', dispatches:'Dispatch note', images:'Photo', receipts:'Receipt', promos:'Promotion', customers:'Customer', invoices:'Invoice / quote', suppliers:'Supplier', payslips:'Payslip', cashups:'Cash-up', settings:'Settings'};
+function logNote(action, col, summary){
+  const e = {id:uid(), at:nowISO(), user:SESSION?.name || (lockOn() ? 'Unknown' : (S.settings.ownerName || 'Admin')), action, col, docId:'', summary};
+  S.logs[e.id] = e; syncPush('logs', e);
+  if (DB) { const {id, ...b} = e; DB.collection('logs').doc(id).set(b).catch(() => {}); } else saveLocal();
+}
+const COL_LABEL = {orders:'Online order', requests:'Reseller / shop request', logins:'Login', applications:'Application', towns:'Town', resellers:'Reseller', products:'Product', moves:'Stock / sale', cash:'Cash book', dispatches:'Dispatch note', images:'Photo', receipts:'Receipt', promos:'Promotion', customers:'Customer', invoices:'Invoice / quote', suppliers:'Supplier', payslips:'Payslip', cashups:'Cash-up', settings:'Settings'};
 const MOVE_LABEL = {purchase:'Received', issue:'Dispatched', return:'Returned', adjust:'Adjusted', sale:'Sale', transfer:'Transfer'};
 function docSummary(col, d){
   if (!d) return '';
@@ -1920,8 +2044,8 @@ function docSummary(col, d){
 function logWrite(action, col, before, after){
   if (LOG_SKIP.has(col)) return;
   const e = {id:uid(), at:nowISO(), user:SESSION?.name || (lockOn() ? 'Unknown' : (S.settings.ownerName || 'Admin')), action, col, docId:(after || before)?.id || '', summary:docSummary(col, after || before)};
-  if (action === 'edit' && before && after) { const ch = Object.keys({...before, ...after}).filter(k => !['createdAt', 'id'].includes(k) && JSON.stringify(before[k]) !== JSON.stringify(after[k])); if (!ch.length) return; e.fields = ch.slice(0, 8).join(', '); }
-  S.logs[e.id] = e;
+  if (action === 'edit' && before && after) { const ch = Object.keys({...before, ...after}).filter(k => !['createdAt', 'updatedAt', 'id'].includes(k) && JSON.stringify(before[k]) !== JSON.stringify(after[k])); if (!ch.length) return; e.fields = ch.slice(0, 8).join(', '); }
+  S.logs[e.id] = e; syncPush('logs', e);
   if (DB) { const {id, ...b} = e; DB.collection('logs').doc(id).set(b).catch(() => {}); }
 }
 PAGES.activity = () => {
@@ -1929,7 +2053,7 @@ PAGES.activity = () => {
   let list = Object.values(S.logs).filter(e => e.at?.startsWith(m)).sort((a, b) => b.at.localeCompare(a.at));
   const us = [...new Set(Object.values(S.logs).map(e => e.user))].sort();
   if (f.user) list = list.filter(e => e.user === f.user); if (f.col) list = list.filter(e => e.col === f.col);
-  const AC = {add:['Added', 'good'], edit:['Changed', 'warn'], delete:['Deleted', 'bad'], settings:['Settings', '']};
+  const AC = {add:['Added', 'good'], edit:['Changed', 'warn'], delete:['Deleted', 'bad'], settings:['Settings', ''], approve:['Approved', 'good'], decline:['Declined', 'bad'], cancel:['Cancelled', 'bad'], confirm:['Confirmed', 'good'], ship:['Sent out', ''], done:['Delivered', 'good'], login:['Login', '']};
   return head('Activity log', 'Every record added, changed or deleted, with who did it and when. Use it to trace mistakes or missing money.')
     + `<div class="filters">${monthFilter()}<select data-act-change="logUser" id="log-user" style="padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)"><option value="">Everyone</option>${us.map(u => `<option ${f.user === u ? 'selected' : ''}>${esc(u)}</option>`).join('')}</select>
       <select id="log-col" style="padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)"><option value="">All records</option>${Object.entries(COL_LABEL).map(([k, v]) => `<option value="${k}" ${f.col === k ? 'selected' : ''}>${v}</option>`).join('')}</select></div>`
@@ -2267,7 +2391,7 @@ function licScreen(){
 /* ---------- settings cards for version 2 ---------- */
 function v2SettingsCards(){
   const st = S.settings, us = users();
-  return lookCard() + deviceCard() + updCard() + alertsCard() + cloudCard() + `<div class="card"><h2>Users &amp; PINs ${btn('+ Add user', 'userNew', {}, 'sm')}</h2>${us.length ? `<ul class="list">${us.map(u => `<li><span><b>${esc(u.name)}</b> · ${ROLES[u.role]}<div class="small mut">${ROLE_HELP[u.role]}</div></span>${btn('Edit', 'userEdit', {id:u.id}, 'sm ghost')}</li>`).join('')}</ul>
+  return syncCard() + lookCard() + deviceCard() + updCard() + alertsCard() + cloudCard() + `<div class="card"><h2>Users &amp; PINs ${btn('+ Add user', 'userNew', {}, 'sm')}</h2>${us.length ? `<ul class="list">${us.map(u => `<li><span><b>${esc(u.name)}</b> · ${ROLES[u.role]}<div class="small mut">${ROLE_HELP[u.role]}</div>${u.role === 'manager' ? (u.loginUid ? `<div class="small"><span class="pill good">Own phone login: ${esc(u.login || '')}</span></div>` : '<div class="small mut">Can also get a login for their own phone.</div>') : ''}</span><span class="actions">${u.role === 'manager' ? (u.loginUid ? btn('New PIN', 'mgrAcc', {id:u.id}, 'sm ghost') + btn('Turn off login', 'mgrOff', {id:u.id}, 'sm ghost danger') : btn('Phone login', 'mgrAcc', {id:u.id}, 'sm pri')) : ''}${btn('Edit', 'userEdit', {id:u.id}, 'sm ghost')}</span></li>`).join('')}</ul>
       <div class="grid2" style="margin-top:10px"><label class="small" for="f-lockm">Lock after this many idle minutes (0 = never)<input id="f-lockm" type="number" min="0" max="240" value="${num(st.lockMinutes ?? 10)}"></label></div>` : '<p class="hint">No PIN lock yet. Add yourself as Admin first, then add your shop assistants as Cashiers. Everyone will then choose their name and enter a PIN to open the hub.</p>'}</div>
     <div class="card"><h2>Stock locations ${btn('+ Add location', 'locNew', {}, 'sm')}</h2><ul class="list">${locs().map(l => `<li><span>${esc(l.name)}${l.id === 'main' ? ' <span class="small mut">(main)</span>' : ''}${(st.posLoc || 'main') === l.id && multiLoc() ? ' <span class="pill acc">Point of sale</span>' : ''}</span><span class="actions">${multiLoc() ? btn('Use for POS', 'locPos', {id:l.id}, 'sm ghost') : ''}${btn('Rename', 'locEdit', {id:l.id}, 'sm ghost')}</span></li>`).join('')}</ul><p class="hint">Add a location if you keep stock in more than one place, e.g. a depot on the Copperbelt. Then choose the location when receiving, dispatching or moving stock.</p></div>
     <div class="card"><h2>Printing</h2><label class="small" for="f-rpaper">Receipt printer paper<select id="f-rpaper"><option value="80" ${(st.receiptPaper || '80') === '80' ? 'selected' : ''}>80 mm thermal roll</option><option value="58" ${st.receiptPaper === '58' ? 'selected' : ''}>58 mm thermal roll</option><option value="a4" ${st.receiptPaper === 'a4' ? 'selected' : ''}>A4 paper</option></select></label><p class="hint">Every document has a Print button. Dispatch notes, agreements, invoices and labels print on A4; receipts use the size above.</p></div>
@@ -2322,6 +2446,12 @@ async function fbLoad(){
     watch: (p, cb) => db.doc(p).onSnapshot(s => cb(s.exists ? {id:s.id, ...s.data()} : null), e => { FB_ERR = fbMsg(e); }),
     listen: (c, field, val, cb) => (field ? db.collection(c).where(field, '==', val) : db.collection(c)).onSnapshot(s => cb(snapList(s)), e => { FB_ERR = e.message; }),
     batch: async ops => { const b = db.batch(); ops.forEach(([k, p, d]) => k === 'del' ? b.delete(ref(p)) : b.set(ref(p), d, k === 'merge' ? {merge:true} : {})); await b.commit(); },
+    syncWrite: (items, onErr) => { let b = db.batch(), n = 0, size = 0; const ts = fb.firestore.FieldValue.serverTimestamp(), who = app.auth().currentUser?.uid || '';
+      const go = () => { if (n) b.commit().catch(e => onErr && onErr(e)); b = db.batch(); n = 0; size = 0; };
+      for (const it of items) { const d = {c:it.c, i:it.i, j:it.j || '', x:!!it.x, dev:it.dev || '', by:who, u:ts}; if (it.uj != null) d.uj = it.uj; const sz = (d.j.length + (d.uj || '').length) * 1.1 + 200; if (n >= 400 || size + sz > 6e6) go(); b.set(db.collection('biz').doc(it.c + '~' + it.i), d); n++; size += sz; } go(); },
+    syncAll: async () => (await db.collection('biz').get({source:'server'})).docs.map(d => { const x = d.data(); return {...x, u:x.u?.toMillis ? x.u.toMillis() : 0}; }),
+    syncListen: (since, cb, onErr) => db.collection('biz').where('u', '>', fb.firestore.Timestamp.fromMillis(since || 0)).orderBy('u').onSnapshot(s => cb(s.docChanges().filter(ch => ch.type !== 'removed' && !ch.doc.metadata.hasPendingWrites).map(ch => { const x = ch.doc.data(); return {...x, u:x.u?.toMillis ? x.u.toMillis() : 0}; }), s.metadata.fromCache), onErr),
+    claim: (path, from) => db.runTransaction(async t => { const r = ref(path), s = await t.get(r); if (!s.exists) return false; const d = s.data(), stale = d.status === 'claimed' && Date.now() - Date.parse(d.claimedAt || 0) > 600000; if (d.status !== from && !stale) return false; t.update(r, {status:'claimed', claimedAt:new Date().toISOString(), claimedBy:app.auth().currentUser?.uid || ''}); return true; }),
     now: () => new Date().toISOString()
   };
   return FB;
@@ -2334,11 +2464,13 @@ async function fbStart(){
   FB.onAuth(async u => {
     if ((u?.uid || '') === (FB_USER?.uid || '') && FB_AUTH_SEEN) return; FB_AUTH_SEEN = true;
     FB_USER = u; FB_ROLE = null; FB_ME = null;
-    if (u) { try { FB_ME = await FB.get('users/' + u.uid); FB_ROLE = FB_ME?.role || 'none'; } catch(e) { FB_ROLE = 'none'; FB_ERR = fbMsg(e); } }
+    let roleErr = false; if (u) { try { FB_ME = await FB.get('users/' + u.uid); FB_ROLE = FB_ME?.role || 'none'; } catch(e) { roleErr = true; FB_ROLE = APP_ROLE === 'manager' ? 'manager' : 'none'; FB_ERR = fbMsg(e); } }
+    if (APP_ROLE === 'manager' && u && FB_ROLE !== 'manager' && !roleErr) { await appSignOut('This manager login was turned off by the admin.'); return; }
     if (DESK && MODE === 'desktop') await ownerAuthCheck(u);
     if (FB_ROLE === 'shop') { shopStart(); if (FB_ME?.name && DCFG.resName !== FB_ME.name) setCfg({resName:FB_ME.name}); }
     else if (FB_ROLE === 'reseller') { resStart(); if (FB_ME?.name && DCFG.resName !== FB_ME.name) setCfg({resName:FB_ME.name}); alertsSetupFor('reseller'); }
-    else if (FB_ROLE === 'owner' && !(DESK && MODE === 'desktop' && APP_ROLE !== 'owner')) { ownerListen(); if (DESK && APP_ROLE === 'owner' && DCFG.ownerUid) alertsSetupFor('owner'); }
+    else if (FB_ROLE === 'manager' && DESK && MODE === 'desktop') { await mgrStart(); }
+    else if (FB_ROLE === 'owner' && !(DESK && MODE === 'desktop' && APP_ROLE !== 'owner')) { ownerListen(); syncStart(); if (DESK && APP_ROLE === 'owner' && DCFG.ownerUid) alertsSetupFor('owner'); }
     render(true);
   });
 }
@@ -2361,10 +2493,10 @@ function ownerListen(){
     appsPrimed = true; if (route() === 'portal') render(true); else updatePortalBadge(); }));
   OWN.shopReqs = {}; locs().filter(l => l.keeperUid).forEach(l => {
     OWN.unsubs.push(FB.listen(`shops/${l.id}/sales`, 'status', 'new', list => list.forEach(q => shopSaleImport(l.id, q))));
-    OWN.unsubs.push(FB.listen(`shops/${l.id}/requests`, 'status', 'pending', async list => { for (const q of list.filter(x => x.type === 'received')) { try { await dnReceive(q.dispatchId, q.date || today(), q.byName || l.keeper || ''); await FB.update(`shops/${l.id}/requests/${q.id}`, {status:'approved', decidedAt:FB.now()}); toast(`${l.name} received parcel ${S.dispatches[q.dispatchId]?.no || ''}`); } catch(e) {} } list = list.filter(x => x.type !== 'received'); const old = new Set((OWN.shopReqs[l.id] || []).map(x => x.id)); OWN.shopReqs[l.id] = list.map(q => ({...q, sid:l.id})); list.filter(q => !old.has(q.id) && OWN.shopPrimed?.[l.id]).forEach(q => { appNotify('Shop stock request', l.name); toast(`${l.name} asks for stock`); }); (OWN.shopPrimed = OWN.shopPrimed || {})[l.id] = true; if (route() === 'shops') render(true); else updatePortalBadge(); }));
+    OWN.unsubs.push(FB.listen(`shops/${l.id}/requests`, 'status', 'pending', async list => { for (const q of list.filter(x => x.type === 'received')) { try { if (!(await claimDoc(`shops/${l.id}/requests/${q.id}`, 'pending'))) continue; await dnReceive(q.dispatchId, q.date || today(), q.byName || l.keeper || ''); await FB.update(`shops/${l.id}/requests/${q.id}`, {status:'approved', decidedAt:FB.now()}); toast(`${l.name} received parcel ${S.dispatches[q.dispatchId]?.no || ''}`); } catch(e) {} } list = list.filter(x => x.type !== 'received'); const old = new Set((OWN.shopReqs[l.id] || []).map(x => x.id)); OWN.shopReqs[l.id] = list.map(q => ({...q, sid:l.id})); list.filter(q => !old.has(q.id) && OWN.shopPrimed?.[l.id]).forEach(q => { appNotify('Shop stock request', l.name); toast(`${l.name} asks for stock`); }); (OWN.shopPrimed = OWN.shopPrimed || {})[l.id] = true; if (route() === 'shops') render(true); else updatePortalBadge(); }));
   });
   OWN.shopCounts = {}; locs().filter(l => l.keeperUid).forEach(l => {
-    OWN.unsubs.push(FB.listen(`shops/${l.id}/closings`, 'status', 'new', async list => { for (const q of list) { if (OWN.importing?.has(q.id)) continue; (OWN.importing = OWN.importing || new Set()).add(q.id); try { await saveCashup({loc:l.id, date:q.date || today(), counted:{cash:num(q.counted?.cash), momo:num(q.counted?.momo), bank:num(q.counted?.bank)}, expense:num(q.expense), expNote:q.expNote || '', note:q.note || '', by:q.byName || l.keeper || ''}); await FB.update(`shops/${l.id}/closings/${q.id}`, {status:'recorded'}); } catch(e) {} OWN.importing.delete(q.id); } }));
+    OWN.unsubs.push(FB.listen(`shops/${l.id}/closings`, 'status', 'new', async list => { for (const q of list) { if (OWN.importing?.has(q.id)) continue; (OWN.importing = OWN.importing || new Set()).add(q.id); try { if (!(await claimDoc(`shops/${l.id}/closings/${q.id}`, 'new'))) { OWN.importing.delete(q.id); continue; } await saveCashup({loc:l.id, date:q.date || today(), counted:{cash:num(q.counted?.cash), momo:num(q.counted?.momo), bank:num(q.counted?.bank)}, expense:num(q.expense), expNote:q.expNote || '', note:q.note || '', by:q.byName || l.keeper || ''}); await FB.update(`shops/${l.id}/closings/${q.id}`, {status:'recorded'}); } catch(e) {} OWN.importing.delete(q.id); } }));
     OWN.unsubs.push(FB.listen(`shops/${l.id}/counts`, 'status', 'new', list => { OWN.shopCounts[l.id] = list.map(q => ({...q, sid:l.id})); if (route() === 'shops') render(true); }));
   });
   let ordPrimed = false;
@@ -2396,7 +2528,7 @@ function publicDocs(){
   return {leaderboard:{month:m, label:monthLabel(m), rows, updatedAt:nowISO()}, promotions:{list:promos, updatedAt:nowISO()}, prices:{list:prices, updatedAt:nowISO()}};
 }
 async function publishAll(quiet){
-  if (FB_ROLE !== 'owner' || OWN.busy) return; OWN.busy = true;
+  if (!ADM() || OWN.busy) return; OWN.busy = true;
   try {
     const ops = sortedRes(true).filter(r => r.portalUid).map(r => ['set', `portal/${r.id}`, snapshotFor(r.id)]);
     const pub = publicDocs(); Object.entries(pub).forEach(([k, v]) => ops.push(['set', `public/${k}`, v]));
@@ -2420,7 +2552,7 @@ PAGES.portal = () => {
       <p class="m-err" id="fb-err">${esc(UI.fbErr || '')}</p>
       <div class="fb-btns">${btn('Sign in', 'fbOwnerIn', {}, 'pri')}${btn('Create admin account', 'fbOwnerUp')}</div>
       ${canGoogle() ? `<div class="fb-or"><span>or</span></div>${btn('Continue with Google', 'fbGoogle', {}, 'gbtn')}` : ''}</form></div>`;
-  if (FB_ROLE !== 'owner') return head('Online reseller accounts', '') + `<div class="card"><p>You are signed in as <b>${esc(FB_USER.email || 'a Google account')}</b>, which is not the admin account.</p><div class="actions">${btn('Make this the admin account', 'fbClaim', {}, 'pri')}${btn('Sign out', 'fbOut')}</div><p class="hint">Only works if no admin has been set up yet.</p></div>`;
+  if (!ADM()) return head('Online reseller accounts', '') + `<div class="card"><p>You are signed in as <b>${esc(FB_USER.email || 'a Google account')}</b>, which is not the admin account.</p><div class="actions">${btn('Make this the admin account', 'fbClaim', {}, 'pri')}${btn('Sign out', 'fbOut')}</div><p class="hint">Only works if no admin has been set up yet.</p></div>`;
   if (!OWN.autoDone) { OWN.autoDone = true; setTimeout(() => publishAll(true), 500); }
   const rs = sortedRes(true), pend = pendingAll(), last = OWN.published || (() => { try { return localStorage.getItem('if-published') || ''; } catch(e) { return ''; } })();
   return head('Online reseller accounts', `Signed in as ${esc(FB_USER.email)}. Resellers see only their own stock and statement. Their sales, payments, orders and returns wait here for your approval.`, btn('Update resellers now', 'fbPublish', {}, 'pri') + (canGoogle() && !(FB.providers?.() || []).includes('google.com') ? btn('Link Google account', 'fbLinkGoogle', {}, 'ghost') : '') + btn('Sign out', 'fbOut', {}, 'ghost'))
@@ -2459,7 +2591,7 @@ async function reqApprove(rid, id, bulk){
     } else if (q.type === 'customer') {
       if (!Object.values(S.customers).some(c => custKey(c.name) === custKey(q.name))) await put('customers', {name:String(q.name || '').trim(), phone:q.phone || '', town:q.town || tName(r.townId), notes:'Added by ' + r.name});
     }
-    await FB.update(`portal/${rid}/requests/${id}`, {status:'approved', decidedAt:FB.now()});
+    await FB.update(`portal/${rid}/requests/${id}`, {status:'approved', decidedAt:FB.now()}); logNote('approve', 'requests', `${r.name}: ${REQ_TYPES[q.type] || 'request'}`);
     await publishOne(rid); fbNotify(r.portalUid, `Your ${(REQ_TYPES[q.type] || 'request').toLowerCase()} was approved.`);
     if (bulk) return true;
     toast(q.type === 'order' ? `Order approved. Now send the parcel from Dispatch.` : `${REQ_TYPES[q.type]} approved`);
@@ -2467,13 +2599,13 @@ async function reqApprove(rid, id, bulk){
   } catch(e) { if (bulk) throw e; toast(fbMsg(e), true); }
 }
 function reqReject(rid, id){
-  modal('Reject request', `<label for="f-rr">Reason (the reseller will see this)<input id="f-rr" name="why" required placeholder="e.g. Payment not received on MoMo"></label>`, async d => { await FB.update(`portal/${rid}/requests/${id}`, {status:'rejected', reason:d.why.trim(), decidedAt:FB.now()}); fbNotify(S.resellers[rid]?.portalUid, `A request was not approved: ${d.why.trim()}`); toast('Rejected'); }, {label:'Reject'});
+  modal('Reject request', `<label for="f-rr">Reason (the reseller will see this)<input id="f-rr" name="why" required placeholder="e.g. Payment not received on MoMo"></label>`, async d => { await FB.update(`portal/${rid}/requests/${id}`, {status:'rejected', reason:d.why.trim(), decidedAt:FB.now()}); logNote('decline', 'requests', `${rName(rid)}: request declined (${d.why.trim()})`); fbNotify(S.resellers[rid]?.portalUid, `A request was not approved: ${d.why.trim()}`); toast('Rejected'); }, {label:'Reject'});
 }
 async function accCreate(rid, reset){
   const r = S.resellers[rid]; const base = String(r.name.split(' ')[0]).toLowerCase().replace(/[^a-z]/g, '') || 'reseller';
   const login = base + String(1000 + Math.floor(Math.random() * 9000)), pin = String(100000 + Math.floor(Math.random() * 900000));
   try {
-    const uid = await FB.createUser(`${login}@${RES_DOMAIN}`, pin);
+    const uid = await FB.createUser(`${login}@${RES_DOMAIN}`, pin); logNote('login', 'logins', `${reset ? 'New PIN' : 'App login created'} for reseller ${r.name} (${login})`);
     const ops = [['set', `users/${uid}`, {role:'reseller', resellerId:rid, name:r.name, login, createdAt:FB.now()}]];
     if (reset && r.portalUid) ops.push(['del', `users/${r.portalUid}`]);
     await FB.batch(ops); await put('resellers', {...r, portalUid:uid, portalLogin:login}); await publishOne(rid); ownerListen();
@@ -2591,7 +2723,7 @@ document.addEventListener('visibilitychange', () => document.hidden ? onHide() :
 document.addEventListener('click', e => { const t = e.target; if (t.closest('input[type=file]') || t.closest('label')?.querySelector('input[type=file]') || t.closest('a[href^="https://wa.me"],a[href^="tel:"],a[href^="mailto:"]')) EXT_T = Date.now(); }, true);
 function appLock(){
   if (!DESK || MODE !== 'desktop') return;
-  if (APP_ROLE === 'reseller') { if (FB_USER && RES_UNLOCKED) { RES_UNLOCKED = false; BIO_TRIED = false; closeModal(); render(true); } }
+  if (APP_ROLE === 'reseller' || APP_ROLE === 'manager') { if (FB_USER && RES_UNLOCKED) { RES_UNLOCKED = false; BIO_TRIED = false; closeModal(); render(true); } }
   else if (lockOn() && SESSION) { BIO_TRIED = false; lockNow(); }
 }
 async function appSignOut(msg){
@@ -2599,7 +2731,9 @@ async function appSignOut(msg){
   try { DESK && DESK.alertsStop && DESK.alertsStop(); } catch(e) {}
   OWN.unsubs.forEach(f => { try { f(); } catch(e) {} }); OWN.unsubs = []; OWN.reqs = {}; OWN.apps = [];
   RES.unsubs.forEach(f => { try { f(); } catch(e) {} }); RES.unsubs = []; RES.snap = null; RES.reqs = [];
-  await setCfg({appRole:'', ownerUid:'', resPinHash:'', resSalt:'', resName:''});
+  const wasMgr = APP_ROLE === 'manager'; syncStop(); syncCfgSet({on:false, joined:false, last:0, uid:''});
+  if (wasMgr) { COLS.forEach(c => S[c] = {}); S.settings = {...DEFAULT_SETTINGS}; saveLocal(); }
+  await setCfg({appRole:'', ownerUid:'', resPinHash:'', resSalt:'', resName:'', mgrId:''});
   APP_ROLE = ''; SESSION = null; try { sessionStorage.removeItem('if-session'); } catch(e) {}
   RES_UNLOCKED = false; PIN_FAILS = 0; OWNER_SIGNING = false; UI.signMsg = msg || ''; UI.signTab = ''; UI.applied = false;
   document.body.classList.remove('res-mode'); resSkinOn(false); closeModal(); render(true);
@@ -2618,6 +2752,7 @@ function installScreen(){
 }
 function gateHTML(){
   if (window.__IF_PWA && !IS_STANDALONE() && !UI.skipInstall) return installScreen();
+  if (APP_ROLE === 'manager') { if (FB_AUTH_SEEN && !FB_USER) return signInScreen(); if (!RES_UNLOCKED) return resUnlockScreen(); if (SYNC.busy && !Object.keys(S.products).length) return '<div class="lockwrap"><div class="lockcard"><img src="' + LOGO + '" alt="" style="width:72px"><h2>Getting the records…</h2><p class="mut">This takes a moment the first time.</p></div></div>'; return ''; }
   if (!APP_ROLE || (APP_ROLE === 'owner' && !DCFG.ownerUid)) return signInScreen();
   if (APP_ROLE === 'owner' && !lockOn()) return pinSetupScreen();
   return '';
@@ -2639,13 +2774,13 @@ function signInScreen(){
       <div class="fb-btns">${btn('Sign in', 'fbOwnerIn', {}, 'pri')}</div>
       ${canGoogle() ? `<div class="fb-or"><span>or</span></div>${btn('Continue with Google', 'fbGoogle', {}, 'gbtn')}` : ''}
       <p class="small" style="margin-top:12px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><button type="button" class="link" data-act="fbForgot">Forgot password?</button><button type="button" class="link" data-act="fbOwnerUp">First time? Create the admin account</button></p></form>`;
-  else body = `<form class="fb-form" onsubmit="return false" style="text-align:left"><label for="r-login">Login ID<input id="r-login" placeholder="e.g. annie4821" autocapitalize="none" autocomplete="username" value="${esc(UI.rLogin || '')}"></label>
+  else body = `<form class="fb-form" onsubmit="return false" style="text-align:left"><p class="small mut" style="margin:0 0 8px">For resellers, shopkeepers and managers.</p><label for="r-login">Login ID<input id="r-login" placeholder="e.g. annie4821" autocapitalize="none" autocomplete="username" value="${esc(UI.rLogin || '')}"></label>
       <label for="r-pin">PIN${pwField('r-pin', 'current-password', 'numeric')}</label>
       <p class="m-err" id="fb-err">${esc(!OWNER_SIGNING && APP_ROLE === 'reseller' ? FB_ERR : '')}</p><div class="fb-btns">${btn('Sign in', 'resIn', {}, 'pri')}</div>
       ${canGoogle() ? `<div class="fb-or"><span>or</span></div>${btn('Continue with Google', 'fbGoogle', {}, 'gbtn')}<p class="small mut" style="margin-top:6px">Google works after you link it once in Account.</p>` : ''}
       <p style="margin-top:14px;text-align:center"><button type="button" class="link" data-act="signTab" data-k="apply">Want to sell for us? Apply here</button></p></form>`;
   return `<div class="lockwrap"><div class="lockcard sign-card"><img src="${LOGO}" alt="" style="width:84px;height:84px"><h1 class="serif" style="margin:10px 0 2px">${tab === 'apply' ? 'Join the team' : 'Sign in'}</h1><p class="mut" style="margin:0 0 14px">${esc(bizName())}</p>${note}
-    ${tab !== 'apply' ? `<div class="seg sign-tabs" role="tablist"><button type="button" role="tab" data-act="signTab" data-k="reseller" class="${tab === 'reseller' ? 'on' : ''}">Reseller / shop</button><button type="button" role="tab" data-act="signTab" data-k="owner" class="${tab === 'owner' ? 'on' : ''}">Admin</button></div>` : ''}
+    ${tab !== 'apply' ? `<div class="seg sign-tabs" role="tablist"><button type="button" role="tab" data-act="signTab" data-k="reseller" class="${tab === 'reseller' ? 'on' : ''}">Team login</button><button type="button" role="tab" data-act="signTab" data-k="owner" class="${tab === 'owner' ? 'on' : ''}">Admin</button></div>` : ''}
     ${body}<p class="small mut" style="margin-top:16px">Version ${APP_VERSION}</p></div></div>`;
 }
 function pinSetupScreen(){
@@ -2667,7 +2802,7 @@ async function ownerVerified(u){
   OWNER_SIGNING = false; APP_ROLE = 'owner'; resSkinOn(false); await setCfg({appRole:'owner', ownerUid:u.uid}); UI.signMsg = ''; UI.signTab = ''; PIN_FAILS = 0; FB_ERR = '';
   document.body.classList.remove('res-mode'); try { LIC = await licCheck(); } catch(e) {}
   const o = users().find(x => x.role === 'owner'); if (o) { SESSION = {id:o.id, name:o.name, role:'owner'}; touchIdle(); }
-  ownerListen(); alertsSetupFor('owner'); render(true);
+  ownerListen(); syncStart(); alertsSetupFor('owner'); render(true);
 }
 async function ownerAuthCheck(u){
   if (OWNER_SIGNING && u) {
@@ -2705,7 +2840,7 @@ function deviceCard(){
   return `<div class="card"><h2>Sign-in &amp; security on this ${DEV_NAME}</h2><p class="hint">The app asks for your PIN every time it opens${bio ? ' (or your fingerprint)' : ''}, and again when you leave it for a while. After ${MAX_FAILS} wrong PINs it signs out and needs the full sign-in.</p>
     <div class="grid2"><label class="small" for="f-locks">Lock when I leave the app for<select id="f-locks">${[[0, 'Straight away'], [60, '1 minute'], [300, '5 minutes'], [900, '15 minutes']].map(([v, l]) => `<option value="${v}" ${lockSecs() === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
     ${bio ? `<label class="small chk" for="f-bio" style="align-self:end"><input id="f-bio" type="checkbox" ${DCFG.bio ? 'checked' : ''}> Unlock with fingerprint</label>` : ''}</div>
-    <div class="actions">${SESSION ? btn('Change my PIN', 'myPin', {}, 'pri') : ''}${btn('Sign out of this ' + DEV_NAME, 'appOut', {}, 'ghost danger')}</div></div>`;
+    <div class="actions">${SESSION && APP_ROLE !== 'manager' ? btn('Change my PIN', 'myPin', {}, 'pri') : ''}${btn('Sign out of this ' + DEV_NAME, 'appOut', {}, 'ghost danger')}</div></div>`;
 }
 
 /* ---- alerts ---- */
@@ -2737,16 +2872,16 @@ async function sendReminders(auto){
   toast(auto ? `Settlement reminders sent to ${n} reseller${n === 1 ? '' : 's'} in the app` : `Reminder sent to ${n} reseller${n === 1 ? '' : 's'} in the app`);
 }
 function maybeAutoRemind(){
-  if (FB_ROLE !== 'owner' || S.settings.autoRemind === false || OWN.remindBusy) return;
+  if (!ADM() || S.settings.autoRemind === false || OWN.remindBusy) return;
   const d = num(today().slice(8)), m = today().slice(0, 7);
   if (d >= sDay() - 3 && d <= sDay() && S.settings.remindSent !== m) { OWN.remindBusy = true; sendReminders(true).finally(() => { OWN.remindBusy = false; }); }
 }
 function remindModal(){
   const C = compute(), rows = remindRows(C);
-  modal('Settlement reminders', `<p class="hint">Settlement day is <b>${fmtDate(nextDueDate())}</b>. Send each reseller a WhatsApp message${FB_ROLE === 'owner' ? ', or a reminder inside the app to everyone who has it' : ''}.${S.settings.remindSent === today().slice(0, 7) ? ' <span class="pill good">App reminders already sent this month</span>' : ''}</p>
+  modal('Settlement reminders', `<p class="hint">Settlement day is <b>${fmtDate(nextDueDate())}</b>. Send each reseller a WhatsApp message${ADM() ? ', or a reminder inside the app to everyone who has it' : ''}.${S.settings.remindSent === today().slice(0, 7) ? ' <span class="pill good">App reminders already sent this month</span>' : ''}</p>
     ${rows.length ? `<ul class="list">${rows.map(x => `<li><span><b>${esc(x.r.name)}</b> <span class="small mut">${esc(tName(x.r.townId))}</span><div class="small mut">${x.n} bottles${x.owes ? ' · owes ' + money(x.owes) : ''}${x.r.portalUid ? ' · has the app' : ''}</div></span>${x.r.phone ? `<a class="btn sm" href="${waLink(x.r.phone, remindText(x))}" target="_blank" rel="noopener">WhatsApp</a>` : '<span class="small mut">No phone</span>'}</li>`).join('')}</ul>` : '<p class="mut">Nobody holds stock or owes money right now.</p>'}
     <label class="chk small" for="f-autor" style="margin-top:10px"><input id="f-autor" type="checkbox" ${S.settings.autoRemind !== false ? 'checked' : ''} data-act="autoRemind"> Send app reminders automatically 3 days before settlement</label>`,
-    FB_ROLE === 'owner' && rows.some(x => x.r.portalUid) ? async () => { await sendReminders(false); } : null, {label:'Send app reminder to all', nofocus:true});
+    ADM() && rows.some(x => x.r.portalUid) ? async () => { await sendReminders(false); } : null, {label:'Send app reminder to all', nofocus:true});
 }
 
 /* ---- proof of payment photos ---- */
@@ -2874,7 +3009,7 @@ function appApprove(id){
   async d => {
     let townId = d.townId; if (!townId) { const t = await put('towns', {name:String(a.town || 'Unknown').trim()}); townId = t.id; }
     const r = await put('resellers', {name:d.name.trim(), phone:d.phone.trim(), townId, recruiterId:d.recruiterId || '', commType:S.settings.defaultCommType || 'tiered', commValue:num(S.settings.defaultCommValue ?? 10), joinDate:today(), status:'active', notes:'Applied in the app' + (a.message ? ': ' + a.message : '')});
-    await FB.update('applications/' + id, {status:'approved', resellerId:r.id, decidedAt:nowISO()});
+    await FB.update('applications/' + id, {status:'approved', resellerId:r.id, decidedAt:nowISO()}); logNote('approve', 'applications', `Reseller application from ${r.name}`);
     setTimeout(() => accCreate(r.id, false), 200);
   }, {label:'Approve and make login'});
 }
@@ -2901,6 +3036,8 @@ service cloud.firestore {
     function ownerDoc() { return /databases/$(database)/documents/meta/owner; }
     function isOwner() { return signedIn() && exists(ownerDoc()) && get(ownerDoc()).data.uid == request.auth.uid; }
     function me() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function isManager() { return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && me().role == 'manager'; }
+    function isAdmin() { return isOwner() || isManager(); }
     function isReseller(rid) { return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && me().role == 'reseller' && me().resellerId == rid; }
 
     match /meta/owner {
@@ -2909,72 +3046,79 @@ service cloud.firestore {
       allow update, delete: if isOwner();
     }
     match /users/{uid} {
-      allow read: if signedIn() && (request.auth.uid == uid || isOwner());
-      allow write: if isOwner() || (request.auth.uid == uid && request.resource.data.role == 'owner' && getAfter(ownerDoc()).data.uid == request.auth.uid);
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow create, update: if isOwner() || (request.auth.uid == uid && request.resource.data.role == 'owner' && getAfter(ownerDoc()).data.uid == request.auth.uid)
+        || (isManager() && request.resource.data.role in ['reseller', 'shop'] && (resource == null || resource.data.role in ['reseller', 'shop']));
+      allow delete: if isOwner() || (isManager() && resource.data.role in ['reseller', 'shop']);
     }
     match /portal/{rid} {
-      allow read: if isOwner() || isReseller(rid);
-      allow write: if isOwner();
+      allow read: if isAdmin() || isReseller(rid);
+      allow write: if isAdmin();
       match /requests/{id} {
-        allow read: if isOwner() || isReseller(rid);
+        allow read: if isAdmin() || isReseller(rid);
         allow create: if isReseller(rid) && request.resource.data.by == request.auth.uid && request.resource.data.status == 'pending';
-        allow update: if isOwner() || (isReseller(rid) && resource.data.status == 'pending' && request.resource.data.status == 'cancelled');
-        allow delete: if isOwner();
+        allow update: if isAdmin() || (isReseller(rid) && resource.data.status == 'pending' && request.resource.data.status == 'cancelled');
+        allow delete: if isAdmin();
       }
     }
     match /public/{doc} {
       allow read: if signedIn();
-      allow write: if isOwner();
+      allow write: if isAdmin();
     }
     match /notify/{who} {
-      allow read: if signedIn() && ((who == 'owner' && isOwner()) || request.auth.uid == who);
-      allow write: if isOwner() || (who == 'owner' && request.resource.data.keys().hasOnly(['at', 'msg']) && request.resource.data.msg is string && request.resource.data.msg.size() < 200);
+      allow read: if signedIn() && ((who == 'owner' && isAdmin()) || request.auth.uid == who);
+      allow write: if isAdmin() || (who == 'owner' && request.resource.data.keys().hasOnly(['at', 'msg']) && request.resource.data.msg is string && request.resource.data.msg.size() < 200);
     }
     match /applications/{id} {
       allow create: if request.resource.data.keys().hasOnly(['name', 'phone', 'town', 'referrer', 'message', 'status', 'at'])
         && request.resource.data.status == 'new' && request.resource.data.name is string && request.resource.data.name.size() > 1 && request.resource.data.name.size() < 80
         && request.resource.data.phone is string && request.resource.data.phone.size() < 30 && request.resource.data.message.size() < 301;
-      allow read, update, delete: if isOwner();
+      allow read, update, delete: if isAdmin();
     }
     function isShop(sid) { return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && me().role == 'shop' && me().shopId == sid; }
     match /shops/{sid} {
-      allow read: if isOwner() || isShop(sid);
-      allow write: if isOwner();
+      allow read: if isAdmin() || isShop(sid);
+      allow write: if isAdmin();
       match /sales/{id} {
-        allow read: if isOwner() || isShop(sid);
+        allow read: if isAdmin() || isShop(sid);
         allow create: if isShop(sid) && request.resource.data.by == request.auth.uid && request.resource.data.status == 'new';
-        allow update, delete: if isOwner();
+        allow update, delete: if isAdmin();
       }
       match /requests/{id} {
-        allow read: if isOwner() || isShop(sid);
+        allow read: if isAdmin() || isShop(sid);
         allow create: if isShop(sid) && request.resource.data.by == request.auth.uid && request.resource.data.status == 'pending';
-        allow update, delete: if isOwner();
+        allow update, delete: if isAdmin();
       }
       match /closings/{id} {
-        allow read: if isOwner() || isShop(sid);
+        allow read: if isAdmin() || isShop(sid);
         allow create: if isShop(sid) && request.resource.data.by == request.auth.uid && request.resource.data.status == 'new';
-        allow update, delete: if isOwner();
+        allow update, delete: if isAdmin();
       }
       match /counts/{id} {
-        allow read: if isOwner() || isShop(sid);
+        allow read: if isAdmin() || isShop(sid);
         allow create: if isShop(sid) && request.resource.data.by == request.auth.uid && request.resource.data.status == 'new';
-        allow update, delete: if isOwner();
+        allow update, delete: if isAdmin();
       }
     }
     match /store/{doc} {
       allow read: if true;
-      allow write: if isOwner();
+      allow write: if isAdmin();
     }
     match /orders/{id} {
       allow get: if true;
-      allow list, update, delete: if isOwner();
+      allow list, update, delete: if isAdmin();
       allow create: if request.resource.data.status == 'new' && request.resource.data.name is string && request.resource.data.name.size() > 1 && request.resource.data.name.size() < 80
         && request.resource.data.phone is string && request.resource.data.phone.size() < 30 && request.resource.data.lines is list && request.resource.data.lines.size() > 0 && request.resource.data.lines.size() < 40;
     }
     match /rcpt/{id} {
       allow get: if true;
       allow create: if signedIn();
-      allow update, delete: if isOwner();
+      allow update, delete: if isAdmin();
+    }
+    match /biz/{id} {
+      allow read: if isAdmin();
+      allow create, update: if isOwner() || (isManager() && (!id.matches('^settings~.*') || (resource != null && request.resource.data.uj == resource.data.uj)));
+      allow delete: if isOwner();
     }
     match /backups/{id} {
       allow read, write: if isOwner();
@@ -3109,7 +3253,7 @@ function psPayForm(id){
   modal(`Pay ${rName(p.rid)}`, `<div class="grid2">${fDate()}<label for="f-ppc">Paid by<select id="f-ppc" name="channel"><option value="momo">Mobile money</option><option value="cash">Cash</option><option value="bank">Bank</option></select></label><label for="f-ppa">Amount<input id="f-ppa" name="amount" type="number" step="0.01" value="${t.net}"></label></div><p class="hint">This records a commission payout in the cash book and marks the payslip paid.</p>`,
   async d => { if (num(d.amount) <= 0) throw Error('Enter the amount.'); const c = await put('cash', {kind:'out', date:d.date, channel:d.channel, amount:num(d.amount), category:'Commission payout', resellerId:p.rid, description:`Payslip ${p.no} (${monthLabel(p.month)})`, payslipId:p.id});
     await put('payslips', {...S.payslips[id], status:'paid', paidDate:d.date, paidVia:d.channel, payCashId:c.id}); const r = S.resellers[p.rid];
-    if (r?.portalUid && FB_ROLE === 'owner') { publishOne(p.rid); fbNotify(r.portalUid, `Your commission of ${money(d.amount)} for ${monthLabel(p.month)} has been paid.`); } toast('Payslip marked paid'); setTimeout(() => psView(id), 100); }, {label:'Record payment'});
+    if (r?.portalUid && ADM()) { publishOne(p.rid); fbNotify(r.portalUid, `Your commission of ${money(d.amount)} for ${monthLabel(p.month)} has been paid.`); } toast('Payslip marked paid'); setTimeout(() => psView(id), 100); }, {label:'Record payment'});
 }
 const resSlips = rid => Object.values(S.payslips || {}).filter(p => p.rid === rid && p.status !== 'draft').sort((a, b) => b.month.localeCompare(a.month)).slice(0, 12).map(p => { const t = psTotals(p); return {id:p.id, no:p.no, month:p.month, label:monthLabel(p.month), bottles:num(p.bottles), value:num(p.value), own:num(p.own), bonus:num(p.bonus), received:num(p.received), lines:(p.lines || []).map(l => ({label:l.label, amount:num(l.amount), type:l.type})), gross:t.gross, net:t.net, note:p.note || '', status:p.status, paidDate:p.paidDate || ''}; });
 function resSlipsHTML(){
@@ -3303,8 +3447,8 @@ PAGES.shops = C => {
     + (pend.length ? `<div class="card"><h2>Shop stock requests <span class="pill warn">${pend.length}</span></h2><ul class="list">${pend.map(q => `<li><span><b>${esc(shopOf(q.sid)?.name || '')}</b> asks for ${(q.lines || []).map(l => `${l.qty} × ${esc(l.name)}`).join(', ')}${q.note ? `<div class="small mut">“${esc(q.note)}”</div>` : ''}</span><span class="actions">${btn('Review', 'shopReview', {sid:q.sid, id:q.id}, 'sm pri')}${btn('Decline', 'shopReqNo', {sid:q.sid, id:q.id}, 'sm ghost')}</span></li>`).join('')}</ul></div>` : '')
     + `<div class="shop-grid">${list.map(l => { const s = shopStats(l.id, C); return `<div class="card shop-card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div><h2 style="margin:0">${esc(l.name)}</h2><div class="small mut">${esc([l.town, l.address].filter(Boolean).join(' · ') || (l.id === 'main' ? 'Your main store' : ''))}</div></div>${l.keeperUid ? '<span class="pill good">Shopkeeper app on</span>' : ''}</div>
       <div class="kv" style="margin:10px 0"><dt>Shopkeeper</dt><dd>${esc(l.keeper || '—')}${l.phone ? ` · ${esc(l.phone)}` : ''}</dd><dt>Stock</dt><dd>${int(s.bottles)} bottles · ${money(s.value)}${(t => t ? ` <span class="pill warn">${t} on the way</span>` : '')(Object.values(C.storeLoc[TRANSIT(l.id)] || {}).reduce((a, q) => a + Math.max(0, q), 0))}</dd><dt>Sales today</dt><dd><b>${money(s.today)}</b>${Object.keys(s.by).length ? ` <span class="small mut">(${Object.entries(s.by).map(([k, v]) => `${PAYL[k] || k} ${money(v)}`).join(', ')})</span>` : ''}</dd><dt>This month</dt><dd>${money(s.month)}</dd><dt>Last cash-up</dt><dd>${(c => c ? `${fmtDate(c.date)} ${c.diff < -0.009 ? `<span class="pill bad">short ${money(-c.diff)}</span>` : c.diff > 0.009 ? `<span class="pill warn">over ${money(c.diff)}</span>` : '<span class="pill good">matched</span>'}` : '—')(lastCashup(l.id))}</dd>${l.keeperLogin ? `<dt>Login ID</dt><dd>${esc(l.keeperLogin)}</dd>` : ''}</div>
-      <div class="actions">${l.id !== 'main' ? btn('Send stock', 'shopDn', {id:l.id}, 'sm pri') : ''}${btn('Edit', 'shopEdit', {id:l.id}, 'sm')}${btn('Sales', 'shopSales', {id:l.id}, 'sm ghost')}${btn('Cash-ups', 'cashups', {id:l.id}, 'sm ghost')}${FB_ROLE === 'owner' ? (l.keeperUid ? btn('New PIN', 'shopAcc', {id:l.id, reset:1}, 'sm ghost') : btn('Make shopkeeper login', 'shopAcc', {id:l.id}, 'sm pri')) : ''}</div></div>`; }).join('')}</div>`
-    + (FB_ROLE === 'owner' ? '' : `<p class="hint">To give shopkeepers their own app, first sign in under Resellers → Online accounts.</p>`);
+      <div class="actions">${l.id !== 'main' ? btn('Send stock', 'shopDn', {id:l.id}, 'sm pri') : ''}${btn('Edit', 'shopEdit', {id:l.id}, 'sm')}${btn('Sales', 'shopSales', {id:l.id}, 'sm ghost')}${btn('Cash-ups', 'cashups', {id:l.id}, 'sm ghost')}${ADM() ? (l.keeperUid ? btn('New PIN', 'shopAcc', {id:l.id, reset:1}, 'sm ghost') : btn('Make shopkeeper login', 'shopAcc', {id:l.id}, 'sm pri')) : ''}</div></div>`; }).join('')}</div>`
+    + (ADM() ? '' : `<p class="hint">To give shopkeepers their own app, first sign in under Resellers → Online accounts.</p>`);
 };
 function shopForm(l = {}){
   const isNew = !l.id;
@@ -3312,13 +3456,13 @@ function shopForm(l = {}){
     <label for="f-sa">Address / landmark<input id="f-sa" name="address" value="${esc(l.address || '')}"></label><label for="f-sc">Receipt code (3 letters)<input id="f-sc" name="code" maxlength="4" value="${esc(l.code || '')}" placeholder="${esc(shopCode({name:l.name || 'Shop'}))}"></label>
     <label for="f-sk">Shopkeeper's name<input id="f-sk" name="keeper" value="${esc(l.keeper || '')}"></label><label for="f-sp">Shopkeeper's phone<input id="f-sp" name="phone" type="tel" value="${esc(l.phone || '')}"></label>
     <label class="chk" for="f-so"><input id="f-so" name="online" type="checkbox" ${l.online !== false ? 'checked' : ''}> Customers can collect online orders here</label></div>`,
-  async d => { const rec = {...l, id:l.id || uid(), name:d.name.trim(), town:d.town.trim(), address:d.address.trim(), code:d.code.trim().toUpperCase(), keeper:d.keeper.trim(), phone:d.phone.trim(), online:!!d.online, shop:true}; await saveLoc(rec); if (rec.keeperUid && FB_ROLE === 'owner') publishShop(rec.id); toast('Shop saved'); }, {label:'Save shop'});
+  async d => { const rec = {...l, id:l.id || uid(), name:d.name.trim(), town:d.town.trim(), address:d.address.trim(), code:d.code.trim().toUpperCase(), keeper:d.keeper.trim(), phone:d.phone.trim(), online:!!d.online, shop:true}; await saveLoc(rec); if (rec.keeperUid && ADM()) publishShop(rec.id); toast('Shop saved'); }, {label:'Save shop'});
 }
 async function shopAccCreate(sid, reset){
   const l = shopOf(sid); if (!l) return; if (!l.keeper) return toast('Add the shopkeeper’s name first (Edit).', true);
   const base = String(l.keeper.split(' ')[0]).toLowerCase().replace(/[^a-z]/g, '') || 'shop', login = base + String(1000 + Math.floor(Math.random() * 9000)), pin = String(100000 + Math.floor(Math.random() * 900000));
   try {
-    const u = await FB.createUser(`${login}@${RES_DOMAIN}`, pin), ops = [['set', `users/${u}`, {role:'shop', shopId:sid, name:l.keeper, login, createdAt:FB.now()}]];
+    const u = await FB.createUser(`${login}@${RES_DOMAIN}`, pin); logNote('login', 'logins', `App login for shop ${l.name} (${login})`); const ops = [['set', `users/${u}`, {role:'shop', shopId:sid, name:l.keeper, login, createdAt:FB.now()}]];
     if (reset && l.keeperUid) ops.push(['del', `users/${l.keeperUid}`]);
     await FB.batch(ops); await saveLoc({...l, keeperUid:u, keeperLogin:login}); await publishShop(sid); ownerListen();
     const msg = `Hello ${l.keeper.split(' ')[0]}! Your ${bizName()} shop login for ${l.name} is ready.\n\n1. Install the Infinity Fragrances app.\n2. Open it and choose "Reseller / shop".\n3. Login ID: ${login}\n   PIN: ${pin}\n\nIn the app you sell, send receipts to customers, see your shop's stock and ask for more stock. Change your PIN in the app.`;
@@ -3334,20 +3478,21 @@ function shopSnapshot(sid){
   const parcels = Object.values(S.dispatches).filter(d => d.toLoc === sid).sort((a, b) => (b.date || '').localeCompare(a.date || '') || (b.no || '').localeCompare(a.no || '')).slice(0, 15).map(d => ({id:d.id, no:d.no, date:d.date, courier:d.courier || '', waybill:d.waybill || '', status:d.status, deliveredDate:d.deliveredDate || '', items:(d.lines || []).map(x => ({name:pName(x.productId), qty:num(x.qty)}))}));
   return {name:l.name, town:l.town || '', address:l.address || '', code:shopCode(l), keeper:l.keeper || '', stock, recent, parcels, festive:S.settings.festive || 'auto', festOff:S.settings.festOff || [], festIcon:S.settings.festIcon !== false, lastCashup:(c => c ? {date:c.date, diff:c.diff} : null)(lastCashup(sid)), lastNo, today:t, business:bizName(), businessPhone:S.settings.phone || '', tagline:S.settings.tagline || '', updatedAt:nowISO()};
 }
-async function publishShop(sid){ const l = shopOf(sid); if (!l || !l.keeperUid || FB_ROLE !== 'owner') return; try { await FB.set('shops/' + sid, shopSnapshot(sid)); } catch(e) {} }
+async function publishShop(sid){ const l = shopOf(sid); if (!l || !l.keeperUid || !ADM()) return; try { await FB.set('shops/' + sid, shopSnapshot(sid)); } catch(e) {} }
 const publishShops = () => locs().filter(l => l.keeperUid).forEach(l => publishShop(l.id));
 /* admin side: shop sales arrive and are booked automatically */
 async function shopSaleImport(sid, q){
   if (OWN.importing?.has(q.id)) return; (OWN.importing = OWN.importing || new Set()).add(q.id);
   try {
     if (Object.values(S.receipts).some(r => r.extId === q.id)) { await FB.update(`shops/${sid}/sales/${q.id}`, {status:'recorded'}); return; }
+    const cl = await claimDoc(`shops/${sid}/sales/${q.id}`, 'new'); if (cl === null) { setTimeout(() => shopSaleImport(sid, {...q}), 60000); return; } if (!cl) return; q.claimed = true;
     const rc = {id:uid(), no:q.no, date:q.date || today(), time:q.time || '', shop:sid, loc:sid, pay:q.pay || 'cash', customer:q.customer || '', phone:q.phone || '', lines:(q.lines || []).map(l => ({productId:l.productId, qty:num(l.qty), price:num(l.price)})), subtotal:num(q.subtotal ?? q.total), discount:num(q.discount), total:num(q.total), seller:'', soldBy:q.byName || shopOf(sid)?.keeper || '', token:q.token || '', extId:q.id, moveIds:[]};
     for (const l of rc.lines) { const mv = await put('moves', {kind:'sale', date:rc.date, loc:sid, productId:l.productId, qty:l.qty, unitPrice:l.price, unitCost:num(S.products[l.productId]?.costPrice), customer:rc.customer, pay:rc.pay, note:`${shopOf(sid)?.name || 'Shop'} · ${rc.no}`}); rc.moveIds.push(mv.id); }
     if (rc.pay !== 'credit') { const c = await put('cash', {kind:'in', date:rc.date, channel:rc.pay, amount:rc.total, category:'Shop sale', shop:sid, customer:rc.customer, description:`${shopOf(sid)?.name || 'Shop'} receipt ${rc.no}`, receiptId:rc.id}); rc.cashId = c.id; }
     if (rc.phone || rc.customer) { try { rc.points = await addPoints(rc.customer, rc.phone, rc.total, rc.no); } catch(e) {} }
     await put('receipts', rc); await FB.update(`shops/${sid}/sales/${q.id}`, {status:'recorded', recordedAt:nowISO()});
     if (route() === 'shops' || route() === 'pos') render(true);
-  } catch(e) { toast('A shop sale could not be booked: ' + fbMsg(e), true); }
+  } catch(e) { toast('A shop sale could not be booked: ' + fbMsg(e), true); if (q.claimed) FB.update(`shops/${sid}/sales/${q.id}`, {status:'new'}).catch(() => {}); }
   finally { OWN.importing.delete(q.id); clearTimeout(OWN.shopPubT); OWN.shopPubT = setTimeout(() => publishShop(sid), 1500); }
 }
 
@@ -3420,7 +3565,7 @@ async function shopSell(){
 /* ---- online shop (customers order from a web link) ---- */
 function storeZones(){ return String(S.settings.storeZones || '').split(/\n+/).map(l => l.split('=')).filter(x => x.length >= 2 && x[0].trim()).map(([a, f]) => ({area:a.trim(), fee:num(f)})); }
 async function publishStore(){
-  if (FB_ROLE !== 'owner') return; const st = S.settings, C = compute();
+  if (!ADM()) return; const st = S.settings, C = compute();
   const avail = pid => Object.entries(C.storeLoc).filter(([k]) => !k.startsWith('transit:')).reduce((t, [, o]) => t + Math.max(0, o[pid] || 0), 0);
   const list = sortedProds().filter(p => (p.status || 'active') !== 'inactive' && avail(p.id) > 0).map(p => { const bp = bestPromo(p.id, num(p.sellPrice), 'pos'); return {id:p.id, name:p.name, size:p.size || '', category:p.category || '', price:num(p.sellPrice), promo:bp && bp.price < num(p.sellPrice) ? {price:r2(bp.price), badge:promoBadge(bp.pr)} : null, stock:Math.min(avail(p.id), 20)}; });
   const doc = {open:st.storeOpen !== false, biz:bizName(), tagline:st.tagline || '', phone:st.phone || '', whatsapp:st.storeWhatsapp || st.phone || '', momo:st.storeMomo || '', momoName:st.storeMomoName || '', delivery:st.storeDelivery || 'Delivery fee depends on your area; we will confirm it on WhatsApp.', shops:locs().filter(l => l.online !== false).map(l => ({id:l.id, name:l.name, town:l.town || '', address:l.address || ''})), list, fest:currentFestival(), festGreet:currentFestival() ? FESTIVALS[currentFestival()].greet : '', zones:storeZones(), updatedAt:nowISO()};
@@ -3430,7 +3575,7 @@ const ORD_ST = {new:['New', 'warn'], confirmed:['Confirmed', 'acc'], shipped:['O
 PAGES.orders = () => {
   const list = (OWN.orders || []).slice().sort((a, b) => (b.at || '').localeCompare(a.at || '')), st = S.settings;
   return head('Online shop', `Customers order from your shop link, then pay on delivery or by mobile money. Share the link on WhatsApp, Facebook or your status.`, btn('Copy shop link', 'storeCopy', {}, 'pri') + btn('Shop settings', 'storeSet'))
-    + `<div class="card"><p style="margin:0">Your shop link: <a href="${STORE_URL}" target="_blank" rel="noopener"><b>${STORE_URL.replace('https://', '')}</b></a> ${st.storeOpen === false ? '<span class="pill bad">Closed</span>' : '<span class="pill good">Open</span>'}</p>${FB_ROLE !== 'owner' ? '<p class="hint">Sign in under Resellers → Online accounts so orders can arrive here.</p>' : ''}</div>`
+    + `<div class="card"><p style="margin:0">Your shop link: <a href="${STORE_URL}" target="_blank" rel="noopener"><b>${STORE_URL.replace('https://', '')}</b></a> ${st.storeOpen === false ? '<span class="pill bad">Closed</span>' : '<span class="pill good">Open</span>'}</p>${!ADM() ? '<p class="hint">Sign in under Resellers → Online accounts so orders can arrive here.</p>' : ''}</div>`
     + (list.length ? `<div class="card"><div class="tw"><table class="t"><thead><tr><th>Order</th><th>Customer</th><th>Perfumes</th><th class="n">Total</th><th>How</th><th>Status</th><th></th></tr></thead><tbody>${list.map(o => { const s2 = ORD_ST[o.status] || ['?', '']; return `<tr><td><b>${esc(o.no || '')}</b><div class="small mut">${esc(fmtDateTime(o.at))}</div></td><td>${esc(o.name)}<div class="small mut">${esc(o.phone)} · ${esc(o.town || '')}</div></td><td class="small">${(o.lines || []).map(l => `${l.qty} × ${esc(l.name)}`).join('<br>')}</td><td class="n"><b>${money(o.total)}</b>${o.deliveryFee ? `<div class="small mut">incl. delivery ${money(o.deliveryFee)}${o.area ? ' · ' + esc(o.area) : ''}</div>` : ''}</td><td class="small">${o.method === 'pickup' ? 'Collect: ' + esc(shopOf(o.shopId)?.name || '') : 'Delivery'}<br>${o.payBy === 'momo' ? 'Mobile money' : 'Cash on delivery'}</td><td><span class="pill ${s2[1]}">${s2[0]}</span></td><td><div class="actions">${o.status === 'new' ? btn('Confirm', 'ordOk', {id:o.id}, 'sm pri') : ''}${o.status === 'confirmed' ? btn('On the way', 'ordShip', {id:o.id}, 'sm') : ''}${['new', 'confirmed', 'shipped'].includes(o.status) ? btn('Delivered & paid', 'ordDone', {id:o.id}, 'sm') + btn('Cancel', 'ordNo', {id:o.id}, 'sm ghost') : ''}<a class="btn sm ghost" href="${waLink(o.phone, `Hello ${String(o.name).split(' ')[0]}, thank you for your ${bizName()} order ${o.no}.`)}" target="_blank" rel="noopener">WhatsApp</a></div></td></tr>`; }).join('')}</tbody></table></div></div>` : empty('No online orders yet. Share your shop link to get started.'));
 };
 function storeSettings(){
@@ -3454,7 +3599,7 @@ function ordDone(id){
     for (const l of rc.lines) { const mv = await put('moves', {kind:'sale', date:rc.date, loc:d.loc, productId:l.productId, qty:l.qty, unitPrice:l.price, unitCost:num(S.products[l.productId]?.costPrice), customer:o.name, pay:d.pay, note:`Online order ${o.no}`}); rc.moveIds.push(mv.id); }
     const c = await put('cash', {kind:'in', date:rc.date, channel:d.pay, amount:num(d.amount), category:'Online sale', shop:rc.shop, customer:o.name, description:`Online order ${o.no} · receipt ${rc.no}`, receiptId:rc.id}); rc.cashId = c.id;
     try { rc.points = await addPoints(o.name, o.phone, num(d.amount) - fee, rc.no); } catch(e) {}
-    await put('receipts', rc); await FB.update('orders/' + o.id, {status:'done', receiptNo:rc.no, doneAt:nowISO()}); publishStore(); if (rc.shop) publishShop(rc.shop);
+    await put('receipts', rc); await FB.update('orders/' + o.id, {status:'done', receiptNo:rc.no, doneAt:nowISO()}); logNote('done', 'orders', `Online order ${o.no || ''} from ${o.name} delivered and booked as receipt ${rc.no} (${money(rc.total)})`); publishStore(); if (rc.shop) publishShop(rc.shop);
     setTimeout(() => { const p = rcptPublic(rc); rcptModal(p, {phone:o.phone, onToken:t => put('receipts', {...S.receipts[rc.id], token:t})}); }, 200);
   }, {label:'Book the sale'});
 }
@@ -3488,7 +3633,7 @@ function shopDispatchForm(sid){
     for (const l of lines) { const mv = await put('moves', {kind:'transfer', date:d.date, productId:l.productId, qty:l.qty, from, to:TRANSIT(d.toLoc), dispatchId:dn.id, note:`${dn.no} ${locName(from)} → ${dnTo(dn)} (on the way)`}); dn.moveIds.push(mv.id); }
     if (dn.charge > 0) { const c = await put('cash', {kind:'out', date:d.date, channel:d.chargeVia, amount:dn.charge, category:'Expense', expType:'Courier charges', description:`${dn.courier} · ${dn.no} to ${dnTo(dn)}${dn.waybill ? ' · ' + dn.waybill : ''}`, dispatchId:dn.id}); dn.cashId = c.id; }
     await put('dispatches', dn);
-    const l = shopOf(d.toLoc); if (l?.keeperUid && FB_ROLE === 'owner') { publishShop(d.toLoc); fbNotify(l.keeperUid, `Parcel ${dn.no} is on the way: ${lines.reduce((t, x) => t + x.qty, 0)} bottles${dn.courier ? ' by ' + dn.courier : ''}${dn.waybill ? ' (waybill ' + dn.waybill + ')' : ''}.`); }
+    const l = shopOf(d.toLoc); if (l?.keeperUid && ADM()) { publishShop(d.toLoc); fbNotify(l.keeperUid, `Parcel ${dn.no} is on the way: ${lines.reduce((t, x) => t + x.qty, 0)} bottles${dn.courier ? ' by ' + dn.courier : ''}${dn.waybill ? ' (waybill ' + dn.waybill + ')' : ''}.`); }
     toast(`${dn.no} saved. Open Dispatch & delivery for the notes.`); setTimeout(() => showDispatchDoc(dn.id, 'dispatch'), 200);
   }, {label:'Send stock', wide:true});
 }
@@ -3597,6 +3742,7 @@ async function orvApprove(){
   if (!lines.length) return toast('Nothing is approved. Tick at least one perfume, or decline the order.', true);
   const path = r.kind === 'shop' ? `shops/${r.owner}/requests/${r.id}` : `portal/${r.owner}/requests/${r.id}`;
   try { await FB.update(path, {status:'approved', approvedLines:lines, unavailable:missing, decidedAt:FB.now()}); } catch(e) { return toast(fbMsg(e), true); }
+  logNote('approve', 'requests', `Stock order from ${orvParty()}: ${lines.map(l => l.qty + ' × ' + l.name).join(', ')}${missing.length ? ` (not available: ${missing.join(', ')})` : ''}`);
   const who = r.kind === 'shop' ? shopOf(r.owner)?.keeperUid : S.resellers[r.owner]?.portalUid;
   fbNotify(who, `Your order was approved: ${lines.reduce((t, l) => t + l.qty, 0)} bottles${missing.length ? `. Not available: ${missing.join(', ')}` : ''}.`);
   if (r.kind === 'res') publishOne(r.owner);
@@ -3658,7 +3804,7 @@ async function stkSave(){
 async function applyShopCount(sid, q){
   const C = compute(), st = C.storeLoc[sid] || {}, ch = (q.lines || []).map(l => ({pid:l.productId, d:num(l.counted) - Math.max(0, st[l.productId] || 0)})).filter(x => x.d);
   for (const x of ch) await put('moves', {kind:'adjust', date:today(), productId:x.pid, qty:x.d, loc:sid, note:`Stock-take by ${q.byName || 'shopkeeper'} ${fmtDate(String(q.date || today()))}`});
-  await FB.update(`shops/${sid}/counts/${q.id}`, {status:'applied', appliedAt:FB.now()}); publishShop(sid); toast(`${shopOf(sid)?.name}: stock corrected (${ch.length} change${ch.length === 1 ? '' : 's'})`);
+  await FB.update(`shops/${sid}/counts/${q.id}`, {status:'applied', appliedAt:FB.now()}); logNote('approve', 'requests', `${shopOf(sid)?.name || 'Shop'}: stock count accepted (${ch.length} correction${ch.length === 1 ? '' : 's'})`); publishShop(sid); toast(`${shopOf(sid)?.name}: stock corrected (${ch.length} change${ch.length === 1 ? '' : 's'})`);
 }
 
 /* ---------- reseller credit limits ---------- */
@@ -5460,7 +5606,7 @@ const ACT = {
   signTab: d => { UI.signTab = d.k; UI.signMsg = ''; FB_ERR = ''; UI.applied = false; render(true); },
   applySend: () => applySend(), pinSetupSave: () => pinSetupSave(), resUnlock: () => resUnlock(), appOut: () => confirmBox(`Sign out of this ${DEV_NAME}? You will need ${APP_ROLE === 'reseller' ? 'your login ID and PIN' : 'your admin email and password'} to open the app again.`, () => appSignOut(), 'Sign out'),
   bioUnlock: async () => { if (!bioReady()) return; const ok = await DESK.bioAuth('Unlock Infinity Fragrances'); if (!ok) return;
-    if (APP_ROLE === 'reseller') { RES_UNLOCKED = true; PIN_FAILS = 0; render(true); }
+    if (APP_ROLE === 'reseller' || APP_ROLE === 'manager') { RES_UNLOCKED = true; PIN_FAILS = 0; render(true); }
     else { const o = users().find(x => x.role === 'owner'); if (o) { SESSION = {id:o.id, name:o.name, role:'owner'}; PIN_FAILS = 0; touchIdle(); if (!allowed(route())) location.hash = firstAllowed(); render(true); toast(`Welcome, ${o.name}`); } } },
   lockEmail: async () => { await setCfg({ownerUid:''}); UI.signTab = 'owner'; UI.signMsg = 'Sign in with your admin email and password. Then set a new PIN in Settings → Users & PINs.'; try { FB && await FB.signOut(); } catch(e) {} render(true); },
   fbForgot: async () => { const e = ($('#f-oe')?.value || '').trim(); if (!e) return $('#fb-err').textContent = 'Type your admin email first.'; try { await fbLoad(); await FB.resetPassword(e); $('#fb-err').textContent = ''; toast('Check your email for a link to set a new password.'); } catch(x) { $('#fb-err').textContent = fbMsg(x); } },
@@ -5474,23 +5620,23 @@ const ACT = {
     let ok = 0, orders = 0; const bad = []; for (const x of sel) { const q = (OWN.reqs[x.rid] || []).find(y => y.id === x.id); try { await reqApprove(x.rid, x.id, true); ok++; if (q?.type === 'order') orders++; } catch(e) { bad.push(`${rName(x.rid)}: ${fbMsg(e)}`); } }
     if (bad.length) modal('Some requests were not approved', `<p>${ok} approved.</p><ul class="small">${bad.map(b => `<li>${esc(b)}</li>`).join('')}</ul>`, null, {nofocus:true}); else toast(`${ok} approved${orders ? `. ${orders} order${orders === 1 ? '' : 's'}: send the parcels from Dispatch.` : ''}`); },
   reqNoSel: () => { const sel = [...document.querySelectorAll('.rq-sel:checked')].map(c => ({rid:c.dataset.rid, id:c.dataset.id})); if (!sel.length) return toast('Tick the requests first.', true);
-    modal(`Reject ${sel.length} request${sel.length === 1 ? '' : 's'}`, `<label for="f-rr">Reason (the resellers will see this)<input id="f-rr" name="why" required></label>`, async d => { for (const x of sel) { await FB.update(`portal/${x.rid}/requests/${x.id}`, {status:'rejected', reason:d.why.trim(), decidedAt:FB.now()}); fbNotify(S.resellers[x.rid]?.portalUid, `A request was not approved: ${d.why.trim()}`); } toast('Rejected'); }, {label:'Reject'}); },
+    modal(`Reject ${sel.length} request${sel.length === 1 ? '' : 's'}`, `<label for="f-rr">Reason (the resellers will see this)<input id="f-rr" name="why" required></label>`, async d => { for (const x of sel) { await FB.update(`portal/${x.rid}/requests/${x.id}`, {status:'rejected', reason:d.why.trim(), decidedAt:FB.now()}); logNote('decline', 'requests', `${rName(x.rid)}: ${REQ_TYPES[x.type] || 'request'} declined (${d.why.trim()})`); fbNotify(S.resellers[x.rid]?.portalUid, `A request was not approved: ${d.why.trim()}`); } toast('Rejected'); }, {label:'Reject'}); },
   remind: () => remindModal(), cloudNow: () => cloudBackup(true), cloudList: () => cloudList(), cloudRestore: d => cloudRestore(d.id),
-  appOk: d => appApprove(d.id), appNo: d => confirmBox('Decline this application?', async () => { try { await FB.update('applications/' + d.id, {status:'declined', decidedAt:nowISO()}); toast('Declined'); } catch(e) { toast(fbMsg(e), true); } }, 'Decline'),
+  appOk: d => appApprove(d.id), appNo: d => confirmBox('Decline this application?', async () => { try { const a = (OWN.apps || []).find(x => x.id === d.id) || {}; await FB.update('applications/' + d.id, {status:'declined', decidedAt:nowISO()}); logNote('decline', 'applications', `Reseller application from ${a.name || ''}`); toast('Declined'); } catch(e) { toast(fbMsg(e), true); } }, 'Decline'),
   copyRules: async () => { try { await navigator.clipboard.writeText(FS_RULES); toast('Rules copied. Paste them in Firebase → Firestore Database → Rules, then Publish.'); } catch(e) { toast('Select the text and copy it.', true); } },
   adSave: async () => { const c = await adCanvas(); if (!c) return; const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.92)); await saveFile(`poster-${today()}.jpg`, blob); },
   adPrint: async () => { const c = await adCanvas(); if (!c) return; const h = `<html><body style="margin:0"><img src="${c.toDataURL('image/jpeg', 0.92)}" style="width:100%"></body></html>`; if (DESK && DESK.printHTML) DESK.printHTML(h); else { const w = window.open(''); if (w) { w.document.write(h); w.document.close(); setTimeout(() => w.print(), 400); } } },
   resSlip: d => { RES.slip = RES.slip === d.id ? '' : d.id; render(true); },
   psMake: () => psMake(), psNew: () => psForm(), psView: d => psView(d.id), psEdit: d => psForm(S.payslips[d.id]),
   psRefresh: d => { const p = S.payslips[d.id]; if (!p) return; const f = payslipFigures(p.rid, p.month); $('#f-pso').value = f.own; $('#f-psb').value = f.bonus; $('#f-psv').value = f.received; toast('Figures refreshed. Save to keep them.'); },
-  psSend: async d => { const p = S.payslips[d.id], r = S.resellers[p.rid]; if (FB_ROLE !== 'owner') return toast('Sign in to your admin account first (Resellers → Online accounts).', true);
+  psSend: async d => { const p = S.payslips[d.id], r = S.resellers[p.rid]; if (!ADM()) return toast('Sign in to your admin account first (Resellers → Online accounts).', true);
     await put('payslips', {...p, status:p.status === 'paid' ? 'paid' : 'sent', sentAt:nowISO(), sentVia:'App'}); await publishOne(p.rid); await fbNotify(r.portalUid, `Your payslip for ${monthLabel(p.month)} is ready: ${money(psTotals(p).net)} due to you.`); toast('Payslip sent in the app'); psView(d.id); },
   psPaid: d => psPayForm(d.id),
-  psDel: d => { const p = S.payslips[d.id]; confirmBox(`Delete payslip ${p.no}?${p.payCashId ? ' The payment in the cash book stays; delete it there if needed.' : ''}`, async () => { await del('payslips', d.id); closeModal(); if (S.resellers[p.rid]?.portalUid && FB_ROLE === 'owner') publishOne(p.rid); toast('Deleted'); }, 'Delete'); },
+  psDel: d => { const p = S.payslips[d.id]; confirmBox(`Delete payslip ${p.no}?${p.payCashId ? ' The payment in the cash book stays; delete it there if needed.' : ''}`, async () => { await del('payslips', d.id); closeModal(); if (S.resellers[p.rid]?.portalUid && ADM()) publishOne(p.rid); toast('Deleted'); }, 'Delete'); },
   drawer: () => openDrawer(),
   reqReview: d => reviewOrder('res', d.rid, d.id), shopReview: d => reviewOrder('shop', d.sid, d.id),
   orvExp: d => orvExport(d.fmt), orvOk: () => orvApprove(),
-  orvNo: () => { const r = ORV; modal('Decline the order', `<label for="f-orn">Reason (they will see it)<input id="f-orn" name="why" required></label>`, async x => { await FB.update(r.kind === 'shop' ? `shops/${r.owner}/requests/${r.id}` : `portal/${r.owner}/requests/${r.id}`, {status:'rejected', reason:x.why.trim(), decidedAt:FB.now()}); fbNotify(r.kind === 'shop' ? shopOf(r.owner)?.keeperUid : S.resellers[r.owner]?.portalUid, `Your order was not approved: ${x.why.trim()}`); toast('Declined'); }, {label:'Decline'}); },
+  orvNo: () => { const r = ORV; modal('Decline the order', `<label for="f-orn">Reason (they will see it)<input id="f-orn" name="why" required></label>`, async x => { await FB.update(r.kind === 'shop' ? `shops/${r.owner}/requests/${r.id}` : `portal/${r.owner}/requests/${r.id}`, {status:'rejected', reason:x.why.trim(), decidedAt:FB.now()}); logNote('decline', 'requests', `Stock order from ${orvParty()} declined (${x.why.trim()})`); fbNotify(r.kind === 'shop' ? shopOf(r.owner)?.keeperUid : S.resellers[r.owner]?.portalUid, `Your order was not approved: ${x.why.trim()}`); toast('Declined'); }, {label:'Decline'}); },
   cashup: d => cashupForm(d.loc || 'main'), cashups: d => cashupList(d.id),
   shopClose: () => { const s0 = SHOP.snap, t = today(), mine = SHOP.sales.filter(x => x.date === t), by = {cash:0, momo:0, bank:0}; mine.forEach(r => { if (by[r.pay] != null) by[r.pay] += num(r.total); });
     modal('Close the day', `<p class="hint">Today: ${mine.length} sale${mine.length === 1 ? '' : 's'}. Expected: cash ${money(by.cash)}, mobile money ${money(by.momo)}, bank ${money(by.bank)}.</p><div class="grid2"><label for="f-sc1">Cash counted<input id="f-sc1" name="cash" type="number" step="0.01" required></label><label for="f-sc2">Mobile money received<input id="f-sc2" name="momo" type="number" step="0.01" value="${by.momo}"></label><label for="f-sc3">Bank / card<input id="f-sc3" name="bank" type="number" step="0.01" value="${by.bank}"></label><label for="f-sc4">Paid out from the till<input id="f-sc4" name="exp" type="number" step="0.01" placeholder="0"></label><label for="f-sc5">What for<input id="f-sc5" name="expNote"></label><label for="f-sc6">Note<input id="f-sc6" name="note"></label></div>`,
@@ -5499,10 +5645,10 @@ const ACT = {
   shopCountSend: () => { const av = shopAvail(), lines = av.filter(p => SHOP.count[p.id] != null).map(p => ({productId:p.id, name:p.name, counted:num(SHOP.count[p.id]), expected:p.avail})); if (!lines.length) return toast('Count at least one perfume.', true);
     (FB.addQ || FB.add)(`shops/${FB_ME.shopId}/counts`, {lines, date:today(), byName:FB_ME?.name || '', by:FB_USER.uid, status:'new', at:FB.now()}); fbNotify('owner', `${SHOP.snap?.name || 'A shop'} sent a stock count`); SHOP.counting = false; SHOP.count = {}; toast('Count sent to the admin'); render(true); },
   countOk: async d => { const q = (OWN.shopCounts[d.sid] || []).find(x => x.id === d.id); if (q) { try { await applyShopCount(d.sid, q); } catch(e) { toast(fbMsg(e), true); } } },
-  countNo: async d => { try { await FB.update(`shops/${d.sid}/counts/${d.id}`, {status:'dismissed'}); toast('Dismissed'); } catch(e) { toast(fbMsg(e), true); } },
+  countNo: async d => { try { await FB.update(`shops/${d.sid}/counts/${d.id}`, {status:'dismissed'}); logNote('decline', 'requests', `${shopOf(d.sid)?.name || 'Shop'}: stock count dismissed`); toast('Dismissed'); } catch(e) { toast(fbMsg(e), true); } },
   stkSave: () => stkSave(), stkReset: () => { STK.counts = {}; render(true); },
   posRedeem: () => { POS.redeem = !POS.redeem; POS.renderCart(); },
-  ordShip: async d => { const o = (OWN.orders || []).find(x => x.id === d.id); if (!o) return; try { await FB.update('orders/' + o.id, {status:'shipped', shippedAt:nowISO()}); } catch(e) { return toast(fbMsg(e), true); }
+  ordShip: async d => { const o = (OWN.orders || []).find(x => x.id === d.id); if (!o) return; try { await FB.update('orders/' + o.id, {status:'shipped', shippedAt:nowISO()}); } catch(e) { return toast(fbMsg(e), true); } logNote('ship', 'orders', `Online order ${o.no || ''} from ${o.name} is on the way`);
     const a = document.createElement('a'); a.href = waLink(o.phone, `Hello ${String(o.name).split(' ')[0]}, your ${bizName()} order ${o.no} is on the way! Track it here: ${STORE_URL}#o=${o.id}`); a.target = '_blank'; a.rel = 'noopener'; EXT_T = Date.now(); document.body.appendChild(a); a.click(); a.remove(); toast('Marked on the way'); },
   updApk: () => { if (!UPD.apk || !DESK.installApk) return; const m = $('#apk-msg'); window.__ifApkP = pc => { const e = $('#apk-msg'); if (e) e.textContent = `Downloading… ${pc}%`; }; window.__ifApk = r => { const e = $('#apk-msg'); if (String(r).startsWith('error')) { if (e) e.textContent = String(r).slice(6) || 'Download failed.'; toast('The update could not download. Check your internet and try again.', true); } else if (e) e.textContent = 'Opening the Android update screen…'; };
     if (m) m.textContent = 'Downloading…'; DESK.installApk(UPD_URL + UPD.apk.file, UPD.apk.sha256); },
@@ -5511,8 +5657,8 @@ const ACT = {
   shopNew: () => shopForm(), shopEdit: d => shopForm(shopOf(d.id)), shopAcc: d => shopAccCreate(d.id, !!d.reset),
   shopSales: d => { const l = shopOf(d.id), cut = iso(addDays(new Date(), -30)), list = Object.values(S.receipts).filter(r => (r.shop || (r.seller ? '' : (r.loc || 'main'))) === d.id && r.date >= cut).sort((a, b) => (b.date + (b.time || '')).localeCompare(a.date + (a.time || '')));
     modal(`${l?.name || 'Shop'}: last 30 days`, list.length ? `<p><b>${money(list.reduce((t, r) => t + num(r.total), 0))}</b> from ${list.length} sale${list.length === 1 ? '' : 's'}</p><div class="tw"><table class="t"><thead><tr><th>Receipt</th><th>When</th><th>Customer</th><th class="n">Total</th><th>Paid</th><th></th></tr></thead><tbody>${list.map(r => `<tr><td><b>${esc(r.no)}</b></td><td class="small">${fmtDate(r.date)} ${esc(r.time || '')}</td><td>${esc(r.customer || '')}</td><td class="n">${money(r.total)}</td><td class="small">${esc(PAYL[r.pay] || r.pay)}</td><td>${btn('Receipt', 'rcptView', {id:r.id}, 'sm ghost')}</td></tr>`).join('')}</tbody></table></div>` : '<p class="mut">No sales in the last 30 days.</p>', null, {wide:true, nofocus:true}); },
-  shopReqOk: async d => { const q = (OWN.shopReqs[d.sid] || []).find(x => x.id === d.id); if (!q) return; try { await FB.update(`shops/${d.sid}/requests/${d.id}`, {status:'approved', decidedAt:FB.now()}); } catch(e) { return toast(fbMsg(e), true); } shopDispatchForm(d.sid); toast(`Choose the perfumes to send to ${shopOf(d.sid)?.name}: ${(q.lines || []).map(l => l.qty + ' × ' + l.name).join(', ')}`); },
-  shopReqNo: d => modal('Decline the request', `<label for="f-srr">Reason<input id="f-srr" name="why" required></label>`, async x => { await FB.update(`shops/${d.sid}/requests/${d.id}`, {status:'rejected', reason:x.why.trim(), decidedAt:FB.now()}); toast('Declined'); }, {label:'Decline'}),
+  shopReqOk: async d => { const q = (OWN.shopReqs[d.sid] || []).find(x => x.id === d.id); if (!q) return; try { await FB.update(`shops/${d.sid}/requests/${d.id}`, {status:'approved', decidedAt:FB.now()}); } catch(e) { return toast(fbMsg(e), true); } logNote('approve', 'requests', `${shopOf(d.sid)?.name || 'Shop'}: stock request`); shopDispatchForm(d.sid); toast(`Choose the perfumes to send to ${shopOf(d.sid)?.name}: ${(q.lines || []).map(l => l.qty + ' × ' + l.name).join(', ')}`); },
+  shopReqNo: d => modal('Decline the request', `<label for="f-srr">Reason<input id="f-srr" name="why" required></label>`, async x => { await FB.update(`shops/${d.sid}/requests/${d.id}`, {status:'rejected', reason:x.why.trim(), decidedAt:FB.now()}); logNote('decline', 'requests', `${shopOf(d.sid)?.name || 'Shop'}: stock request declined (${x.why.trim()})`); toast('Declined'); }, {label:'Decline'}),
   shopTab: d => { closeModal(); SHOP.tab = d.k; window.scrollTo(0, 0); render(true); },
   shopPlus: d => { const p = shopAvail().find(x => x.id === d.id); const q = (SHOP.cart[d.id] || 0) + 1; if (p && q > p.avail) return toast(`Only ${p.avail} in the shop.`, true); SHOP.cart[d.id] = q; $('#sq-' + d.id).textContent = q; $('#shop-cart').innerHTML = shopCartBar(); },
   shopMinus: d => { SHOP.cart[d.id] = Math.max(0, (SHOP.cart[d.id] || 0) - 1); $('#sq-' + d.id).textContent = SHOP.cart[d.id]; $('#shop-cart').innerHTML = shopCartBar(); },
@@ -5526,24 +5672,24 @@ const ACT = {
     try { (FB.addQ || FB.add)(`shops/${FB_ME.shopId}/requests`, {type:'order', lines, note:(d.note || '').trim(), status:'pending', by:FB_USER.uid, at:FB.now()}); fbNotify('owner', `${SHOP.snap?.name || 'A shop'} asks for stock`); toast('Request sent'); render(true); } catch(e) { toast(fbMsg(e), true); } },
   storeCopy: async () => { try { await navigator.clipboard.writeText(STORE_URL); toast('Shop link copied. Paste it on WhatsApp or Facebook.'); } catch(e) { prompt('Copy your shop link:', STORE_URL); } },
   storeSet: () => storeSettings(),
-  ordOk: async d => { const o = (OWN.orders || []).find(x => x.id === d.id); if (!o) return; try { await FB.update('orders/' + o.id, {status:'confirmed', confirmedAt:nowISO()}); } catch(e) { return toast(fbMsg(e), true); } const st = S.settings;
+  ordOk: async d => { const o = (OWN.orders || []).find(x => x.id === d.id); if (!o) return; try { await FB.update('orders/' + o.id, {status:'confirmed', confirmedAt:nowISO()}); } catch(e) { return toast(fbMsg(e), true); } logNote('confirm', 'orders', `Online order ${o.no || ''} from ${o.name} (${money(o.total)})`); const st = S.settings;
     const msg = `Hello ${String(o.name).split(' ')[0]}, your ${bizName()} order ${o.no} is confirmed: ${(o.lines || []).map(l => l.qty + ' × ' + l.name).join(', ')}. Total ${money(o.total)}.` + (o.payBy === 'momo' && st.storeMomo ? `\nPlease pay by mobile money to ${st.storeMomo}${st.storeMomoName ? ' (' + st.storeMomoName + ')' : ''} and send the reference.` : '\nYou pay when you receive it.') + (o.method === 'pickup' ? `\nCollect at ${shopOf(o.shopId)?.name || 'our shop'}.` : `\nWe will deliver to ${o.address || o.town || 'you'}.`);
     const a = document.createElement('a'); a.href = waLink(o.phone, msg); a.target = '_blank'; a.rel = 'noopener'; EXT_T = Date.now(); document.body.appendChild(a); a.click(); a.remove(); toast('Order confirmed'); },
   ordDone: d => ordDone(d.id),
-  ordNo: d => confirmBox('Cancel this order?', async () => { try { await FB.update('orders/' + d.id, {status:'cancelled', cancelledAt:nowISO()}); toast('Order cancelled'); } catch(e) { toast(fbMsg(e), true); } }, 'Cancel order'), resDrawer: () => openResDrawer(), resLock: () => { closeModal(); RES_UNLOCKED = false; BIO_TRIED = false; render(true); }, skipInstall: () => { UI.skipInstall = true; render(true); },
+  ordNo: d => confirmBox('Cancel this order?', async () => { try { const o = (OWN.orders || []).find(x => x.id === d.id) || {}; await FB.update('orders/' + d.id, {status:'cancelled', cancelledAt:nowISO()}); logNote('cancel', 'orders', `Online order ${o.no || ''} from ${o.name || 'a customer'} (${money(o.total || 0)})`); toast('Order cancelled'); } catch(e) { toast(fbMsg(e), true); } }, 'Cancel order'), resDrawer: () => openResDrawer(), resLock: () => { closeModal(); RES_UNLOCKED = false; BIO_TRIED = false; render(true); }, skipInstall: () => { UI.skipInstall = true; render(true); },
   updCheck: () => checkUpdate(true), updLater: () => { const b = $('#upd-bar'); if (b) b.remove(); },
   updGo: async () => { try { if (DESK_T) { clearTimeout(DESK_T); DESK_T = 0; await deskSave(); } } catch(e) {} toast('Restarting…'); setTimeout(() => DESK.relaunch(), 400); }, posGo: () => $('#pos-cart')?.scrollIntoView({behavior:'smooth', block:'start'}),
   lookOpen: () => { closeModal(); if (APP_ROLE === 'reseller') { RES.tab = 'account'; render(true); } else location.hash = 'setup'; setTimeout(() => $('#look-card')?.scrollIntoView({behavior:'smooth', block:'start'}), 150); },
   lookSkin: d => { setLook({skin:d.k}); const c = $('#look-card'); if (c) c.outerHTML = lookCard(); toast(LOOKS.find(x => x[0] === d.k)?.[1] + ' theme on'); },
   fbRetry: () => { FB_ERR = ''; FB_AUTH_STARTED = false; FB = null; fbStart(); render(true); },
-  fbOwnerIn: async () => { const e = $('#f-oe').value.trim(), pw = $('#f-op').value; UI.fbEmail = e; if (!e || !pw) return $('#fb-err').textContent = 'Type your email and password.'; const gate = DESK && MODE === 'desktop' && route() !== 'portal' || (DESK && !DCFG.ownerUid); if (gate) { OWNER_SIGNING = true; UI.signMsg = ''; } try { await fbLoad(); if (gate) fbStart(); await FB.signIn(e, pw); if (gate && OWNER_SIGNING && FB_USER && FB_ROLE === 'owner' && FB_USER.email === e) return ownerVerified(FB_USER); } catch(x) { OWNER_SIGNING = false; const el = $('#fb-err'); const m = fbMsg(x); if (el) el.textContent = (/login ID or PIN/.test(m) ? 'Wrong email or password.' : m) + ' First time? Tap "Create the admin account".'; } },
+  fbOwnerIn: async () => { const e = $('#f-oe').value.trim(), pw = $('#f-op').value; UI.fbEmail = e; if (!e || !pw) return $('#fb-err').textContent = 'Type your email and password.'; const gate = DESK && MODE === 'desktop' && route() !== 'portal' || (DESK && !DCFG.ownerUid); if (gate) { OWNER_SIGNING = true; UI.signMsg = ''; } try { await fbLoad(); if (gate) fbStart(); await FB.signIn(e, pw); if (gate && OWNER_SIGNING && FB_USER && ADM() && FB_USER.email === e) return ownerVerified(FB_USER); } catch(x) { OWNER_SIGNING = false; const el = $('#fb-err'); const m = fbMsg(x); if (el) el.textContent = (/login ID or PIN/.test(m) ? 'Wrong email or password.' : m) + ' First time? Tap "Create the admin account".'; } },
   fbOwnerUp: async () => { const e = $('#f-oe').value.trim(), pw = $('#f-op').value; UI.fbEmail = e; if (!e) return $('#fb-err').textContent = 'Type your email.'; if (pw.length < 8) return $('#fb-err').textContent = 'Use a password of at least 8 characters.'; if (DESK && MODE === 'desktop') { OWNER_SIGNING = true; await fbLoad(); fbStart(); } try { const owner = await FB.get('meta/owner').catch(() => null); const c = await FB.signUp(e, pw); const uid = (c && c.user && c.user.uid) || FB_USER?.uid; if (!owner) { await FB.batch([['set', 'meta/owner', {uid, email:e, at:FB.now()}], ['set', `users/${uid}`, {role:'owner', email:e, at:FB.now()}]]); FB_ROLE = 'owner'; FB_ME = {role:'owner'}; ownerListen(); toast('Admin account created'); render(true); } else toast('An admin account already exists. Sign in with it instead.', true); } catch(x) { $('#fb-err').textContent = fbMsg(x); } },
   fbClaim: async () => { try { await FB.batch([['set', 'meta/owner', {uid:FB_USER.uid, email:FB_USER.email, at:FB.now()}], ['set', `users/${FB_USER.uid}`, {role:'owner', email:FB_USER.email, at:FB.now()}]]); FB_ROLE = 'owner'; ownerListen(); render(true); } catch(x) { toast(fbMsg(x), true); } },
   fbOut: async () => { if (DESK && MODE === 'desktop') return ACT.appOut(); try { await FB.signOut(); } catch(e) {} },
   fbPublish: () => publishAll(false),
   reqOk: d => reqApprove(d.rid, d.id), reqNo: d => reqReject(d.rid, d.id),
   accNew: d => accCreate(d.id, false), accReset: d => confirmBox('Make a new login ID and PIN? The old ones stop working.', () => accCreate(d.id, true), 'Make new login'),
-  accRemove: d => { const r = S.resellers[d.id]; confirmBox(`Remove ${esc(r.name)}'s online access? They will no longer be able to sign in.`, async () => { try { await FB.del(`users/${r.portalUid}`); await FB.del(`portal/${r.id}`); } catch(e) {} await put('resellers', {...r, portalUid:'', portalLogin:''}); ownerListen(); toast('Access removed'); }, 'Remove access'); },
+  accRemove: d => { const r = S.resellers[d.id]; confirmBox(`Remove ${esc(r.name)}'s online access? They will no longer be able to sign in.`, async () => { try { await FB.del(`users/${r.portalUid}`); await FB.del(`portal/${r.id}`); } catch(e) {} logNote('login', 'logins', `App access removed for reseller ${r.name}`); await put('resellers', {...r, portalUid:'', portalLogin:''}); ownerListen(); toast('Access removed'); }, 'Remove access'); },
   resIn: async () => { const id = $('#r-login').value.trim().toLowerCase().replace(/\s+/g, ''), pin = $('#r-pin').value.trim(); if (!id || !pin) return $('#fb-err').textContent = 'Type your login ID and PIN.'; FB_ERR = ''; OWNER_SIGNING = false;
     const prevRole = APP_ROLE; APP_ROLE = 'reseller'; RES_UNLOCKED = true; PIN_FAILS = 0;
     try { await fbLoad(); fbStart(); await FB.signIn(id.includes('@') ? id : `${id}@${RES_DOMAIN}`, pin); await setCfg({appRole:'reseller'}); await savePinHash(pin); resSkinOn(true); }
@@ -5557,8 +5703,17 @@ const ACT = {
   lockPick: d => { UI.lockUser = d.id; render(true); }, lockNow: () => lockNow(),
   pinKey: d => { const el = $('#lock-pin'); if (!el) return; if (d.k === '⌫') el.value = el.value.slice(0, -1); else if (d.k === 'OK') tryUnlock(); else if (el.value.length < 8) { el.value += d.k; if (el.value.length >= 4) { const u = users().find(x => x.id === (UI.lockUser || users()[0]?.id)); if (u) sha(u.salt + el.value).then(h => { if (h === u.pin) tryUnlock(); }); } } },
   lockRecover: () => modal('Unlock with recovery key', `<label for="f-rk">Recovery key<input id="f-rk" name="key" placeholder="XXXX-XXXX" required style="text-transform:uppercase"></label>`, async d => { if (await sha('rk:' + d.key.trim().toUpperCase()) !== S.settings.recoveryHash) throw Error('That recovery key is not right.'); const o = users().find(u => u.role === 'owner'); SESSION = {id:o.id, name:o.name, role:'owner'}; try { sessionStorage.setItem('if-session', JSON.stringify(SESSION)); } catch(e) {} toast('Unlocked as Admin. Set a new PIN in Settings.'); location.hash = 'setup'; render(true); }, {label:'Unlock'}),
+  syncOn: async () => { if (FB_ROLE !== 'owner') return toast('Sign in to your admin account first.', true); let remote = []; try { remote = await FB.syncAll(); } catch(e) { return toast('Connect to the internet first. ' + fbMsg(e), true); }
+    const n = remote.filter(r => !r.x && r.c !== 'settings').length;
+    if (!n) { if (await syncJoin('merge')) toast('Shared records are on. Now turn them on on your other devices.'); return; }
+    modal('Shared records already exist', `<p>Your shared records already hold <b>${int(n)}</b> entries from another device.</p><p><b>Use the shared records</b> (recommended): this ${DEV_NAME}'s own records are replaced by the shared ones.${DESK && MODE === 'desktop' ? ` A backup of this ${DEV_NAME} is saved first.` : ''}</p><p><b>Combine both</b>: keeps everything from both. Choose this only if this ${DEV_NAME} has real records the others don't, because anything typed on both appears twice.</p><div class="actions">${btn('Use the shared records', 'syncJoinR', {}, 'pri')}${btn('Combine both', 'syncJoinM', {}, 'ghost')}</div>`, null, {nofocus:true}); },
+  syncJoinR: async () => { closeModal(); if (DESK && MODE === 'desktop') { try { await DESK.backup(); } catch(e) {} } if (await syncJoin('replace')) toast(`This ${DEV_NAME} now uses the shared records.`); },
+  syncJoinM: async () => { closeModal(); if (await syncJoin('merge')) toast('Records combined and shared.'); },
+  syncOff: () => confirmBox(`Stop sharing on this ${DEV_NAME}? It keeps its records but stops sending and receiving changes.`, () => { syncStop(); syncCfgSet({on:false}); setStatus('Saved on this ' + DEV_NAME); render(true); }, 'Turn off'),
+  mgrAcc: d => { const u = users().find(x => x.id === d.id); if (u?.loginUid) confirmBox(`Make a new PIN for ${esc(u.name)}? The old login stops working.`, () => mgrAccCreate(d.id), 'New PIN'); else mgrAccCreate(d.id); },
+  mgrOff: d => confirmBox('Turn off this phone login? The manager is signed out and their phone stops getting your records.', () => mgrAccOff(d.id), 'Turn off'),
   userNew: () => userForm(), userEdit: d => userForm(users().find(u => u.id === d.id)),
-  userDel: d => { const u = users().find(x => x.id === d.id); if (!u) return; if (u.role === 'owner' && users().filter(x => x.role === 'owner').length < 2 && users().length > 1) return toast('Remove the other users first, or make someone else Admin.', true); confirmBox(`Remove ${esc(u.name)}?${users().length === 1 ? ' This turns the PIN lock off.' : ''}`, async () => { const list = users().filter(x => x.id !== u.id); await putSettings({users:list, ...(list.length ? {} : {recoveryHash:''})}); if (SESSION?.id === u.id) { SESSION = null; sessionStorage.removeItem('if-session'); } toast('User removed'); }, 'Remove'); },
+  userDel: d => { const u = users().find(x => x.id === d.id); if (!u) return; if (u.loginUid && FB) FB.del(`users/${u.loginUid}`).catch(() => {}); if (u.role === 'owner' && users().filter(x => x.role === 'owner').length < 2 && users().length > 1) return toast('Remove the other users first, or make someone else Admin.', true); confirmBox(`Remove ${esc(u.name)}?${users().length === 1 ? ' This turns the PIN lock off.' : ''}`, async () => { const list = users().filter(x => x.id !== u.id); await putSettings({users:list, ...(list.length ? {} : {recoveryHash:''})}); if (SESSION?.id === u.id) { SESSION = null; sessionStorage.removeItem('if-session'); } toast('User removed'); }, 'Remove'); },
   locNew: () => modal('Add stock location', `<label for="f-ln">Name<input id="f-ln" name="name" required placeholder="e.g. Kitwe depot"></label>`, async d => { await putSettings({locations:[...locs(), {id:uid(), name:d.name.trim()}]}); toast('Location added'); }, {label:'Add'}),
   locEdit: d => { const l = locs().find(x => x.id === d.id); modal('Rename location', `<label for="f-ln">Name<input id="f-ln" name="name" required value="${esc(l.name)}"></label>`, async x => { await putSettings({locations:locs().map(y => y.id === l.id ? {...y, name:x.name.trim()} : y)}); toast('Saved'); }, {label:'Save'}); },
   locPos: d => { putSettings({posLoc:d.id}); toast(`Point of sale now sells from ${locName(d.id)}`); },
@@ -5669,13 +5824,13 @@ document.addEventListener('change', async e => {
   if (t0.id === 'rq-all') { document.querySelectorAll('.rq-sel').forEach(c => c.checked = t0.checked); return; }
   if (t0.id === 'f-locks') { await setCfg({lockSecs:num(t0.value)}); toast('Saved'); return; }
   if (t0.id === 'f-bio') { if (t0.checked) { const ok = await DESK.bioAuth('Confirm your fingerprint'); if (!ok) { t0.checked = false; return toast('Fingerprint not confirmed', true); } } await setCfg({bio:t0.checked}); toast(t0.checked ? 'Fingerprint unlock is on' : 'Fingerprint unlock is off'); return; }
-  if (t0.id === 'f-alerts') { await setCfg({alerts:t0.checked}); if (t0.checked) alertsSetupFor(FB_ROLE === 'owner' ? 'owner' : 'reseller'); else DESK.alertsStop && DESK.alertsStop(); toast('Saved'); return; }
+  if (t0.id === 'f-alerts') { await setCfg({alerts:t0.checked}); if (t0.checked) alertsSetupFor(ADM() ? 'owner' : 'reseller'); else DESK.alertsStop && DESK.alertsStop(); toast('Saved'); return; }
   if (t0.id === 'f-autor' || t0.id === 'f-autor2') { await putSettings({autoRemind:t0.checked}); toast('Saved'); return; }
   if (t0.id === 'f-admk') { await putSettings({adMarkup:Math.max(0, Math.min(100, num(t0.value)))}); toast('Saved. Resellers see the new limit after the next update.'); return; }
   if (t0.classList?.contains('ad-pick')) { adRead(); const a = adState(), id = t0.dataset.id; if (t0.checked) { if (a.items.length >= 4) { t0.checked = false; return toast('Up to 4 perfumes per poster.', true); } a.items.push({id, price:adBase(id).base}); } else a.items = a.items.filter(x => x.id !== id); render(true); return; }
   if (t0.closest?.('#ad-form')) { adRedraw(); return; }
-  if (t0.classList?.contains('fest-tick')) { const off = new Set(S.settings.festOff || []); t0.checked ? off.delete(t0.dataset.k) : off.add(t0.dataset.k); await putSettings({festOff:[...off]}); render(true); if (FB_ROLE === 'owner') publishAll(); return; }
-  if (t0.id === 'f-festicon') { await putSettings({festIcon:t0.checked}); if (FB_ROLE === 'owner') publishAll(); toast('Saved'); return; }
+  if (t0.classList?.contains('fest-tick')) { const off = new Set(S.settings.festOff || []); t0.checked ? off.delete(t0.dataset.k) : off.add(t0.dataset.k); await putSettings({festOff:[...off]}); render(true); if (ADM()) publishAll(); return; }
+  if (t0.id === 'f-festicon') { await putSettings({festIcon:t0.checked}); if (ADM()) publishAll(); toast('Saved'); return; }
   if (t0.id === 'f-autoupd') { await setCfg({autoUpd:t0.checked}); toast('Saved'); return; }
   if (t0.id === 'lk-mode') { setLook({mode:t0.value}); return; }
   if (t0.id === 'lk-text') { setLook({text:t0.value}); return; }
@@ -5709,7 +5864,7 @@ document.addEventListener('change', async e => {
   if (t.id === 'f-lockm') putSettings({lockMinutes:Math.max(0, Math.round(num(t.value)))});
   if (t.id === 'f-rpaper') { putSettings({receiptPaper:t.value}); toast('Receipt paper saved'); }
   if (t.id === 'bc-aud') { UI.bc.aud = t.value; UI.bc.msg = BC_TPL[t.value]; render(true); }
-  if (t.id === 'f-fest') { putSettings({festive:t.value}).then(() => { render(true); publishAll && FB_ROLE === 'owner' && publishAll(); }); toast(t.value === 'off' ? 'Holiday themes turned off' : 'Holiday themes on'); }
+  if (t.id === 'f-fest') { putSettings({festive:t.value}).then(() => { render(true); publishAll && ADM() && publishAll(); }); toast(t.value === 'off' ? 'Holiday themes turned off' : 'Holiday themes on'); }
   if (t.id === 'scan-file' && t.files[0]) onScanFile(t.files[0]);
 });
 document.addEventListener('input', e => {

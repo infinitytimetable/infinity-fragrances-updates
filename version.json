@@ -1,19 +1,19 @@
 {
- "version": "2.9.1",
+ "version": "2.9.2",
  "date": "2026-11-16",
  "notes": [
-  "Small fix: the old online-hub note is hidden once shared records are on."
+  "The activity log now records online actions too: online orders, request approvals and declines, stock counts, applications and logins, with who did them."
  ],
  "android": {
-  "file": "android-2.9.1.html",
-  "sig": "//xaSZxteZi81AdWftVo3gfR99nNaRFzd1qFqHPSdsU1MBRLrSCbdEIYZF4o3mMG7wMvqZzZrk3yeCzZv/54cg==",
-  "size": 1851861,
+  "file": "android-2.9.2.html",
+  "sig": "oor4GkR4MlVK3OqBoCOO7qqVhcEbbLEWAb9KBKSjgVe+FNjurDRIJWXSBEVyodohLghbWoRsVnLol5/g038OqA==",
+  "size": 1854880,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.9.1.html",
-  "sig": "QYUHRdUZ6HV/lke10fCydVIZGwccez36/c8qf0A9rdVYvVLAgBONboDqzWYRNFTJOMi1+h1WFbpMW+vB4c3mHg==",
-  "size": 1848128,
+  "file": "desktop-2.9.2.html",
+  "sig": "GnvGq8bTmV9EdEZK+8RooPqPk7W25ut26HBUW8LDjMefqYKDKyr5mRjT1UURREBbmWk0ibwtdHavnvA7A9NV4A==",
+  "size": 1851147,
   "minShell": "2.5.0"
  },
  "apk": {

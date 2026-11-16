@@ -861,14 +861,14 @@ async function mgrAccCreate(id){
   try {
     const fuid = await FB.createUser(`${login}@${RES_DOMAIN}`, pin), ops = [['set', `users/${fuid}`, {role:'manager', staffId:u.id, name:u.name, login, createdAt:FB.now()}]];
     if (u.loginUid) ops.push(['del', `users/${u.loginUid}`]);
-    await FB.batch(ops); await putSettings({users:users().map(x => x.id === id ? {...x, loginUid:fuid, login} : x)});
+    await FB.batch(ops); logNote('login', 'logins', `Phone login ${u.loginUid ? 'PIN reset' : 'created'} for manager ${u.name} (${login})`); await putSettings({users:users().map(x => x.id === id ? {...x, loginUid:fuid, login} : x)});
     const msg = `Hello ${u.name.split(' ')[0]}! Your ${bizName()} manager login is ready.\n\n1. Install the Infinity Fragrances app.\n2. Open it and sign in under "Team login".\n3. Login ID: ${login}\n   PIN: ${pin}\n\nYou can change the PIN in Settings after signing in.`;
     modal(`${esc(u.name)}: phone login created`, `<p>Send these details to ${esc(u.name)}. The PIN is shown only now.</p><div style="font-size:20px;padding:14px;border:2px dashed var(--gold);border-radius:12px;line-height:1.7">Login ID: <b>${login}</b><br>PIN: <b>${pin}</b></div><div class="actions" style="margin-top:12px"><a class="btn pri" href="https://wa.me/?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">Send on WhatsApp</a>${btn('Copy', 'copyText', {text:msg}, '')}</div>`, null, {nofocus:true});
   } catch(e) { toast(fbMsg(e), true); }
 }
 async function mgrAccOff(id){
   const u = users().find(x => x.id === id); if (!u || !u.loginUid) return;
-  try { await FB.del(`users/${u.loginUid}`); } catch(e) { return toast(fbMsg(e), true); }
+  try { await FB.del(`users/${u.loginUid}`); } catch(e) { return toast(fbMsg(e), true); } logNote('login', 'logins', `Phone login turned off for manager ${u.name}`);
   await putSettings({users:users().map(x => x.id === id ? (({loginUid, login, ...r}) => r)(x) : x)}); toast(`${u.name}'s phone login is turned off`); render(true);
 }
 async function mgrStart(){
@@ -1929,8 +1929,9 @@ function fixNumbers(o){
 }
 
 /* ======================= Version 2.0 ======================= */
-const APP_VERSION = '2.9.1';
+const APP_VERSION = '2.9.2';
 const CHANGELOG = [
+  ['2.9.2', '16 Nov 2026', ['Activity log now also records online actions with who did them: online orders confirmed, sent, delivered or cancelled; reseller and shop requests approved or declined; stock counts; applications; app logins']],
   ['2.9.1', '16 Nov 2026', ['The "changes not yet sent to the online hub" note is hidden once shared records are on']],
   ['2.9.0', '16 Nov 2026', ['Shared records: your admin phone, computer and iPhone, and your managers\' phones, keep one set of records in step, offline first', 'Managers can have their own phone login (Settings → Users & PINs)', 'Shop sales, cash-ups and parcels are booked once even when several admin devices are online', 'Sign-in tab renamed Team login for resellers, shopkeepers and managers']],
   ['2.8.0', '16 Nov 2026', ['One-tap app updates on Android', 'Holiday themes recolour the whole app, icons, receipts, posters and the online shop, automatically by date', 'Review orders: tick what is available, change quantities, export with bottle photos, approve and dispatch', 'Close the day: cash-ups for shops and the till', 'Stock-take with the scanner, for the store and the shops', 'Shop and reseller sales work offline and send later', 'Reseller credit limits', 'Customer loyalty points, birthdays and anniversaries', 'Online orders: delivery fees by area and On the way tracking', 'Monthly business report', 'Menus reorganised']],
@@ -2017,7 +2018,12 @@ function userForm(u = {}){
 
 /* ---------- activity log ---------- */
 const LOG_SKIP = new Set(['logs']);
-const COL_LABEL = {towns:'Town', resellers:'Reseller', products:'Product', moves:'Stock / sale', cash:'Cash book', dispatches:'Dispatch note', images:'Photo', receipts:'Receipt', promos:'Promotion', customers:'Customer', invoices:'Invoice / quote', suppliers:'Supplier', payslips:'Payslip', cashups:'Cash-up', settings:'Settings'};
+function logNote(action, col, summary){
+  const e = {id:uid(), at:nowISO(), user:SESSION?.name || (lockOn() ? 'Unknown' : (S.settings.ownerName || 'Admin')), action, col, docId:'', summary};
+  S.logs[e.id] = e; syncPush('logs', e);
+  if (DB) { const {id, ...b} = e; DB.collection('logs').doc(id).set(b).catch(() => {}); } else saveLocal();
+}
+const COL_LABEL = {orders:'Online order', requests:'Reseller / shop request', logins:'Login', applications:'Application', towns:'Town', resellers:'Reseller', products:'Product', moves:'Stock / sale', cash:'Cash book', dispatches:'Dispatch note', images:'Photo', receipts:'Receipt', promos:'Promotion', customers:'Customer', invoices:'Invoice / quote', suppliers:'Supplier', payslips:'Payslip', cashups:'Cash-up', settings:'Settings'};
 const MOVE_LABEL = {purchase:'Received', issue:'Dispatched', return:'Returned', adjust:'Adjusted', sale:'Sale', transfer:'Transfer'};
 function docSummary(col, d){
   if (!d) return '';
@@ -2041,7 +2047,7 @@ PAGES.activity = () => {
   let list = Object.values(S.logs).filter(e => e.at?.startsWith(m)).sort((a, b) => b.at.localeCompare(a.at));
   const us = [...new Set(Object.values(S.logs).map(e => e.user))].sort();
   if (f.user) list = list.filter(e => e.user === f.user); if (f.col) list = list.filter(e => e.col === f.col);
-  const AC = {add:['Added', 'good'], edit:['Changed', 'warn'], delete:['Deleted', 'bad'], settings:['Settings', '']};
+  const AC = {add:['Added', 'good'], edit:['Changed', 'warn'], delete:['Deleted', 'bad'], settings:['Settings', ''], approve:['Approved', 'good'], decline:['Declined', 'bad'], cancel:['Cancelled', 'bad'], confirm:['Confirmed', 'good'], ship:['Sent out', ''], done:['Delivered', 'good'], login:['Login', '']};
   return head('Activity log', 'Every record added, changed or deleted, with who did it and when. Use it to trace mistakes or missing money.')
     + `<div class="filters">${monthFilter()}<select data-act-change="logUser" id="log-user" style="padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)"><option value="">Everyone</option>${us.map(u => `<option ${f.user === u ? 'selected' : ''}>${esc(u)}</option>`).join('')}</select>
       <select id="log-col" style="padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)"><option value="">All records</option>${Object.entries(COL_LABEL).map(([k, v]) => `<option value="${k}" ${f.col === k ? 'selected' : ''}>${v}</option>`).join('')}</select></div>`
@@ -2579,7 +2585,7 @@ async function reqApprove(rid, id, bulk){
     } else if (q.type === 'customer') {
       if (!Object.values(S.customers).some(c => custKey(c.name) === custKey(q.name))) await put('customers', {name:String(q.name || '').trim(), phone:q.phone || '', town:q.town || tName(r.townId), notes:'Added by ' + r.name});
     }
-    await FB.update(`portal/${rid}/requests/${id}`, {status:'approved', decidedAt:FB.now()});
+    await FB.update(`portal/${rid}/requests/${id}`, {status:'approved', decidedAt:FB.now()}); logNote('approve', 'requests', `${r.name}: ${REQ_TYPES[q.type] || 'request'}`);
     await publishOne(rid); fbNotify(r.portalUid, `Your ${(REQ_TYPES[q.type] || 'request').toLowerCase()} was approved.`);
     if (bulk) return true;
     toast(q.type === 'order' ? `Order approved. Now send the parcel from Dispatch.` : `${REQ_TYPES[q.type]} approved`);
@@ -2587,13 +2593,13 @@ async function reqApprove(rid, id, bulk){
   } catch(e) { if (bulk) throw e; toast(fbMsg(e), true); }
 }
 function reqReject(rid, id){
-  modal('Reject request', `<label for="f-rr">Reason (the reseller will see this)<input id="f-rr" name="why" required placeholder="e.g. Payment not received on MoMo"></label>`, async d => { await FB.update(`portal/${rid}/requests/${id}`, {status:'rejected', reason:d.why.trim(), decidedAt:FB.now()}); fbNotify(S.resellers[rid]?.portalUid, `A request was not approved: ${d.why.trim()}`); toast('Rejected'); }, {label:'Reject'});
+  modal('Reject request', `<label for="f-rr">Reason (the reseller will see this)<input id="f-rr" name="why" required placeholder="e.g. Payment not received on MoMo"></label>`, async d => { await FB.update(`portal/${rid}/requests/${id}`, {status:'rejected', reason:d.why.trim(), decidedAt:FB.now()}); logNote('decline', 'requests', `${rName(rid)}: request declined (${d.why.trim()})`); fbNotify(S.resellers[rid]?.portalUid, `A request was not approved: ${d.why.trim()}`); toast('Rejected'); }, {label:'Reject'});
 }
 async function accCreate(rid, reset){
   const r = S.resellers[rid]; const base = String(r.name.split(' ')[0]).toLowerCase().replace(/[^a-z]/g, '') || 'reseller';
   const login = base + String(1000 + Math.floor(Math.random() * 9000)), pin = String(100000 + Math.floor(Math.random() * 900000));
   try {
-    const uid = await FB.createUser(`${login}@${RES_DOMAIN}`, pin);
+    const uid = await FB.createUser(`${login}@${RES_DOMAIN}`, pin); logNote('login', 'logins', `${reset ? 'New PIN' : 'App login created'} for reseller ${r.name} (${login})`);
     const ops = [['set', `users/${uid}`, {role:'reseller', resellerId:rid, name:r.name, login, createdAt:FB.now()}]];
     if (reset && r.portalUid) ops.push(['del', `users/${r.portalUid}`]);
     await FB.batch(ops); await put('resellers', {...r, portalUid:uid, portalLogin:login}); await publishOne(rid); ownerListen();
@@ -2997,7 +3003,7 @@ function appApprove(id){
   async d => {
     let townId = d.townId; if (!townId) { const t = await put('towns', {name:String(a.town || 'Unknown').trim()}); townId = t.id; }
     const r = await put('resellers', {name:d.name.trim(), phone:d.phone.trim(), townId, recruiterId:d.recruiterId || '', commType:S.settings.defaultCommType || 'tiered', commValue:num(S.settings.defaultCommValue ?? 10), joinDate:today(), status:'active', notes:'Applied in the app' + (a.message ? ': ' + a.message : '')});
-    await FB.update('applications/' + id, {status:'approved', resellerId:r.id, decidedAt:nowISO()});
+    await FB.update('applications/' + id, {status:'approved', resellerId:r.id, decidedAt:nowISO()}); logNote('approve', 'applications', `Reseller application from ${r.name}`);
     setTimeout(() => accCreate(r.id, false), 200);
   }, {label:'Approve and make login'});
 }
@@ -3450,7 +3456,7 @@ async function shopAccCreate(sid, reset){
   const l = shopOf(sid); if (!l) return; if (!l.keeper) return toast('Add the shopkeeper’s name first (Edit).', true);
   const base = String(l.keeper.split(' ')[0]).toLowerCase().replace(/[^a-z]/g, '') || 'shop', login = base + String(1000 + Math.floor(Math.random() * 9000)), pin = String(100000 + Math.floor(Math.random() * 900000));
   try {
-    const u = await FB.createUser(`${login}@${RES_DOMAIN}`, pin), ops = [['set', `users/${u}`, {role:'shop', shopId:sid, name:l.keeper, login, createdAt:FB.now()}]];
+    const u = await FB.createUser(`${login}@${RES_DOMAIN}`, pin); logNote('login', 'logins', `App login for shop ${l.name} (${login})`); const ops = [['set', `users/${u}`, {role:'shop', shopId:sid, name:l.keeper, login, createdAt:FB.now()}]];
     if (reset && l.keeperUid) ops.push(['del', `users/${l.keeperUid}`]);
     await FB.batch(ops); await saveLoc({...l, keeperUid:u, keeperLogin:login}); await publishShop(sid); ownerListen();
     const msg = `Hello ${l.keeper.split(' ')[0]}! Your ${bizName()} shop login for ${l.name} is ready.\n\n1. Install the Infinity Fragrances app.\n2. Open it and choose "Reseller / shop".\n3. Login ID: ${login}\n   PIN: ${pin}\n\nIn the app you sell, send receipts to customers, see your shop's stock and ask for more stock. Change your PIN in the app.`;
@@ -3587,7 +3593,7 @@ function ordDone(id){
     for (const l of rc.lines) { const mv = await put('moves', {kind:'sale', date:rc.date, loc:d.loc, productId:l.productId, qty:l.qty, unitPrice:l.price, unitCost:num(S.products[l.productId]?.costPrice), customer:o.name, pay:d.pay, note:`Online order ${o.no}`}); rc.moveIds.push(mv.id); }
     const c = await put('cash', {kind:'in', date:rc.date, channel:d.pay, amount:num(d.amount), category:'Online sale', shop:rc.shop, customer:o.name, description:`Online order ${o.no} · receipt ${rc.no}`, receiptId:rc.id}); rc.cashId = c.id;
     try { rc.points = await addPoints(o.name, o.phone, num(d.amount) - fee, rc.no); } catch(e) {}
-    await put('receipts', rc); await FB.update('orders/' + o.id, {status:'done', receiptNo:rc.no, doneAt:nowISO()}); publishStore(); if (rc.shop) publishShop(rc.shop);
+    await put('receipts', rc); await FB.update('orders/' + o.id, {status:'done', receiptNo:rc.no, doneAt:nowISO()}); logNote('done', 'orders', `Online order ${o.no || ''} from ${o.name} delivered and booked as receipt ${rc.no} (${money(rc.total)})`); publishStore(); if (rc.shop) publishShop(rc.shop);
     setTimeout(() => { const p = rcptPublic(rc); rcptModal(p, {phone:o.phone, onToken:t => put('receipts', {...S.receipts[rc.id], token:t})}); }, 200);
   }, {label:'Book the sale'});
 }
@@ -3730,6 +3736,7 @@ async function orvApprove(){
   if (!lines.length) return toast('Nothing is approved. Tick at least one perfume, or decline the order.', true);
   const path = r.kind === 'shop' ? `shops/${r.owner}/requests/${r.id}` : `portal/${r.owner}/requests/${r.id}`;
   try { await FB.update(path, {status:'approved', approvedLines:lines, unavailable:missing, decidedAt:FB.now()}); } catch(e) { return toast(fbMsg(e), true); }
+  logNote('approve', 'requests', `Stock order from ${orvParty()}: ${lines.map(l => l.qty + ' × ' + l.name).join(', ')}${missing.length ? ` (not available: ${missing.join(', ')})` : ''}`);
   const who = r.kind === 'shop' ? shopOf(r.owner)?.keeperUid : S.resellers[r.owner]?.portalUid;
   fbNotify(who, `Your order was approved: ${lines.reduce((t, l) => t + l.qty, 0)} bottles${missing.length ? `. Not available: ${missing.join(', ')}` : ''}.`);
   if (r.kind === 'res') publishOne(r.owner);
@@ -3791,7 +3798,7 @@ async function stkSave(){
 async function applyShopCount(sid, q){
   const C = compute(), st = C.storeLoc[sid] || {}, ch = (q.lines || []).map(l => ({pid:l.productId, d:num(l.counted) - Math.max(0, st[l.productId] || 0)})).filter(x => x.d);
   for (const x of ch) await put('moves', {kind:'adjust', date:today(), productId:x.pid, qty:x.d, loc:sid, note:`Stock-take by ${q.byName || 'shopkeeper'} ${fmtDate(String(q.date || today()))}`});
-  await FB.update(`shops/${sid}/counts/${q.id}`, {status:'applied', appliedAt:FB.now()}); publishShop(sid); toast(`${shopOf(sid)?.name}: stock corrected (${ch.length} change${ch.length === 1 ? '' : 's'})`);
+  await FB.update(`shops/${sid}/counts/${q.id}`, {status:'applied', appliedAt:FB.now()}); logNote('approve', 'requests', `${shopOf(sid)?.name || 'Shop'}: stock count accepted (${ch.length} correction${ch.length === 1 ? '' : 's'})`); publishShop(sid); toast(`${shopOf(sid)?.name}: stock corrected (${ch.length} change${ch.length === 1 ? '' : 's'})`);
 }
 
 /* ---------- reseller credit limits ---------- */
@@ -5607,9 +5614,9 @@ const ACT = {
     let ok = 0, orders = 0; const bad = []; for (const x of sel) { const q = (OWN.reqs[x.rid] || []).find(y => y.id === x.id); try { await reqApprove(x.rid, x.id, true); ok++; if (q?.type === 'order') orders++; } catch(e) { bad.push(`${rName(x.rid)}: ${fbMsg(e)}`); } }
     if (bad.length) modal('Some requests were not approved', `<p>${ok} approved.</p><ul class="small">${bad.map(b => `<li>${esc(b)}</li>`).join('')}</ul>`, null, {nofocus:true}); else toast(`${ok} approved${orders ? `. ${orders} order${orders === 1 ? '' : 's'}: send the parcels from Dispatch.` : ''}`); },
   reqNoSel: () => { const sel = [...document.querySelectorAll('.rq-sel:checked')].map(c => ({rid:c.dataset.rid, id:c.dataset.id})); if (!sel.length) return toast('Tick the requests first.', true);
-    modal(`Reject ${sel.length} request${sel.length === 1 ? '' : 's'}`, `<label for="f-rr">Reason (the resellers will see this)<input id="f-rr" name="why" required></label>`, async d => { for (const x of sel) { await FB.update(`portal/${x.rid}/requests/${x.id}`, {status:'rejected', reason:d.why.trim(), decidedAt:FB.now()}); fbNotify(S.resellers[x.rid]?.portalUid, `A request was not approved: ${d.why.trim()}`); } toast('Rejected'); }, {label:'Reject'}); },
+    modal(`Reject ${sel.length} request${sel.length === 1 ? '' : 's'}`, `<label for="f-rr">Reason (the resellers will see this)<input id="f-rr" name="why" required></label>`, async d => { for (const x of sel) { await FB.update(`portal/${x.rid}/requests/${x.id}`, {status:'rejected', reason:d.why.trim(), decidedAt:FB.now()}); logNote('decline', 'requests', `${rName(x.rid)}: ${REQ_TYPES[x.type] || 'request'} declined (${d.why.trim()})`); fbNotify(S.resellers[x.rid]?.portalUid, `A request was not approved: ${d.why.trim()}`); } toast('Rejected'); }, {label:'Reject'}); },
   remind: () => remindModal(), cloudNow: () => cloudBackup(true), cloudList: () => cloudList(), cloudRestore: d => cloudRestore(d.id),
-  appOk: d => appApprove(d.id), appNo: d => confirmBox('Decline this application?', async () => { try { await FB.update('applications/' + d.id, {status:'declined', decidedAt:nowISO()}); toast('Declined'); } catch(e) { toast(fbMsg(e), true); } }, 'Decline'),
+  appOk: d => appApprove(d.id), appNo: d => confirmBox('Decline this application?', async () => { try { const a = (OWN.apps || []).find(x => x.id === d.id) || {}; await FB.update('applications/' + d.id, {status:'declined', decidedAt:nowISO()}); logNote('decline', 'applications', `Reseller application from ${a.name || ''}`); toast('Declined'); } catch(e) { toast(fbMsg(e), true); } }, 'Decline'),
   copyRules: async () => { try { await navigator.clipboard.writeText(FS_RULES); toast('Rules copied. Paste them in Firebase → Firestore Database → Rules, then Publish.'); } catch(e) { toast('Select the text and copy it.', true); } },
   adSave: async () => { const c = await adCanvas(); if (!c) return; const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.92)); await saveFile(`poster-${today()}.jpg`, blob); },
   adPrint: async () => { const c = await adCanvas(); if (!c) return; const h = `<html><body style="margin:0"><img src="${c.toDataURL('image/jpeg', 0.92)}" style="width:100%"></body></html>`; if (DESK && DESK.printHTML) DESK.printHTML(h); else { const w = window.open(''); if (w) { w.document.write(h); w.document.close(); setTimeout(() => w.print(), 400); } } },
@@ -5623,7 +5630,7 @@ const ACT = {
   drawer: () => openDrawer(),
   reqReview: d => reviewOrder('res', d.rid, d.id), shopReview: d => reviewOrder('shop', d.sid, d.id),
   orvExp: d => orvExport(d.fmt), orvOk: () => orvApprove(),
-  orvNo: () => { const r = ORV; modal('Decline the order', `<label for="f-orn">Reason (they will see it)<input id="f-orn" name="why" required></label>`, async x => { await FB.update(r.kind === 'shop' ? `shops/${r.owner}/requests/${r.id}` : `portal/${r.owner}/requests/${r.id}`, {status:'rejected', reason:x.why.trim(), decidedAt:FB.now()}); fbNotify(r.kind === 'shop' ? shopOf(r.owner)?.keeperUid : S.resellers[r.owner]?.portalUid, `Your order was not approved: ${x.why.trim()}`); toast('Declined'); }, {label:'Decline'}); },
+  orvNo: () => { const r = ORV; modal('Decline the order', `<label for="f-orn">Reason (they will see it)<input id="f-orn" name="why" required></label>`, async x => { await FB.update(r.kind === 'shop' ? `shops/${r.owner}/requests/${r.id}` : `portal/${r.owner}/requests/${r.id}`, {status:'rejected', reason:x.why.trim(), decidedAt:FB.now()}); logNote('decline', 'requests', `Stock order from ${orvParty()} declined (${x.why.trim()})`); fbNotify(r.kind === 'shop' ? shopOf(r.owner)?.keeperUid : S.resellers[r.owner]?.portalUid, `Your order was not approved: ${x.why.trim()}`); toast('Declined'); }, {label:'Decline'}); },
   cashup: d => cashupForm(d.loc || 'main'), cashups: d => cashupList(d.id),
   shopClose: () => { const s0 = SHOP.snap, t = today(), mine = SHOP.sales.filter(x => x.date === t), by = {cash:0, momo:0, bank:0}; mine.forEach(r => { if (by[r.pay] != null) by[r.pay] += num(r.total); });
     modal('Close the day', `<p class="hint">Today: ${mine.length} sale${mine.length === 1 ? '' : 's'}. Expected: cash ${money(by.cash)}, mobile money ${money(by.momo)}, bank ${money(by.bank)}.</p><div class="grid2"><label for="f-sc1">Cash counted<input id="f-sc1" name="cash" type="number" step="0.01" required></label><label for="f-sc2">Mobile money received<input id="f-sc2" name="momo" type="number" step="0.01" value="${by.momo}"></label><label for="f-sc3">Bank / card<input id="f-sc3" name="bank" type="number" step="0.01" value="${by.bank}"></label><label for="f-sc4">Paid out from the till<input id="f-sc4" name="exp" type="number" step="0.01" placeholder="0"></label><label for="f-sc5">What for<input id="f-sc5" name="expNote"></label><label for="f-sc6">Note<input id="f-sc6" name="note"></label></div>`,
@@ -5632,10 +5639,10 @@ const ACT = {
   shopCountSend: () => { const av = shopAvail(), lines = av.filter(p => SHOP.count[p.id] != null).map(p => ({productId:p.id, name:p.name, counted:num(SHOP.count[p.id]), expected:p.avail})); if (!lines.length) return toast('Count at least one perfume.', true);
     (FB.addQ || FB.add)(`shops/${FB_ME.shopId}/counts`, {lines, date:today(), byName:FB_ME?.name || '', by:FB_USER.uid, status:'new', at:FB.now()}); fbNotify('owner', `${SHOP.snap?.name || 'A shop'} sent a stock count`); SHOP.counting = false; SHOP.count = {}; toast('Count sent to the admin'); render(true); },
   countOk: async d => { const q = (OWN.shopCounts[d.sid] || []).find(x => x.id === d.id); if (q) { try { await applyShopCount(d.sid, q); } catch(e) { toast(fbMsg(e), true); } } },
-  countNo: async d => { try { await FB.update(`shops/${d.sid}/counts/${d.id}`, {status:'dismissed'}); toast('Dismissed'); } catch(e) { toast(fbMsg(e), true); } },
+  countNo: async d => { try { await FB.update(`shops/${d.sid}/counts/${d.id}`, {status:'dismissed'}); logNote('decline', 'requests', `${shopOf(d.sid)?.name || 'Shop'}: stock count dismissed`); toast('Dismissed'); } catch(e) { toast(fbMsg(e), true); } },
   stkSave: () => stkSave(), stkReset: () => { STK.counts = {}; render(true); },
   posRedeem: () => { POS.redeem = !POS.redeem; POS.renderCart(); },
-  ordShip: async d => { const o = (OWN.orders || []).find(x => x.id === d.id); if (!o) return; try { await FB.update('orders/' + o.id, {status:'shipped', shippedAt:nowISO()}); } catch(e) { return toast(fbMsg(e), true); }
+  ordShip: async d => { const o = (OWN.orders || []).find(x => x.id === d.id); if (!o) return; try { await FB.update('orders/' + o.id, {status:'shipped', shippedAt:nowISO()}); } catch(e) { return toast(fbMsg(e), true); } logNote('ship', 'orders', `Online order ${o.no || ''} from ${o.name} is on the way`);
     const a = document.createElement('a'); a.href = waLink(o.phone, `Hello ${String(o.name).split(' ')[0]}, your ${bizName()} order ${o.no} is on the way! Track it here: ${STORE_URL}#o=${o.id}`); a.target = '_blank'; a.rel = 'noopener'; EXT_T = Date.now(); document.body.appendChild(a); a.click(); a.remove(); toast('Marked on the way'); },
   updApk: () => { if (!UPD.apk || !DESK.installApk) return; const m = $('#apk-msg'); window.__ifApkP = pc => { const e = $('#apk-msg'); if (e) e.textContent = `Downloading… ${pc}%`; }; window.__ifApk = r => { const e = $('#apk-msg'); if (String(r).startsWith('error')) { if (e) e.textContent = String(r).slice(6) || 'Download failed.'; toast('The update could not download. Check your internet and try again.', true); } else if (e) e.textContent = 'Opening the Android update screen…'; };
     if (m) m.textContent = 'Downloading…'; DESK.installApk(UPD_URL + UPD.apk.file, UPD.apk.sha256); },
@@ -5644,8 +5651,8 @@ const ACT = {
   shopNew: () => shopForm(), shopEdit: d => shopForm(shopOf(d.id)), shopAcc: d => shopAccCreate(d.id, !!d.reset),
   shopSales: d => { const l = shopOf(d.id), cut = iso(addDays(new Date(), -30)), list = Object.values(S.receipts).filter(r => (r.shop || (r.seller ? '' : (r.loc || 'main'))) === d.id && r.date >= cut).sort((a, b) => (b.date + (b.time || '')).localeCompare(a.date + (a.time || '')));
     modal(`${l?.name || 'Shop'}: last 30 days`, list.length ? `<p><b>${money(list.reduce((t, r) => t + num(r.total), 0))}</b> from ${list.length} sale${list.length === 1 ? '' : 's'}</p><div class="tw"><table class="t"><thead><tr><th>Receipt</th><th>When</th><th>Customer</th><th class="n">Total</th><th>Paid</th><th></th></tr></thead><tbody>${list.map(r => `<tr><td><b>${esc(r.no)}</b></td><td class="small">${fmtDate(r.date)} ${esc(r.time || '')}</td><td>${esc(r.customer || '')}</td><td class="n">${money(r.total)}</td><td class="small">${esc(PAYL[r.pay] || r.pay)}</td><td>${btn('Receipt', 'rcptView', {id:r.id}, 'sm ghost')}</td></tr>`).join('')}</tbody></table></div>` : '<p class="mut">No sales in the last 30 days.</p>', null, {wide:true, nofocus:true}); },
-  shopReqOk: async d => { const q = (OWN.shopReqs[d.sid] || []).find(x => x.id === d.id); if (!q) return; try { await FB.update(`shops/${d.sid}/requests/${d.id}`, {status:'approved', decidedAt:FB.now()}); } catch(e) { return toast(fbMsg(e), true); } shopDispatchForm(d.sid); toast(`Choose the perfumes to send to ${shopOf(d.sid)?.name}: ${(q.lines || []).map(l => l.qty + ' × ' + l.name).join(', ')}`); },
-  shopReqNo: d => modal('Decline the request', `<label for="f-srr">Reason<input id="f-srr" name="why" required></label>`, async x => { await FB.update(`shops/${d.sid}/requests/${d.id}`, {status:'rejected', reason:x.why.trim(), decidedAt:FB.now()}); toast('Declined'); }, {label:'Decline'}),
+  shopReqOk: async d => { const q = (OWN.shopReqs[d.sid] || []).find(x => x.id === d.id); if (!q) return; try { await FB.update(`shops/${d.sid}/requests/${d.id}`, {status:'approved', decidedAt:FB.now()}); } catch(e) { return toast(fbMsg(e), true); } logNote('approve', 'requests', `${shopOf(d.sid)?.name || 'Shop'}: stock request`); shopDispatchForm(d.sid); toast(`Choose the perfumes to send to ${shopOf(d.sid)?.name}: ${(q.lines || []).map(l => l.qty + ' × ' + l.name).join(', ')}`); },
+  shopReqNo: d => modal('Decline the request', `<label for="f-srr">Reason<input id="f-srr" name="why" required></label>`, async x => { await FB.update(`shops/${d.sid}/requests/${d.id}`, {status:'rejected', reason:x.why.trim(), decidedAt:FB.now()}); logNote('decline', 'requests', `${shopOf(d.sid)?.name || 'Shop'}: stock request declined (${x.why.trim()})`); toast('Declined'); }, {label:'Decline'}),
   shopTab: d => { closeModal(); SHOP.tab = d.k; window.scrollTo(0, 0); render(true); },
   shopPlus: d => { const p = shopAvail().find(x => x.id === d.id); const q = (SHOP.cart[d.id] || 0) + 1; if (p && q > p.avail) return toast(`Only ${p.avail} in the shop.`, true); SHOP.cart[d.id] = q; $('#sq-' + d.id).textContent = q; $('#shop-cart').innerHTML = shopCartBar(); },
   shopMinus: d => { SHOP.cart[d.id] = Math.max(0, (SHOP.cart[d.id] || 0) - 1); $('#sq-' + d.id).textContent = SHOP.cart[d.id]; $('#shop-cart').innerHTML = shopCartBar(); },
@@ -5659,11 +5666,11 @@ const ACT = {
     try { (FB.addQ || FB.add)(`shops/${FB_ME.shopId}/requests`, {type:'order', lines, note:(d.note || '').trim(), status:'pending', by:FB_USER.uid, at:FB.now()}); fbNotify('owner', `${SHOP.snap?.name || 'A shop'} asks for stock`); toast('Request sent'); render(true); } catch(e) { toast(fbMsg(e), true); } },
   storeCopy: async () => { try { await navigator.clipboard.writeText(STORE_URL); toast('Shop link copied. Paste it on WhatsApp or Facebook.'); } catch(e) { prompt('Copy your shop link:', STORE_URL); } },
   storeSet: () => storeSettings(),
-  ordOk: async d => { const o = (OWN.orders || []).find(x => x.id === d.id); if (!o) return; try { await FB.update('orders/' + o.id, {status:'confirmed', confirmedAt:nowISO()}); } catch(e) { return toast(fbMsg(e), true); } const st = S.settings;
+  ordOk: async d => { const o = (OWN.orders || []).find(x => x.id === d.id); if (!o) return; try { await FB.update('orders/' + o.id, {status:'confirmed', confirmedAt:nowISO()}); } catch(e) { return toast(fbMsg(e), true); } logNote('confirm', 'orders', `Online order ${o.no || ''} from ${o.name} (${money(o.total)})`); const st = S.settings;
     const msg = `Hello ${String(o.name).split(' ')[0]}, your ${bizName()} order ${o.no} is confirmed: ${(o.lines || []).map(l => l.qty + ' × ' + l.name).join(', ')}. Total ${money(o.total)}.` + (o.payBy === 'momo' && st.storeMomo ? `\nPlease pay by mobile money to ${st.storeMomo}${st.storeMomoName ? ' (' + st.storeMomoName + ')' : ''} and send the reference.` : '\nYou pay when you receive it.') + (o.method === 'pickup' ? `\nCollect at ${shopOf(o.shopId)?.name || 'our shop'}.` : `\nWe will deliver to ${o.address || o.town || 'you'}.`);
     const a = document.createElement('a'); a.href = waLink(o.phone, msg); a.target = '_blank'; a.rel = 'noopener'; EXT_T = Date.now(); document.body.appendChild(a); a.click(); a.remove(); toast('Order confirmed'); },
   ordDone: d => ordDone(d.id),
-  ordNo: d => confirmBox('Cancel this order?', async () => { try { await FB.update('orders/' + d.id, {status:'cancelled', cancelledAt:nowISO()}); toast('Order cancelled'); } catch(e) { toast(fbMsg(e), true); } }, 'Cancel order'), resDrawer: () => openResDrawer(), resLock: () => { closeModal(); RES_UNLOCKED = false; BIO_TRIED = false; render(true); }, skipInstall: () => { UI.skipInstall = true; render(true); },
+  ordNo: d => confirmBox('Cancel this order?', async () => { try { const o = (OWN.orders || []).find(x => x.id === d.id) || {}; await FB.update('orders/' + d.id, {status:'cancelled', cancelledAt:nowISO()}); logNote('cancel', 'orders', `Online order ${o.no || ''} from ${o.name || 'a customer'} (${money(o.total || 0)})`); toast('Order cancelled'); } catch(e) { toast(fbMsg(e), true); } }, 'Cancel order'), resDrawer: () => openResDrawer(), resLock: () => { closeModal(); RES_UNLOCKED = false; BIO_TRIED = false; render(true); }, skipInstall: () => { UI.skipInstall = true; render(true); },
   updCheck: () => checkUpdate(true), updLater: () => { const b = $('#upd-bar'); if (b) b.remove(); },
   updGo: async () => { try { if (DESK_T) { clearTimeout(DESK_T); DESK_T = 0; await deskSave(); } } catch(e) {} toast('Restarting…'); setTimeout(() => DESK.relaunch(), 400); }, posGo: () => $('#pos-cart')?.scrollIntoView({behavior:'smooth', block:'start'}),
   lookOpen: () => { closeModal(); if (APP_ROLE === 'reseller') { RES.tab = 'account'; render(true); } else location.hash = 'setup'; setTimeout(() => $('#look-card')?.scrollIntoView({behavior:'smooth', block:'start'}), 150); },
@@ -5676,7 +5683,7 @@ const ACT = {
   fbPublish: () => publishAll(false),
   reqOk: d => reqApprove(d.rid, d.id), reqNo: d => reqReject(d.rid, d.id),
   accNew: d => accCreate(d.id, false), accReset: d => confirmBox('Make a new login ID and PIN? The old ones stop working.', () => accCreate(d.id, true), 'Make new login'),
-  accRemove: d => { const r = S.resellers[d.id]; confirmBox(`Remove ${esc(r.name)}'s online access? They will no longer be able to sign in.`, async () => { try { await FB.del(`users/${r.portalUid}`); await FB.del(`portal/${r.id}`); } catch(e) {} await put('resellers', {...r, portalUid:'', portalLogin:''}); ownerListen(); toast('Access removed'); }, 'Remove access'); },
+  accRemove: d => { const r = S.resellers[d.id]; confirmBox(`Remove ${esc(r.name)}'s online access? They will no longer be able to sign in.`, async () => { try { await FB.del(`users/${r.portalUid}`); await FB.del(`portal/${r.id}`); } catch(e) {} logNote('login', 'logins', `App access removed for reseller ${r.name}`); await put('resellers', {...r, portalUid:'', portalLogin:''}); ownerListen(); toast('Access removed'); }, 'Remove access'); },
   resIn: async () => { const id = $('#r-login').value.trim().toLowerCase().replace(/\s+/g, ''), pin = $('#r-pin').value.trim(); if (!id || !pin) return $('#fb-err').textContent = 'Type your login ID and PIN.'; FB_ERR = ''; OWNER_SIGNING = false;
     const prevRole = APP_ROLE; APP_ROLE = 'reseller'; RES_UNLOCKED = true; PIN_FAILS = 0;
     try { await fbLoad(); fbStart(); await FB.signIn(id.includes('@') ? id : `${id}@${RES_DOMAIN}`, pin); await setCfg({appRole:'reseller'}); await savePinHash(pin); resSkinOn(true); }
