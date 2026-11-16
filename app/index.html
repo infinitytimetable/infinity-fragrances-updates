@@ -294,6 +294,7 @@ a[data-badge]:not([data-badge=""])::after{content:attr(data-badge);margin-left:6
 .bottombar,.drawer-sheet{display:none}
 .grid2 > label:not(.chk),.grid3 > label:not(.chk){display:flex;flex-direction:column;gap:4px;font-weight:600}
 .pos-float{display:none}
+@media (max-width:860px){body.nav-on .res-tabs{display:none}body.nav-on .cart-bar{bottom:calc(80px + env(safe-area-inset-bottom))}}
 .install-steps{text-align:left;margin:0 0 6px;padding-left:22px;line-height:1.55}.install-steps li{margin:8px 0}
 .ios-share{display:inline-block;width:16px;height:20px;vertical-align:-4px;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 20' fill='none' stroke='%23007aff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 1v12M4 5l4-4 4 4M3 8H1.5v10.5h13V8H13'/%3E%3C/svg%3E")}
 #upd-bar{position:fixed;left:50%;transform:translateX(-50%);top:calc(12px + env(safe-area-inset-top));z-index:70;display:flex;gap:12px;align-items:center;justify-content:space-between;width:min(560px,calc(100vw - 24px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-left:5px solid var(--gold);border-radius:14px;padding:10px 12px 10px 14px;box-shadow:0 14px 40px -10px rgba(0,0,0,.35)}
@@ -441,7 +442,7 @@ a[data-badge]:not([data-badge=""])::after{content:attr(data-badge);margin-left:6
   --sk-card:rgba(30,30,37,.8);--sk-card2:rgba(22,22,28,.9);--sk-solid:#18181d;--sk-field:rgba(0,0,0,.35);--sk-edge:rgba(255,255,255,.08);--sk-edge2:rgba(0,0,0,.5);--sk-hi:rgba(255,255,255,.07);--sk-shadow:rgba(0,0,0,.75);--sk-deep:#6e5520;
   --sk-grad:linear-gradient(135deg,#f1d590 0%,#d9b465 50%,#9a7530 100%);--sk-title:linear-gradient(90deg,#ffffff,#d9b465);--sk-rail:rgba(18,18,22,.75)}
 </style>
-<script>try{var L=JSON.parse(localStorage.getItem('if-look')||'{}'),R=document.documentElement;R.dataset.skin=L.skin||'classic';if(L.mode&&L.mode!=='auto')R.dataset.theme=L.mode;R.dataset.text=L.text||'normal';if(L.motion===false)R.dataset.motion='off';}catch(e){}</script>
+<script>try{var L=JSON.parse(localStorage.getItem('if-look')||'{}'),R=document.documentElement;var F=localStorage.getItem('if-forceskin');R.dataset.skin=F||L.skin||'classic';if(L.mode&&L.mode!=='auto')R.dataset.theme=L.mode;R.dataset.text=L.text||'normal';if(L.motion===false)R.dataset.motion='off';}catch(e){}</script>
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Infinity"><meta name="theme-color" content="#0b0a08">
 </head>
 <body>
@@ -596,7 +597,7 @@ async function boot(){
     try { DCFG = (await window.IFDesktop.getConfig()) || {}; APP_ROLE = DCFG.appRole || ''; } catch(e) {}
     SESSION = null; try { sessionStorage.removeItem('if-session'); } catch(e) {}
     if (APP_ROLE !== 'reseller') LIC = await licCheck(); setStatus('Saved on this ' + DEV_NAME);
-    if (APP_ROLE) fbStart(); render(true); updSchedule();
+    if (APP_ROLE === 'reseller') resSkinOn(true); if (APP_ROLE) fbStart(); render(true); updSchedule();
     window.addEventListener('beforeunload', () => { if (DESK_T) { clearTimeout(DESK_T); window.IFDesktop.saveSync && window.IFDesktop.saveSync(JSON.stringify({...snapshotData(), savedAt:nowISO()})); } });
     return;
   }
@@ -675,8 +676,8 @@ async function del(col, id){
 }
 async function putSettings(patch){
   const ks = Object.keys(patch).filter(k => !['appliedUpdates', 'mergedOffline', 'users', 'recoveryHash'].includes(k) && JSON.stringify(S.settings[k]) !== JSON.stringify(patch[k]));
-  if (ks.length) { const e = {id:uid(), at:nowISO(), user:SESSION?.name || (lockOn() ? 'Unknown' : (S.settings.ownerName || 'Owner')), action:'settings', col:'settings', docId:'', summary:'Changed ' + ks.join(', ')}; S.logs[e.id] = e; if (DB) { const {id, ...b} = e; DB.collection('logs').doc(id).set(b).catch(() => {}); } }
-  if ('users' in patch && JSON.stringify(S.settings.users) !== JSON.stringify(patch.users)) { const e = {id:uid(), at:nowISO(), user:SESSION?.name || 'Owner', action:'settings', col:'settings', docId:'', summary:'Changed users and PINs'}; S.logs[e.id] = e; if (DB) { const {id, ...b} = e; DB.collection('logs').doc(id).set(b).catch(() => {}); } }
+  if (ks.length) { const e = {id:uid(), at:nowISO(), user:SESSION?.name || (lockOn() ? 'Unknown' : (S.settings.ownerName || 'Admin')), action:'settings', col:'settings', docId:'', summary:'Changed ' + ks.join(', ')}; S.logs[e.id] = e; if (DB) { const {id, ...b} = e; DB.collection('logs').doc(id).set(b).catch(() => {}); } }
+  if ('users' in patch && JSON.stringify(S.settings.users) !== JSON.stringify(patch.users)) { const e = {id:uid(), at:nowISO(), user:SESSION?.name || 'Admin', action:'settings', col:'settings', docId:'', summary:'Changed users and PINs'}; S.logs[e.id] = e; if (DB) { const {id, ...b} = e; DB.collection('logs').doc(id).set(b).catch(() => {}); } }
   S.settings = {...S.settings, ...patch}; schedule();
   if (DB) await DB.doc('settings/main').set(clean(S.settings)); else saveLocal();
 }
@@ -815,7 +816,7 @@ function tabsHTML(r){
 const TOOL_PAGES = new Set(['catalogue','adverts','studio','pos','prospects','reminders']);
 function render(force){
   if (DESK && MODE === 'desktop' && APP_ROLE !== 'reseller') { const g = gateHTML(); if (g) { document.body.classList.remove('res-mode'); navOff(); $('#main').dataset.page = ''; $('#main').innerHTML = g; return; } }
-  if (APP_ROLE === 'reseller') { document.body.classList.add('res-mode'); navOff(); $('#main').dataset.page = ''; $('#main').innerHTML = !FB_USER ? (FB_AUTH_SEEN || FB_ERR || !FB_AUTH_STARTED ? signInScreen() : '<div class="lockwrap"><p class="mut">Opening…</p></div>') : FB_ROLE === 'reseller' ? (RES_UNLOCKED ? resUI() : resUnlockScreen()) : FB_ROLE === null ? '<div class="lockwrap"><p class="mut">Signing in…</p></div>' : `<div class="lockwrap"><div class="lockcard"><p>${(FB.providers?.() || []).includes('google.com') ? 'This Google account is not linked to a reseller login yet. Sign in once with your login ID and PIN, then open Account and tap <b>Link Google account</b>.' : 'This login is not a reseller account.'}</p>${btn('Sign out', 'fbOut', {}, 'pri')}</div></div>`; return; }
+  if (APP_ROLE === 'reseller') { document.body.classList.add('res-mode'); navOff(); $('#main').dataset.page = ''; $('#main').innerHTML = !FB_USER ? (FB_AUTH_SEEN || FB_ERR || !FB_AUTH_STARTED ? signInScreen() : '<div class="lockwrap"><p class="mut">Opening…</p></div>') : FB_ROLE === 'reseller' ? (RES_UNLOCKED ? resUI() : resUnlockScreen()) : FB_ROLE === null ? '<div class="lockwrap"><p class="mut">Signing in…</p></div>' : `<div class="lockwrap"><div class="lockcard"><p>${(FB.providers?.() || []).includes('google.com') ? 'This Google account is not linked to a reseller login yet. Sign in once with your login ID and PIN, then open Account and tap <b>Link Google account</b>.' : 'This login is not a reseller account.'}</p>${btn('Sign out', 'fbOut', {}, 'pri')}</div></div>`; if (document.querySelector('.res-wrap')) resBottomBar(); return; }
   if (lockOn() && !SESSION) { document.body.classList.remove('res-mode'); navOff(); $('#main').innerHTML = lockScreen(); $('#main').dataset.page = ''; setTimeout(() => $('#lock-pin')?.focus(), 30); return; }
   if (DESK && MODE === 'desktop' && (!LIC.ok || (LIC.trial && !UI.licSeen))) { navOff(); $('#main').innerHTML = licScreen(); $('#main').dataset.page = ''; return; }
   if (!allowed(route())) { location.hash = firstAllowed(); return; }
@@ -1723,12 +1724,13 @@ function fixNumbers(o){
 }
 
 /* ======================= Version 2.0 ======================= */
-const APP_VERSION = '2.6.0';
+const APP_VERSION = '2.6.1';
 const CHANGELOG = [
+  ['2.6.1', '16 Nov 2026', ['Reseller app: phone layout with a bottom menu (Home, Sell, Order, Pay, More)', 'Reseller app always uses the Rose Quartz look, including the PIN screen', '"Owner" is now called "Admin" in the app']],
   ['2.6.0', '16 Nov 2026', ['iPhone app: install from Safari with Add to Home Screen; works offline and updates itself', 'Records on iPhone are kept on the phone, with backups shared through the iPhone share sheet']],
   ['2.5.0', '16 Nov 2026', ['Automatic updates: the app downloads new versions by itself and asks you to restart', 'Every update is digitally signed and checked before it installs', 'App updates card in Settings (resellers: Account)']],
   ['2.4.0', '16 Nov 2026', ['Phone layout: bottom menu bar, a More menu with every page, two-column summaries, forms that slide up from the bottom', 'Floating sale bar on the till on phones', 'Eight themes, including 3D themes with gradients (Settings → Look & feel), light/dark choice and larger text', 'PC window remembers its size and position, and can be made as narrow as a phone']],
-  ['2.3.0', '16 Nov 2026', ['One sign-in page for owner and resellers; the owner role needs your owner email and password', 'PIN or fingerprint every time the app opens, and when you come back to it; signs out after 5 wrong PINs', 'Phone notifications for new requests, approvals and parcels, even when the app is closed', 'Settlement reminders by WhatsApp and in the app (automatic 3 days before)', 'Resellers attach a photo of their payment slip', 'Order catalogue with photos, promotion prices and a cart', 'Resellers running low on the dashboard', 'Approve or reject several requests at once', 'Daily online backup to your Firebase account, with restore', 'New resellers can apply in the app', 'Monthly target progress and badges for resellers', 'Resellers make posters and flyers, and may raise prices by a small margin you set', 'Payslips for resellers: make, print, send in the app or on WhatsApp, and mark paid']],
+  ['2.3.0', '16 Nov 2026', ['One sign-in page for owner and resellers; the owner role needs your admin email and password', 'PIN or fingerprint every time the app opens, and when you come back to it; signs out after 5 wrong PINs', 'Phone notifications for new requests, approvals and parcels, even when the app is closed', 'Settlement reminders by WhatsApp and in the app (automatic 3 days before)', 'Resellers attach a photo of their payment slip', 'Order catalogue with photos, promotion prices and a cart', 'Resellers running low on the dashboard', 'Approve or reject several requests at once', 'Daily online backup to your Firebase account, with restore', 'New resellers can apply in the app', 'Monthly target progress and badges for resellers', 'Resellers make posters and flyers, and may raise prices by a small margin you set', 'Payslips for resellers: make, print, send in the app or on WhatsApp, and mark paid']],
   ['2.2.0', '16 Nov 2026', ['Neater sign-in screens with a Show/Hide password button', 'Continue with Google (Android app), after linking Google once', 'Resellers see every parcel sent to them and can confirm when it arrives']],
   ['2.1.0', '16 Nov 2026', ['Online reseller accounts: each reseller signs in with their own login ID and PIN', 'Resellers see their own stock, prices, statement, commission, recruits, leaderboard, promotions and price list', 'Resellers record sales and customers, report payments, order stock and ask to return bottles', 'Everything a reseller sends waits for your approval', 'The Android and PC apps open with a choice: owner or reseller']],
   ['2.0.0', '11 Nov 2026', ['Desktop (PC) version with records saved in a file on your computer', 'Automatic daily backups and back up to a flash drive', 'PIN login with Owner, Manager and Cashier roles', 'Activity log of every change', 'Send changes to and get latest from the online hub', 'Direct printing, including small receipt printers', 'Barcode labels', 'Invoices and quotations', 'Supplier book', 'Monthly business goals', 'Excel workbook export', 'WhatsApp broadcast to resellers and customers', 'Reseller pages', 'Several stock locations', 'Works without internet (desktop)']],
@@ -1747,7 +1749,7 @@ const locName = id => locs().find(l => l.id === (id || 'main'))?.name || 'Main s
 const locSelect = (sel, name = 'loc', label = 'Stock location') => multiLoc() ? `<label for="f-${name}">${label}<select id="f-${name}" name="${name}">${locs().map(l => `<option value="${l.id}" ${(sel || 'main') === l.id ? 'selected' : ''}>${esc(l.name)}</option>`).join('')}</select></label>` : '';
 
 /* ---------- users, PIN and roles ---------- */
-const ROLES = {owner:'Owner', manager:'Manager', cashier:'Cashier'};
+const ROLES = {owner:'Admin', manager:'Manager', cashier:'Cashier'};
 const ROLE_HELP = {owner:'Everything, including settings, users, backups and the activity log.', manager:'Everything except settings, users and the activity log.', cashier:'Point of sale and customers only.'};
 let SESSION = null; try { SESSION = JSON.parse(sessionStorage.getItem('if-session') || 'null'); } catch(e) {}
 const users = () => S.settings.users || [];
@@ -1767,13 +1769,13 @@ function lockScreen(){
     <div class="seg" style="justify-content:center;flex-wrap:wrap;margin-bottom:14px">${us.map((u, i) => `<button type="button" data-act="lockPick" data-id="${u.id}" class="${(UI.lockUser || us[0].id) === u.id ? 'on' : ''}">${esc(u.name)} <span class="small mut">${ROLES[u.role]}</span></button>`).join('')}</div>
     <input id="lock-pin" type="password" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="PIN" style="font-size:28px;text-align:center;letter-spacing:.4em;width:220px;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink)">
     <div class="pinpad">${[1, 2, 3, 4, 5, 6, 7, 8, 9, '⌫', 0, 'OK'].map(k => `<button type="button" data-act="pinKey" data-k="${k}">${k}</button>`).join('')}</div>
-    <p class="m-err" id="lock-err"></p>${DESK && DCFG.bio && bioReady() ? `<div style="margin:6px 0 10px">${btn('Use fingerprint', 'bioUnlock', {}, 'pri')}</div>` : ''}${DESK && MODE === 'desktop' ? `<button type="button" class="link small" data-act="lockEmail">Forgot PIN? Sign in with your owner email</button><br>` : ''}<button type="button" class="link small" data-act="lockRecover">${DESK && MODE === 'desktop' ? 'Or use the recovery key' : 'Forgot PIN? Use the recovery key'}</button>
+    <p class="m-err" id="lock-err"></p>${DESK && DCFG.bio && bioReady() ? `<div style="margin:6px 0 10px">${btn('Use fingerprint', 'bioUnlock', {}, 'pri')}</div>` : ''}${DESK && MODE === 'desktop' ? `<button type="button" class="link small" data-act="lockEmail">Forgot PIN? Sign in with your admin email</button><br>` : ''}<button type="button" class="link small" data-act="lockRecover">${DESK && MODE === 'desktop' ? 'Or use the recovery key' : 'Forgot PIN? Use the recovery key'}</button>
     <p class="small mut" style="margin-top:14px">Version ${APP_VERSION}</p></div></div>`;
 }
 async function tryUnlock(){
   const el = $('#lock-pin'); if (!el) return; const u = users().find(x => x.id === (UI.lockUser || users()[0]?.id)); if (!u) return;
   if (await sha(u.salt + el.value) === u.pin) { PIN_FAILS = 0; SESSION = {id:u.id, name:u.name, role:u.role}; try { sessionStorage.setItem('if-session', JSON.stringify(SESSION)); } catch(e) {} el.value = ''; touchIdle(); if (!allowed(route())) location.hash = firstAllowed(); render(true); toast(`Welcome, ${u.name}`); }
-  else { if (DESK && MODE === 'desktop' && ++PIN_FAILS >= MAX_FAILS) { PIN_FAILS = 0; await setCfg({ownerUid:''}); try { FB && await FB.signOut(); } catch(e) {} UI.signMsg = 'Too many wrong PINs. Sign in with your owner email and password.'; UI.signTab = 'owner'; return render(true); } $('#lock-err').textContent = DESK && MODE === 'desktop' ? `Wrong PIN. ${MAX_FAILS - PIN_FAILS} tries left.` : 'Wrong PIN. Try again.'; el.value = ''; el.focus(); }
+  else { if (DESK && MODE === 'desktop' && ++PIN_FAILS >= MAX_FAILS) { PIN_FAILS = 0; await setCfg({ownerUid:''}); try { FB && await FB.signOut(); } catch(e) {} UI.signMsg = 'Too many wrong PINs. Sign in with your admin email and password.'; UI.signTab = 'owner'; return render(true); } $('#lock-err').textContent = DESK && MODE === 'desktop' ? `Wrong PIN. ${MAX_FAILS - PIN_FAILS} tries left.` : 'Wrong PIN. Try again.'; el.value = ''; el.focus(); }
 }
 function lockNow(){ SESSION = null; try { sessionStorage.removeItem('if-session'); } catch(e) {} closeModal(); render(true); }
 let IDLE_T = 0; function touchIdle(){ IDLE_T = Date.now(); }
@@ -1787,8 +1789,8 @@ function userForm(u = {}){
     ${!isNew ? `<div class="actions">${btn('Remove user', 'userDel', {id:u.id}, 'sm ghost danger')}</div>` : ''}`,
   async d => {
     if (d.pin || isNew) { if (!/^\d{4,8}$/.test(d.pin)) throw Error('The PIN must be 4 to 8 digits.'); if (d.pin !== d.pin2) throw Error('The two PINs do not match.'); }
-    if (!users().length && d.role !== 'owner') throw Error('The first user must be the Owner.');
-    if (!isNew && u.role === 'owner' && d.role !== 'owner' && owners.length < 2) throw Error('There must always be at least one Owner.');
+    if (!users().length && d.role !== 'owner') throw Error('The first user must be the Admin.');
+    if (!isNew && u.role === 'owner' && d.role !== 'owner' && owners.length < 2) throw Error('There must always be at least one Admin.');
     const rec = {...u, id:u.id || uid(), name:d.name.trim(), role:d.role};
     if (d.pin) { rec.salt = uid(); rec.pin = await sha(rec.salt + d.pin); }
     const list = users().filter(x => x.id !== rec.id).concat(rec); let extra = {};
@@ -1797,7 +1799,7 @@ function userForm(u = {}){
     await putSettings({users:list, ...extra});
     if (isNew && !SESSION && rec.role === 'owner') { SESSION = {id:rec.id, name:rec.name, role:rec.role}; try { sessionStorage.setItem('if-session', JSON.stringify(SESSION)); } catch(e) {} }
     toast('User saved');
-    if (key) setTimeout(() => modal('Write down your recovery key', `<p>If every Owner forgets their PIN, this key opens the hub as Owner. Write it down and keep it somewhere safe. It will not be shown again.</p><div style="font-size:32px;font-weight:800;letter-spacing:.12em;text-align:center;padding:16px;border:2px dashed var(--gold);border-radius:12px">${key}</div>`, null, {nofocus:true}), 80);
+    if (key) setTimeout(() => modal('Write down your recovery key', `<p>If every Admin forgets their PIN, this key opens the hub as Admin. Write it down and keep it somewhere safe. It will not be shown again.</p><div style="font-size:32px;font-weight:800;letter-spacing:.12em;text-align:center;padding:16px;border:2px dashed var(--gold);border-radius:12px">${key}</div>`, null, {nofocus:true}), 80);
   }, {label:'Save user'});
 }
 
@@ -1817,7 +1819,7 @@ function docSummary(col, d){
 }
 function logWrite(action, col, before, after){
   if (LOG_SKIP.has(col)) return;
-  const e = {id:uid(), at:nowISO(), user:SESSION?.name || (lockOn() ? 'Unknown' : (S.settings.ownerName || 'Owner')), action, col, docId:(after || before)?.id || '', summary:docSummary(col, after || before)};
+  const e = {id:uid(), at:nowISO(), user:SESSION?.name || (lockOn() ? 'Unknown' : (S.settings.ownerName || 'Admin')), action, col, docId:(after || before)?.id || '', summary:docSummary(col, after || before)};
   if (action === 'edit' && before && after) { const ch = Object.keys({...before, ...after}).filter(k => !['createdAt', 'id'].includes(k) && JSON.stringify(before[k]) !== JSON.stringify(after[k])); if (!ch.length) return; e.fields = ch.slice(0, 8).join(', '); }
   S.logs[e.id] = e;
   if (DB) { const {id, ...b} = e; DB.collection('logs').doc(id).set(b).catch(() => {}); }
@@ -2166,7 +2168,7 @@ function licScreen(){
 function v2SettingsCards(){
   const st = S.settings, us = users();
   return lookCard() + deviceCard() + updCard() + alertsCard() + cloudCard() + `<div class="card"><h2>Users &amp; PINs ${btn('+ Add user', 'userNew', {}, 'sm')}</h2>${us.length ? `<ul class="list">${us.map(u => `<li><span><b>${esc(u.name)}</b> · ${ROLES[u.role]}<div class="small mut">${ROLE_HELP[u.role]}</div></span>${btn('Edit', 'userEdit', {id:u.id}, 'sm ghost')}</li>`).join('')}</ul>
-      <div class="grid2" style="margin-top:10px"><label class="small" for="f-lockm">Lock after this many idle minutes (0 = never)<input id="f-lockm" type="number" min="0" max="240" value="${num(st.lockMinutes ?? 10)}"></label></div>` : '<p class="hint">No PIN lock yet. Add yourself as Owner first, then add your shop assistants as Cashiers. Everyone will then choose their name and enter a PIN to open the hub.</p>'}</div>
+      <div class="grid2" style="margin-top:10px"><label class="small" for="f-lockm">Lock after this many idle minutes (0 = never)<input id="f-lockm" type="number" min="0" max="240" value="${num(st.lockMinutes ?? 10)}"></label></div>` : '<p class="hint">No PIN lock yet. Add yourself as Admin first, then add your shop assistants as Cashiers. Everyone will then choose their name and enter a PIN to open the hub.</p>'}</div>
     <div class="card"><h2>Stock locations ${btn('+ Add location', 'locNew', {}, 'sm')}</h2><ul class="list">${locs().map(l => `<li><span>${esc(l.name)}${l.id === 'main' ? ' <span class="small mut">(main)</span>' : ''}${(st.posLoc || 'main') === l.id && multiLoc() ? ' <span class="pill acc">Point of sale</span>' : ''}</span><span class="actions">${multiLoc() ? btn('Use for POS', 'locPos', {id:l.id}, 'sm ghost') : ''}${btn('Rename', 'locEdit', {id:l.id}, 'sm ghost')}</span></li>`).join('')}</ul><p class="hint">Add a location if you keep stock in more than one place, e.g. a depot on the Copperbelt. Then choose the location when receiving, dispatching or moving stock.</p></div>
     <div class="card"><h2>Printing</h2><label class="small" for="f-rpaper">Receipt printer paper<select id="f-rpaper"><option value="80" ${(st.receiptPaper || '80') === '80' ? 'selected' : ''}>80 mm thermal roll</option><option value="58" ${st.receiptPaper === '58' ? 'selected' : ''}>58 mm thermal roll</option><option value="a4" ${st.receiptPaper === 'a4' ? 'selected' : ''}>A4 paper</option></select></label><p class="hint">Every document has a Print button. Dispatch notes, agreements, invoices and labels print on A4; receipts use the size above.</p></div>
     ${DESK ? `<div class="card"><h2>This ${DEV_NAME}</h2><dl class="kv"><dt>Records file</dt><dd class="small">${esc(UI.deskInfo?.dataFile || '')}</dd><dt>Last saved</dt><dd>${UI.deskInfo?.savedAt ? esc(fmtDateTime(UI.deskInfo.savedAt)) : '—'}</dd><dt>Backups</dt><dd>${int(UI.deskInfo?.backups || 0)} kept (last 30)</dd></dl>
@@ -2295,13 +2297,13 @@ PAGES.portal = () => {
   if (!cfg && !window.__FB_MOCK) return head('Online reseller accounts', 'Give each reseller their own login. They see only their own stock, record sales and payments, order stock and return bottles. Nothing counts until you approve it.') + `<div class="card"><h2>Connect your Firebase project</h2><p class="hint">Paste the <b>firebaseConfig</b> block from Firebase (Project settings → Your apps → Web app).</p><label for="f-fbc">Firebase config<textarea id="f-fbc" rows="8" placeholder="const firebaseConfig = { apiKey: &quot;…&quot;, authDomain: &quot;…&quot;, projectId: &quot;…&quot;, … };"></textarea></label><div class="actions">${btn('Connect', 'fbSaveCfg', {}, 'pri')}</div></div>`;
   if (!FB_AUTH_STARTED) setTimeout(fbStart, 0);
   if (FB_ERR && !FB_USER) return head('Online reseller accounts', '') + `<div class="card"><p class="neg"><b>Could not connect:</b> ${esc(FB_ERR)}</p><p class="hint">${MODE === 'live' ? 'This version may not be allowed to reach Firebase. Use the PC or Android app for online accounts.' : 'Check your internet connection.'}</p><div class="actions">${btn('Try again', 'fbRetry', {}, 'pri')}</div></div>`;
-  if (!FB_USER) return head('Online reseller accounts', 'Sign in with your owner account. The first time, type your email and choose a password (at least 8 characters), then tap Create owner account.') + `<div class="card" style="max-width:520px"><form class="fb-form" onsubmit="return false">
+  if (!FB_USER) return head('Online reseller accounts', 'Sign in with your admin account. The first time, type your email and choose a password (at least 8 characters), then tap Create admin account.') + `<div class="card" style="max-width:520px"><form class="fb-form" onsubmit="return false">
       <label for="f-oe">Email<input id="f-oe" type="email" autocomplete="username" value="${esc(UI.fbEmail ?? S.settings.email ?? '')}"></label>
       <label for="f-op">Password${pwField('f-op', 'current-password')}</label>
       <p class="m-err" id="fb-err">${esc(UI.fbErr || '')}</p>
-      <div class="fb-btns">${btn('Sign in', 'fbOwnerIn', {}, 'pri')}${btn('Create owner account', 'fbOwnerUp')}</div>
+      <div class="fb-btns">${btn('Sign in', 'fbOwnerIn', {}, 'pri')}${btn('Create admin account', 'fbOwnerUp')}</div>
       ${canGoogle() ? `<div class="fb-or"><span>or</span></div>${btn('Continue with Google', 'fbGoogle', {}, 'gbtn')}` : ''}</form></div>`;
-  if (FB_ROLE !== 'owner') return head('Online reseller accounts', '') + `<div class="card"><p>You are signed in as <b>${esc(FB_USER.email || 'a Google account')}</b>, which is not the owner account.</p><div class="actions">${btn('Make this the owner account', 'fbClaim', {}, 'pri')}${btn('Sign out', 'fbOut')}</div><p class="hint">Only works if no owner has been set up yet.</p></div>`;
+  if (FB_ROLE !== 'owner') return head('Online reseller accounts', '') + `<div class="card"><p>You are signed in as <b>${esc(FB_USER.email || 'a Google account')}</b>, which is not the admin account.</p><div class="actions">${btn('Make this the admin account', 'fbClaim', {}, 'pri')}${btn('Sign out', 'fbOut')}</div><p class="hint">Only works if no admin has been set up yet.</p></div>`;
   if (!OWN.autoDone) { OWN.autoDone = true; setTimeout(() => publishAll(true), 500); }
   const rs = sortedRes(true), pend = pendingAll(), last = OWN.published || (() => { try { return localStorage.getItem('if-published') || ''; } catch(e) { return ''; } })();
   return head('Online reseller accounts', `Signed in as ${esc(FB_USER.email)}. Resellers see only their own stock and statement. Their sales, payments, orders and returns wait here for your approval.`, btn('Update resellers now', 'fbPublish', {}, 'pri') + (canGoogle() && !(FB.providers?.() || []).includes('google.com') ? btn('Link Google account', 'fbLinkGoogle', {}, 'ghost') : '') + btn('Sign out', 'fbOut', {}, 'ghost'))
@@ -2480,7 +2482,7 @@ async function appSignOut(msg){
   await setCfg({appRole:'', ownerUid:'', resPinHash:'', resSalt:'', resName:''});
   APP_ROLE = ''; SESSION = null; try { sessionStorage.removeItem('if-session'); } catch(e) {}
   RES_UNLOCKED = false; PIN_FAILS = 0; OWNER_SIGNING = false; UI.signMsg = msg || ''; UI.signTab = ''; UI.applied = false;
-  document.body.classList.remove('res-mode'); closeModal(); render(true);
+  document.body.classList.remove('res-mode'); resSkinOn(false); closeModal(); render(true);
 }
 
 /* ---- the one sign-in page (phone and computer apps) ---- */
@@ -2502,7 +2504,7 @@ function gateHTML(){
 }
 function signInScreen(){
   const tab = UI.signTab || (APP_ROLE === 'owner' ? 'owner' : 'reseller');
-  const note = UI.signMsg ? `<p class="sign-note">${esc(UI.signMsg)}</p>` : (APP_ROLE === 'owner' && !DCFG.ownerUid ? '<p class="sign-note">For your security, confirm once that you are the owner. After that you open the app with your PIN or fingerprint.</p>' : '');
+  const note = UI.signMsg ? `<p class="sign-note">${esc(UI.signMsg)}</p>` : (APP_ROLE === 'owner' && !DCFG.ownerUid ? '<p class="sign-note">For your security, confirm once that you are the admin. After that you open the app with your PIN or fingerprint.</p>' : '');
   let body = '';
   if (tab === 'apply') body = UI.applied ? `<div style="text-align:center"><p style="font-size:40px;margin:6px 0">🎉</p><h2>Application sent</h2><p class="mut">Thank you! ${esc(bizName())} will contact you on WhatsApp. When you are approved you will get a login ID and PIN.</p>${btn('Back to sign in', 'signTab', {k:'reseller'}, 'pri wide')}</div>`
     : `<form class="fb-form" onsubmit="return false" style="text-align:left"><h2 style="margin:0 0 4px">Sell for ${esc(bizName())}</h2><p class="small mut" style="margin:0 0 12px">Fill this in and we will get back to you.</p>
@@ -2511,38 +2513,38 @@ function signInScreen(){
       <label for="ap-m">Anything else (optional)<input id="ap-m" placeholder="e.g. I already sell clothes at the market"></label>
       <p class="m-err" id="fb-err"></p><div class="fb-btns">${btn('Send application', 'applySend', {}, 'pri')}${btn('Back to sign in', 'signTab', {k:'reseller'}, 'ghost')}</div></form>`;
   else if (tab === 'owner') body = `<form class="fb-form" onsubmit="return false" style="text-align:left">
-      <label for="f-oe">Owner email<input id="f-oe" type="email" autocomplete="username" value="${esc(UI.fbEmail ?? S.settings.email ?? '')}"></label>
+      <label for="f-oe">Admin email<input id="f-oe" type="email" autocomplete="username" value="${esc(UI.fbEmail ?? S.settings.email ?? '')}"></label>
       <label for="f-op">Password${pwField('f-op', 'current-password')}</label>
       <p class="m-err" id="fb-err">${esc(FB_ERR && OWNER_SIGNING ? FB_ERR : '')}</p>
       <div class="fb-btns">${btn('Sign in', 'fbOwnerIn', {}, 'pri')}</div>
       ${canGoogle() ? `<div class="fb-or"><span>or</span></div>${btn('Continue with Google', 'fbGoogle', {}, 'gbtn')}` : ''}
-      <p class="small" style="margin-top:12px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><button type="button" class="link" data-act="fbForgot">Forgot password?</button><button type="button" class="link" data-act="fbOwnerUp">First time? Create the owner account</button></p></form>`;
+      <p class="small" style="margin-top:12px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><button type="button" class="link" data-act="fbForgot">Forgot password?</button><button type="button" class="link" data-act="fbOwnerUp">First time? Create the admin account</button></p></form>`;
   else body = `<form class="fb-form" onsubmit="return false" style="text-align:left"><label for="r-login">Login ID<input id="r-login" placeholder="e.g. annie4821" autocapitalize="none" autocomplete="username" value="${esc(UI.rLogin || '')}"></label>
       <label for="r-pin">PIN${pwField('r-pin', 'current-password', 'numeric')}</label>
       <p class="m-err" id="fb-err">${esc(!OWNER_SIGNING && APP_ROLE === 'reseller' ? FB_ERR : '')}</p><div class="fb-btns">${btn('Sign in', 'resIn', {}, 'pri')}</div>
       ${canGoogle() ? `<div class="fb-or"><span>or</span></div>${btn('Continue with Google', 'fbGoogle', {}, 'gbtn')}<p class="small mut" style="margin-top:6px">Google works after you link it once in Account.</p>` : ''}
       <p style="margin-top:14px;text-align:center"><button type="button" class="link" data-act="signTab" data-k="apply">Want to sell for us? Apply here</button></p></form>`;
   return `<div class="lockwrap"><div class="lockcard sign-card"><img src="${LOGO}" alt="" style="width:84px;height:84px"><h1 class="serif" style="margin:10px 0 2px">${tab === 'apply' ? 'Join the team' : 'Sign in'}</h1><p class="mut" style="margin:0 0 14px">${esc(bizName())}</p>${note}
-    ${tab !== 'apply' ? `<div class="seg sign-tabs" role="tablist"><button type="button" role="tab" data-act="signTab" data-k="reseller" class="${tab === 'reseller' ? 'on' : ''}">I'm a reseller</button><button type="button" role="tab" data-act="signTab" data-k="owner" class="${tab === 'owner' ? 'on' : ''}">Owner</button></div>` : ''}
+    ${tab !== 'apply' ? `<div class="seg sign-tabs" role="tablist"><button type="button" role="tab" data-act="signTab" data-k="reseller" class="${tab === 'reseller' ? 'on' : ''}">I'm a reseller</button><button type="button" role="tab" data-act="signTab" data-k="owner" class="${tab === 'owner' ? 'on' : ''}">Admin</button></div>` : ''}
     ${body}<p class="small mut" style="margin-top:16px">Version ${APP_VERSION}</p></div></div>`;
 }
 function pinSetupScreen(){
   return `<div class="lockwrap"><div class="lockcard sign-card"><img src="${LOGO}" alt="" style="width:72px;height:72px"><h1 class="serif" style="margin:10px 0 4px">Create your app PIN</h1><p class="mut" style="margin:0 0 14px">You will enter this PIN (or use your fingerprint) every time you open the app.</p>
-    <form class="fb-form" onsubmit="return false" style="text-align:left"><label for="ps-n">Your name<input id="ps-n" value="${esc(S.settings.ownerName || 'Owner')}"></label>
+    <form class="fb-form" onsubmit="return false" style="text-align:left"><label for="ps-n">Your name<input id="ps-n" value="${esc(S.settings.ownerName || 'Admin')}"></label>
     <label for="ps-p">PIN (4 to 8 digits)${pwField('ps-p', 'new-password', 'numeric')}</label><label for="ps-p2">Repeat PIN<input id="ps-p2" type="password" inputmode="numeric" autocomplete="new-password"></label>
     <p class="m-err" id="fb-err"></p><div class="fb-btns">${btn('Save PIN and open', 'pinSetupSave', {}, 'pri')}</div></form></div></div>`;
 }
 const recoveryKey = () => Array.from(crypto.getRandomValues(new Uint8Array(8))).map(b => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[b % 32]).join('').replace(/(.{4})/, '$1-');
 async function pinSetupSave(){
-  const name = $('#ps-n').value.trim() || 'Owner', a = $('#ps-p').value, b = $('#ps-p2').value, err = $('#fb-err');
+  const name = $('#ps-n').value.trim() || 'Admin', a = $('#ps-p').value, b = $('#ps-p2').value, err = $('#fb-err');
   if (!/^\d{4,8}$/.test(a)) return err.textContent = 'The PIN must be 4 to 8 digits.'; if (a !== b) return err.textContent = 'The two PINs do not match.';
   const rec = {id:uid(), name, role:'owner', salt:uid()}; rec.pin = await sha(rec.salt + a);
   const key = recoveryKey(); await putSettings({users:users().concat(rec), recoveryHash:await sha('rk:' + key)});
   SESSION = {id:rec.id, name, role:'owner'}; render(true);
-  setTimeout(() => modal('Write down your recovery key', `<p>If you forget your PIN you can also sign in again with your owner email and password. This key is a second way back in. Keep it somewhere safe; it will not be shown again.</p><div style="font-size:32px;font-weight:800;letter-spacing:.12em;text-align:center;padding:16px;border:2px dashed var(--gold);border-radius:12px">${key}</div>`, null, {nofocus:true}), 80);
+  setTimeout(() => modal('Write down your recovery key', `<p>If you forget your PIN you can also sign in again with your admin email and password. This key is a second way back in. Keep it somewhere safe; it will not be shown again.</p><div style="font-size:32px;font-weight:800;letter-spacing:.12em;text-align:center;padding:16px;border:2px dashed var(--gold);border-radius:12px">${key}</div>`, null, {nofocus:true}), 80);
 }
 async function ownerVerified(u){
-  OWNER_SIGNING = false; APP_ROLE = 'owner'; await setCfg({appRole:'owner', ownerUid:u.uid}); UI.signMsg = ''; UI.signTab = ''; PIN_FAILS = 0; FB_ERR = '';
+  OWNER_SIGNING = false; APP_ROLE = 'owner'; resSkinOn(false); await setCfg({appRole:'owner', ownerUid:u.uid}); UI.signMsg = ''; UI.signTab = ''; PIN_FAILS = 0; FB_ERR = '';
   document.body.classList.remove('res-mode'); try { LIC = await licCheck(); } catch(e) {}
   const o = users().find(x => x.role === 'owner'); if (o) { SESSION = {id:o.id, name:o.name, role:'owner'}; touchIdle(); }
   ownerListen(); alertsSetupFor('owner'); render(true);
@@ -2553,10 +2555,10 @@ async function ownerAuthCheck(u){
     let ow = null; try { ow = await FB.get('meta/owner'); } catch(e) {}
     if (ow && ow.uid === u.uid) { FB_ROLE = 'owner'; return ownerVerified(u); }
     if (!ow) { try { await FB.batch([['set', 'meta/owner', {uid:u.uid, email:u.email || '', at:FB.now()}], ['set', `users/${u.uid}`, {role:'owner', email:u.email || '', at:FB.now()}]]); FB_ROLE = 'owner'; return ownerVerified(u); } catch(e) { FB_ERR = fbMsg(e); } }
-    OWNER_SIGNING = false; UI.signMsg = 'That account is not the owner account of this business.'; try { await FB.signOut(); } catch(e) {}
+    OWNER_SIGNING = false; UI.signMsg = 'That account is not the admin account of this business.'; try { await FB.signOut(); } catch(e) {}
     return;
   }
-  if (APP_ROLE === 'owner' && DCFG.ownerUid && (!u || u.uid !== DCFG.ownerUid)) { await setCfg({ownerUid:''}); SESSION = null; UI.signMsg = 'You were signed out. Sign in again with your owner email.'; }
+  if (APP_ROLE === 'owner' && DCFG.ownerUid && (!u || u.uid !== DCFG.ownerUid)) { await setCfg({ownerUid:''}); SESSION = null; UI.signMsg = 'You were signed out. Sign in again with your admin email.'; }
 }
 /* reseller quick unlock */
 function resUnlockScreen(){
@@ -2683,7 +2685,7 @@ function lowStockCard(C){
 const lastCloudBk = () => { try { return localStorage.getItem('if-cloudbk') || ''; } catch(e) { return ''; } };
 function cloudBackupDue(){ const l = lastCloudBk(); if (!l) return true; const h = (Date.now() - new Date(l)) / 3600000; return (new Date().getHours() >= 18 && iso(new Date(l)) !== today()) || h > 26; }
 async function cloudBackup(manual){
-  if (FB_ROLE !== 'owner' || CB_BUSY) { if (manual && FB_ROLE !== 'owner') toast('Sign in to your owner account first.', true); return; } CB_BUSY = true;
+  if (FB_ROLE !== 'owner' || CB_BUSY) { if (manual && FB_ROLE !== 'owner') toast('Sign in to your admin account first.', true); return; } CB_BUSY = true;
   try {
     const txt = JSON.stringify({...snapshotData(), savedBy:'Infinity Fragrances Hub ' + APP_VERSION, savedAt:nowISO()}), SZ = 600000, n = Math.max(1, Math.ceil(txt.length / SZ));
     const id = nowISO().replace(/[-:]/g, '').slice(0, 15);
@@ -2698,7 +2700,7 @@ async function cloudBackup(manual){
 }
 setInterval(() => { if (FB_ROLE === 'owner' && cloudBackupDue()) cloudBackup(false); }, 15 * 60000);
 async function cloudList(){
-  if (FB_ROLE !== 'owner') return toast('Sign in to your owner account first (Resellers → Online reseller accounts).', true);
+  if (FB_ROLE !== 'owner') return toast('Sign in to your admin account first (Resellers → Online reseller accounts).', true);
   let list; try { list = (await FB.list('backups')).sort((a, b) => b.id.localeCompare(a.id)); } catch(e) { return toast(fbMsg(e), true); }
   modal('Online backups', list.length ? `<p class="hint">The last 7 are kept. Restoring brings back the records from that day; records with the same ID are replaced.</p><ul class="list">${list.map(b => `<li><span><b>${esc(fmtDateTime(b.at))}</b><div class="small mut">${int(b.records || 0)} records · ${esc(b.device || '')} · version ${esc(b.version || '')}</div></span>${btn('Restore', 'cloudRestore', {id:b.id}, 'sm')}</li>`).join('')}</ul>` : '<p class="mut">No online backups yet.</p>', null, {nofocus:true});
 }
@@ -2709,8 +2711,8 @@ async function cloudRestore(id){
 function cloudCard(){
   if (!fbCfg() && !window.__FB_MOCK) return '';
   const l = lastCloudBk();
-  return `<div class="card"><h2>Online backup</h2><p class="hint">While you are signed in as owner, the app backs up all your records to your own Firebase account once a day (in the evening), and keeps the last 7. If you lose your phone or computer, sign in on the new one and restore.</p>
-    <p>Last online backup: <b>${l ? esc(fmtDateTime(l)) : 'not yet'}</b>${FB_ROLE === 'owner' ? '' : ' <span class="small mut">(sign in as owner to turn this on)</span>'}</p>
+  return `<div class="card"><h2>Online backup</h2><p class="hint">While you are signed in as admin, the app backs up all your records to your own Firebase account once a day (in the evening), and keeps the last 7. If you lose your phone or computer, sign in on the new one and restore.</p>
+    <p>Last online backup: <b>${l ? esc(fmtDateTime(l)) : 'not yet'}</b>${FB_ROLE === 'owner' ? '' : ' <span class="small mut">(sign in as admin to turn this on)</span>'}</p>
     <div class="actions">${btn('Back up online now', 'cloudNow', {}, 'pri')}${btn('Restore from online…', 'cloudList')}</div></div>`;
 }
 function alertsCard(){
@@ -2976,10 +2978,11 @@ const LOOKS = [
   ['obsidian', 'Obsidian', 'Dark graphite and gold', 'radial-gradient(circle at 0% 0%,#26262e,transparent 60%),linear-gradient(160deg,#121216,#08080a)', 'linear-gradient(135deg,#f1d590,#9a7530)']
 ];
 function getLook(){ try { return JSON.parse(localStorage.getItem('if-look') || '{}') || {}; } catch(e) { return {}; } }
-function applyLook(){ const l = getLook(), R = document.documentElement; R.dataset.skin = l.skin || 'classic'; if (l.mode && l.mode !== 'auto') R.dataset.theme = l.mode; else delete R.dataset.theme; R.dataset.text = l.text || 'normal'; if (l.motion === false) R.dataset.motion = 'off'; else delete R.dataset.motion; }
+function applyLook(){ const l = getLook(), R = document.documentElement; let fs = ''; try { fs = localStorage.getItem('if-forceskin') || ''; } catch(e) {} R.dataset.skin = fs || l.skin || 'classic'; if (l.mode && l.mode !== 'auto') R.dataset.theme = l.mode; else delete R.dataset.theme; R.dataset.text = l.text || 'normal'; if (l.motion === false) R.dataset.motion = 'off'; else delete R.dataset.motion; }
 function setLook(p){ const l = {...getLook(), ...p}; try { localStorage.setItem('if-look', JSON.stringify(l)); } catch(e) {} applyLook(); }
 function lookCard(){
   const l = getLook(), cur = l.skin || 'classic';
+  if (APP_ROLE === 'reseller') return `<div class="card" id="look-card"><h2>Look &amp; feel</h2><p class="hint">Your app uses the ${esc(bizName())} Rose Quartz look.</p><div class="grid2"><label class="small" for="lk-text">Text size<select id="lk-text"><option value="normal" ${(l.text || 'normal') === 'normal' ? 'selected' : ''}>Normal</option><option value="large" ${l.text === 'large' ? 'selected' : ''}>Large (easier to read)</option></select></label><label class="small chk" for="lk-motion" style="align-self:end"><input id="lk-motion" type="checkbox" ${l.motion !== false ? 'checked' : ''}> Moving background and 3D effects</label></div></div>`;
   return `<div class="card" id="look-card"><h2>Look &amp; feel</h2><p class="hint">Choose a theme for this ${DESK ? DEV_NAME : 'device'}. It changes colours, depth and buttons only; your records stay the same.</p>
     <div class="look-grid">${LOOKS.map(([k, n, d, bg, b]) => `<button type="button" class="look-opt ${cur === k ? 'on' : ''}" data-act="lookSkin" data-k="${k}" aria-pressed="${cur === k}"><div class="look-sw" style="background:${bg}"><i></i><u style="background:${b}"></u></div><b>${n}</b><span>${d}</span></button>`).join('')}</div>
     <div class="grid2" style="margin-top:12px">${cur === 'classic' ? `<label class="small" for="lk-mode">Light or dark<select id="lk-mode"><option value="auto" ${!l.mode || l.mode === 'auto' ? 'selected' : ''}>Follow my phone / computer</option><option value="light" ${l.mode === 'light' ? 'selected' : ''}>Always light</option><option value="dark" ${l.mode === 'dark' ? 'selected' : ''}>Always dark</option></select></label>` : ''}
@@ -3038,6 +3041,26 @@ function updSchedule(){
   setTimeout(() => { if (auto()) checkUpdate(false); }, 15000);
   setInterval(() => { if (auto()) checkUpdate(false); }, 6 * 3600000);
 }
+
+
+/* ---- reseller phone menu & fixed Rose Quartz look ---- */
+const RES_TABS = [['home', 'My stock'], ['sell', 'Record sale'], ['pay', 'Report payment'], ['parcels', 'Parcels'], ['order', 'Order / return'], ['ads', 'Adverts'], ['statement', 'Statement'], ['slips', 'Payslips'], ['board', 'Leaderboard'], ['promos', 'Prices & promotions'], ['team', 'My recruits'], ['account', 'Account']];
+const RES_ICONS = {sell:'<path d="M6 7h12l-1 13H7z"/><path d="M9 7a3 3 0 0 1 6 0"/>', order:'<circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/><path d="M2.5 3.5h3l2.4 11.5h10.6l2-8H6.7"/>', pay:'<rect x="2.5" y="5.5" width="19" height="13" rx="2.5"/><path d="M2.5 10h19M6.5 15h3"/>'};
+function resBottomBar(){
+  const bb = $('#bottombar'); if (!bb) return; const main = [['home', 'Home', ICONS.home], ['sell', 'Sell', RES_ICONS.sell], ['order', 'Order', RES_ICONS.order], ['pay', 'Pay', RES_ICONS.pay]];
+  bb.innerHTML = main.map(([k, l, ic]) => `<button type="button" data-act="resTab" data-k="${k}" class="${RES.tab === k ? 'on' : ''}" ${RES.tab === k ? 'aria-current="page"' : ''}><svg viewBox="0 0 24 24" aria-hidden="true">${ic}</svg>${l}</button>`).join('')
+    + `<button type="button" data-act="resDrawer" class="${main.some(x => x[0] === RES.tab) ? '' : 'on'}" aria-label="More"><svg viewBox="0 0 24 24" aria-hidden="true">${ICONS.more}</svg>More</button>`;
+  document.body.classList.add('nav-on');
+}
+function openResDrawer(){
+  const s = RES.snap || {}, el = $('#modal'); el.classList.add('drawer-on');
+  el.innerHTML = `<div class="drawer-sheet" role="dialog" aria-modal="true" aria-label="All pages"><div class="drawer-head"><img src="${LOGO}" alt=""><b>${esc(s.business || bizName())}</b><button type="button" class="x" data-act="close" style="margin-left:auto" aria-label="Close">×</button></div>
+    <div class="small mut" style="margin:-2px 4px 6px">${esc(s.name || '')}${s.town ? ' · ' + esc(s.town) : ''}</div>
+    <div class="drawer-links">${RES_TABS.map(([k, l]) => `<a href="javascript:void 0" data-act="resTab" data-k="${k}" class="${RES.tab === k ? 'on' : ''}">${esc(l)}</a>`).join('')}</div>
+    <div class="drawer-foot"><span class="small mut">Version ${APP_VERSION}</span><span class="actions">${btn('Lock', 'resLock', {}, 'sm')}${btn('Sign out', 'appOut', {}, 'sm ghost')}</span></div></div>`;
+  el.hidden = false;
+}
+const resSkinOn = on => { try { on ? localStorage.setItem('if-forceskin', 'rose') : localStorage.removeItem('if-forceskin'); } catch(e) {} applyLook(); };
 
 /* ---------- images, documents & export ---------- */
 const imgOf = pid => S.images[pid]?.data || '';
@@ -4720,16 +4743,16 @@ const ACT = {
   roleReset: async () => { await DESK.setConfig({appRole:''}); APP_ROLE = ''; document.body.classList.remove('res-mode'); render(true); },
   fbSaveCfg: async () => { const t = $('#f-fbc').value, o = {}; for (const k of ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId']) { const m = t.match(new RegExp(k + '\\s*:\\s*["\']([^"\']+)["\']')); if (m) o[k] = m[1]; } if (!o.apiKey || !o.projectId) return toast('That does not look like a Firebase config. Copy the whole firebaseConfig block.', true); await putSettings({firebase:o}); toast('Firebase connected'); render(true); },
   pwToggle: d => { const i = $('#' + d.id), b = document.querySelector(`[data-act=pwToggle][data-id="${d.id}"]`); if (!i) return; const show = i.type === 'password'; i.type = show ? 'text' : 'password'; if (b) { b.textContent = show ? 'Hide' : 'Show'; b.setAttribute('aria-label', show ? 'Hide password' : 'Show password'); } },
-  fbGoogle: async () => { const own = (UI.signTab || (APP_ROLE === 'owner' ? 'owner' : 'reseller')) === 'owner'; try { await fbLoad(); if (DESK && MODE === 'desktop' && !FB_USER) { if (own) OWNER_SIGNING = true; else { APP_ROLE = 'reseller'; RES_UNLOCKED = true; } fbStart(); } const t = await googleToken(); await FB.googleIn(t); if (!own && DESK) await setCfg({appRole:'reseller'}); } catch(x) { const el = $('#fb-err'); if (el) el.textContent = fbMsg(x); else toast(fbMsg(x), true); } },
+  fbGoogle: async () => { const own = (UI.signTab || (APP_ROLE === 'owner' ? 'owner' : 'reseller')) === 'owner'; try { await fbLoad(); if (DESK && MODE === 'desktop' && !FB_USER) { if (own) OWNER_SIGNING = true; else { APP_ROLE = 'reseller'; RES_UNLOCKED = true; } fbStart(); } const t = await googleToken(); await FB.googleIn(t); if (!own && DESK) { await setCfg({appRole:'reseller'}); resSkinOn(true); } } catch(x) { const el = $('#fb-err'); if (el) el.textContent = fbMsg(x); else toast(fbMsg(x), true); } },
   fbLinkGoogle: async () => { try { const t = await googleToken(); await FB.googleLink(t); toast('Google account linked. Next time tap Continue with Google.'); render(true); } catch(x) { toast(fbMsg(x), true); } },
   resGot: d => resSubmit('received', {dispatchId:d.id, no:d.no, date:today()}),
   signTab: d => { UI.signTab = d.k; UI.signMsg = ''; FB_ERR = ''; UI.applied = false; render(true); },
-  applySend: () => applySend(), pinSetupSave: () => pinSetupSave(), resUnlock: () => resUnlock(), appOut: () => confirmBox(`Sign out of this ${DEV_NAME}? You will need ${APP_ROLE === 'reseller' ? 'your login ID and PIN' : 'your owner email and password'} to open the app again.`, () => appSignOut(), 'Sign out'),
+  applySend: () => applySend(), pinSetupSave: () => pinSetupSave(), resUnlock: () => resUnlock(), appOut: () => confirmBox(`Sign out of this ${DEV_NAME}? You will need ${APP_ROLE === 'reseller' ? 'your login ID and PIN' : 'your admin email and password'} to open the app again.`, () => appSignOut(), 'Sign out'),
   bioUnlock: async () => { if (!bioReady()) return; const ok = await DESK.bioAuth('Unlock Infinity Fragrances'); if (!ok) return;
     if (APP_ROLE === 'reseller') { RES_UNLOCKED = true; PIN_FAILS = 0; render(true); }
     else { const o = users().find(x => x.role === 'owner'); if (o) { SESSION = {id:o.id, name:o.name, role:'owner'}; PIN_FAILS = 0; touchIdle(); if (!allowed(route())) location.hash = firstAllowed(); render(true); toast(`Welcome, ${o.name}`); } } },
-  lockEmail: async () => { await setCfg({ownerUid:''}); UI.signTab = 'owner'; UI.signMsg = 'Sign in with your owner email and password. Then set a new PIN in Settings → Users & PINs.'; try { FB && await FB.signOut(); } catch(e) {} render(true); },
-  fbForgot: async () => { const e = ($('#f-oe')?.value || '').trim(); if (!e) return $('#fb-err').textContent = 'Type your owner email first.'; try { await fbLoad(); await FB.resetPassword(e); $('#fb-err').textContent = ''; toast('Check your email for a link to set a new password.'); } catch(x) { $('#fb-err').textContent = fbMsg(x); } },
+  lockEmail: async () => { await setCfg({ownerUid:''}); UI.signTab = 'owner'; UI.signMsg = 'Sign in with your admin email and password. Then set a new PIN in Settings → Users & PINs.'; try { FB && await FB.signOut(); } catch(e) {} render(true); },
+  fbForgot: async () => { const e = ($('#f-oe')?.value || '').trim(); if (!e) return $('#fb-err').textContent = 'Type your admin email first.'; try { await fbLoad(); await FB.resetPassword(e); $('#fb-err').textContent = ''; toast('Check your email for a link to set a new password.'); } catch(x) { $('#fb-err').textContent = fbMsg(x); } },
   catPlus: d => { RES.cart = RES.cart || {}; RES.cart[d.id] = (RES.cart[d.id] || 0) + 1; $('#cq-' + d.id).textContent = RES.cart[d.id]; $('#cart-bar').innerHTML = cartBarHTML(); },
   catMinus: d => { RES.cart = RES.cart || {}; RES.cart[d.id] = Math.max(0, (RES.cart[d.id] || 0) - 1); $('#cq-' + d.id).textContent = RES.cart[d.id]; $('#cart-bar').innerHTML = cartBarHTML(); },
   catCat: (d, el) => { document.querySelectorAll('[data-act=catCat]').forEach(b => b.classList.toggle('on', b.dataset.k === d.k)); document.querySelectorAll('.cat-card').forEach(c => c.hidden = !!d.k && c.dataset.cat !== d.k); },
@@ -4749,18 +4772,18 @@ const ACT = {
   resSlip: d => { RES.slip = RES.slip === d.id ? '' : d.id; render(true); },
   psMake: () => psMake(), psNew: () => psForm(), psView: d => psView(d.id), psEdit: d => psForm(S.payslips[d.id]),
   psRefresh: d => { const p = S.payslips[d.id]; if (!p) return; const f = payslipFigures(p.rid, p.month); $('#f-pso').value = f.own; $('#f-psb').value = f.bonus; $('#f-psv').value = f.received; toast('Figures refreshed. Save to keep them.'); },
-  psSend: async d => { const p = S.payslips[d.id], r = S.resellers[p.rid]; if (FB_ROLE !== 'owner') return toast('Sign in to your owner account first (Resellers → Online accounts).', true);
+  psSend: async d => { const p = S.payslips[d.id], r = S.resellers[p.rid]; if (FB_ROLE !== 'owner') return toast('Sign in to your admin account first (Resellers → Online accounts).', true);
     await put('payslips', {...p, status:p.status === 'paid' ? 'paid' : 'sent', sentAt:nowISO(), sentVia:'App'}); await publishOne(p.rid); await fbNotify(r.portalUid, `Your payslip for ${monthLabel(p.month)} is ready: ${money(psTotals(p).net)} due to you.`); toast('Payslip sent in the app'); psView(d.id); },
   psPaid: d => psPayForm(d.id),
   psDel: d => { const p = S.payslips[d.id]; confirmBox(`Delete payslip ${p.no}?${p.payCashId ? ' The payment in the cash book stays; delete it there if needed.' : ''}`, async () => { await del('payslips', d.id); closeModal(); if (S.resellers[p.rid]?.portalUid && FB_ROLE === 'owner') publishOne(p.rid); toast('Deleted'); }, 'Delete'); },
-  drawer: () => openDrawer(), skipInstall: () => { UI.skipInstall = true; render(true); },
+  drawer: () => openDrawer(), resDrawer: () => openResDrawer(), resLock: () => { closeModal(); RES_UNLOCKED = false; BIO_TRIED = false; render(true); }, skipInstall: () => { UI.skipInstall = true; render(true); },
   updCheck: () => checkUpdate(true), updLater: () => { const b = $('#upd-bar'); if (b) b.remove(); },
   updGo: async () => { try { if (DESK_T) { clearTimeout(DESK_T); DESK_T = 0; await deskSave(); } } catch(e) {} toast('Restarting…'); setTimeout(() => DESK.relaunch(), 400); }, posGo: () => $('#pos-cart')?.scrollIntoView({behavior:'smooth', block:'start'}),
   lookOpen: () => { closeModal(); if (APP_ROLE === 'reseller') { RES.tab = 'account'; render(true); } else location.hash = 'setup'; setTimeout(() => $('#look-card')?.scrollIntoView({behavior:'smooth', block:'start'}), 150); },
   lookSkin: d => { setLook({skin:d.k}); const c = $('#look-card'); if (c) c.outerHTML = lookCard(); toast(LOOKS.find(x => x[0] === d.k)?.[1] + ' theme on'); },
   fbRetry: () => { FB_ERR = ''; FB_AUTH_STARTED = false; FB = null; fbStart(); render(true); },
-  fbOwnerIn: async () => { const e = $('#f-oe').value.trim(), pw = $('#f-op').value; UI.fbEmail = e; if (!e || !pw) return $('#fb-err').textContent = 'Type your email and password.'; const gate = DESK && MODE === 'desktop' && route() !== 'portal' || (DESK && !DCFG.ownerUid); if (gate) { OWNER_SIGNING = true; UI.signMsg = ''; } try { await fbLoad(); if (gate) fbStart(); await FB.signIn(e, pw); if (gate && OWNER_SIGNING && FB_USER && FB_ROLE === 'owner' && FB_USER.email === e) return ownerVerified(FB_USER); } catch(x) { OWNER_SIGNING = false; const el = $('#fb-err'); const m = fbMsg(x); if (el) el.textContent = (/login ID or PIN/.test(m) ? 'Wrong email or password.' : m) + ' First time? Tap "Create the owner account".'; } },
-  fbOwnerUp: async () => { const e = $('#f-oe').value.trim(), pw = $('#f-op').value; UI.fbEmail = e; if (!e) return $('#fb-err').textContent = 'Type your email.'; if (pw.length < 8) return $('#fb-err').textContent = 'Use a password of at least 8 characters.'; if (DESK && MODE === 'desktop') { OWNER_SIGNING = true; await fbLoad(); fbStart(); } try { const owner = await FB.get('meta/owner').catch(() => null); const c = await FB.signUp(e, pw); const uid = (c && c.user && c.user.uid) || FB_USER?.uid; if (!owner) { await FB.batch([['set', 'meta/owner', {uid, email:e, at:FB.now()}], ['set', `users/${uid}`, {role:'owner', email:e, at:FB.now()}]]); FB_ROLE = 'owner'; FB_ME = {role:'owner'}; ownerListen(); toast('Owner account created'); render(true); } else toast('An owner account already exists. Sign in with it instead.', true); } catch(x) { $('#fb-err').textContent = fbMsg(x); } },
+  fbOwnerIn: async () => { const e = $('#f-oe').value.trim(), pw = $('#f-op').value; UI.fbEmail = e; if (!e || !pw) return $('#fb-err').textContent = 'Type your email and password.'; const gate = DESK && MODE === 'desktop' && route() !== 'portal' || (DESK && !DCFG.ownerUid); if (gate) { OWNER_SIGNING = true; UI.signMsg = ''; } try { await fbLoad(); if (gate) fbStart(); await FB.signIn(e, pw); if (gate && OWNER_SIGNING && FB_USER && FB_ROLE === 'owner' && FB_USER.email === e) return ownerVerified(FB_USER); } catch(x) { OWNER_SIGNING = false; const el = $('#fb-err'); const m = fbMsg(x); if (el) el.textContent = (/login ID or PIN/.test(m) ? 'Wrong email or password.' : m) + ' First time? Tap "Create the admin account".'; } },
+  fbOwnerUp: async () => { const e = $('#f-oe').value.trim(), pw = $('#f-op').value; UI.fbEmail = e; if (!e) return $('#fb-err').textContent = 'Type your email.'; if (pw.length < 8) return $('#fb-err').textContent = 'Use a password of at least 8 characters.'; if (DESK && MODE === 'desktop') { OWNER_SIGNING = true; await fbLoad(); fbStart(); } try { const owner = await FB.get('meta/owner').catch(() => null); const c = await FB.signUp(e, pw); const uid = (c && c.user && c.user.uid) || FB_USER?.uid; if (!owner) { await FB.batch([['set', 'meta/owner', {uid, email:e, at:FB.now()}], ['set', `users/${uid}`, {role:'owner', email:e, at:FB.now()}]]); FB_ROLE = 'owner'; FB_ME = {role:'owner'}; ownerListen(); toast('Admin account created'); render(true); } else toast('An admin account already exists. Sign in with it instead.', true); } catch(x) { $('#fb-err').textContent = fbMsg(x); } },
   fbClaim: async () => { try { await FB.batch([['set', 'meta/owner', {uid:FB_USER.uid, email:FB_USER.email, at:FB.now()}], ['set', `users/${FB_USER.uid}`, {role:'owner', email:FB_USER.email, at:FB.now()}]]); FB_ROLE = 'owner'; ownerListen(); render(true); } catch(x) { toast(fbMsg(x), true); } },
   fbOut: async () => { if (DESK && MODE === 'desktop') return ACT.appOut(); try { await FB.signOut(); } catch(e) {} },
   fbPublish: () => publishAll(false),
@@ -4769,9 +4792,9 @@ const ACT = {
   accRemove: d => { const r = S.resellers[d.id]; confirmBox(`Remove ${esc(r.name)}'s online access? They will no longer be able to sign in.`, async () => { try { await FB.del(`users/${r.portalUid}`); await FB.del(`portal/${r.id}`); } catch(e) {} await put('resellers', {...r, portalUid:'', portalLogin:''}); ownerListen(); toast('Access removed'); }, 'Remove access'); },
   resIn: async () => { const id = $('#r-login').value.trim().toLowerCase().replace(/\s+/g, ''), pin = $('#r-pin').value.trim(); if (!id || !pin) return $('#fb-err').textContent = 'Type your login ID and PIN.'; FB_ERR = ''; OWNER_SIGNING = false;
     const prevRole = APP_ROLE; APP_ROLE = 'reseller'; RES_UNLOCKED = true; PIN_FAILS = 0;
-    try { await fbLoad(); fbStart(); await FB.signIn(id.includes('@') ? id : `${id}@${RES_DOMAIN}`, pin); await setCfg({appRole:'reseller'}); await savePinHash(pin); }
+    try { await fbLoad(); fbStart(); await FB.signIn(id.includes('@') ? id : `${id}@${RES_DOMAIN}`, pin); await setCfg({appRole:'reseller'}); await savePinHash(pin); resSkinOn(true); }
     catch(x) { APP_ROLE = prevRole; RES_UNLOCKED = false; const el = $('#fb-err'); if (el) el.textContent = fbMsg(x); else { FB_ERR = fbMsg(x); render(true); } } },
-  resTab: d => { RES.tab = d.k; render(true); window.scrollTo(0, 0); },
+  resTab: d => { closeModal(); window.scrollTo(0, 0); RES.tab = d.k; render(true); window.scrollTo(0, 0); },
   resSend: () => { const f = $('#res-form'); try { resSubmit(f.dataset.type, resCollect(f)); } catch(e) { toast(e.message, true); } },
   resSend2: () => { const f = $('#res-form2'); try { resSubmit(f.dataset.type, resCollect(f)); } catch(e) { toast(e.message, true); } },
   resCancel: async d => { try { await FB.update(`portal/${FB_ME.resellerId}/requests/${d.id}`, {status:'cancelled'}); toast('Cancelled'); } catch(e) { toast(fbMsg(e), true); } },
@@ -4779,9 +4802,9 @@ const ACT = {
   printDoc: () => printDocs([...document.querySelectorAll('#doc-prev .doc')]),
   lockPick: d => { UI.lockUser = d.id; render(true); }, lockNow: () => lockNow(),
   pinKey: d => { const el = $('#lock-pin'); if (!el) return; if (d.k === '⌫') el.value = el.value.slice(0, -1); else if (d.k === 'OK') tryUnlock(); else if (el.value.length < 8) { el.value += d.k; if (el.value.length >= 4) { const u = users().find(x => x.id === (UI.lockUser || users()[0]?.id)); if (u) sha(u.salt + el.value).then(h => { if (h === u.pin) tryUnlock(); }); } } },
-  lockRecover: () => modal('Unlock with recovery key', `<label for="f-rk">Recovery key<input id="f-rk" name="key" placeholder="XXXX-XXXX" required style="text-transform:uppercase"></label>`, async d => { if (await sha('rk:' + d.key.trim().toUpperCase()) !== S.settings.recoveryHash) throw Error('That recovery key is not right.'); const o = users().find(u => u.role === 'owner'); SESSION = {id:o.id, name:o.name, role:'owner'}; try { sessionStorage.setItem('if-session', JSON.stringify(SESSION)); } catch(e) {} toast('Unlocked as Owner. Set a new PIN in Settings.'); location.hash = 'setup'; render(true); }, {label:'Unlock'}),
+  lockRecover: () => modal('Unlock with recovery key', `<label for="f-rk">Recovery key<input id="f-rk" name="key" placeholder="XXXX-XXXX" required style="text-transform:uppercase"></label>`, async d => { if (await sha('rk:' + d.key.trim().toUpperCase()) !== S.settings.recoveryHash) throw Error('That recovery key is not right.'); const o = users().find(u => u.role === 'owner'); SESSION = {id:o.id, name:o.name, role:'owner'}; try { sessionStorage.setItem('if-session', JSON.stringify(SESSION)); } catch(e) {} toast('Unlocked as Admin. Set a new PIN in Settings.'); location.hash = 'setup'; render(true); }, {label:'Unlock'}),
   userNew: () => userForm(), userEdit: d => userForm(users().find(u => u.id === d.id)),
-  userDel: d => { const u = users().find(x => x.id === d.id); if (!u) return; if (u.role === 'owner' && users().filter(x => x.role === 'owner').length < 2 && users().length > 1) return toast('Remove the other users first, or make someone else Owner.', true); confirmBox(`Remove ${esc(u.name)}?${users().length === 1 ? ' This turns the PIN lock off.' : ''}`, async () => { const list = users().filter(x => x.id !== u.id); await putSettings({users:list, ...(list.length ? {} : {recoveryHash:''})}); if (SESSION?.id === u.id) { SESSION = null; sessionStorage.removeItem('if-session'); } toast('User removed'); }, 'Remove'); },
+  userDel: d => { const u = users().find(x => x.id === d.id); if (!u) return; if (u.role === 'owner' && users().filter(x => x.role === 'owner').length < 2 && users().length > 1) return toast('Remove the other users first, or make someone else Admin.', true); confirmBox(`Remove ${esc(u.name)}?${users().length === 1 ? ' This turns the PIN lock off.' : ''}`, async () => { const list = users().filter(x => x.id !== u.id); await putSettings({users:list, ...(list.length ? {} : {recoveryHash:''})}); if (SESSION?.id === u.id) { SESSION = null; sessionStorage.removeItem('if-session'); } toast('User removed'); }, 'Remove'); },
   locNew: () => modal('Add stock location', `<label for="f-ln">Name<input id="f-ln" name="name" required placeholder="e.g. Kitwe depot"></label>`, async d => { await putSettings({locations:[...locs(), {id:uid(), name:d.name.trim()}]}); toast('Location added'); }, {label:'Add'}),
   locEdit: d => { const l = locs().find(x => x.id === d.id); modal('Rename location', `<label for="f-ln">Name<input id="f-ln" name="name" required value="${esc(l.name)}"></label>`, async x => { await putSettings({locations:locs().map(y => y.id === l.id ? {...y, name:x.name.trim()} : y)}); toast('Saved'); }, {label:'Save'}); },
   locPos: d => { putSettings({posLoc:d.id}); toast(`Point of sale now sells from ${locName(d.id)}`); },

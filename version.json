@@ -1,20 +1,20 @@
 {
- "version": "2.6.0",
+ "version": "2.6.1",
  "date": "2026-11-16",
  "notes": [
-  "iPhone app (Add to Home Screen from Safari)",
-  "Fix: Settings on a brand-new install"
+  "Reseller app: phone layout with a bottom menu, Rose Quartz look",
+  "Owner is now called Admin"
  ],
  "android": {
-  "file": "android-2.6.0.html",
-  "sig": "Ynv5bRj100225GbIuExJ6UCVzo9UGXSWbpo6uJVvgP9UDGsaKuWdKPYCu5WxsWR34FkznAmGBPn32v+BllNVKw==",
-  "size": 859660,
+  "file": "android-2.6.1.html",
+  "sig": "KHqnAnhNsMyMqJMoaCTLNe19yMwrg7YMNVYaRH7BdA0A0iDovCH5DcVr6DpJTvx949VXoAMeFz0byToaFViFSQ==",
+  "size": 863651,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.6.0.html",
-  "sig": "5pfO3YxstHVVRZM1MzOi0ZzB4yRGkre+WaN8HFj5MdkPKBwOIX0dlHe0l7NrrgxyAwbLVcoXupHWviOU5fWFjg==",
-  "size": 856159,
+  "file": "desktop-2.6.1.html",
+  "sig": "qzCoBl2NnGkmjXT9eHDPsM1Z8Uq8WbtV+y3ndz2GJxQ+xDNic4cZdT+/ybJZdN5b75cvPLatlopNo2aeTRmIcg==",
+  "size": 860150,
   "minShell": "2.5.0"
  }
 }
