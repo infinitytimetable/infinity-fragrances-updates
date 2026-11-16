@@ -1,19 +1,19 @@
 {
- "version": "2.10.2",
+ "version": "2.11.0",
  "date": "2026-11-16",
  "notes": [
-  "Sharper PDFs and pictures: documents now export at print quality."
+  "New Company profile page: keep your registration, tax and bank details and download a print-quality company profile at any time."
  ],
  "android": {
-  "file": "android-2.10.2.html",
-  "sig": "0vJHqLQGjBiQ2bwK9xqOxx/lLcMRlm5/o2BhCPgvwe9SUeeyF1x8TCKpXEU9sISuTjJ5/oe6h1i81HlJRNI7Kg==",
-  "size": 1868296,
+  "file": "android-2.11.0.html",
+  "sig": "V0hKrmJmL65OAn8Wn8O9+SQ2W6HJpHXSptuoi5GgYjgdQdffkAsHdJHcM6ObOKBDwGTy/BwE9QGdq8k/6U8tdQ==",
+  "size": 2096557,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.10.2.html",
-  "sig": "+8wp00iS7PDXq1qzDvhLG4rck44aL8bXbmgmh/3bT0B7kKIw0fv/sTutooB5GWnr1wDJ+tsZHYfAe5dLCy4/+g==",
-  "size": 1864563,
+  "file": "desktop-2.11.0.html",
+  "sig": "l3eHhvNvrwFXfs5rFqm9HGmcfQZykl+alKMguWkGvuvPiG+ySpENLp76b+9ZgrYGJl6JX2xvJ9WfHE3ZQP0tyw==",
+  "size": 2092824,
   "minShell": "2.5.0"
  },
  "apk": {
