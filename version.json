@@ -1,19 +1,19 @@
 {
- "version": "2.8.0",
+ "version": "2.9.0",
  "date": "2026-11-16",
  "notes": [
-  "Review and export requested orders with bottle photos; daily cash-up; stock-take with the scanner; loyalty points and birthdays; reseller credit limits; holiday themes across the whole app; delivery areas and order tracking in the online shop; monthly report; tidier menus; one-tap app updates."
+  "Shared records across your admin devices and managers' phones (offline first); manager phone logins; shop sales and cash-ups booked once."
  ],
  "android": {
-  "file": "android-2.8.0.html",
-  "sig": "JzDw+bgC2rl65iEEuO04+EdslJ/AL5WfZX+7+zVQ/PhsON9I8QGEXMpfFG4m/FpauozthdFlqjyfp+lcLaT+Fw==",
-  "size": 1834145,
+  "file": "android-2.9.0.html",
+  "sig": "rFq+B/VsK1l4VRiLCrZpynxZWg1BBIF4gihjr+gYFoiLp7OywTbJcSzfAlQ2pvNmg1NAkzcsg1axcBwZM9OTDA==",
+  "size": 1851712,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.8.0.html",
-  "sig": "y/5/ADwt+cv9rIvUzv9UfrXMBoDD98iNVx2kprcN8yTmo/e5WqaOYhXRX2U+M3oLddo8MVnXlMcjfpwAcFSCYA==",
-  "size": 1830412,
+  "file": "desktop-2.9.0.html",
+  "sig": "RDqf1YiY60CPvuXdRNQVPNUx1wfomgxM5tgRkr+W8+8jtHhxGG+xoSc5SLvD60qiVrSL9BQCDmHXhqRP/8ykzw==",
+  "size": 1847979,
   "minShell": "2.5.0"
  },
  "apk": {
