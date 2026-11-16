@@ -1985,8 +1985,9 @@ function fixNumbers(o){
 }
 
 /* ======================= Version 2.0 ======================= */
-const APP_VERSION = '2.10.1';
+const APP_VERSION = '2.10.2';
 const CHANGELOG = [
+  ['2.10.2', '16 Nov 2026', ['Sharper exports: PDFs and pictures of documents, reports, order sheets and catalogues are made at print quality (about 290 dpi); posters and photos saved at higher quality']],
   ['2.10.1', '16 Nov 2026', ['The page buttons under each menu (e.g. Towns & resellers, Requests & logins) are raised pills, all visible at once, with the open one filled in']],
   ['2.10.0', '16 Nov 2026', ['Lists show as easy-to-read cards on phones', 'Buttons look raised and press down, so they are easy to see', 'Online orders: type the rider or driver when sending; the customer sees them with call and WhatsApp buttons', 'Customer order page updates by itself and can send notifications', 'Resellers have a sales till: sales count straight away and the receipt goes to the customer', 'App download page for Android and iPhone, included in every login message']],
   ['2.9.2', '16 Nov 2026', ['Activity log now also records online actions with who did them: online orders confirmed, sent, delivered or cancelled; reseller and shop requests approved or declined; stock counts; applications; app logins']],
@@ -2170,7 +2171,7 @@ async function pdfFromCanvases(pages){
   obj(1, '<< /Type /Catalog /Pages 2 0 R >>'); obj(2, `<< /Type /Pages /Kids [${kids.join(' ')}] /Count ${N} >>`);
   for (let i = 0; i < N; i++) {
     const {canvas, w, h} = pages[i], pw = w * 0.75, ph = h * 0.75;
-    const jpg = await new Promise(r => canvas.toBlob(b => b.arrayBuffer().then(a => r(new Uint8Array(a))), 'image/jpeg', 0.92));
+    const jpg = await new Promise(r => canvas.toBlob(b => b.arrayBuffer().then(a => r(new Uint8Array(a))), 'image/jpeg', 0.95));
     const p = 3 + i * 3, im = p + 1, ct = p + 2, content = `q ${pw.toFixed(2)} 0 0 ${ph.toFixed(2)} 0 0 cm /Im0 Do Q`;
     obj(p, `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pw.toFixed(2)} ${ph.toFixed(2)}] /Resources << /XObject << /Im0 ${im} 0 R >> >> /Contents ${ct} 0 R >>`);
     obj(im, [`<< /Type /XObject /Subtype /Image /Width ${canvas.width} /Height ${canvas.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`, jpg, '\nendstream']);
@@ -3805,7 +3806,7 @@ async function orvExport(fmt){
   try { if (!window.html2canvas) await loadScript(LIBS.h2c); } catch(e) { return toast(e.message, true); }
   const box = $('#orv-doc'); box.innerHTML = orvDoc().map(p => `<div class="docwrap">${ph ? p.split(PLACEHOLDER).join(ph) : p}</div>`).join('');
   const name = `order-${orvParty().replace(/\s+/g, '-')}-${today()}`;
-  try { const cvs = []; for (const d of box.querySelectorAll('.doc')) cvs.push(await window.html2canvas(d, {scale:2, backgroundColor:'#ffffff', useCORS:true}));
+  try { const cvs = []; for (const d of box.querySelectorAll('.doc')) cvs.push(await window.html2canvas(d, {scale:EXPORT_SCALE, backgroundColor:'#ffffff', useCORS:true, logging:false}));
     if (fmt === 'pdf') await saveFile(name + '.pdf', await pdfFromCanvases(cvs.map(c => ({canvas:c, w:794, h:1123})))); else for (let i = 0; i < cvs.length; i++) { const b = await new Promise(r => cvs[i].toBlob(r, 'image/png')); await saveFile(`${name}${cvs.length > 1 ? '-' + (i + 1) : ''}.png`, b); } }
   catch(e) { toast('Could not export: ' + (e.message || e), true); }
   box.innerHTML = '';
@@ -3951,11 +3952,12 @@ async function exportPDF(nodes, filename){
   if (!nodes.length) return;
   try {
     toast('Preparing PDF…'); const pages = [];
-    for (const n of nodes) pages.push({canvas:await snap(n, 2), w:+n.dataset.w, h:+n.dataset.h});
+    for (const n of nodes) pages.push({canvas:await snap(n, EXPORT_SCALE), w:+n.dataset.w, h:+n.dataset.h});
     await saveFile(filename, await pdfFromCanvases(pages));
   } catch(e) { toast(e.message || 'Could not make the PDF.', true); }
 }
-async function exportPNG(nodes, base, scale = 2){
+const EXPORT_SCALE = (() => { const m = navigator.deviceMemory || 4; return m <= 1 ? 2 : m <= 2 ? 2.5 : 3; })();   // 3 ≈ 290 dpi on A4
+async function exportPNG(nodes, base, scale = EXPORT_SCALE){
   try {
     toast('Preparing image…');
     for (const [i, n] of nodes.entries()) {
@@ -5697,7 +5699,7 @@ const ACT = {
   remind: () => remindModal(), cloudNow: () => cloudBackup(true), cloudList: () => cloudList(), cloudRestore: d => cloudRestore(d.id),
   appOk: d => appApprove(d.id), appNo: d => confirmBox('Decline this application?', async () => { try { const a = (OWN.apps || []).find(x => x.id === d.id) || {}; await FB.update('applications/' + d.id, {status:'declined', decidedAt:nowISO()}); logNote('decline', 'applications', `Reseller application from ${a.name || ''}`); toast('Declined'); } catch(e) { toast(fbMsg(e), true); } }, 'Decline'),
   copyRules: async () => { try { await navigator.clipboard.writeText(FS_RULES); toast('Rules copied. Paste them in Firebase → Firestore Database → Rules, then Publish.'); } catch(e) { toast('Select the text and copy it.', true); } },
-  adSave: async () => { const c = await adCanvas(); if (!c) return; const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.92)); await saveFile(`poster-${today()}.jpg`, blob); },
+  adSave: async () => { const c = await adCanvas(); if (!c) return; const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.96)); await saveFile(`poster-${today()}.jpg`, blob); },
   adPrint: async () => { const c = await adCanvas(); if (!c) return; const h = `<html><body style="margin:0"><img src="${c.toDataURL('image/jpeg', 0.92)}" style="width:100%"></body></html>`; if (DESK && DESK.printHTML) DESK.printHTML(h); else { const w = window.open(''); if (w) { w.document.write(h); w.document.close(); setTimeout(() => w.print(), 400); } } },
   resSlip: d => { RES.slip = RES.slip === d.id ? '' : d.id; render(true); },
   psMake: () => psMake(), psNew: () => psForm(), psView: d => psView(d.id), psEdit: d => psForm(S.payslips[d.id]),
@@ -5863,7 +5865,7 @@ const ACT = {
   toStudio: d => { UI.studioLoad = d.id; ST.product = d.id; if (!imgOf(d.id)) toast(`Upload a photo for ${pName(d.id)}`); location.hash = 'studio'; },
   stAuto: () => stAuto(), stUndo: () => { if (ST.undo.length) { ST.mask = ST.undo.pop(); stDraw(); stOut(); } }, stReset: () => { if (ST.orig) { stPush(); ST.mask = new Uint8Array(ST.w * ST.h); stDraw(); stOut(); } },
   stSave: () => stSave(),
-  stDownload: async () => { if (!ST.orig) return toast('Upload a photo first.', true); const blob = await new Promise(r => stFinal().toBlob(r, 'image/jpeg', 0.92)); saveFile(`${ST.product ? pName(ST.product).replace(/\s+/g, '-') : 'perfume'}-white.jpg`, blob); },
+  stDownload: async () => { if (!ST.orig) return toast('Upload a photo first.', true); const blob = await new Promise(r => stFinal().toBlob(r, 'image/jpeg', 0.96)); saveFile(`${ST.product ? pName(ST.product).replace(/\s+/g, '-') : 'perfume'}-white.jpg`, blob); },
   townNew: () => townForm(), townEdit: d => townForm(S.towns[d.id]), townQuick: () => { UI.afterTown = id => resForm({}, id); townForm(); },
   townFilter: d => { UI.town = d.id; UI.status = 'all'; render(); document.getElementById('f-town')?.scrollIntoView({behavior:'smooth', block:'center'}); },
   townDel: d => { const n = Object.values(S.resellers).filter(r => r.townId === d.id).length; if (n) return toast(`Move or delete the ${n} reseller${n > 1 ? 's' : ''} in ${tName(d.id)} first.`, true); confirmBox(`Delete ${esc(tName(d.id))}?`, () => del('towns', d.id)); },
