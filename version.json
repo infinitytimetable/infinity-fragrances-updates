@@ -1,19 +1,19 @@
 {
- "version": "2.9.0",
+ "version": "2.9.1",
  "date": "2026-11-16",
  "notes": [
-  "Shared records across your admin devices and managers' phones (offline first); manager phone logins; shop sales and cash-ups booked once."
+  "Small fix: the old online-hub note is hidden once shared records are on."
  ],
  "android": {
-  "file": "android-2.9.0.html",
-  "sig": "rFq+B/VsK1l4VRiLCrZpynxZWg1BBIF4gihjr+gYFoiLp7OywTbJcSzfAlQ2pvNmg1NAkzcsg1axcBwZM9OTDA==",
-  "size": 1851712,
+  "file": "android-2.9.1.html",
+  "sig": "//xaSZxteZi81AdWftVo3gfR99nNaRFzd1qFqHPSdsU1MBRLrSCbdEIYZF4o3mMG7wMvqZzZrk3yeCzZv/54cg==",
+  "size": 1851861,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.9.0.html",
-  "sig": "RDqf1YiY60CPvuXdRNQVPNUx1wfomgxM5tgRkr+W8+8jtHhxGG+xoSc5SLvD60qiVrSL9BQCDmHXhqRP/8ykzw==",
-  "size": 1847979,
+  "file": "desktop-2.9.1.html",
+  "sig": "QYUHRdUZ6HV/lke10fCydVIZGwccez36/c8qf0A9rdVYvVLAgBONboDqzWYRNFTJOMi1+h1WFbpMW+vB4c3mHg==",
+  "size": 1848128,
   "minShell": "2.5.0"
  },
  "apk": {
