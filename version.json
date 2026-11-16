@@ -1,20 +1,21 @@
 {
- "version": "2.6.1",
+ "version": "2.7.0",
  "date": "2026-11-16",
  "notes": [
-  "Reseller app: phone layout with a bottom menu, Rose Quartz look",
-  "Owner is now called Admin"
+  "Digital receipts by WhatsApp, SMS, link or print",
+  "Shops with a shopkeeper app",
+  "Online shop link for customers"
  ],
  "android": {
-  "file": "android-2.6.1.html",
-  "sig": "KHqnAnhNsMyMqJMoaCTLNe19yMwrg7YMNVYaRH7BdA0A0iDovCH5DcVr6DpJTvx949VXoAMeFz0byToaFViFSQ==",
-  "size": 863651,
+  "file": "android-2.7.0.html",
+  "sig": "mi1XvUVQRUXLGyhm8WFd3tGdMAxJDdpp9PON6mhxFpe3gYVfDSI26157mrBHoC2OfCxYFiyWrDvGsZEGLIgURw==",
+  "size": 909316,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.6.1.html",
-  "sig": "qzCoBl2NnGkmjXT9eHDPsM1Z8Uq8WbtV+y3ndz2GJxQ+xDNic4cZdT+/ybJZdN5b75cvPLatlopNo2aeTRmIcg==",
-  "size": 860150,
+  "file": "desktop-2.7.0.html",
+  "sig": "o5gJjkuDUJX8yBppRTa373dS97FwD0p2GxzHcDUm3VzVH1/Hn/tJa5KgEfG8sVmEfrkHBlf5SLDXbCBXFah+1g==",
+  "size": 905815,
   "minShell": "2.5.0"
  }
 }

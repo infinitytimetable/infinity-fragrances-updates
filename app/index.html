@@ -294,6 +294,10 @@ a[data-badge]:not([data-badge=""])::after{content:attr(data-badge);margin-left:6
 .bottombar,.drawer-sheet{display:none}
 .grid2 > label:not(.chk),.grid3 > label:not(.chk){display:flex;flex-direction:column;gap:4px;font-weight:600}
 .pos-float{display:none}
+.res-wrap .grid2 > label input,.res-wrap .grid2 > label select{width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font-size:16px;background:var(--surface);color:var(--ink);font-weight:400}
+.shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}.shop-grid .card{margin:0}
+.send-panel{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:12px;background:var(--soft)}.send-panel label{display:flex;flex-direction:column;gap:4px;font-weight:600}.send-panel input{width:100%;box-sizing:border-box}
+body.nav-on #shop-cart{bottom:calc(80px + env(safe-area-inset-bottom))}
 @media (max-width:860px){body.nav-on .res-tabs{display:none}body.nav-on .cart-bar{bottom:calc(80px + env(safe-area-inset-bottom))}}
 .install-steps{text-align:left;margin:0 0 6px;padding-left:22px;line-height:1.55}.install-steps li{margin:8px 0}
 .ios-share{display:inline-block;width:16px;height:20px;vertical-align:-4px;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 20' fill='none' stroke='%23007aff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 1v12M4 5l4-4 4 4M3 8H1.5v10.5h13V8H13'/%3E%3C/svg%3E")}
@@ -789,13 +793,13 @@ function monthStats(m){
 
 /* ---------- render ---------- */
 const PAGES = {};
-const ROUTES = ['dashboard','pos','customers','portal','invoices','suppliers','broadcast','activity','settlement','leaderboard','team','planner','profit','reminders','agreements','resellers','commissions','payslips','debtors','products','stock','purchases','dispatch','sales','cashbook','expenses','promos','catalogue','adverts','studio','prospects','reports','setup'];
+const ROUTES = ['dashboard','pos','orders','customers','portal','invoices','suppliers','broadcast','activity','settlement','leaderboard','team','planner','profit','reminders','agreements','resellers','commissions','payslips','debtors','products','shops','stock','purchases','dispatch','sales','cashbook','expenses','promos','catalogue','adverts','studio','prospects','reports','setup'];
 function route(){ const h = location.hash.slice(1); return ROUTES.includes(h) ? h : 'dashboard'; }
 const GROUPS = [
   {label:'Dashboard', tabs:[['dashboard','Dashboard']]},
-  {label:'Point of sale', tabs:[['pos','Point of sale'],['customers','Customers']]},
+  {label:'Point of sale', tabs:[['pos','Point of sale'],['orders','Online shop'],['customers','Customers']]},
   {label:'Resellers', tabs:[['resellers','Towns & resellers'],['settlement','Settlement day'],['debtors','Money owed & expected'],['commissions','Commissions'],['payslips','Payslips'],['leaderboard','Leaderboard'],['team','Recruits & bonuses'],['portal','Online accounts'],['reminders','Reminders & reports'],['agreements','Agreements']]},
-  {label:'Stock', tabs:[['products','Products'],['stock','Stock register'],['dispatch','Dispatch & delivery'],['purchases','Purchases book'],['suppliers','Supplier book'],['planner','Reorder planner']]},
+  {label:'Stock', tabs:[['products','Products'],['shops','Shops'],['stock','Stock register'],['dispatch','Dispatch & delivery'],['purchases','Purchases book'],['suppliers','Supplier book'],['planner','Reorder planner']]},
   {label:'Money', tabs:[['sales','Sales book'],['invoices','Invoices & quotes'],['cashbook','Cash book'],['expenses','Expenses']]},
   {label:'Marketing', tabs:[['promos','Promotions & discounts'],['adverts','Flyers & adverts'],['catalogue','Catalogue maker'],['broadcast','WhatsApp broadcast'],['studio','Photo studio']]},
   {label:'Prospects', tabs:[['prospects','Prospects & advice']]},
@@ -816,7 +820,7 @@ function tabsHTML(r){
 const TOOL_PAGES = new Set(['catalogue','adverts','studio','pos','prospects','reminders']);
 function render(force){
   if (DESK && MODE === 'desktop' && APP_ROLE !== 'reseller') { const g = gateHTML(); if (g) { document.body.classList.remove('res-mode'); navOff(); $('#main').dataset.page = ''; $('#main').innerHTML = g; return; } }
-  if (APP_ROLE === 'reseller') { document.body.classList.add('res-mode'); navOff(); $('#main').dataset.page = ''; $('#main').innerHTML = !FB_USER ? (FB_AUTH_SEEN || FB_ERR || !FB_AUTH_STARTED ? signInScreen() : '<div class="lockwrap"><p class="mut">Opening…</p></div>') : FB_ROLE === 'reseller' ? (RES_UNLOCKED ? resUI() : resUnlockScreen()) : FB_ROLE === null ? '<div class="lockwrap"><p class="mut">Signing in…</p></div>' : `<div class="lockwrap"><div class="lockcard"><p>${(FB.providers?.() || []).includes('google.com') ? 'This Google account is not linked to a reseller login yet. Sign in once with your login ID and PIN, then open Account and tap <b>Link Google account</b>.' : 'This login is not a reseller account.'}</p>${btn('Sign out', 'fbOut', {}, 'pri')}</div></div>`; if (document.querySelector('.res-wrap')) resBottomBar(); return; }
+  if (APP_ROLE === 'reseller') { document.body.classList.add('res-mode'); navOff(); $('#main').dataset.page = ''; $('#main').innerHTML = !FB_USER ? (FB_AUTH_SEEN || FB_ERR || !FB_AUTH_STARTED ? signInScreen() : '<div class="lockwrap"><p class="mut">Opening…</p></div>') : FB_ROLE === 'reseller' ? (RES_UNLOCKED ? resUI() : resUnlockScreen()) : FB_ROLE === 'shop' ? (RES_UNLOCKED ? shopUI() : resUnlockScreen()) : FB_ROLE === null ? '<div class="lockwrap"><p class="mut">Signing in…</p></div>' : `<div class="lockwrap"><div class="lockcard"><p>${(FB.providers?.() || []).includes('google.com') ? 'This Google account is not linked to a reseller login yet. Sign in once with your login ID and PIN, then open Account and tap <b>Link Google account</b>.' : 'This login is not a reseller account.'}</p>${btn('Sign out', 'fbOut', {}, 'pri')}</div></div>`; if (document.querySelector('.res-wrap')) (FB_ROLE === 'shop' ? shopBottomBar() : resBottomBar()); return; }
   if (lockOn() && !SESSION) { document.body.classList.remove('res-mode'); navOff(); $('#main').innerHTML = lockScreen(); $('#main').dataset.page = ''; setTimeout(() => $('#lock-pin')?.focus(), 30); return; }
   if (DESK && MODE === 'desktop' && (!LIC.ok || (LIC.trial && !UI.licSeen))) { navOff(); $('#main').innerHTML = licScreen(); $('#main').dataset.page = ''; return; }
   if (!allowed(route())) { location.hash = firstAllowed(); return; }
@@ -1724,8 +1728,9 @@ function fixNumbers(o){
 }
 
 /* ======================= Version 2.0 ======================= */
-const APP_VERSION = '2.6.1';
+const APP_VERSION = '2.7.0';
 const CHANGELOG = [
+  ['2.7.0', '16 Nov 2026', ['Digital receipts: send by WhatsApp, SMS, link or print from the till, shops and resellers', 'Shops: each shop has its own stock and a shopkeeper app; sales, receipts and cash arrive automatically', 'Online shop link for customers: order and pay on delivery or by mobile money', 'Change my PIN button; resellers confirm their current PIN to change it']],
   ['2.6.1', '16 Nov 2026', ['Reseller app: phone layout with a bottom menu (Home, Sell, Order, Pay, More)', 'Reseller app always uses the Rose Quartz look, including the PIN screen', '"Owner" is now called "Admin" in the app']],
   ['2.6.0', '16 Nov 2026', ['iPhone app: install from Safari with Add to Home Screen; works offline and updates itself', 'Records on iPhone are kept on the phone, with backups shared through the iPhone share sheet']],
   ['2.5.0', '16 Nov 2026', ['Automatic updates: the app downloads new versions by itself and asks you to restart', 'Every update is digitally signed and checked before it installs', 'App updates card in Settings (resellers: Account)']],
@@ -2207,6 +2212,7 @@ async function fbLoad(){
     changePassword: p => app.auth().currentUser.updatePassword(p),
     googleIn: tok => app.auth().signInWithCredential(fb.auth.GoogleAuthProvider.credential(tok)),
     googleLink: tok => app.auth().currentUser.linkWithCredential(fb.auth.GoogleAuthProvider.credential(tok)),
+    reauth: pw => { const u = app.auth().currentUser; return u.reauthenticateWithCredential(fb.auth.EmailAuthProvider.credential(u.email, pw)); },
     refreshToken: () => app.auth().currentUser?.refreshToken || '',
     resetPassword: e => app.auth().sendPasswordResetEmail(e),
     providers: () => (app.auth().currentUser?.providerData || []).map(x => x.providerId),
@@ -2234,7 +2240,8 @@ async function fbStart(){
     FB_USER = u; FB_ROLE = null; FB_ME = null;
     if (u) { try { FB_ME = await FB.get('users/' + u.uid); FB_ROLE = FB_ME?.role || 'none'; } catch(e) { FB_ROLE = 'none'; FB_ERR = fbMsg(e); } }
     if (DESK && MODE === 'desktop') await ownerAuthCheck(u);
-    if (FB_ROLE === 'reseller') { resStart(); if (FB_ME?.name && DCFG.resName !== FB_ME.name) setCfg({resName:FB_ME.name}); alertsSetupFor('reseller'); }
+    if (FB_ROLE === 'shop') { shopStart(); if (FB_ME?.name && DCFG.resName !== FB_ME.name) setCfg({resName:FB_ME.name}); }
+    else if (FB_ROLE === 'reseller') { resStart(); if (FB_ME?.name && DCFG.resName !== FB_ME.name) setCfg({resName:FB_ME.name}); alertsSetupFor('reseller'); }
     else if (FB_ROLE === 'owner' && !(DESK && MODE === 'desktop' && APP_ROLE !== 'owner')) { ownerListen(); if (DESK && APP_ROLE === 'owner' && DCFG.ownerUid) alertsSetupFor('owner'); }
     render(true);
   });
@@ -2256,11 +2263,20 @@ function ownerListen(){
   OWN.unsubs.push(FB.listen('applications', 'status', 'new', list => { const old = new Set((OWN.apps || []).map(x => x.id)); OWN.apps = list.sort((a, b) => (a.at || '').localeCompare(b.at || ''));
     if (appsPrimed) list.filter(x => !old.has(x.id)).forEach(x => { appNotify('New reseller application', `${x.name} (${x.town || ''})`); toast(`New reseller application: ${x.name}`); });
     appsPrimed = true; if (route() === 'portal') render(true); else updatePortalBadge(); }));
+  OWN.shopReqs = {}; locs().filter(l => l.keeperUid).forEach(l => {
+    OWN.unsubs.push(FB.listen(`shops/${l.id}/sales`, 'status', 'new', list => list.forEach(q => shopSaleImport(l.id, q))));
+    OWN.unsubs.push(FB.listen(`shops/${l.id}/requests`, 'status', 'pending', list => { const old = new Set((OWN.shopReqs[l.id] || []).map(x => x.id)); OWN.shopReqs[l.id] = list.map(q => ({...q, sid:l.id})); list.filter(q => !old.has(q.id) && OWN.shopPrimed?.[l.id]).forEach(q => { appNotify('Shop stock request', l.name); toast(`${l.name} asks for stock`); }); (OWN.shopPrimed = OWN.shopPrimed || {})[l.id] = true; if (route() === 'shops') render(true); else updatePortalBadge(); }));
+  });
+  let ordPrimed = false;
+  OWN.unsubs.push(FB.listen('orders', null, null, list => { const old = new Set((OWN.orders || []).map(o => o.id)), cut = iso(addDays(new Date(), -60)); OWN.orders = list.filter(o => (o.at || '') >= cut || o.status === 'new' || o.status === 'confirmed');
+    if (ordPrimed) list.filter(o => !old.has(o.id) && o.status === 'new').forEach(o => { appNotify('New online order', `${o.name}: ${money(o.total)}`); toast(`New online order from ${o.name}`); });
+    ordPrimed = true; if (route() === 'orders') render(true); else updatePortalBadge(); }));
+  setTimeout(() => { publishStore(); publishShops(); }, 6000);
   setTimeout(maybeAutoRemind, 4000);
   setTimeout(() => { if (cloudBackupDue()) cloudBackup(false); }, 20000);
 }
 const pendingAll = () => Object.entries(OWN.reqs).flatMap(([rid, l]) => l.map(q => ({...q, rid}))).sort((a, b) => (a.at || '').localeCompare(b.at || ''));
-function updatePortalBadge(){ const n = pendingAll().length + (OWN.apps || []).length; document.querySelectorAll('a[href="#portal"]').forEach(a => a.dataset.badge = n || ''); }
+function updatePortalBadge(){ const n = pendingAll().length + (OWN.apps || []).length + (OWN.orders || []).filter(o => o.status === 'new').length + Object.values(OWN.shopReqs || {}).flat().length; document.querySelectorAll('a[href="#portal"]').forEach(a => a.dataset.badge = n || ''); }
 function snapshotFor(rid){
   const r = S.resellers[rid], C = compute(), a = C.acc[rid] || {sales:0, remit:0, earned:0, paid:0, net:0}, st = statement(rid);
   const held = heldOf(rid, C).map(([p, q]) => { const pr = S.products[p] || {}; return {productId:p, name:pr.name || pName(p), size:pr.size || '', category:pr.category || '', qty:q, price:resPrice(rid, p, C)}; }).sort((x, y) => x.name.localeCompare(y.name));
@@ -2285,6 +2301,7 @@ async function publishAll(quiet){
     const ops = sortedRes(true).filter(r => r.portalUid).map(r => ['set', `portal/${r.id}`, snapshotFor(r.id)]);
     const pub = publicDocs(); Object.entries(pub).forEach(([k, v]) => ops.push(['set', `public/${k}`, v]));
     for (let i = 0; i < ops.length; i += 400) await FB.batch(ops.slice(i, i + 400));
+    publishStore(); publishShops();
     try { const cat = await catalogOps(); for (let i = 0; i < cat.ops.length; i += 6) await FB.batch(cat.ops.slice(i, i + 6)); if (cat.ops.length) localStorage.setItem('if-catsig', cat.sig); } catch(e) {}
     OWN.published = nowISO(); try { localStorage.setItem('if-published', OWN.published); } catch(e) {}
     if (!quiet) toast('Resellers updated');
@@ -2382,7 +2399,8 @@ const resPendingQty = () => { const m = {}; RES.reqs.filter(q => q.status === 'p
 const resAvail = () => { const pend = resPendingQty(); return (RES.snap?.held || []).map(x => ({...x, avail:Math.max(0, x.qty - (pend[x.productId] || 0))})); };
 async function resSubmit(type, data){
   try { await FB.add(`portal/${FB_ME.resellerId}/requests`, {...data, type, status:'pending', by:FB_USER.uid, at:FB.now()}); fbNotify('owner', `${RES.snap?.name || 'A reseller'}: new ${(REQ_TYPES[type] || 'request').toLowerCase()}`); toast('Sent. Waiting for approval.');
-    if (type === 'order') { RES.cart = {}; RES.note = ''; } if (type === 'payment') RES.proof = ''; RES.tab = 'home'; render(true); }
+    if (type === 'order') { RES.cart = {}; RES.note = ''; } if (type === 'payment') RES.proof = ''; RES.tab = 'home'; render(true);
+    if (type === 'sale') { const s0 = RES.snap || {}, now = new Date(), tot = r2(data.lines.reduce((t, l) => t + num(l.qty) * num(l.price), 0)); const p = {...rcptPublic({no:'RS-' + Date.now().toString(36).toUpperCase().slice(-6), date:data.date || today(), time:now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}), customer:data.customer, lines:data.lines, total:tot, pay:''}), biz:s0.business || bizName(), phone:s0.phone || s0.businessPhone || '', seller:s0.name || ''}; setTimeout(() => rcptModal(p, {phone:data.phone || '', print:true}), 300); } }
   catch(e) { toast(fbMsg(e), true); }
 }
 function resLogin(){ return signInScreen(); }
@@ -2404,7 +2422,7 @@ function resUI(){
       <p class="hint">Updated by ${esc(s.business)} on ${esc(fmtDateTime(s.updatedAt))}.</p>`;
   } else if (RES.tab === 'sell') {
     const av = resAvail().filter(x => x.avail > 0);
-    body = `<div class="card"><h2>Record a sale</h2>${av.length ? `<form id="res-form" data-type="sale"><div class="grid2"><label for="rs-d">Date<input id="rs-d" type="date" name="date" value="${today()}"></label><label for="rs-c">Customer (optional)<input id="rs-c" name="customer" placeholder="Name"></label></div>
+    body = `<div class="card"><h2>Record a sale</h2>${av.length ? `<form id="res-form" data-type="sale"><div class="grid2"><label for="rs-d">Date<input id="rs-d" type="date" name="date" value="${today()}"></label><label for="rs-c">Customer (optional)<input id="rs-c" name="customer" placeholder="Name"></label><label for="rs-ph">Customer phone (for the receipt)<input id="rs-ph" name="phone" type="tel" placeholder="0977 123456"></label></div>
       <div class="tw"><table class="t"><thead><tr><th>Perfume</th><th class="n">Available</th><th class="n">Price</th><th class="n">Sold</th></tr></thead><tbody>${av.map(x => `<tr><td>${esc(x.name)}</td><td class="n">${x.avail}</td><td class="n">${money(x.price)}</td><td class="n"><input type="number" name="q_${x.productId}" min="0" max="${x.avail}" placeholder="0" style="width:70px;text-align:right"></td></tr>`).join('')}</tbody></table></div>
       <div class="actions" style="margin-top:10px">${btn('Send sale', 'resSend', {}, 'pri')}</div></form><p class="hint">Your commission: ${esc(s.commRule)}.</p>` : '<p class="mut">You have no bottles available to sell.</p>'}</div>`;
   } else if (RES.tab === 'pay') {
@@ -2432,7 +2450,7 @@ function resUI(){
   } else if (RES.tab === 'team') {
     body = `<div class="card"><h2>My recruits</h2><p class="hint">You earn 2.5% of the selling price on every bottle your recruits sell.</p>${s.recruits.length ? `<ul class="list">${s.recruits.map(k => `<li><span><b>${esc(k.name)}</b> <span class="small mut">${esc(k.town)}</span><div class="small mut">${int(k.bottlesThisMonth)} bottles this month</div></span><b>${money(k.bonusTotal)} bonus</b></li>`).join('')}</ul>` : '<p class="mut">No recruits yet. Bring in a new reseller and earn on their sales!</p>'}</div>`;
   } else if (RES.tab === 'account') {
-    body = `<div class="card"><h2>${esc(s.name)}</h2><p>${esc(s.town)} · login <code>${esc(FB_ME.login || '')}</code></p><h3>Change PIN</h3><div class="grid2"><label for="ra-p">New PIN (6 digits or more)<input id="ra-p" type="password" inputmode="numeric"></label><label for="ra-p2">Repeat<input id="ra-p2" type="password" inputmode="numeric"></label></div><div class="actions">${btn('Change PIN', 'resPin', {}, 'pri')}${canGoogle() ? ((FB.providers?.() || []).includes('google.com') ? '<span class="pill good">Google linked</span>' : btn('Link Google account', 'fbLinkGoogle')) : ''}${btn('Sign out', 'appOut', {}, 'ghost')}</div></div>${lookCard()}${deviceCard()}${updCard()}<div><p class="hint">Questions? Call ${esc(s.business)} on ${esc(s.businessPhone)}.</p></div>`;
+    body = `<div class="card"><h2>${esc(s.name)}</h2><p>${esc(s.town)} · login <code>${esc(FB_ME.login || '')}</code></p><h3>Change PIN</h3><div class="grid2"><label for="ra-o">Current PIN<input id="ra-o" type="password" inputmode="numeric" autocomplete="current-password"></label><label for="ra-p">New PIN (6 digits or more)<input id="ra-p" type="password" inputmode="numeric"></label><label for="ra-p2">Repeat<input id="ra-p2" type="password" inputmode="numeric"></label></div><div class="actions">${btn('Change PIN', 'resPin', {}, 'pri')}${canGoogle() ? ((FB.providers?.() || []).includes('google.com') ? '<span class="pill good">Google linked</span>' : btn('Link Google account', 'fbLinkGoogle')) : ''}${btn('Sign out', 'appOut', {}, 'ghost')}</div></div>${lookCard()}${deviceCard()}${updCard()}<div><p class="hint">Questions? Call ${esc(s.business)} on ${esc(s.businessPhone)}.</p></div>`;
   }
   return `<div class="res-wrap"><div class="res-head"><img src="${LOGO}" alt=""><div><div class="serif" style="font-size:22px;line-height:1">${esc(s.business)}</div><div class="small mut">${esc(s.name)} · ${esc(s.town)}${pend.length ? ` · ${pend.length} waiting` : ''}</div></div></div>${nav}${body}</div>`;
 }
@@ -2441,7 +2459,7 @@ function resCollect(form){
   if (type === 'sale' || type === 'return') {
     const lines = av.map(x => ({productId:x.productId, name:x.name, qty:Math.round(num(d['q_' + x.productId])), price:x.price, max:x.avail})).filter(l => l.qty > 0);
     if (!lines.length) throw Error('Enter how many bottles.'); const over = lines.find(l => l.qty > l.max); if (over) throw Error(`You have only ${over.max} × ${over.name} available.`);
-    return type === 'sale' ? {lines:lines.map(({max, ...l}) => l), customer:(d.customer || '').trim(), date:d.date || today()} : {lines:lines.map(({max, price, ...l}) => l), note:(d.note || '').trim()};
+    return type === 'sale' ? {lines:lines.map(({max, ...l}) => l), customer:(d.customer || '').trim(), phone:(d.phone || '').trim(), date:d.date || today()} : {lines:lines.map(({max, price, ...l}) => l), note:(d.note || '').trim()};
   }
   if (type === 'order') { const pl = RES.pub.prices?.list || [], cart = RES.cart || {}; const lines = pl.filter(p => cart[p.id] > 0).map(p => ({productId:p.id, name:p.name + (p.size ? ' ' + p.size + 'ml' : ''), qty:cart[p.id], price:p.promo ? p.promo.price : p.price})); if (!lines.length) throw Error('Tap + on the perfumes you want.');
     return {lines, note:($('#ro-n')?.value || '').trim()}; }
@@ -2525,7 +2543,7 @@ function signInScreen(){
       ${canGoogle() ? `<div class="fb-or"><span>or</span></div>${btn('Continue with Google', 'fbGoogle', {}, 'gbtn')}<p class="small mut" style="margin-top:6px">Google works after you link it once in Account.</p>` : ''}
       <p style="margin-top:14px;text-align:center"><button type="button" class="link" data-act="signTab" data-k="apply">Want to sell for us? Apply here</button></p></form>`;
   return `<div class="lockwrap"><div class="lockcard sign-card"><img src="${LOGO}" alt="" style="width:84px;height:84px"><h1 class="serif" style="margin:10px 0 2px">${tab === 'apply' ? 'Join the team' : 'Sign in'}</h1><p class="mut" style="margin:0 0 14px">${esc(bizName())}</p>${note}
-    ${tab !== 'apply' ? `<div class="seg sign-tabs" role="tablist"><button type="button" role="tab" data-act="signTab" data-k="reseller" class="${tab === 'reseller' ? 'on' : ''}">I'm a reseller</button><button type="button" role="tab" data-act="signTab" data-k="owner" class="${tab === 'owner' ? 'on' : ''}">Admin</button></div>` : ''}
+    ${tab !== 'apply' ? `<div class="seg sign-tabs" role="tablist"><button type="button" role="tab" data-act="signTab" data-k="reseller" class="${tab === 'reseller' ? 'on' : ''}">Reseller / shop</button><button type="button" role="tab" data-act="signTab" data-k="owner" class="${tab === 'owner' ? 'on' : ''}">Admin</button></div>` : ''}
     ${body}<p class="small mut" style="margin-top:16px">Version ${APP_VERSION}</p></div></div>`;
 }
 function pinSetupScreen(){
@@ -2585,7 +2603,7 @@ function deviceCard(){
   return `<div class="card"><h2>Sign-in &amp; security on this ${DEV_NAME}</h2><p class="hint">The app asks for your PIN every time it opens${bio ? ' (or your fingerprint)' : ''}, and again when you leave it for a while. After ${MAX_FAILS} wrong PINs it signs out and needs the full sign-in.</p>
     <div class="grid2"><label class="small" for="f-locks">Lock when I leave the app for<select id="f-locks">${[[0, 'Straight away'], [60, '1 minute'], [300, '5 minutes'], [900, '15 minutes']].map(([v, l]) => `<option value="${v}" ${lockSecs() === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
     ${bio ? `<label class="small chk" for="f-bio" style="align-self:end"><input id="f-bio" type="checkbox" ${DCFG.bio ? 'checked' : ''}> Unlock with fingerprint</label>` : ''}</div>
-    <div class="actions">${btn('Sign out of this ' + DEV_NAME, 'appOut', {}, 'ghost danger')}</div></div>`;
+    <div class="actions">${SESSION ? btn('Change my PIN', 'myPin', {}, 'pri') : ''}${btn('Sign out of this ' + DEV_NAME, 'appOut', {}, 'ghost danger')}</div></div>`;
 }
 
 /* ---- alerts ---- */
@@ -2643,9 +2661,9 @@ const proofModal = (src, title = 'Payment slip') => modal(title, `<img src="${sr
 function thumbOf(data, max = 220){
   return new Promise(res => { const im = new Image(); im.onload = () => { const k = Math.min(1, max / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.max(1, Math.round(im.width * k)); c.height = Math.max(1, Math.round(im.height * k)); const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(im, 0, 0, c.width, c.height); res(c.toDataURL('image/jpeg', 0.72)); }; im.onerror = () => res(''); im.src = data; });
 }
-async function catalogOps(){
+async function catalogOps(key = 'if-catsig'){
   const ps = sortedProds().filter(p => (p.status || 'active') !== 'inactive' && imgOf(p.id));
-  const sig = 'v2|' + ps.map(p => p.id + ':' + imgOf(p.id).length).join('|'); let last = ''; try { last = localStorage.getItem('if-catsig') || ''; } catch(e) {}
+  const sig = 'v2|' + ps.map(p => p.id + ':' + imgOf(p.id).length).join('|'); let last = ''; try { last = localStorage.getItem(key) || ''; } catch(e) {}
   if (sig === last) return {ops:[], sig};
   const parts = []; let cur = {}, size = 0;
   for (const p of ps) { const t = await thumbOf(imgOf(p.id), 360); if (!t) continue; if (size + t.length > 800000) { parts.push(cur); cur = {}; size = 0; } cur[p.id] = t; size += t.length; }
@@ -2808,6 +2826,36 @@ service cloud.firestore {
         && request.resource.data.status == 'new' && request.resource.data.name is string && request.resource.data.name.size() > 1 && request.resource.data.name.size() < 80
         && request.resource.data.phone is string && request.resource.data.phone.size() < 30 && request.resource.data.message.size() < 301;
       allow read, update, delete: if isOwner();
+    }
+    function isShop(sid) { return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && me().role == 'shop' && me().shopId == sid; }
+    match /shops/{sid} {
+      allow read: if isOwner() || isShop(sid);
+      allow write: if isOwner();
+      match /sales/{id} {
+        allow read: if isOwner() || isShop(sid);
+        allow create: if isShop(sid) && request.resource.data.by == request.auth.uid && request.resource.data.status == 'new';
+        allow update, delete: if isOwner();
+      }
+      match /requests/{id} {
+        allow read: if isOwner() || isShop(sid);
+        allow create: if isShop(sid) && request.resource.data.by == request.auth.uid && request.resource.data.status == 'pending';
+        allow update, delete: if isOwner();
+      }
+    }
+    match /store/{doc} {
+      allow read: if true;
+      allow write: if isOwner();
+    }
+    match /orders/{id} {
+      allow get: if true;
+      allow list, update, delete: if isOwner();
+      allow create: if request.resource.data.status == 'new' && request.resource.data.name is string && request.resource.data.name.size() > 1 && request.resource.data.name.size() < 80
+        && request.resource.data.phone is string && request.resource.data.phone.size() < 30 && request.resource.data.lines is list && request.resource.data.lines.size() > 0 && request.resource.data.lines.size() < 40;
+    }
+    match /rcpt/{id} {
+      allow get: if true;
+      allow create: if signedIn();
+      allow update, delete: if isOwner();
     }
     match /backups/{id} {
       allow read, write: if isOwner();
@@ -3061,6 +3109,220 @@ function openResDrawer(){
   el.hidden = false;
 }
 const resSkinOn = on => { try { on ? localStorage.setItem('if-forceskin', 'rose') : localStorage.removeItem('if-forceskin'); } catch(e) {} applyLook(); };
+
+
+/* ======================= 2.7: receipts out, shops & shopkeepers, online shop ======================= */
+const STORE_URL = 'https://infinitytimetable.github.io/infinity-fragrances-updates/shop/';
+const smsLink = (phone, text) => `sms:${String(phone || '').replace(/[^\d+]/g, '')}?body=${encodeURIComponent(text)}`;
+const rToken = () => Array.from(crypto.getRandomValues(new Uint8Array(15))).map(b => 'abcdefghijkmnpqrstuvwxyz23456789'[b % 32]).join('');
+const PAYL = {cash:'Cash', momo:'Mobile money', bank:'Bank', credit:'Credit (to pay later)', account:'Reseller account', cod:'Cash on delivery'};
+
+/* ---- one receipt format that every sender understands ---- */
+function rcptPublic(r, extra = {}){
+  return {biz:bizName(), phone:S.settings.phone || extra.phone || '', tagline:S.settings.tagline || '', no:r.no, date:r.date, time:r.time || '', customer:String(r.customer || '').split(' ')[0],
+    lines:(r.lines || []).map(l => ({name:l.name || pName(l.productId), qty:num(l.qty), price:num(l.price)})), subtotal:num(r.subtotal ?? r.total), discount:num(r.discount), total:num(r.total), pay:PAYL[r.pay] || r.pay || '', seller:extra.seller || '', at:nowISO()};
+}
+function rcptText(p, link){
+  return `*${p.biz}* receipt ${p.no}\n${fmtDate(p.date)} ${p.time}\n` + p.lines.map(l => `${l.name} ${l.qty} × ${money(l.price)}`).join('\n') + (p.discount ? `\nDiscount −${money(p.discount)}` : '') + `\n*TOTAL ${money(p.total)}*${p.pay ? ` (${p.pay})` : ''}` + (link ? `\n\nYour receipt: ${link}` : '') + `\n\nThank you for shopping with us!`;
+}
+async function rcptLink(p, token){
+  if (!FB || !FB_USER) throw Error('Sign in online first (receipt links are kept in your Firebase account).');
+  token = token || rToken(); await FB.set('rcpt/' + token, p); return {token, url:STORE_URL + '#r=' + token};
+}
+/* the "send receipt" panel used by the till, shops and resellers */
+function sendPanel(p, opts = {}){
+  const ph = opts.phone || '';
+  return `<div class="send-panel"><label for="sr-ph" class="small">Customer's phone (for WhatsApp / SMS)<input id="sr-ph" type="tel" placeholder="0977 123456" value="${esc(ph)}"></label>
+    <div class="actions">${btn('WhatsApp', 'rcWa', {}, 'pri sm')}${btn('SMS', 'rcSms', {}, 'sm')}${btn('Copy link', 'rcLink', {}, 'sm')}${opts.print !== false ? btn('Print', 'printDoc', {}, 'sm') : ''}${opts.image !== false ? btn('Picture', 'expDoc', {fmt:'png', name:p.no}, 'sm') : ''}</div>
+    <p class="small mut" id="sr-note">WhatsApp and SMS open on this phone with the receipt ready to send. The link lets the customer open and save the receipt.</p></div>`;
+}
+let RC = null;   // receipt being sent: {p, token, onToken}
+async function rcSend(kind){
+  if (!RC) return; const ph = ($('#sr-ph')?.value || '').trim(); RC.phone = ph;
+  let link = RC.token ? STORE_URL + '#r=' + RC.token : '';
+  if (!link && FB && FB_USER) { try { const r = await rcptLink(RC.p); RC.token = r.token; link = r.url; RC.onToken && RC.onToken(r.token); } catch(e) {} }
+  const text = rcptText(RC.p, link);
+  if (kind === 'link') { if (!link) return toast('Receipt links need you to be signed in online.', true); try { await navigator.clipboard.writeText(link); toast('Link copied. Paste it in any chat.'); } catch(e) { prompt('Copy this link:', link); } return; }
+  if ((kind === 'wa' || kind === 'sms') && !ph) toast('Tip: type the customer’s number first so it opens their chat.');
+  const url = kind === 'wa' ? waLink(ph, text) : smsLink(ph, text); EXT_T = Date.now();
+  const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; document.body.appendChild(a); a.click(); a.remove();
+  RC.onSent && RC.onSent(kind, ph);
+}
+function rcptDocPublic(p){
+  const H = 420 + p.lines.length * 46 + (p.discount ? 26 : 0);
+  return `<div class="doc" data-w="420" data-h="${H}" style="width:420px;height:${H}px;padding:26px 28px;font-size:14px"><div style="text-align:center"><img src="${LOGO}" style="width:70px;height:70px" alt=""><div class="serif" style="font-size:25px;margin-top:6px">${esc(p.biz)}</div><div style="font-size:12px;color:#6e675c">${esc(p.phone)}</div></div>
+    <div style="border-top:1px dashed #b9b1a1;margin:14px 0 10px"></div><div style="display:flex;justify-content:space-between;font-size:13px"><span>Receipt <b>${esc(p.no)}</b></span><span>${fmtDate(p.date)} ${esc(p.time)}</span></div>${p.seller ? `<div style="font-size:13px;margin-top:4px">Sold by: ${esc(p.seller)}</div>` : ''}
+    <div style="border-top:1px dashed #b9b1a1;margin:10px 0"></div>${p.lines.map(l => `<div style="padding:5px 0"><div style="font-weight:700">${esc(l.name)}</div><div style="display:flex;justify-content:space-between;color:#4b463d"><span>${l.qty} × ${money(l.price)}</span><span>${money(l.qty * l.price)}</span></div></div>`).join('')}
+    <div style="border-top:1px dashed #b9b1a1;margin:10px 0"></div>${p.discount ? `<div style="display:flex;justify-content:space-between"><span>Discount</span><span>−${money(p.discount)}</span></div>` : ''}
+    <div style="display:flex;justify-content:space-between;font-size:20px;font-weight:800;margin-top:6px"><span>TOTAL</span><span>${money(p.total)}</span></div><div style="display:flex;justify-content:space-between;margin-top:6px"><span>Paid by</span><span>${esc(p.pay)}</span></div>
+    <div style="border-top:1px dashed #b9b1a1;margin:14px 0 10px"></div><div style="text-align:center;font-size:13px">Thank you for shopping with us!</div></div>`;
+}
+function rcptModal(p, opts = {}){
+  RC = {p, token:opts.token || '', onToken:opts.onToken, onSent:opts.onSent};
+  modal(`Receipt ${p.no}`, sendPanel(p, opts) + `<div class="preview" id="doc-prev"><div class="docwrap" data-maxw="420">${opts.doc || rcptDocPublic(p)}</div></div>`, null, {nofocus:true});
+  requestAnimationFrame(() => fitDocs($('#doc-prev')));
+}
+
+/* ---- shops (stock locations with a shopkeeper) ---- */
+const shopOf = id => locs().find(l => l.id === id) || null;
+const shopCode = l => (l.code || String(l.name || 'SHOP').replace(/[^A-Za-z]/g, '').slice(0, 3) || 'SHP').toUpperCase();
+async function saveLoc(rec){ const list = locs().some(l => l.id === rec.id) ? locs().map(l => l.id === rec.id ? rec : l) : locs().concat(rec); await putSettings({locations:list}); }
+function shopStats(sid, C){
+  const st = (C.storeLoc[sid] || {}), bottles = Object.values(st).reduce((t, q) => t + Math.max(0, q), 0), value = Object.entries(st).reduce((t, [p, q]) => t + Math.max(0, q) * num(S.products[p]?.sellPrice), 0);
+  const t = today(), m = t.slice(0, 7); let td = 0, mo = 0; const by = {};
+  Object.values(S.receipts).forEach(r => { if ((r.shop || (r.seller ? '' : (r.loc || S.settings.posLoc || 'main'))) !== sid) return; if (r.date === t) { td += num(r.total); by[r.pay] = (by[r.pay] || 0) + num(r.total); } if (r.date?.startsWith(m)) mo += num(r.total); });
+  return {bottles, value:r2(value), today:r2(td), month:r2(mo), by};
+}
+PAGES.shops = C => {
+  const list = locs(), pend = Object.values(OWN.shopReqs || {}).flat();
+  return head('Shops', 'Each shop has its own stock. Give a shopkeeper a login and they sell from their own phone: their sales, receipts and cash appear here straight away, and the shop’s stock goes down.', btn('+ Add shop', 'shopNew', {}, 'pri') + btn('Move stock to a shop', 'stockMove'))
+    + (pend.length ? `<div class="card"><h2>Shop stock requests <span class="pill warn">${pend.length}</span></h2><ul class="list">${pend.map(q => `<li><span><b>${esc(shopOf(q.sid)?.name || '')}</b> asks for ${(q.lines || []).map(l => `${l.qty} × ${esc(l.name)}`).join(', ')}${q.note ? `<div class="small mut">“${esc(q.note)}”</div>` : ''}</span><span class="actions">${btn('Send stock', 'shopReqOk', {sid:q.sid, id:q.id}, 'sm pri')}${btn('Decline', 'shopReqNo', {sid:q.sid, id:q.id}, 'sm ghost')}</span></li>`).join('')}</ul></div>` : '')
+    + `<div class="shop-grid">${list.map(l => { const s = shopStats(l.id, C); return `<div class="card shop-card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div><h2 style="margin:0">${esc(l.name)}</h2><div class="small mut">${esc([l.town, l.address].filter(Boolean).join(' · ') || (l.id === 'main' ? 'Your main store' : ''))}</div></div>${l.keeperUid ? '<span class="pill good">Shopkeeper app on</span>' : ''}</div>
+      <div class="kv" style="margin:10px 0"><dt>Shopkeeper</dt><dd>${esc(l.keeper || '—')}${l.phone ? ` · ${esc(l.phone)}` : ''}</dd><dt>Stock</dt><dd>${int(s.bottles)} bottles · ${money(s.value)}</dd><dt>Sales today</dt><dd><b>${money(s.today)}</b>${Object.keys(s.by).length ? ` <span class="small mut">(${Object.entries(s.by).map(([k, v]) => `${PAYL[k] || k} ${money(v)}`).join(', ')})</span>` : ''}</dd><dt>This month</dt><dd>${money(s.month)}</dd>${l.keeperLogin ? `<dt>Login ID</dt><dd>${esc(l.keeperLogin)}</dd>` : ''}</div>
+      <div class="actions">${btn('Edit', 'shopEdit', {id:l.id}, 'sm')}${btn('Sales', 'shopSales', {id:l.id}, 'sm ghost')}${FB_ROLE === 'owner' ? (l.keeperUid ? btn('New PIN', 'shopAcc', {id:l.id, reset:1}, 'sm ghost') : btn('Make shopkeeper login', 'shopAcc', {id:l.id}, 'sm pri')) : ''}</div></div>`; }).join('')}</div>`
+    + (FB_ROLE === 'owner' ? '' : `<p class="hint">To give shopkeepers their own app, first sign in under Resellers → Online accounts.</p>`);
+};
+function shopForm(l = {}){
+  const isNew = !l.id;
+  modal(isNew ? 'Add shop' : `Edit ${l.name}`, `<div class="grid2"><label for="f-sn">Shop name<input id="f-sn" name="name" value="${esc(l.name || '')}" required placeholder="e.g. Kitwe shop"></label><label for="f-st">Town<input id="f-st" name="town" value="${esc(l.town || '')}"></label>
+    <label for="f-sa">Address / landmark<input id="f-sa" name="address" value="${esc(l.address || '')}"></label><label for="f-sc">Receipt code (3 letters)<input id="f-sc" name="code" maxlength="4" value="${esc(l.code || '')}" placeholder="${esc(shopCode({name:l.name || 'Shop'}))}"></label>
+    <label for="f-sk">Shopkeeper's name<input id="f-sk" name="keeper" value="${esc(l.keeper || '')}"></label><label for="f-sp">Shopkeeper's phone<input id="f-sp" name="phone" type="tel" value="${esc(l.phone || '')}"></label>
+    <label class="chk" for="f-so"><input id="f-so" name="online" type="checkbox" ${l.online !== false ? 'checked' : ''}> Customers can collect online orders here</label></div>`,
+  async d => { const rec = {...l, id:l.id || uid(), name:d.name.trim(), town:d.town.trim(), address:d.address.trim(), code:d.code.trim().toUpperCase(), keeper:d.keeper.trim(), phone:d.phone.trim(), online:!!d.online, shop:true}; await saveLoc(rec); if (rec.keeperUid && FB_ROLE === 'owner') publishShop(rec.id); toast('Shop saved'); }, {label:'Save shop'});
+}
+async function shopAccCreate(sid, reset){
+  const l = shopOf(sid); if (!l) return; if (!l.keeper) return toast('Add the shopkeeper’s name first (Edit).', true);
+  const base = String(l.keeper.split(' ')[0]).toLowerCase().replace(/[^a-z]/g, '') || 'shop', login = base + String(1000 + Math.floor(Math.random() * 9000)), pin = String(100000 + Math.floor(Math.random() * 900000));
+  try {
+    const u = await FB.createUser(`${login}@${RES_DOMAIN}`, pin), ops = [['set', `users/${u}`, {role:'shop', shopId:sid, name:l.keeper, login, createdAt:FB.now()}]];
+    if (reset && l.keeperUid) ops.push(['del', `users/${l.keeperUid}`]);
+    await FB.batch(ops); await saveLoc({...l, keeperUid:u, keeperLogin:login}); await publishShop(sid); ownerListen();
+    const msg = `Hello ${l.keeper.split(' ')[0]}! Your ${bizName()} shop login for ${l.name} is ready.\n\n1. Install the Infinity Fragrances app.\n2. Open it and choose "Reseller / shop".\n3. Login ID: ${login}\n   PIN: ${pin}\n\nIn the app you sell, send receipts to customers, see your shop's stock and ask for more stock. Change your PIN in the app.`;
+    modal(`${l.name}: shopkeeper login`, `<p>Send these to ${esc(l.keeper)}. The PIN is shown only now.</p><div style="font-size:20px;padding:14px;border:2px dashed var(--gold);border-radius:12px;line-height:1.7">Login ID: <b>${login}</b><br>PIN: <b>${pin}</b></div><div class="actions" style="margin-top:12px">${l.phone ? `<a class="btn pri" href="${waLink(l.phone, msg)}" target="_blank" rel="noopener">Send on WhatsApp</a>` : ''}</div>`, null, {nofocus:true});
+  } catch(e) { toast(fbMsg(e), true); }
+}
+function shopSnapshot(sid){
+  const l = shopOf(sid), C = compute(), st = C.storeLoc[sid] || {};
+  const stock = sortedProds().filter(p => (p.status || 'active') !== 'inactive').map(p => { const bp = bestPromo(p.id, num(p.sellPrice), 'pos'); return {id:p.id, name:p.name, size:p.size || '', category:p.category || '', qty:Math.max(0, st[p.id] || 0), price:num(p.sellPrice), promo:bp && bp.price < num(p.sellPrice) ? {price:r2(bp.price), badge:promoBadge(bp.pr)} : null}; });
+  const t = today(), recent = Object.values(S.receipts).filter(r => r.shop === sid && r.date >= iso(addDays(new Date(), -2))).sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time)).slice(0, 60)
+    .map(r => ({id:r.id, no:r.no, date:r.date, time:r.time, total:num(r.total), pay:r.pay, customer:r.customer || '', bottles:(r.lines || []).reduce((s2, x) => s2 + num(x.qty), 0), token:r.token || ''}));
+  const lastNo = Object.values(S.receipts).filter(r => r.shop === sid).reduce((m, r) => Math.max(m, parseInt(String(r.no).split('-').pop()) || 0), 0);
+  return {name:l.name, town:l.town || '', address:l.address || '', code:shopCode(l), keeper:l.keeper || '', stock, recent, lastNo, today:t, business:bizName(), businessPhone:S.settings.phone || '', tagline:S.settings.tagline || '', updatedAt:nowISO()};
+}
+async function publishShop(sid){ const l = shopOf(sid); if (!l || !l.keeperUid || FB_ROLE !== 'owner') return; try { await FB.set('shops/' + sid, shopSnapshot(sid)); } catch(e) {} }
+const publishShops = () => locs().filter(l => l.keeperUid).forEach(l => publishShop(l.id));
+/* admin side: shop sales arrive and are booked automatically */
+async function shopSaleImport(sid, q){
+  if (OWN.importing?.has(q.id)) return; (OWN.importing = OWN.importing || new Set()).add(q.id);
+  try {
+    if (Object.values(S.receipts).some(r => r.extId === q.id)) { await FB.update(`shops/${sid}/sales/${q.id}`, {status:'recorded'}); return; }
+    const rc = {id:uid(), no:q.no, date:q.date || today(), time:q.time || '', shop:sid, loc:sid, pay:q.pay || 'cash', customer:q.customer || '', phone:q.phone || '', lines:(q.lines || []).map(l => ({productId:l.productId, qty:num(l.qty), price:num(l.price)})), subtotal:num(q.subtotal ?? q.total), discount:num(q.discount), total:num(q.total), seller:'', soldBy:q.byName || shopOf(sid)?.keeper || '', token:q.token || '', extId:q.id, moveIds:[]};
+    for (const l of rc.lines) { const mv = await put('moves', {kind:'sale', date:rc.date, loc:sid, productId:l.productId, qty:l.qty, unitPrice:l.price, unitCost:num(S.products[l.productId]?.costPrice), customer:rc.customer, pay:rc.pay, note:`${shopOf(sid)?.name || 'Shop'} · ${rc.no}`}); rc.moveIds.push(mv.id); }
+    if (rc.pay !== 'credit') { const c = await put('cash', {kind:'in', date:rc.date, channel:rc.pay, amount:rc.total, category:'Shop sale', shop:sid, customer:rc.customer, description:`${shopOf(sid)?.name || 'Shop'} receipt ${rc.no}`, receiptId:rc.id}); rc.cashId = c.id; }
+    await put('receipts', rc); await FB.update(`shops/${sid}/sales/${q.id}`, {status:'recorded', recordedAt:nowISO()});
+    if (route() === 'shops' || route() === 'pos') render(true);
+  } catch(e) { toast('A shop sale could not be booked: ' + fbMsg(e), true); }
+  finally { OWN.importing.delete(q.id); clearTimeout(OWN.shopPubT); OWN.shopPubT = setTimeout(() => publishShop(sid), 1500); }
+}
+
+/* ---- shopkeeper app ---- */
+let SHOP = {snap:null, sales:[], reqs:[], tab:'sell', cart:{}, pay:'cash', unsubs:[], q:''};
+function shopStart(){
+  SHOP.unsubs.forEach(f => { try { f(); } catch(e) {} }); SHOP.unsubs = []; const sid = FB_ME.shopId; let first = true;
+  SHOP.unsubs.push(FB.watch('shops/' + sid, d => { SHOP.snap = d; if (!first && SHOP.tab !== 'sell') render(true); else if (first) render(true); first = false; }));
+  SHOP.unsubs.push(FB.listen(`shops/${sid}/sales`, 'by', FB_USER.uid, list => { SHOP.sales = list.sort((a, b) => (b.at || '').localeCompare(a.at || '')); if (SHOP.tab !== 'sell') render(true); }));
+  SHOP.unsubs.push(FB.listen(`shops/${sid}/requests`, 'by', FB_USER.uid, list => { SHOP.reqs = list.sort((a, b) => (b.at || '').localeCompare(a.at || '')); if (SHOP.tab === 'order') render(true); }));
+}
+function shopAvail(){ const s = SHOP.snap; if (!s) return []; const pend = {}; SHOP.sales.filter(x => x.status === 'new').forEach(x => (x.lines || []).forEach(l => pend[l.productId] = (pend[l.productId] || 0) + num(l.qty)));
+  return s.stock.map(p => ({...p, avail:Math.max(0, p.qty - (pend[p.id] || 0)), unit:p.promo ? p.promo.price : p.price})); }
+function shopCartTotals(){ const av = shopAvail(); let n = 0, t = 0; av.forEach(p => { const q = SHOP.cart[p.id] || 0; n += q; t += q * p.unit; }); return {n, t:r2(t)}; }
+function shopCartBar(){ const {n, t} = shopCartTotals(); return n ? `<span><b>${n}</b> bottle${n === 1 ? '' : 's'} · <b>${money(t)}</b></span>${btn('Complete sale', 'shopSell', {}, 'pri')}` : '<span class="mut">Tap + to add perfumes</span>'; }
+function shopUI(){
+  const s = SHOP.snap;
+  if (!s) return `<div class="res-wrap"><div class="card"><p>${FB_ERR ? esc(FB_ERR) : 'Loading your shop…'}</p><p class="hint">If this takes long, ask the admin to open Shops in their app.</p></div></div>`;
+  const av = shopAvail(), t = today(), mine = SHOP.sales.filter(x => x.date === t);
+  let body = '';
+  if (SHOP.tab === 'sell') {
+    const cats = [...new Set(av.map(p => p.category).filter(Boolean))];
+    body = `<div class="card"><h2>New sale</h2><input id="shop-q" type="search" placeholder="Search perfumes…" style="width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:10px;font-size:16px;margin-bottom:8px;background:var(--surface);color:var(--ink)">
+      ${cats.length > 1 ? `<div class="seg" style="flex-wrap:wrap;margin-bottom:10px"><button type="button" data-act="shopCat" data-k="" class="on">All</button>${cats.map(c => `<button type="button" data-act="shopCat" data-k="${esc(c)}">${esc(c)}</button>`).join('')}</div>` : ''}
+      <div class="cat-grid">${av.filter(p => p.avail > 0).map(p => `<div class="cat-card" data-name="${esc((p.name + ' ' + (p.category || '')).toLowerCase())}" data-cat="${esc(p.category || '')}"><div class="cat-name">${esc(p.name)}${p.size ? ` <span class="small mut">${esc(p.size)}ml</span>` : ''}</div><div class="small mut">${p.avail} in shop</div>
+        <div class="cat-price">${p.promo ? `<s class="small mut">${money(p.price)}</s> <b>${money(p.promo.price)}</b> <span class="pill acc">${esc(p.promo.badge)}</span>` : `<b>${money(p.price)}</b>`}</div><div class="stepper"><button type="button" data-act="shopMinus" data-id="${p.id}" aria-label="One less">−</button><span id="sq-${p.id}">${SHOP.cart[p.id] || 0}</span><button type="button" data-act="shopPlus" data-id="${p.id}" aria-label="One more">+</button></div></div>`).join('') || '<p class="mut">No stock in the shop. Ask for stock in the Order tab.</p>'}</div>
+      <div class="grid2" style="margin-top:12px"><label for="sh-c">Customer name (optional)<input id="sh-c" value="${esc(SHOP.cust || '')}"></label><label for="sh-p">Customer phone (for the receipt)<input id="sh-p" type="tel" value="${esc(SHOP.phone || '')}"></label></div>
+      <div class="seg" style="margin-top:8px;flex-wrap:wrap">${[['cash', 'Cash'], ['momo', 'Mobile money'], ['bank', 'Bank'], ['credit', 'Credit']].map(([k, l]) => `<button type="button" data-act="shopPay" data-k="${k}" class="${SHOP.pay === k ? 'on' : ''}">${l}</button>`).join('')}</div></div>
+      <div class="cart-bar" id="shop-cart">${shopCartBar()}</div>`;
+  } else if (SHOP.tab === 'today') {
+    const tot = mine.reduce((x, r) => x + num(r.total), 0), by = {}; mine.forEach(r => by[r.pay] = (by[r.pay] || 0) + num(r.total));
+    body = `<div class="tiles">${tile('Sales today', money(tot), `${mine.length} receipt${mine.length === 1 ? '' : 's'}`)}${tile('Bottles sold', int(mine.reduce((x, r) => x + (r.lines || []).reduce((y, l) => y + num(l.qty), 0), 0)))}${Object.entries(by).map(([k, v]) => tile(PAYL[k] || k, money(v))).join('')}</div>
+      <div class="card"><h2>Today's receipts</h2>${mine.length ? `<ul class="list">${mine.map(r => `<li><span><b>${esc(r.no)}</b> · ${esc(r.time || '')}${r.customer ? ' · ' + esc(r.customer) : ''}<div class="small mut">${(r.lines || []).map(l => `${l.qty} × ${esc(l.name)}`).join(', ')} · ${esc(PAYL[r.pay] || r.pay)}${r.status === 'new' ? ' · <span class="pill warn">sending…</span>' : ''}</div></span><span class="actions"><b>${money(r.total)}</b>${btn('Receipt', 'shopRc', {id:r.id}, 'sm ghost')}</span></li>`).join('')}</ul>` : '<p class="mut">No sales yet today.</p>'}</div>`;
+  } else if (SHOP.tab === 'stock') {
+    body = `<div class="card"><h2>Stock in ${esc(s.name)}</h2><div class="tw"><table class="t"><thead><tr><th>Perfume</th><th class="n">In shop</th><th class="n">Price</th></tr></thead><tbody>${av.map(p => `<tr><td>${esc(p.name)}${p.size ? ` <span class="small mut">${esc(p.size)}ml</span>` : ''}</td><td class="n">${p.avail}</td><td class="n">${money(p.unit)}</td></tr>`).join('')}</tbody></table></div><p class="small mut">Updated ${esc(fmtDateTime(s.updatedAt))}</p></div>`;
+  } else if (SHOP.tab === 'order') {
+    body = `<div class="card"><h2>Ask for stock</h2><form id="shop-ord"><div class="tw"><table class="t"><thead><tr><th>Perfume</th><th class="n">In shop</th><th class="n">Want</th></tr></thead><tbody>${av.map(p => `<tr><td>${esc(p.name)}</td><td class="n">${p.avail}</td><td class="n"><input type="number" min="0" name="o_${p.id}" placeholder="0" style="width:70px;text-align:right"></td></tr>`).join('')}</tbody></table></div>
+      <label for="so-n">Note (optional)<input id="so-n" name="note"></label><div class="actions" style="margin-top:10px">${btn('Send request', 'shopOrder', {}, 'pri')}</div></form></div>
+      <div class="card"><h2>My requests</h2>${SHOP.reqs.length ? `<ul class="list">${SHOP.reqs.slice(0, 20).map(q => `<li><span>${(q.lines || []).map(l => `${l.qty} × ${esc(l.name)}`).join(', ')}<div class="small mut">${esc(fmtDateTime(q.at))}${q.reason ? ' · ' + esc(q.reason) : ''}</div></span><span class="pill ${q.status === 'approved' ? 'good' : q.status === 'rejected' ? 'bad' : 'warn'}">${q.status === 'approved' ? 'Sent' : q.status === 'rejected' ? 'Declined' : 'Waiting'}</span></li>`).join('')}</ul>` : '<p class="mut">No requests yet.</p>'}</div>`;
+  } else {
+    body = `<div class="card"><h2>Account</h2><p>${esc(FB_ME?.name || '')} · ${esc(s.name)}</p><div class="grid2"><label for="ra-o">Current PIN<input id="ra-o" type="password" inputmode="numeric"></label><span></span><label for="ra-p">New PIN (6 digits or more)<input id="ra-p" type="password" inputmode="numeric"></label><label for="ra-p2">Repeat new PIN<input id="ra-p2" type="password" inputmode="numeric"></label></div><div class="actions">${btn('Change PIN', 'resPin', {}, 'pri')}${btn('Sign out', 'appOut', {}, 'ghost')}</div></div>${lookCard()}${deviceCard()}${updCard()}<p class="hint">Questions? Call ${esc(s.business)} on ${esc(s.businessPhone)}.</p>`;
+  }
+  return `<div class="res-wrap"><div class="res-head"><img src="${LOGO}" alt=""><div><div class="serif" style="font-size:22px;line-height:1">${esc(s.name)}</div><div class="small mut">${esc(s.business)} · ${esc(FB_ME?.name || '')}</div></div></div>${body}</div>`;
+}
+function shopBottomBar(){
+  const bb = $('#bottombar'); if (!bb) return; const I = {sell:RES_ICONS.sell, today:'<rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/><path d="M3.5 9.5h17M8 2.5v4M16 2.5v4"/>', stock:ICONS.box, order:RES_ICONS.order, account:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.4 4.2-6.5 8-6.5s7 2.1 8 6.5"/>'};
+  bb.innerHTML = [['sell', 'Sell'], ['today', 'Today'], ['stock', 'Stock'], ['order', 'Order'], ['account', 'Account']].map(([k, l]) => `<button type="button" data-act="shopTab" data-k="${k}" class="${SHOP.tab === k ? 'on' : ''}"><svg viewBox="0 0 24 24" aria-hidden="true">${I[k]}</svg>${l}</button>`).join('');
+  document.body.classList.add('nav-on');
+}
+async function shopSell(){
+  const av = shopAvail(), lines = av.filter(p => SHOP.cart[p.id] > 0).map(p => ({productId:p.id, name:p.name + (p.size ? ' ' + p.size + 'ml' : ''), qty:SHOP.cart[p.id], price:p.unit}));
+  if (!lines.length) return toast('Tap + on what the customer is buying.', true);
+  const over = lines.find(l => l.qty > (av.find(p => p.id === l.productId)?.avail || 0)); if (over) return toast(`Only ${av.find(p => p.id === over.productId)?.avail} × ${over.name} in the shop.`, true);
+  const cust = ($('#sh-c')?.value || '').trim(), phone = ($('#sh-p')?.value || '').trim(); if (SHOP.pay === 'credit' && !cust) return toast('Type the customer’s name for a credit sale.', true);
+  const s = SHOP.snap, n = Math.max(num(s.lastNo), num(DCFG.shopLastNo)) + 1, now = new Date(), total = r2(lines.reduce((t, l) => t + l.qty * l.price, 0));
+  const sale = {no:`${s.code}-${String(n).padStart(5, '0')}`, date:today(), time:now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}), lines, subtotal:total, discount:0, total, pay:SHOP.pay, customer:cust, phone, byName:FB_ME?.name || '', status:'new', by:FB_USER.uid, at:nowISO()};
+  const p = {...rcptPublic(sale), biz:s.business, phone:s.businessPhone, seller:s.name};
+  try { const r = await rcptLink(p); sale.token = r.token; } catch(e) {}
+  try { await FB.add(`shops/${FB_ME.shopId}/sales`, sale); } catch(e) { return toast('The sale was not sent: ' + fbMsg(e), true); }
+  await setCfg({shopLastNo:n}); SHOP.cart = {}; SHOP.cust = ''; SHOP.phone = ''; render(true);
+  rcptModal(p, {token:sale.token, phone, print:true});
+}
+
+/* ---- online shop (customers order from a web link) ---- */
+async function publishStore(){
+  if (FB_ROLE !== 'owner') return; const st = S.settings, C = compute();
+  const avail = pid => Object.values(C.storeLoc).reduce((t, o) => t + Math.max(0, o[pid] || 0), 0);
+  const list = sortedProds().filter(p => (p.status || 'active') !== 'inactive' && avail(p.id) > 0).map(p => { const bp = bestPromo(p.id, num(p.sellPrice), 'pos'); return {id:p.id, name:p.name, size:p.size || '', category:p.category || '', price:num(p.sellPrice), promo:bp && bp.price < num(p.sellPrice) ? {price:r2(bp.price), badge:promoBadge(bp.pr)} : null, stock:Math.min(avail(p.id), 20)}; });
+  const doc = {open:st.storeOpen !== false, biz:bizName(), tagline:st.tagline || '', phone:st.phone || '', whatsapp:st.storeWhatsapp || st.phone || '', momo:st.storeMomo || '', momoName:st.storeMomoName || '', delivery:st.storeDelivery || 'Delivery fee depends on your area; we will confirm it on WhatsApp.', shops:locs().filter(l => l.online !== false).map(l => ({id:l.id, name:l.name, town:l.town || '', address:l.address || ''})), list, updatedAt:nowISO()};
+  try { await FB.set('store/catalog', doc); const cat = await catalogOps('if-storesig'); for (const op of cat.ops) { if (op[1].startsWith('public/cat_')) await FB.set(op[1].replace('public/', 'store/'), op[2]); if (op[1] === 'public/catalog') await FB.set('store/images', op[2]); } if (cat.ops.length) localStorage.setItem('if-storesig', cat.sig); } catch(e) {}
+}
+const ORD_ST = {new:['New', 'warn'], confirmed:['Confirmed', 'acc'], done:['Delivered', 'good'], cancelled:['Cancelled', '']};
+PAGES.orders = () => {
+  const list = (OWN.orders || []).slice().sort((a, b) => (b.at || '').localeCompare(a.at || '')), st = S.settings;
+  return head('Online shop', `Customers order from your shop link, then pay on delivery or by mobile money. Share the link on WhatsApp, Facebook or your status.`, btn('Copy shop link', 'storeCopy', {}, 'pri') + btn('Shop settings', 'storeSet'))
+    + `<div class="card"><p style="margin:0">Your shop link: <a href="${STORE_URL}" target="_blank" rel="noopener"><b>${STORE_URL.replace('https://', '')}</b></a> ${st.storeOpen === false ? '<span class="pill bad">Closed</span>' : '<span class="pill good">Open</span>'}</p>${FB_ROLE !== 'owner' ? '<p class="hint">Sign in under Resellers → Online accounts so orders can arrive here.</p>' : ''}</div>`
+    + (list.length ? `<div class="card"><div class="tw"><table class="t"><thead><tr><th>Order</th><th>Customer</th><th>Perfumes</th><th class="n">Total</th><th>How</th><th>Status</th><th></th></tr></thead><tbody>${list.map(o => { const s2 = ORD_ST[o.status] || ['?', '']; return `<tr><td><b>${esc(o.no || '')}</b><div class="small mut">${esc(fmtDateTime(o.at))}</div></td><td>${esc(o.name)}<div class="small mut">${esc(o.phone)} · ${esc(o.town || '')}</div></td><td class="small">${(o.lines || []).map(l => `${l.qty} × ${esc(l.name)}`).join('<br>')}</td><td class="n"><b>${money(o.total)}</b></td><td class="small">${o.method === 'pickup' ? 'Collect: ' + esc(shopOf(o.shopId)?.name || '') : 'Delivery'}<br>${o.payBy === 'momo' ? 'Mobile money' : 'Cash on delivery'}</td><td><span class="pill ${s2[1]}">${s2[0]}</span></td><td><div class="actions">${o.status === 'new' ? btn('Confirm', 'ordOk', {id:o.id}, 'sm pri') : ''}${o.status === 'new' || o.status === 'confirmed' ? btn('Delivered & paid', 'ordDone', {id:o.id}, 'sm') + btn('Cancel', 'ordNo', {id:o.id}, 'sm ghost') : ''}<a class="btn sm ghost" href="${waLink(o.phone, `Hello ${String(o.name).split(' ')[0]}, thank you for your ${bizName()} order ${o.no}.`)}" target="_blank" rel="noopener">WhatsApp</a></div></td></tr>`; }).join('')}</tbody></table></div></div>` : empty('No online orders yet. Share your shop link to get started.'));
+};
+function storeSettings(){
+  const st = S.settings;
+  modal('Online shop settings', `<label class="chk" for="f-so1"><input id="f-so1" name="open" type="checkbox" ${st.storeOpen !== false ? 'checked' : ''}> Shop is open for orders</label>
+    <div class="grid2"><label for="f-so2">WhatsApp number customers can message<input id="f-so2" name="wa" type="tel" value="${esc(st.storeWhatsapp || st.phone || '')}"></label><label for="f-so3">Mobile money number to pay to<input id="f-so3" name="momo" type="tel" value="${esc(st.storeMomo || '')}"></label>
+    <label for="f-so4">Name on the mobile money account<input id="f-so4" name="momoName" value="${esc(st.storeMomoName || '')}"></label><label for="f-so5">Delivery note shown to customers<input id="f-so5" name="delivery" value="${esc(st.storeDelivery || 'Delivery fee depends on your area; we will confirm it on WhatsApp.')}"></label></div>
+    <p class="hint">Only perfumes you have in stock show in the online shop, with your normal selling price and any promotion marked for shop customers. Cost prices are never shown.</p>`,
+  async d => { await putSettings({storeOpen:!!d.open, storeWhatsapp:d.wa.trim(), storeMomo:d.momo.trim(), storeMomoName:d.momoName.trim(), storeDelivery:d.delivery.trim()}); await publishStore(); toast('Online shop updated'); }, {label:'Save'});
+}
+function ordDone(id){
+  const o = (OWN.orders || []).find(x => x.id === id); if (!o) return; const C = compute();
+  const opts = locs().map(l => `<option value="${l.id}" ${(o.shopId || 'main') === l.id ? 'selected' : ''}>${esc(l.name)}</option>`).join('');
+  modal(`Order ${o.no}: delivered & paid`, `<div class="grid2">${fDate()}<label for="f-od1">Stock taken from<select id="f-od1" name="loc">${opts}</select></label><label for="f-od2">Paid by<select id="f-od2" name="pay"><option value="cash" ${o.payBy !== 'momo' ? 'selected' : ''}>Cash</option><option value="momo" ${o.payBy === 'momo' ? 'selected' : ''}>Mobile money</option><option value="bank">Bank</option></select></label><label for="f-od3">Amount received<input id="f-od3" name="amount" type="number" step="0.01" value="${num(o.total)}"></label></div>
+    <p class="hint">This books the sale, takes the bottles out of that stock, records the money and makes a receipt you can send.</p>`,
+  async d => {
+    const have = C.storeLoc[d.loc] || {}; for (const l of o.lines) if (num(l.qty) > (have[l.productId] || 0)) throw Error(`Only ${have[l.productId] || 0} × ${l.name} at ${locName(d.loc)}.`);
+    const n = Object.values(S.receipts).reduce((m, r) => Math.max(m, parseInt(String(r.no).replace(/\D/g, '')) || 0), 0), f = o.total ? num(d.amount) / num(o.total) : 1;
+    const rc = {id:uid(), no:'R-' + String(n + 1).padStart(5, '0'), date:d.date, time:new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}), loc:d.loc, shop:d.loc === 'main' ? '' : d.loc, pay:d.pay, customer:o.name, phone:o.phone, lines:o.lines.map(l => ({productId:l.productId, qty:num(l.qty), price:r2(num(l.price) * f)})), subtotal:num(d.amount), discount:0, total:num(d.amount), orderId:o.id, moveIds:[]};
+    for (const l of rc.lines) { const mv = await put('moves', {kind:'sale', date:rc.date, loc:d.loc, productId:l.productId, qty:l.qty, unitPrice:l.price, unitCost:num(S.products[l.productId]?.costPrice), customer:o.name, pay:d.pay, note:`Online order ${o.no}`}); rc.moveIds.push(mv.id); }
+    const c = await put('cash', {kind:'in', date:rc.date, channel:d.pay, amount:num(d.amount), category:'Online sale', shop:rc.shop, customer:o.name, description:`Online order ${o.no} · receipt ${rc.no}`, receiptId:rc.id}); rc.cashId = c.id;
+    await put('receipts', rc); await FB.update('orders/' + o.id, {status:'done', receiptNo:rc.no, doneAt:nowISO()}); publishStore(); if (rc.shop) publishShop(rc.shop);
+    setTimeout(() => { const p = rcptPublic(rc); rcptModal(p, {phone:o.phone, onToken:t => put('receipts', {...S.receipts[rc.id], token:t})}); }, 200);
+  }, {label:'Book the sale'});
+}
 
 /* ---------- images, documents & export ---------- */
 const imgOf = pid => S.images[pid]?.data || '';
@@ -4203,7 +4465,7 @@ POS.renderCart = function(){
     <div class="small pos" id="pos-saved" style="text-align:right" ${s.saved ? '' : 'hidden'}>Customer saves ${money(s.saved)} with promotions</div>
     <div class="seg" data-seg="pay" style="margin-top:10px">${(res ? [['account','On their account (pay on the ' + sDay() + 'th)']] : [['cash','Cash'],['momo','Mobile money'],['bank','Bank'],['credit','Credit']]).map(([k, v]) => `<button type="button" class="${POS.pay === k ? 'on' : ''}" data-v="${k}">${v}</button>`).join('')}</div>
     ${POS.pay === 'cash' ? `<div class="sumrow"><label for="pos-tend">Cash received</label><input id="pos-tend" type="number" min="0" step="0.01" value="${esc(POS.tendered)}" style="max-width:130px"></div><div class="sumrow"><span>Change</span><b id="pos-change" class="${POS.tendered === '' ? 'mut' : s.change < 0 ? 'neg' : 'pos'}">${POS.tendered === '' ? '—' : money(s.change)}</b></div>` : ''}
-    <label for="pos-cust" class="small mut" style="display:block;font-weight:600;margin-top:8px">Customer${POS.pay === 'credit' ? ' (needed for credit)' : ' (optional)'}</label><input id="pos-cust" list="cust-list" autocomplete="off" value="${esc(POS.customer)}" style="margin-top:4px"><datalist id="cust-list">${Object.values(S.customers).map(c => `<option value="${esc(c.name)}">`).join('')}</datalist>
+    <label for="pos-cust" class="small mut" style="display:block;font-weight:600;margin-top:8px">Customer${POS.pay === 'credit' ? ' (needed for credit)' : ' (optional)'}</label><input id="pos-cust" list="cust-list" autocomplete="off" value="${esc(POS.customer)}" style="margin-top:4px"><label for="pos-phone" class="small mut" style="display:block;font-weight:600;margin-top:8px">Customer phone (to send the receipt)</label><input id="pos-phone" type="tel" autocomplete="off" value="${esc(POS.phone || '')}" style="margin-top:4px"><datalist id="cust-list">${Object.values(S.customers).map(c => `<option value="${esc(c.name)}">`).join('')}</datalist>
     <div class="actions" style="margin-top:12px">${btn('Complete sale', 'posDone', {}, 'pri big')}${btn('Clear', 'posClear', {}, 'ghost')}</div>`;
   POS.float();
 };
@@ -4242,7 +4504,7 @@ async function posDone(){
   const b = document.querySelector('[data-act=posDone]'); if (b) b.disabled = true;
   try {
     const n = Object.values(S.receipts).reduce((m, r) => Math.max(m, parseInt(String(r.no).replace(/\D/g, '')) || 0), 0);
-    const now = new Date(), rc = {id:uid(), no:'R-' + String(n + 1).padStart(5, '0'), date:today(), time:now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}), seller:POS.seller, pay:POS.pay, customer:POS.customer.trim(),
+    const now = new Date(), rc = {id:uid(), no:'R-' + String(n + 1).padStart(5, '0'), date:today(), time:now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}), seller:POS.seller, pay:POS.pay, customer:POS.customer.trim(), phone:(POS.phone || '').trim(),
       lines:POS.cart.map(l => ({productId:l.pid, qty:l.qty, price:num(l.price)})), subtotal:s.sub, discount:r2(s.auto + s.disc), promo:[...new Set(POS.cart.map(l => l.promo).filter(Boolean)), ...s.notes].join('; '), saved:s.saved, total:s.total, tendered:POS.pay === 'cash' && POS.tendered !== '' ? num(POS.tendered) : null, change:POS.pay === 'cash' && POS.tendered !== '' ? s.change : null, moveIds:[]};
     const f = s.sub ? s.total / s.sub : 1;
     for (const l of POS.cart) {
@@ -4252,7 +4514,7 @@ async function posDone(){
     }
     if (!POS.seller && POS.pay !== 'credit') { const c = await put('cash', {kind:'in', date:rc.date, channel:POS.pay, amount:s.total, category:'Direct sale', customer:rc.customer, description:`Receipt ${rc.no}`, receiptId:rc.id}); rc.cashId = c.id; }
     await put('receipts', rc);
-    POS.cart = []; POS.disc = ''; POS.tendered = ''; POS.customer = ''; POS.renderCart(); POS.grid(); POS.today();
+    POS.cart = []; POS.disc = ''; POS.tendered = ''; POS.customer = ''; POS.phone = ''; POS.renderCart(); POS.grid(); POS.today();
     showReceipt(rc.id);
   } catch(e) { toast('The sale was not finished. Check the Sales book before trying again.', true); }
   finally { if (b) b.disabled = false; }
@@ -4279,10 +4541,8 @@ function receiptDoc(r){
 }
 function showReceipt(id){
   const r = S.receipts[id]; if (!r) return;
-  const msg = `*${S.settings.businessName || 'Infinity Fragrances'}* receipt ${r.no}\n${fmtDate(r.date)} ${r.time}\n` + (r.lines || []).map(l => `${pName(l.productId)} ${l.qty} × ${money(l.price)}`).join('\n') + `${r.discount ? `\nDiscount −${money(r.discount)}` : ''}\nTOTAL ${money(r.total)}\nThank you!`;
-  modal(`Receipt ${r.no}`, `<div class="actions" style="margin-bottom:12px">${btn('Download image', 'expDoc', {fmt:'png', name:r.no}, 'pri sm')}${btn('Download PDF', 'expDoc', {fmt:'pdf', name:r.no}, 'sm')}<a class="btn sm" href="${waLink('', msg)}" target="_blank" rel="noopener">Send on WhatsApp</a>${btn('New sale', 'close', {}, 'sm ghost')}</div>
-    <div class="preview" id="doc-prev"><div class="docwrap" data-maxw="420">${receiptDoc(r)}</div></div>`, null, {nofocus:true});
-  requestAnimationFrame(() => fitDocs($('#doc-prev')));
+  const p = rcptPublic(r, {seller:r.seller ? rName(r.seller) : (r.shop ? shopOf(r.shop)?.name || '' : '')});
+  rcptModal(p, {doc:receiptDoc(r), token:r.token, phone:r.phone || '', onToken:t => put('receipts', {...S.receipts[id], token:t}), onSent:(k, ph) => { if (ph && ph !== r.phone) put('receipts', {...S.receipts[id], phone:ph}); }});
 }
 TOOLS.pos = {
   mount(){ POS.grid(); POS.renderCart(); POS.today(); setTimeout(() => $('#pos-scan')?.focus(), 50); },
@@ -4294,6 +4554,7 @@ TOOLS.pos = {
     else if (t.id === 'pos-disc') { POS.disc = t.value; POS.totals(); }
     else if (t.id === 'pos-tend') { POS.tendered = t.value; POS.totals(); }
     else if (t.id === 'pos-cust') POS.customer = t.value;
+    else if (t.id === 'pos-phone') POS.phone = t.value;
   },
   seg(k, v){ if (k === 'cat') { POS.cat = v; POS.grid(); } if (k === 'pay') { POS.pay = v; POS.renderCart(); } }
 };
@@ -4776,7 +5037,30 @@ const ACT = {
     await put('payslips', {...p, status:p.status === 'paid' ? 'paid' : 'sent', sentAt:nowISO(), sentVia:'App'}); await publishOne(p.rid); await fbNotify(r.portalUid, `Your payslip for ${monthLabel(p.month)} is ready: ${money(psTotals(p).net)} due to you.`); toast('Payslip sent in the app'); psView(d.id); },
   psPaid: d => psPayForm(d.id),
   psDel: d => { const p = S.payslips[d.id]; confirmBox(`Delete payslip ${p.no}?${p.payCashId ? ' The payment in the cash book stays; delete it there if needed.' : ''}`, async () => { await del('payslips', d.id); closeModal(); if (S.resellers[p.rid]?.portalUid && FB_ROLE === 'owner') publishOne(p.rid); toast('Deleted'); }, 'Delete'); },
-  drawer: () => openDrawer(), resDrawer: () => openResDrawer(), resLock: () => { closeModal(); RES_UNLOCKED = false; BIO_TRIED = false; render(true); }, skipInstall: () => { UI.skipInstall = true; render(true); },
+  drawer: () => openDrawer(),
+  rcWa: () => rcSend('wa'), rcSms: () => rcSend('sms'), rcLink: () => rcSend('link'),
+  myPin: () => { const me = users().find(u => u.id === SESSION?.id); if (!me) return; modal('Change my PIN', `<label for="f-mp0">Current PIN<input id="f-mp0" name="old" type="password" inputmode="numeric" required></label><div class="grid2"><label for="f-mp1">New PIN (4 to 8 digits)<input id="f-mp1" name="pin" type="password" inputmode="numeric" required></label><label for="f-mp2">Repeat new PIN<input id="f-mp2" name="pin2" type="password" inputmode="numeric" required></label></div>`, async d => { if (await sha(me.salt + d.old) !== me.pin) throw Error('Your current PIN is not right.'); if (!/^\d{4,8}$/.test(d.pin)) throw Error('The new PIN must be 4 to 8 digits.'); if (d.pin !== d.pin2) throw Error('The two new PINs do not match.'); const salt = uid(), h = await sha(salt + d.pin); await putSettings({users:users().map(u => u.id === me.id ? {...u, salt, pin:h} : u)}); toast('PIN changed. Use the new PIN next time.'); }, {label:'Change PIN'}); },
+  shopNew: () => shopForm(), shopEdit: d => shopForm(shopOf(d.id)), shopAcc: d => shopAccCreate(d.id, !!d.reset),
+  shopSales: d => { const l = shopOf(d.id), cut = iso(addDays(new Date(), -30)), list = Object.values(S.receipts).filter(r => (r.shop || (r.seller ? '' : (r.loc || 'main'))) === d.id && r.date >= cut).sort((a, b) => (b.date + (b.time || '')).localeCompare(a.date + (a.time || '')));
+    modal(`${l?.name || 'Shop'}: last 30 days`, list.length ? `<p><b>${money(list.reduce((t, r) => t + num(r.total), 0))}</b> from ${list.length} sale${list.length === 1 ? '' : 's'}</p><div class="tw"><table class="t"><thead><tr><th>Receipt</th><th>When</th><th>Customer</th><th class="n">Total</th><th>Paid</th><th></th></tr></thead><tbody>${list.map(r => `<tr><td><b>${esc(r.no)}</b></td><td class="small">${fmtDate(r.date)} ${esc(r.time || '')}</td><td>${esc(r.customer || '')}</td><td class="n">${money(r.total)}</td><td class="small">${esc(PAYL[r.pay] || r.pay)}</td><td>${btn('Receipt', 'rcptView', {id:r.id}, 'sm ghost')}</td></tr>`).join('')}</tbody></table></div>` : '<p class="mut">No sales in the last 30 days.</p>', null, {wide:true, nofocus:true}); },
+  shopReqOk: async d => { const q = (OWN.shopReqs[d.sid] || []).find(x => x.id === d.id); if (!q) return; try { await FB.update(`shops/${d.sid}/requests/${d.id}`, {status:'approved', decidedAt:FB.now()}); } catch(e) { return toast(fbMsg(e), true); } ACT.stockMove(); setTimeout(() => { const t = document.querySelector('#m-form [name=to]'); if (t) t.value = d.sid; }, 50); toast(`Choose the perfumes to send to ${shopOf(d.sid)?.name}: ${(q.lines || []).map(l => l.qty + ' × ' + l.name).join(', ')}`); },
+  shopReqNo: d => modal('Decline the request', `<label for="f-srr">Reason<input id="f-srr" name="why" required></label>`, async x => { await FB.update(`shops/${d.sid}/requests/${d.id}`, {status:'rejected', reason:x.why.trim(), decidedAt:FB.now()}); toast('Declined'); }, {label:'Decline'}),
+  shopTab: d => { closeModal(); SHOP.tab = d.k; window.scrollTo(0, 0); render(true); },
+  shopPlus: d => { const p = shopAvail().find(x => x.id === d.id); const q = (SHOP.cart[d.id] || 0) + 1; if (p && q > p.avail) return toast(`Only ${p.avail} in the shop.`, true); SHOP.cart[d.id] = q; $('#sq-' + d.id).textContent = q; $('#shop-cart').innerHTML = shopCartBar(); },
+  shopMinus: d => { SHOP.cart[d.id] = Math.max(0, (SHOP.cart[d.id] || 0) - 1); $('#sq-' + d.id).textContent = SHOP.cart[d.id]; $('#shop-cart').innerHTML = shopCartBar(); },
+  shopCat: d => { document.querySelectorAll('[data-act=shopCat]').forEach(b => b.classList.toggle('on', b.dataset.k === d.k)); document.querySelectorAll('.cat-card').forEach(c => c.hidden = !!d.k && c.dataset.cat !== d.k); },
+  shopPay: d => { SHOP.pay = d.k; document.querySelectorAll('[data-act=shopPay]').forEach(b => b.classList.toggle('on', b.dataset.k === d.k)); },
+  shopSell: () => shopSell(),
+  shopRc: d => { const r = SHOP.sales.find(x => x.id === d.id); if (!r) return; const s0 = SHOP.snap; rcptModal({...rcptPublic(r), biz:s0.business, phone:s0.businessPhone, seller:s0.name}, {token:r.token, phone:r.phone || ''}); },
+  shopOrder: async () => { const f = $('#shop-ord'), d = Object.fromEntries(new FormData(f)), lines = shopAvail().map(p => ({productId:p.id, name:p.name, qty:Math.round(num(d['o_' + p.id]))})).filter(l => l.qty > 0); if (!lines.length) return toast('Type how many bottles you need.', true);
+    try { await FB.add(`shops/${FB_ME.shopId}/requests`, {type:'order', lines, note:(d.note || '').trim(), status:'pending', by:FB_USER.uid, at:FB.now()}); fbNotify('owner', `${SHOP.snap?.name || 'A shop'} asks for stock`); toast('Request sent'); render(true); } catch(e) { toast(fbMsg(e), true); } },
+  storeCopy: async () => { try { await navigator.clipboard.writeText(STORE_URL); toast('Shop link copied. Paste it on WhatsApp or Facebook.'); } catch(e) { prompt('Copy your shop link:', STORE_URL); } },
+  storeSet: () => storeSettings(),
+  ordOk: async d => { const o = (OWN.orders || []).find(x => x.id === d.id); if (!o) return; try { await FB.update('orders/' + o.id, {status:'confirmed', confirmedAt:nowISO()}); } catch(e) { return toast(fbMsg(e), true); } const st = S.settings;
+    const msg = `Hello ${String(o.name).split(' ')[0]}, your ${bizName()} order ${o.no} is confirmed: ${(o.lines || []).map(l => l.qty + ' × ' + l.name).join(', ')}. Total ${money(o.total)}.` + (o.payBy === 'momo' && st.storeMomo ? `\nPlease pay by mobile money to ${st.storeMomo}${st.storeMomoName ? ' (' + st.storeMomoName + ')' : ''} and send the reference.` : '\nYou pay when you receive it.') + (o.method === 'pickup' ? `\nCollect at ${shopOf(o.shopId)?.name || 'our shop'}.` : `\nWe will deliver to ${o.address || o.town || 'you'}.`);
+    const a = document.createElement('a'); a.href = waLink(o.phone, msg); a.target = '_blank'; a.rel = 'noopener'; EXT_T = Date.now(); document.body.appendChild(a); a.click(); a.remove(); toast('Order confirmed'); },
+  ordDone: d => ordDone(d.id),
+  ordNo: d => confirmBox('Cancel this order?', async () => { try { await FB.update('orders/' + d.id, {status:'cancelled', cancelledAt:nowISO()}); toast('Order cancelled'); } catch(e) { toast(fbMsg(e), true); } }, 'Cancel order'), resDrawer: () => openResDrawer(), resLock: () => { closeModal(); RES_UNLOCKED = false; BIO_TRIED = false; render(true); }, skipInstall: () => { UI.skipInstall = true; render(true); },
   updCheck: () => checkUpdate(true), updLater: () => { const b = $('#upd-bar'); if (b) b.remove(); },
   updGo: async () => { try { if (DESK_T) { clearTimeout(DESK_T); DESK_T = 0; await deskSave(); } } catch(e) {} toast('Restarting…'); setTimeout(() => DESK.relaunch(), 400); }, posGo: () => $('#pos-cart')?.scrollIntoView({behavior:'smooth', block:'start'}),
   lookOpen: () => { closeModal(); if (APP_ROLE === 'reseller') { RES.tab = 'account'; render(true); } else location.hash = 'setup'; setTimeout(() => $('#look-card')?.scrollIntoView({behavior:'smooth', block:'start'}), 150); },
@@ -4798,7 +5082,7 @@ const ACT = {
   resSend: () => { const f = $('#res-form'); try { resSubmit(f.dataset.type, resCollect(f)); } catch(e) { toast(e.message, true); } },
   resSend2: () => { const f = $('#res-form2'); try { resSubmit(f.dataset.type, resCollect(f)); } catch(e) { toast(e.message, true); } },
   resCancel: async d => { try { await FB.update(`portal/${FB_ME.resellerId}/requests/${d.id}`, {status:'cancelled'}); toast('Cancelled'); } catch(e) { toast(fbMsg(e), true); } },
-  resPin: async () => { const a = $('#ra-p').value, b = $('#ra-p2').value; if (a.length < 6) return toast('Use at least 6 digits.', true); if (a !== b) return toast('The two PINs do not match.', true); try { await FB.changePassword(a); if (DESK) await savePinHash(a); toast('PIN changed'); } catch(e) { toast(fbMsg(e) + (String(e.code || '').includes('recent') ? ' Sign out and in again, then try.' : ''), true); } },
+  resPin: async () => { const o = ($('#ra-o')?.value || '').trim(), a = $('#ra-p').value.trim(), b = $('#ra-p2').value.trim(); if (!o) return toast('Type your current PIN first.', true); if (!/^\d{6,}$/.test(a)) return toast('The new PIN must be at least 6 digits.', true); if (a !== b) return toast('The two new PINs do not match.', true); try { try { await FB.reauth(o); } catch(x) { return toast('Your current PIN is not right.', true); } await FB.changePassword(a); $('#ra-o').value = $('#ra-p').value = $('#ra-p2').value = ''; if (DESK) await savePinHash(a); toast('PIN changed'); } catch(e) { toast(fbMsg(e) + (String(e.code || '').includes('recent') ? ' Sign out and in again, then try.' : ''), true); } },
   printDoc: () => printDocs([...document.querySelectorAll('#doc-prev .doc')]),
   lockPick: d => { UI.lockUser = d.id; render(true); }, lockNow: () => lockNow(),
   pinKey: d => { const el = $('#lock-pin'); if (!el) return; if (d.k === '⌫') el.value = el.value.slice(0, -1); else if (d.k === 'OK') tryUnlock(); else if (el.value.length < 8) { el.value += d.k; if (el.value.length >= 4) { const u = users().find(x => x.id === (UI.lockUser || users()[0]?.id)); if (u) sha(u.salt + el.value).then(h => { if (h === u.pin) tryUnlock(); }); } } },
@@ -4958,6 +5242,8 @@ document.addEventListener('input', e => {
   if (t.id === 'f-q') { UI.q = t.value; render(); }
   if (t.id === 'f-oe') UI.fbEmail = t.value; if (t.id === 'r-login') UI.rLogin = t.value; if (t.id === 'ro-n') RES.note = t.value;
   if (t.closest && t.closest('#ad-form') && !t.classList.contains('ad-pick')) adRedraw();
+  if (t.id === 'shop-q') { const q = t.value.toLowerCase().trim(); document.querySelectorAll('.cat-card').forEach(c => c.hidden = !!q && !c.dataset.name.includes(q)); }
+  if (t.id === 'sh-c') SHOP.cust = t.value; if (t.id === 'sh-p') SHOP.phone = t.value;
   if (t.id === 'cat-q') { const q = t.value.toLowerCase().trim(); document.querySelectorAll('.cat-card').forEach(c => c.hidden = !!q && !c.dataset.name.includes(q)); }
   if (t.id === 'bc-msg') { UI.bc.msg = t.value; document.querySelectorAll('.bc-go').forEach(a => { const x = bcAudience().find(y => y.id === a.dataset.id); if (x) a.href = waLink(x.phone, bcFill(UI.bc.msg, x)); }); }
 });

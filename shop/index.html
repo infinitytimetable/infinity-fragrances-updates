@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Infinity Fragrances · Shop</title>
+<meta name="description" content="Order original long-lasting perfumes from Infinity Fragrances. Pay on delivery or by mobile money.">
+<meta name="theme-color" content="#3b0d1f">
+<link rel="icon" href="../app/icon-192.png">
+<link rel="apple-touch-icon" href="../app/icon-180.png">
+<style>
+:root{--bg:#fbeef0;--card:#fffafb;--ink:#2b1520;--muted:#8a6575;--line:#f1d6de;--acc:#d0507e;--deep:#9b3060;--grad:linear-gradient(135deg,#f08aac 0%,#d0507e 50%,#9b3060 100%);--good:#1b7f4c;--radius:16px;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);background:radial-gradient(900px 600px at 0% 0%,#ffe1ea 0%,transparent 60%),radial-gradient(800px 600px at 100% 30%,#ffd9c7 0%,transparent 55%),linear-gradient(160deg,#fff2f4 0%,#f6d3dd 100%) fixed;min-height:100vh}
+.wrap{max-width:980px;margin:0 auto;padding:16px 14px 120px}
+header{display:flex;align-items:center;gap:12px;margin:4px 0 14px}
+header img{width:58px;height:58px;border-radius:50%;box-shadow:0 6px 16px rgba(155,48,96,.25)}
+h1{font-family:Georgia,"Times New Roman",serif;font-weight:700;font-size:26px;margin:0;line-height:1.1}
+.sub{color:var(--muted);font-size:13.5px}
+.card{background:rgba(255,250,251,.9);border:1px solid rgba(208,80,126,.18);border-radius:var(--radius);padding:16px;box-shadow:inset 0 1px 0 #fff,0 12px 30px -16px rgba(170,60,100,.45);margin-bottom:14px}
+.search{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;font-size:16px;background:#fff;color:var(--ink)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 2px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 13px;font-weight:600;font-size:14px;cursor:pointer;color:var(--ink)}
+.chip.on{background:var(--grad);color:#fff;border-color:transparent}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.p{background:#fff;border:1px solid var(--line);border-radius:14px;padding:8px;display:flex;flex-direction:column;gap:5px;box-shadow:0 8px 20px -14px rgba(170,60,100,.5)}
+.p[hidden]{display:none}
+.img{aspect-ratio:1;border-radius:10px;background:#fff7f9;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.img img{width:100%;height:100%;object-fit:contain}
+.badge{position:absolute;top:6px;left:6px;background:var(--grad);color:#fff;font-size:11px;font-weight:800;padding:3px 8px;border-radius:999px}
+.nm{font-weight:700;font-size:14.5px;line-height:1.25}.sz{color:var(--muted);font-weight:500;font-size:12.5px}
+.pr{font-weight:800;font-size:16px}.pr s{color:var(--muted);font-weight:500;font-size:13px;margin-right:4px}
+.step{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:auto}
+.step button{border:0;background:#fbe4ea;width:44px;height:40px;font-size:21px;font-weight:800;cursor:pointer;color:var(--ink)}
+.step span{font-weight:800}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:12px;padding:12px 18px;font-weight:800;font-size:15px;cursor:pointer;text-decoration:none;color:var(--ink);background:#fff;border:1px solid var(--line)}
+.btn.pri{background:var(--grad);color:#fff;border-color:transparent;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 3px 0 #8e2a52,0 10px 20px -8px rgba(170,60,100,.6)}
+.btn.pri:active{transform:translateY(2px);box-shadow:inset 0 2px 6px rgba(0,0,0,.25)}
+.btn.wa{background:#25d366;color:#fff;border-color:transparent}
+.btn[disabled]{opacity:.55}
+.bar{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));max-width:956px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(43,21,32,.94);color:#fff;border-radius:16px;padding:10px 10px 10px 16px;box-shadow:0 16px 40px -10px rgba(0,0,0,.45);z-index:10}
+.bar[hidden]{display:none}
+label{display:flex;flex-direction:column;gap:5px;font-weight:600;font-size:14px;margin-bottom:10px}
+input,select,textarea{font:inherit;font-size:16px;padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink);width:100%}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.row2{grid-template-columns:1fr}}
+.seg{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.seg button{flex:1;min-width:130px;border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px;font-weight:700;cursor:pointer;color:var(--ink);text-align:left}
+.seg button.on{border-color:var(--acc);box-shadow:0 0 0 3px rgba(208,80,126,.2)}
+.seg small{display:block;font-weight:500;color:var(--muted);margin-top:2px}
+.list{list-style:none;margin:0;padding:0}.list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}.list li:last-child{border:0}
+.tot{display:flex;justify-content:space-between;font-size:19px;font-weight:800;margin-top:8px}
+.err{color:#b3261e;font-weight:600;min-height:1em}
+.mut{color:var(--muted)}.small{font-size:13px}
+.center{text-align:center}
+.rc{max-width:420px;margin:0 auto;background:#fff;border-radius:14px;padding:22px;box-shadow:0 18px 40px -18px rgba(0,0,0,.35);font-size:14.5px}
+.rc .dash{border-top:1px dashed #c9b8bf;margin:12px 0}
+.rc .ln{display:flex;justify-content:space-between}
+.pill{display:inline-block;padding:4px 10px;border-radius:999px;font-weight:700;font-size:13px;background:#fbe4ea}
+.pill.good{background:#dcf3e6;color:var(--good)}
+@media print{body{background:#fff}.no-print{display:none!important}.rc{box-shadow:none}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><p class="mut">Loading…</p></div>
+<div class="bar no-print" id="bar" hidden></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+(function () {
+  var CFG = {"apiKey": "AIzaSyDWFimYe-ttYeVnyjySJF9G3WS2sXnJxuA", "authDomain": "infinity-fragrances.firebaseapp.com", "projectId": "infinity-fragrances", "storageBucket": "infinity-fragrances.firebasestorage.app", "messagingSenderId": "702795967020", "appId": "1:702795967020:web:8b9798de1561a5059e3f89"};
+  var LOGO = '../app/icon-192.png';
+  var $ = function (s) { return document.querySelector(s); };
+  var esc = function (v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
+  var money = function (n) { return 'K ' + (Math.round(Number(n || 0) * 100) / 100).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); };
+  var fmtDate = function (d) { if (!d) return ''; var x = new Date(String(d).length <= 10 ? d + 'T12:00:00' : d); return x.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'}); };
+  var wa = function (phone, text) { var p = String(phone || '').replace(/\D/g, ''); if (p.startsWith('0')) p = '260' + p.slice(1); return 'https://wa.me/' + p + '?text=' + encodeURIComponent(text); };
+  var db = null, CAT = null, IMGS = {}, cart = {}, cat = '', q = '', step = 'shop', method = 'delivery', payBy = 'cod', shopId = '';
+  try { cart = JSON.parse(localStorage.getItem('if-cart') || '{}') || {}; } catch (e) {}
+  var saveCart = function () { try { localStorage.setItem('if-cart', JSON.stringify(cart)); } catch (e) {} };
+  try { firebase.initializeApp(CFG); db = firebase.firestore(); } catch (e) { $('#app').innerHTML = '<div class="card"><p>Could not connect. Check your internet and refresh.</p></div>'; return; }
+  var get = function (p) { return db.doc(p).get().then(function (s) { return s.exists ? s.data() : null; }); };
+  function head(sub) { return '<header><img src="' + LOGO + '" alt=""><div><h1>' + esc(CAT ? CAT.biz : 'Infinity Fragrances') + '</h1><div class="sub">' + esc(sub || (CAT && CAT.tagline) || 'Original long-lasting perfumes') + '</div></div></header>'; }
+  function items() { return (CAT && CAT.list || []).filter(function (p) { return cart[p.id] > 0; }); }
+  var unit = function (p) { return p.promo ? p.promo.price : p.price; };
+  function totals() { var n = 0, t = 0; items().forEach(function (p) { n += cart[p.id]; t += cart[p.id] * unit(p); }); return {n: n, t: Math.round(t * 100) / 100}; }
+  function bar() {
+    var b = $('#bar'), x = totals();
+    if (step !== 'shop' || !x.n) { b.hidden = true; return; }
+    b.hidden = false; b.innerHTML = '<span><b>' + x.n + '</b> item' + (x.n === 1 ? '' : 's') + ' · <b>' + money(x.t) + '</b></span><button class="btn pri" id="go">Order now</button>';
+    $('#go').onclick = function () { step = 'checkout'; render(); window.scrollTo(0, 0); };
+  }
+  function render() {
+    var A = $('#app');
+    if (!CAT) return;
+    if (!CAT.open) { A.innerHTML = head() + '<div class="card center"><h2>We are not taking online orders right now</h2><p class="mut">Please message us on WhatsApp.</p>' + (CAT.whatsapp ? '<a class="btn wa" href="' + wa(CAT.whatsapp, 'Hello! I would like to order perfume.') + '">WhatsApp us</a>' : '') + '</div>'; bar(); return; }
+    if (step === 'shop') {
+      var cats = []; CAT.list.forEach(function (p) { if (p.category && cats.indexOf(p.category) < 0) cats.push(p.category); });
+      A.innerHTML = head() + '<div class="card"><input class="search" id="q" type="search" placeholder="Search perfumes…" value="' + esc(q) + '">' +
+        (cats.length > 1 ? '<div class="chips">' + ['<button class="chip ' + (cat ? '' : 'on') + '" data-c="">All</button>'].concat(cats.map(function (c) { return '<button class="chip ' + (cat === c ? 'on' : '') + '" data-c="' + esc(c) + '">' + esc(c) + '</button>'; })).join('') + '</div>' : '') + '</div>' +
+        (CAT.list.length ? '<div class="grid">' + CAT.list.map(function (p) {
+          var show = (!cat || p.category === cat) && (!q || (p.name + ' ' + (p.category || '')).toLowerCase().indexOf(q.toLowerCase()) >= 0);
+          return '<div class="p"' + (show ? '' : ' hidden') + '><div class="img">' + (IMGS[p.id] ? '<img src="' + IMGS[p.id] + '" alt="" loading="lazy">' : '<img src="' + LOGO + '" alt="" style="width:55%;height:55%;opacity:.35">') + (p.promo ? '<span class="badge">' + esc(p.promo.badge) + '</span>' : '') + '</div>' +
+            '<div class="nm">' + esc(p.name) + (p.size ? ' <span class="sz">' + esc(p.size) + 'ml</span>' : '') + '</div><div class="pr">' + (p.promo ? '<s>' + money(p.price) + '</s>' + money(p.promo.price) : money(p.price)) + '</div>' +
+            '<div class="step"><button data-m="' + p.id + '" aria-label="One less">−</button><span id="c-' + p.id + '">' + (cart[p.id] || 0) + '</span><button data-p="' + p.id + '" aria-label="One more">+</button></div></div>';
+        }).join('') + '</div>' : '<div class="card"><p>No perfumes available right now. Please check again soon.</p></div>') +
+        '<p class="center small mut" style="margin-top:18px">Questions? ' + (CAT.whatsapp ? '<a href="' + wa(CAT.whatsapp, 'Hello!') + '">WhatsApp ' + esc(CAT.whatsapp) + '</a>' : '') + '</p>';
+      $('#q').oninput = function (e) { q = e.target.value; document.querySelectorAll('.p').forEach(function (el, i) { var p = CAT.list[i]; el.hidden = !((!cat || p.category === cat) && (!q || (p.name + ' ' + (p.category || '')).toLowerCase().indexOf(q.toLowerCase()) >= 0)); }); };
+      document.querySelectorAll('[data-c]').forEach(function (b) { b.onclick = function () { cat = b.dataset.c; render(); }; });
+      document.querySelectorAll('[data-p]').forEach(function (b) { b.onclick = function () { var p = CAT.list.find(function (x) { return x.id === b.dataset.p; }); var n = (cart[p.id] || 0) + 1; if (n > p.stock) { alert('Only ' + p.stock + ' available right now.'); return; } cart[p.id] = n; saveCart(); $('#c-' + p.id).textContent = n; bar(); }; });
+      document.querySelectorAll('[data-m]').forEach(function (b) { b.onclick = function () { var id = b.dataset.m; cart[id] = Math.max(0, (cart[id] || 0) - 1); saveCart(); $('#c-' + id).textContent = cart[id]; bar(); }; });
+    } else if (step === 'checkout') {
+      var x = totals(), shops = CAT.shops || [];
+      if (!shopId && shops[0]) shopId = shops[0].id;
+      A.innerHTML = head('Your order') + '<div class="card"><ul class="list">' + items().map(function (p) { return '<li><span>' + cart[p.id] + ' × ' + esc(p.name) + (p.size ? ' ' + esc(p.size) + 'ml' : '') + '</span><b>' + money(cart[p.id] * unit(p)) + '</b></li>'; }).join('') + '</ul><div class="tot"><span>Total</span><span>' + money(x.t) + '</span></div><p class="small mut">' + esc(CAT.delivery || '') + '</p><button class="btn" id="back">← Change order</button></div>' +
+        '<div class="card"><h2 style="margin-top:0">Your details</h2><div class="row2"><label>Full name<input id="o-n" autocomplete="name"></label><label>Phone / WhatsApp<input id="o-p" type="tel" autocomplete="tel" placeholder="0977 123456"></label></div>' +
+        '<h3>How do you want it?</h3><div class="seg"><button data-meth="delivery" class="' + (method === 'delivery' ? 'on' : '') + '">Delivery<small>We bring it to you</small></button>' + (shops.length ? '<button data-meth="pickup" class="' + (method === 'pickup' ? 'on' : '') + '">Collect<small>From one of our shops</small></button>' : '') + '</div>' +
+        (method === 'delivery' ? '<div class="row2"><label>Town<input id="o-t"></label><label>Area / street / landmark<input id="o-a"></label></div>' : '<label>Collect from<select id="o-s">' + shops.map(function (s) { return '<option value="' + esc(s.id) + '"' + (s.id === shopId ? ' selected' : '') + '>' + esc(s.name) + (s.town ? ' · ' + esc(s.town) : '') + (s.address ? ' (' + esc(s.address) + ')' : '') + '</option>'; }).join('') + '</select></label>') +
+        '<h3>How will you pay?</h3><div class="seg"><button data-pay="cod" class="' + (payBy === 'cod' ? 'on' : '') + '">' + (method === 'pickup' ? 'Pay when I collect' : 'Cash on delivery') + '<small>Pay when you get your perfume</small></button>' + (CAT.momo ? '<button data-pay="momo" class="' + (payBy === 'momo' ? 'on' : '') + '">Mobile money<small>To ' + esc(CAT.momo) + (CAT.momoName ? ' · ' + esc(CAT.momoName) : '') + '</small></button>' : '') + '</div>' +
+        '<label>Note (optional)<input id="o-x" placeholder="e.g. call me when you arrive"></label><p class="err" id="err"></p><button class="btn pri" id="send" style="width:100%">Send my order</button><p class="small mut center">We will confirm your order on WhatsApp.</p></div>';
+      $('#back').onclick = function () { step = 'shop'; render(); };
+      document.querySelectorAll('[data-meth]').forEach(function (b) { b.onclick = function () { keep(); method = b.dataset.meth; render(); restore(); }; });
+      document.querySelectorAll('[data-pay]').forEach(function (b) { b.onclick = function () { keep(); payBy = b.dataset.pay; render(); restore(); }; });
+      $('#send').onclick = send;
+    } else if (step === 'done') {
+      var o = window.__lastOrder;
+      A.innerHTML = head() + '<div class="card center"><p style="font-size:44px;margin:4px 0">🎉</p><h2>Thank you, ' + esc(o.name.split(' ')[0]) + '!</h2><p>Your order <b>' + esc(o.no) + '</b> for <b>' + money(o.total) + '</b> has been sent.</p><p class="mut">We will confirm it on WhatsApp' + (o.payBy === 'momo' && CAT.momo ? '. Pay by mobile money to <b>' + esc(CAT.momo) + '</b>' + (CAT.momoName ? ' (' + esc(CAT.momoName) + ')' : '') + ' and send us the reference' : '') + '.</p>' +
+        (CAT.whatsapp ? '<a class="btn wa" href="' + wa(CAT.whatsapp, 'Hello! I just placed order ' + o.no + ' (' + money(o.total) + ') on your website.') + '">Message us on WhatsApp</a> ' : '') + '<a class="btn" href="#o=' + esc(o.id) + '">Check my order</a><p><button class="btn" id="more">Shop again</button></p></div>';
+      $('#more').onclick = function () { step = 'shop'; location.hash = ''; render(); };
+    }
+    bar();
+  }
+  var form = {};
+  function keep() { ['o-n', 'o-p', 'o-t', 'o-a', 'o-x', 'o-s'].forEach(function (id) { var el = $('#' + id); if (el) form[id] = el.value; }); }
+  function restore() { Object.keys(form).forEach(function (id) { var el = $('#' + id); if (el) el.value = form[id]; }); }
+  function send() {
+    keep(); var e = $('#err'), name = (form['o-n'] || '').trim(), phone = (form['o-p'] || '').trim();
+    if (name.length < 2) { e.textContent = 'Please type your name.'; return; }
+    if (phone.replace(/\D/g, '').length < 9) { e.textContent = 'Please type your phone number.'; return; }
+    if (method === 'delivery' && !(form['o-t'] || '').trim()) { e.textContent = 'Please type your town.'; return; }
+    var lines = items().map(function (p) { return {productId: p.id, name: p.name + (p.size ? ' ' + p.size + 'ml' : ''), qty: cart[p.id], price: unit(p)}; }), x = totals();
+    if (!lines.length) { e.textContent = 'Your order is empty.'; return; }
+    var o = {no: 'W-' + Date.now().toString(36).toUpperCase().slice(-6), name: name.slice(0, 79), phone: phone.slice(0, 29), town: (form['o-t'] || '').trim().slice(0, 60), address: (form['o-a'] || '').trim().slice(0, 120), method: method, shopId: method === 'pickup' ? (form['o-s'] || shopId) : '', payBy: payBy, note: (form['o-x'] || '').trim().slice(0, 300), lines: lines, total: x.t, status: 'new', at: new Date().toISOString()};
+    $('#send').disabled = true; e.textContent = '';
+    db.collection('orders').add(o).then(function (ref) {
+      o.id = ref.id; window.__lastOrder = o; cart = {}; saveCart(); step = 'done';
+      db.doc('notify/owner').set({at: new Date().toISOString(), msg: 'New online order from ' + o.name + ': ' + money(o.total)}).catch(function () {});
+      render(); window.scrollTo(0, 0);
+    }).catch(function () { $('#send').disabled = false; e.textContent = 'The order could not be sent. Check your internet and try again.'; });
+  }
+  function showReceipt(token) {
+    get('rcpt/' + token).then(function (p) {
+      if (!p) { $('#app').innerHTML = '<div class="card center"><p>Receipt not found.</p></div>'; return; }
+      document.title = p.biz + ' · Receipt ' + p.no;
+      $('#app').innerHTML = '<div class="rc"><div class="center"><img src="' + LOGO + '" alt="" style="width:64px;height:64px;border-radius:50%"><div style="font-family:Georgia,serif;font-size:24px;margin-top:6px">' + esc(p.biz) + '</div><div class="small mut">' + esc(p.phone || '') + '</div></div><div class="dash"></div>' +
+        '<div class="ln small"><span>Receipt <b>' + esc(p.no) + '</b></span><span>' + fmtDate(p.date) + ' ' + esc(p.time || '') + '</span></div>' + (p.seller ? '<div class="small">Sold by: ' + esc(p.seller) + '</div>' : '') + '<div class="dash"></div>' +
+        (p.lines || []).map(function (l) { return '<div style="padding:5px 0"><b>' + esc(l.name) + '</b><div class="ln mut"><span>' + l.qty + ' × ' + money(l.price) + '</span><span>' + money(l.qty * l.price) + '</span></div></div>'; }).join('') + '<div class="dash"></div>' +
+        (p.discount ? '<div class="ln"><span>Discount</span><span>−' + money(p.discount) + '</span></div>' : '') + '<div class="ln" style="font-size:20px;font-weight:800"><span>TOTAL</span><span>' + money(p.total) + '</span></div>' + (p.pay ? '<div class="ln"><span>Paid by</span><span>' + esc(p.pay) + '</span></div>' : '') +
+        '<div class="dash"></div><div class="center small">Thank you for shopping with us!</div></div><p class="center no-print" style="margin-top:16px"><button class="btn pri" onclick="window.print()">Save or print</button> <a class="btn" href="./">Visit our shop</a></p>';
+    }).catch(function () { $('#app').innerHTML = '<div class="card center"><p>Could not open the receipt. Check your internet.</p></div>'; });
+  }
+  function showOrder(id) {
+    get('orders/' + id).then(function (o) {
+      if (!o) { $('#app').innerHTML = '<div class="card center"><p>Order not found.</p></div>'; return; }
+      var st = {new: ['Received, waiting for confirmation', ''], confirmed: ['Confirmed, on its way to you', ''], done: ['Delivered. Thank you!', 'good'], cancelled: ['Cancelled', '']}[o.status] || ['', ''];
+      $('#app').innerHTML = head('Your order') + '<div class="card"><h2 style="margin-top:0">Order ' + esc(o.no) + '</h2><p><span class="pill ' + st[1] + '">' + st[0] + '</span></p><ul class="list">' + (o.lines || []).map(function (l) { return '<li><span>' + l.qty + ' × ' + esc(l.name) + '</span><b>' + money(l.qty * l.price) + '</b></li>'; }).join('') + '</ul><div class="tot"><span>Total</span><span>' + money(o.total) + '</span></div><p class="small mut">Placed ' + fmtDate(o.at) + '</p><a class="btn" href="./">Back to the shop</a></div>';
+    }).catch(function () { $('#app').innerHTML = '<div class="card center"><p>Could not open the order. Check your internet.</p></div>'; });
+  }
+  function route() {
+    var h = location.hash, m;
+    if ((m = h.match(/^#r=([\w-]+)/))) return showReceipt(m[1]);
+    if ((m = h.match(/^#o=([\w-]+)/))) { (CAT ? Promise.resolve() : get('store/catalog').then(function (c) { CAT = c; })).then(function () { showOrder(m[1]); }); return; }
+    if (!CAT) {
+      get('store/catalog').then(function (c) {
+        CAT = c || {open: false, biz: 'Infinity Fragrances', list: []}; document.title = CAT.biz + ' · Shop';
+        Object.keys(cart).forEach(function (id) { if (!CAT.list.some(function (p) { return p.id === id; })) delete cart[id]; });
+        render();
+        return get('store/images').then(function (im) { var n = im && im.parts || 0, ps = []; for (var i = 0; i < n; i++) ps.push(get('store/cat_' + i)); return Promise.all(ps); }).then(function (all) { (all || []).forEach(function (d) { if (d && d.imgs) Object.assign(IMGS, d.imgs); }); if (step === 'shop') render(); });
+      }).catch(function () { $('#app').innerHTML = '<div class="card center"><p>Could not load the shop. Check your internet and refresh.</p></div>'; });
+    } else render();
+  }
+  window.addEventListener('hashchange', route); route();
+})();
+</script>
+</body>
+</html>

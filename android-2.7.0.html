@@ -294,6 +294,13 @@ a[data-badge]:not([data-badge=""])::after{content:attr(data-badge);margin-left:6
 .bottombar,.drawer-sheet{display:none}
 .grid2 > label:not(.chk),.grid3 > label:not(.chk){display:flex;flex-direction:column;gap:4px;font-weight:600}
 .pos-float{display:none}
+.res-wrap .grid2 > label input,.res-wrap .grid2 > label select{width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font-size:16px;background:var(--surface);color:var(--ink);font-weight:400}
+.shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}.shop-grid .card{margin:0}
+.send-panel{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:12px;background:var(--soft)}.send-panel label{display:flex;flex-direction:column;gap:4px;font-weight:600}.send-panel input{width:100%;box-sizing:border-box}
+body.nav-on #shop-cart{bottom:calc(80px + env(safe-area-inset-bottom))}
+@media (max-width:860px){body.nav-on .res-tabs{display:none}body.nav-on .cart-bar{bottom:calc(80px + env(safe-area-inset-bottom))}}
+.install-steps{text-align:left;margin:0 0 6px;padding-left:22px;line-height:1.55}.install-steps li{margin:8px 0}
+.ios-share{display:inline-block;width:16px;height:20px;vertical-align:-4px;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 20' fill='none' stroke='%23007aff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 1v12M4 5l4-4 4 4M3 8H1.5v10.5h13V8H13'/%3E%3C/svg%3E")}
 #upd-bar{position:fixed;left:50%;transform:translateX(-50%);top:calc(12px + env(safe-area-inset-top));z-index:70;display:flex;gap:12px;align-items:center;justify-content:space-between;width:min(560px,calc(100vw - 24px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-left:5px solid var(--gold);border-radius:14px;padding:10px 12px 10px 14px;box-shadow:0 14px 40px -10px rgba(0,0,0,.35)}
 #upd-bar .actions{flex-wrap:nowrap}
 @media (max-width:860px){body.nav-on #toast{bottom:calc(84px + env(safe-area-inset-bottom))}body.nav-on:has(#pos-float:not([hidden])) #toast{bottom:calc(150px + env(safe-area-inset-bottom))}}
@@ -439,7 +446,7 @@ a[data-badge]:not([data-badge=""])::after{content:attr(data-badge);margin-left:6
   --sk-card:rgba(30,30,37,.8);--sk-card2:rgba(22,22,28,.9);--sk-solid:#18181d;--sk-field:rgba(0,0,0,.35);--sk-edge:rgba(255,255,255,.08);--sk-edge2:rgba(0,0,0,.5);--sk-hi:rgba(255,255,255,.07);--sk-shadow:rgba(0,0,0,.75);--sk-deep:#6e5520;
   --sk-grad:linear-gradient(135deg,#f1d590 0%,#d9b465 50%,#9a7530 100%);--sk-title:linear-gradient(90deg,#ffffff,#d9b465);--sk-rail:rgba(18,18,22,.75)}
 </style>
-<script>try{var L=JSON.parse(localStorage.getItem('if-look')||'{}'),R=document.documentElement;R.dataset.skin=L.skin||'classic';if(L.mode&&L.mode!=='auto')R.dataset.theme=L.mode;R.dataset.text=L.text||'normal';if(L.motion===false)R.dataset.motion='off';}catch(e){}</script>
+<script>try{var L=JSON.parse(localStorage.getItem('if-look')||'{}'),R=document.documentElement;var F=localStorage.getItem('if-forceskin');R.dataset.skin=F||L.skin||'classic';if(L.mode&&L.mode!=='auto')R.dataset.theme=L.mode;R.dataset.text=L.text||'normal';if(L.motion===false)R.dataset.motion='off';}catch(e){}</script>
 </head>
 <body>
 <div class="app">
@@ -561,7 +568,7 @@ const DEFAULT_SETTINGS = {
   opening:{cash:0, momo:0, bank:0}, openingDate:''
 };
 const COLS = ['towns','resellers','products','moves','cash','dispatches','images','receipts','promos','customers','invoices','suppliers','payslips','logs'];
-const S = {towns:{}, resellers:{}, products:{}, moves:{}, cash:{}, dispatches:{}, images:{}, receipts:{}, promos:{}, customers:{}, invoices:{}, suppliers:{}, logs:{}, settings:{...DEFAULT_SETTINGS}};
+const S = {towns:{}, resellers:{}, products:{}, moves:{}, cash:{}, dispatches:{}, images:{}, receipts:{}, promos:{}, customers:{}, invoices:{}, suppliers:{}, payslips:{}, logs:{}, settings:{...DEFAULT_SETTINGS}};
 let DB = null, MODE = 'connecting', DL = null;
 const loaded = {};
 const UI = {month: thisMonth(), town:'', status:'active', q:'', year: String(new Date().getFullYear())};
@@ -598,7 +605,7 @@ async function boot(){
     try { DCFG = (await window.IFDesktop.getConfig()) || {}; APP_ROLE = DCFG.appRole || ''; } catch(e) {}
     SESSION = null; try { sessionStorage.removeItem('if-session'); } catch(e) {}
     if (APP_ROLE !== 'reseller') LIC = await licCheck(); setStatus('Saved on this ' + DEV_NAME);
-    if (APP_ROLE) fbStart(); render(true); updSchedule();
+    if (APP_ROLE === 'reseller') resSkinOn(true); if (APP_ROLE) fbStart(); render(true); updSchedule();
     window.addEventListener('beforeunload', () => { if (DESK_T) { clearTimeout(DESK_T); window.IFDesktop.saveSync && window.IFDesktop.saveSync(JSON.stringify({...snapshotData(), savedAt:nowISO()})); } });
     return;
   }
@@ -677,8 +684,8 @@ async function del(col, id){
 }
 async function putSettings(patch){
   const ks = Object.keys(patch).filter(k => !['appliedUpdates', 'mergedOffline', 'users', 'recoveryHash'].includes(k) && JSON.stringify(S.settings[k]) !== JSON.stringify(patch[k]));
-  if (ks.length) { const e = {id:uid(), at:nowISO(), user:SESSION?.name || (lockOn() ? 'Unknown' : (S.settings.ownerName || 'Owner')), action:'settings', col:'settings', docId:'', summary:'Changed ' + ks.join(', ')}; S.logs[e.id] = e; if (DB) { const {id, ...b} = e; DB.collection('logs').doc(id).set(b).catch(() => {}); } }
-  if ('users' in patch && JSON.stringify(S.settings.users) !== JSON.stringify(patch.users)) { const e = {id:uid(), at:nowISO(), user:SESSION?.name || 'Owner', action:'settings', col:'settings', docId:'', summary:'Changed users and PINs'}; S.logs[e.id] = e; if (DB) { const {id, ...b} = e; DB.collection('logs').doc(id).set(b).catch(() => {}); } }
+  if (ks.length) { const e = {id:uid(), at:nowISO(), user:SESSION?.name || (lockOn() ? 'Unknown' : (S.settings.ownerName || 'Admin')), action:'settings', col:'settings', docId:'', summary:'Changed ' + ks.join(', ')}; S.logs[e.id] = e; if (DB) { const {id, ...b} = e; DB.collection('logs').doc(id).set(b).catch(() => {}); } }
+  if ('users' in patch && JSON.stringify(S.settings.users) !== JSON.stringify(patch.users)) { const e = {id:uid(), at:nowISO(), user:SESSION?.name || 'Admin', action:'settings', col:'settings', docId:'', summary:'Changed users and PINs'}; S.logs[e.id] = e; if (DB) { const {id, ...b} = e; DB.collection('logs').doc(id).set(b).catch(() => {}); } }
   S.settings = {...S.settings, ...patch}; schedule();
   if (DB) await DB.doc('settings/main').set(clean(S.settings)); else saveLocal();
 }
@@ -790,13 +797,13 @@ function monthStats(m){
 
 /* ---------- render ---------- */
 const PAGES = {};
-const ROUTES = ['dashboard','pos','customers','portal','invoices','suppliers','broadcast','activity','settlement','leaderboard','team','planner','profit','reminders','agreements','resellers','commissions','payslips','debtors','products','stock','purchases','dispatch','sales','cashbook','expenses','promos','catalogue','adverts','studio','prospects','reports','setup'];
+const ROUTES = ['dashboard','pos','orders','customers','portal','invoices','suppliers','broadcast','activity','settlement','leaderboard','team','planner','profit','reminders','agreements','resellers','commissions','payslips','debtors','products','shops','stock','purchases','dispatch','sales','cashbook','expenses','promos','catalogue','adverts','studio','prospects','reports','setup'];
 function route(){ const h = location.hash.slice(1); return ROUTES.includes(h) ? h : 'dashboard'; }
 const GROUPS = [
   {label:'Dashboard', tabs:[['dashboard','Dashboard']]},
-  {label:'Point of sale', tabs:[['pos','Point of sale'],['customers','Customers']]},
+  {label:'Point of sale', tabs:[['pos','Point of sale'],['orders','Online shop'],['customers','Customers']]},
   {label:'Resellers', tabs:[['resellers','Towns & resellers'],['settlement','Settlement day'],['debtors','Money owed & expected'],['commissions','Commissions'],['payslips','Payslips'],['leaderboard','Leaderboard'],['team','Recruits & bonuses'],['portal','Online accounts'],['reminders','Reminders & reports'],['agreements','Agreements']]},
-  {label:'Stock', tabs:[['products','Products'],['stock','Stock register'],['dispatch','Dispatch & delivery'],['purchases','Purchases book'],['suppliers','Supplier book'],['planner','Reorder planner']]},
+  {label:'Stock', tabs:[['products','Products'],['shops','Shops'],['stock','Stock register'],['dispatch','Dispatch & delivery'],['purchases','Purchases book'],['suppliers','Supplier book'],['planner','Reorder planner']]},
   {label:'Money', tabs:[['sales','Sales book'],['invoices','Invoices & quotes'],['cashbook','Cash book'],['expenses','Expenses']]},
   {label:'Marketing', tabs:[['promos','Promotions & discounts'],['adverts','Flyers & adverts'],['catalogue','Catalogue maker'],['broadcast','WhatsApp broadcast'],['studio','Photo studio']]},
   {label:'Prospects', tabs:[['prospects','Prospects & advice']]},
@@ -817,7 +824,7 @@ function tabsHTML(r){
 const TOOL_PAGES = new Set(['catalogue','adverts','studio','pos','prospects','reminders']);
 function render(force){
   if (DESK && MODE === 'desktop' && APP_ROLE !== 'reseller') { const g = gateHTML(); if (g) { document.body.classList.remove('res-mode'); navOff(); $('#main').dataset.page = ''; $('#main').innerHTML = g; return; } }
-  if (APP_ROLE === 'reseller') { document.body.classList.add('res-mode'); navOff(); $('#main').dataset.page = ''; $('#main').innerHTML = !FB_USER ? (FB_AUTH_SEEN || FB_ERR || !FB_AUTH_STARTED ? signInScreen() : '<div class="lockwrap"><p class="mut">Opening…</p></div>') : FB_ROLE === 'reseller' ? (RES_UNLOCKED ? resUI() : resUnlockScreen()) : FB_ROLE === null ? '<div class="lockwrap"><p class="mut">Signing in…</p></div>' : `<div class="lockwrap"><div class="lockcard"><p>${(FB.providers?.() || []).includes('google.com') ? 'This Google account is not linked to a reseller login yet. Sign in once with your login ID and PIN, then open Account and tap <b>Link Google account</b>.' : 'This login is not a reseller account.'}</p>${btn('Sign out', 'fbOut', {}, 'pri')}</div></div>`; return; }
+  if (APP_ROLE === 'reseller') { document.body.classList.add('res-mode'); navOff(); $('#main').dataset.page = ''; $('#main').innerHTML = !FB_USER ? (FB_AUTH_SEEN || FB_ERR || !FB_AUTH_STARTED ? signInScreen() : '<div class="lockwrap"><p class="mut">Opening…</p></div>') : FB_ROLE === 'reseller' ? (RES_UNLOCKED ? resUI() : resUnlockScreen()) : FB_ROLE === 'shop' ? (RES_UNLOCKED ? shopUI() : resUnlockScreen()) : FB_ROLE === null ? '<div class="lockwrap"><p class="mut">Signing in…</p></div>' : `<div class="lockwrap"><div class="lockcard"><p>${(FB.providers?.() || []).includes('google.com') ? 'This Google account is not linked to a reseller login yet. Sign in once with your login ID and PIN, then open Account and tap <b>Link Google account</b>.' : 'This login is not a reseller account.'}</p>${btn('Sign out', 'fbOut', {}, 'pri')}</div></div>`; if (document.querySelector('.res-wrap')) (FB_ROLE === 'shop' ? shopBottomBar() : resBottomBar()); return; }
   if (lockOn() && !SESSION) { document.body.classList.remove('res-mode'); navOff(); $('#main').innerHTML = lockScreen(); $('#main').dataset.page = ''; setTimeout(() => $('#lock-pin')?.focus(), 30); return; }
   if (DESK && MODE === 'desktop' && (!LIC.ok || (LIC.trial && !UI.licSeen))) { navOff(); $('#main').innerHTML = licScreen(); $('#main').dataset.page = ''; return; }
   if (!allowed(route())) { location.hash = firstAllowed(); return; }
@@ -1725,11 +1732,14 @@ function fixNumbers(o){
 }
 
 /* ======================= Version 2.0 ======================= */
-const APP_VERSION = '2.5.0';
+const APP_VERSION = '2.7.0';
 const CHANGELOG = [
+  ['2.7.0', '16 Nov 2026', ['Digital receipts: send by WhatsApp, SMS, link or print from the till, shops and resellers', 'Shops: each shop has its own stock and a shopkeeper app; sales, receipts and cash arrive automatically', 'Online shop link for customers: order and pay on delivery or by mobile money', 'Change my PIN button; resellers confirm their current PIN to change it']],
+  ['2.6.1', '16 Nov 2026', ['Reseller app: phone layout with a bottom menu (Home, Sell, Order, Pay, More)', 'Reseller app always uses the Rose Quartz look, including the PIN screen', '"Owner" is now called "Admin" in the app']],
+  ['2.6.0', '16 Nov 2026', ['iPhone app: install from Safari with Add to Home Screen; works offline and updates itself', 'Records on iPhone are kept on the phone, with backups shared through the iPhone share sheet']],
   ['2.5.0', '16 Nov 2026', ['Automatic updates: the app downloads new versions by itself and asks you to restart', 'Every update is digitally signed and checked before it installs', 'App updates card in Settings (resellers: Account)']],
   ['2.4.0', '16 Nov 2026', ['Phone layout: bottom menu bar, a More menu with every page, two-column summaries, forms that slide up from the bottom', 'Floating sale bar on the till on phones', 'Eight themes, including 3D themes with gradients (Settings → Look & feel), light/dark choice and larger text', 'PC window remembers its size and position, and can be made as narrow as a phone']],
-  ['2.3.0', '16 Nov 2026', ['One sign-in page for owner and resellers; the owner role needs your owner email and password', 'PIN or fingerprint every time the app opens, and when you come back to it; signs out after 5 wrong PINs', 'Phone notifications for new requests, approvals and parcels, even when the app is closed', 'Settlement reminders by WhatsApp and in the app (automatic 3 days before)', 'Resellers attach a photo of their payment slip', 'Order catalogue with photos, promotion prices and a cart', 'Resellers running low on the dashboard', 'Approve or reject several requests at once', 'Daily online backup to your Firebase account, with restore', 'New resellers can apply in the app', 'Monthly target progress and badges for resellers', 'Resellers make posters and flyers, and may raise prices by a small margin you set', 'Payslips for resellers: make, print, send in the app or on WhatsApp, and mark paid']],
+  ['2.3.0', '16 Nov 2026', ['One sign-in page for owner and resellers; the owner role needs your admin email and password', 'PIN or fingerprint every time the app opens, and when you come back to it; signs out after 5 wrong PINs', 'Phone notifications for new requests, approvals and parcels, even when the app is closed', 'Settlement reminders by WhatsApp and in the app (automatic 3 days before)', 'Resellers attach a photo of their payment slip', 'Order catalogue with photos, promotion prices and a cart', 'Resellers running low on the dashboard', 'Approve or reject several requests at once', 'Daily online backup to your Firebase account, with restore', 'New resellers can apply in the app', 'Monthly target progress and badges for resellers', 'Resellers make posters and flyers, and may raise prices by a small margin you set', 'Payslips for resellers: make, print, send in the app or on WhatsApp, and mark paid']],
   ['2.2.0', '16 Nov 2026', ['Neater sign-in screens with a Show/Hide password button', 'Continue with Google (Android app), after linking Google once', 'Resellers see every parcel sent to them and can confirm when it arrives']],
   ['2.1.0', '16 Nov 2026', ['Online reseller accounts: each reseller signs in with their own login ID and PIN', 'Resellers see their own stock, prices, statement, commission, recruits, leaderboard, promotions and price list', 'Resellers record sales and customers, report payments, order stock and ask to return bottles', 'Everything a reseller sends waits for your approval', 'The Android and PC apps open with a choice: owner or reseller']],
   ['2.0.0', '11 Nov 2026', ['Desktop (PC) version with records saved in a file on your computer', 'Automatic daily backups and back up to a flash drive', 'PIN login with Owner, Manager and Cashier roles', 'Activity log of every change', 'Send changes to and get latest from the online hub', 'Direct printing, including small receipt printers', 'Barcode labels', 'Invoices and quotations', 'Supplier book', 'Monthly business goals', 'Excel workbook export', 'WhatsApp broadcast to resellers and customers', 'Reseller pages', 'Several stock locations', 'Works without internet (desktop)']],
@@ -1738,8 +1748,8 @@ const CHANGELOG = [
 ];
 const DESK = window.IFDesktop || null;
 let APP_ROLE = '';
-const PHONE = !!(DESK && DESK.platform === 'android');
-const DEV_NAME = PHONE ? 'phone' : 'computer', DEV_LABEL = PHONE ? 'Android' : 'PC';
+const PHONE = !!(DESK && (DESK.platform === 'android' || DESK.platform === 'ios'));
+const DEV_NAME = PHONE ? 'phone' : 'computer', DEV_LABEL = DESK && DESK.platform === 'ios' ? 'iPhone' : PHONE ? 'Android' : 'PC';
 
 /* ---------- locations ---------- */
 const locs = () => (S.settings.locations && S.settings.locations.length ? S.settings.locations : [{id:'main', name:'Main store'}]);
@@ -1748,7 +1758,7 @@ const locName = id => locs().find(l => l.id === (id || 'main'))?.name || 'Main s
 const locSelect = (sel, name = 'loc', label = 'Stock location') => multiLoc() ? `<label for="f-${name}">${label}<select id="f-${name}" name="${name}">${locs().map(l => `<option value="${l.id}" ${(sel || 'main') === l.id ? 'selected' : ''}>${esc(l.name)}</option>`).join('')}</select></label>` : '';
 
 /* ---------- users, PIN and roles ---------- */
-const ROLES = {owner:'Owner', manager:'Manager', cashier:'Cashier'};
+const ROLES = {owner:'Admin', manager:'Manager', cashier:'Cashier'};
 const ROLE_HELP = {owner:'Everything, including settings, users, backups and the activity log.', manager:'Everything except settings, users and the activity log.', cashier:'Point of sale and customers only.'};
 let SESSION = null; try { SESSION = JSON.parse(sessionStorage.getItem('if-session') || 'null'); } catch(e) {}
 const users = () => S.settings.users || [];
@@ -1768,13 +1778,13 @@ function lockScreen(){
     <div class="seg" style="justify-content:center;flex-wrap:wrap;margin-bottom:14px">${us.map((u, i) => `<button type="button" data-act="lockPick" data-id="${u.id}" class="${(UI.lockUser || us[0].id) === u.id ? 'on' : ''}">${esc(u.name)} <span class="small mut">${ROLES[u.role]}</span></button>`).join('')}</div>
     <input id="lock-pin" type="password" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="PIN" style="font-size:28px;text-align:center;letter-spacing:.4em;width:220px;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink)">
     <div class="pinpad">${[1, 2, 3, 4, 5, 6, 7, 8, 9, '⌫', 0, 'OK'].map(k => `<button type="button" data-act="pinKey" data-k="${k}">${k}</button>`).join('')}</div>
-    <p class="m-err" id="lock-err"></p>${DESK && DCFG.bio && bioReady() ? `<div style="margin:6px 0 10px">${btn('Use fingerprint', 'bioUnlock', {}, 'pri')}</div>` : ''}${DESK && MODE === 'desktop' ? `<button type="button" class="link small" data-act="lockEmail">Forgot PIN? Sign in with your owner email</button><br>` : ''}<button type="button" class="link small" data-act="lockRecover">${DESK && MODE === 'desktop' ? 'Or use the recovery key' : 'Forgot PIN? Use the recovery key'}</button>
+    <p class="m-err" id="lock-err"></p>${DESK && DCFG.bio && bioReady() ? `<div style="margin:6px 0 10px">${btn('Use fingerprint', 'bioUnlock', {}, 'pri')}</div>` : ''}${DESK && MODE === 'desktop' ? `<button type="button" class="link small" data-act="lockEmail">Forgot PIN? Sign in with your admin email</button><br>` : ''}<button type="button" class="link small" data-act="lockRecover">${DESK && MODE === 'desktop' ? 'Or use the recovery key' : 'Forgot PIN? Use the recovery key'}</button>
     <p class="small mut" style="margin-top:14px">Version ${APP_VERSION}</p></div></div>`;
 }
 async function tryUnlock(){
   const el = $('#lock-pin'); if (!el) return; const u = users().find(x => x.id === (UI.lockUser || users()[0]?.id)); if (!u) return;
   if (await sha(u.salt + el.value) === u.pin) { PIN_FAILS = 0; SESSION = {id:u.id, name:u.name, role:u.role}; try { sessionStorage.setItem('if-session', JSON.stringify(SESSION)); } catch(e) {} el.value = ''; touchIdle(); if (!allowed(route())) location.hash = firstAllowed(); render(true); toast(`Welcome, ${u.name}`); }
-  else { if (DESK && MODE === 'desktop' && ++PIN_FAILS >= MAX_FAILS) { PIN_FAILS = 0; await setCfg({ownerUid:''}); try { FB && await FB.signOut(); } catch(e) {} UI.signMsg = 'Too many wrong PINs. Sign in with your owner email and password.'; UI.signTab = 'owner'; return render(true); } $('#lock-err').textContent = DESK && MODE === 'desktop' ? `Wrong PIN. ${MAX_FAILS - PIN_FAILS} tries left.` : 'Wrong PIN. Try again.'; el.value = ''; el.focus(); }
+  else { if (DESK && MODE === 'desktop' && ++PIN_FAILS >= MAX_FAILS) { PIN_FAILS = 0; await setCfg({ownerUid:''}); try { FB && await FB.signOut(); } catch(e) {} UI.signMsg = 'Too many wrong PINs. Sign in with your admin email and password.'; UI.signTab = 'owner'; return render(true); } $('#lock-err').textContent = DESK && MODE === 'desktop' ? `Wrong PIN. ${MAX_FAILS - PIN_FAILS} tries left.` : 'Wrong PIN. Try again.'; el.value = ''; el.focus(); }
 }
 function lockNow(){ SESSION = null; try { sessionStorage.removeItem('if-session'); } catch(e) {} closeModal(); render(true); }
 let IDLE_T = 0; function touchIdle(){ IDLE_T = Date.now(); }
@@ -1788,8 +1798,8 @@ function userForm(u = {}){
     ${!isNew ? `<div class="actions">${btn('Remove user', 'userDel', {id:u.id}, 'sm ghost danger')}</div>` : ''}`,
   async d => {
     if (d.pin || isNew) { if (!/^\d{4,8}$/.test(d.pin)) throw Error('The PIN must be 4 to 8 digits.'); if (d.pin !== d.pin2) throw Error('The two PINs do not match.'); }
-    if (!users().length && d.role !== 'owner') throw Error('The first user must be the Owner.');
-    if (!isNew && u.role === 'owner' && d.role !== 'owner' && owners.length < 2) throw Error('There must always be at least one Owner.');
+    if (!users().length && d.role !== 'owner') throw Error('The first user must be the Admin.');
+    if (!isNew && u.role === 'owner' && d.role !== 'owner' && owners.length < 2) throw Error('There must always be at least one Admin.');
     const rec = {...u, id:u.id || uid(), name:d.name.trim(), role:d.role};
     if (d.pin) { rec.salt = uid(); rec.pin = await sha(rec.salt + d.pin); }
     const list = users().filter(x => x.id !== rec.id).concat(rec); let extra = {};
@@ -1798,7 +1808,7 @@ function userForm(u = {}){
     await putSettings({users:list, ...extra});
     if (isNew && !SESSION && rec.role === 'owner') { SESSION = {id:rec.id, name:rec.name, role:rec.role}; try { sessionStorage.setItem('if-session', JSON.stringify(SESSION)); } catch(e) {} }
     toast('User saved');
-    if (key) setTimeout(() => modal('Write down your recovery key', `<p>If every Owner forgets their PIN, this key opens the hub as Owner. Write it down and keep it somewhere safe. It will not be shown again.</p><div style="font-size:32px;font-weight:800;letter-spacing:.12em;text-align:center;padding:16px;border:2px dashed var(--gold);border-radius:12px">${key}</div>`, null, {nofocus:true}), 80);
+    if (key) setTimeout(() => modal('Write down your recovery key', `<p>If every Admin forgets their PIN, this key opens the hub as Admin. Write it down and keep it somewhere safe. It will not be shown again.</p><div style="font-size:32px;font-weight:800;letter-spacing:.12em;text-align:center;padding:16px;border:2px dashed var(--gold);border-radius:12px">${key}</div>`, null, {nofocus:true}), 80);
   }, {label:'Save user'});
 }
 
@@ -1818,7 +1828,7 @@ function docSummary(col, d){
 }
 function logWrite(action, col, before, after){
   if (LOG_SKIP.has(col)) return;
-  const e = {id:uid(), at:nowISO(), user:SESSION?.name || (lockOn() ? 'Unknown' : (S.settings.ownerName || 'Owner')), action, col, docId:(after || before)?.id || '', summary:docSummary(col, after || before)};
+  const e = {id:uid(), at:nowISO(), user:SESSION?.name || (lockOn() ? 'Unknown' : (S.settings.ownerName || 'Admin')), action, col, docId:(after || before)?.id || '', summary:docSummary(col, after || before)};
   if (action === 'edit' && before && after) { const ch = Object.keys({...before, ...after}).filter(k => !['createdAt', 'id'].includes(k) && JSON.stringify(before[k]) !== JSON.stringify(after[k])); if (!ch.length) return; e.fields = ch.slice(0, 8).join(', '); }
   S.logs[e.id] = e;
   if (DB) { const {id, ...b} = e; DB.collection('logs').doc(id).set(b).catch(() => {}); }
@@ -2167,7 +2177,7 @@ function licScreen(){
 function v2SettingsCards(){
   const st = S.settings, us = users();
   return lookCard() + deviceCard() + updCard() + alertsCard() + cloudCard() + `<div class="card"><h2>Users &amp; PINs ${btn('+ Add user', 'userNew', {}, 'sm')}</h2>${us.length ? `<ul class="list">${us.map(u => `<li><span><b>${esc(u.name)}</b> · ${ROLES[u.role]}<div class="small mut">${ROLE_HELP[u.role]}</div></span>${btn('Edit', 'userEdit', {id:u.id}, 'sm ghost')}</li>`).join('')}</ul>
-      <div class="grid2" style="margin-top:10px"><label class="small" for="f-lockm">Lock after this many idle minutes (0 = never)<input id="f-lockm" type="number" min="0" max="240" value="${num(st.lockMinutes ?? 10)}"></label></div>` : '<p class="hint">No PIN lock yet. Add yourself as Owner first, then add your shop assistants as Cashiers. Everyone will then choose their name and enter a PIN to open the hub.</p>'}</div>
+      <div class="grid2" style="margin-top:10px"><label class="small" for="f-lockm">Lock after this many idle minutes (0 = never)<input id="f-lockm" type="number" min="0" max="240" value="${num(st.lockMinutes ?? 10)}"></label></div>` : '<p class="hint">No PIN lock yet. Add yourself as Admin first, then add your shop assistants as Cashiers. Everyone will then choose their name and enter a PIN to open the hub.</p>'}</div>
     <div class="card"><h2>Stock locations ${btn('+ Add location', 'locNew', {}, 'sm')}</h2><ul class="list">${locs().map(l => `<li><span>${esc(l.name)}${l.id === 'main' ? ' <span class="small mut">(main)</span>' : ''}${(st.posLoc || 'main') === l.id && multiLoc() ? ' <span class="pill acc">Point of sale</span>' : ''}</span><span class="actions">${multiLoc() ? btn('Use for POS', 'locPos', {id:l.id}, 'sm ghost') : ''}${btn('Rename', 'locEdit', {id:l.id}, 'sm ghost')}</span></li>`).join('')}</ul><p class="hint">Add a location if you keep stock in more than one place, e.g. a depot on the Copperbelt. Then choose the location when receiving, dispatching or moving stock.</p></div>
     <div class="card"><h2>Printing</h2><label class="small" for="f-rpaper">Receipt printer paper<select id="f-rpaper"><option value="80" ${(st.receiptPaper || '80') === '80' ? 'selected' : ''}>80 mm thermal roll</option><option value="58" ${st.receiptPaper === '58' ? 'selected' : ''}>58 mm thermal roll</option><option value="a4" ${st.receiptPaper === 'a4' ? 'selected' : ''}>A4 paper</option></select></label><p class="hint">Every document has a Print button. Dispatch notes, agreements, invoices and labels print on A4; receipts use the size above.</p></div>
     ${DESK ? `<div class="card"><h2>This ${DEV_NAME}</h2><dl class="kv"><dt>Records file</dt><dd class="small">${esc(UI.deskInfo?.dataFile || '')}</dd><dt>Last saved</dt><dd>${UI.deskInfo?.savedAt ? esc(fmtDateTime(UI.deskInfo.savedAt)) : '—'}</dd><dt>Backups</dt><dd>${int(UI.deskInfo?.backups || 0)} kept (last 30)</dd></dl>
@@ -2206,6 +2216,7 @@ async function fbLoad(){
     changePassword: p => app.auth().currentUser.updatePassword(p),
     googleIn: tok => app.auth().signInWithCredential(fb.auth.GoogleAuthProvider.credential(tok)),
     googleLink: tok => app.auth().currentUser.linkWithCredential(fb.auth.GoogleAuthProvider.credential(tok)),
+    reauth: pw => { const u = app.auth().currentUser; return u.reauthenticateWithCredential(fb.auth.EmailAuthProvider.credential(u.email, pw)); },
     refreshToken: () => app.auth().currentUser?.refreshToken || '',
     resetPassword: e => app.auth().sendPasswordResetEmail(e),
     providers: () => (app.auth().currentUser?.providerData || []).map(x => x.providerId),
@@ -2233,7 +2244,8 @@ async function fbStart(){
     FB_USER = u; FB_ROLE = null; FB_ME = null;
     if (u) { try { FB_ME = await FB.get('users/' + u.uid); FB_ROLE = FB_ME?.role || 'none'; } catch(e) { FB_ROLE = 'none'; FB_ERR = fbMsg(e); } }
     if (DESK && MODE === 'desktop') await ownerAuthCheck(u);
-    if (FB_ROLE === 'reseller') { resStart(); if (FB_ME?.name && DCFG.resName !== FB_ME.name) setCfg({resName:FB_ME.name}); alertsSetupFor('reseller'); }
+    if (FB_ROLE === 'shop') { shopStart(); if (FB_ME?.name && DCFG.resName !== FB_ME.name) setCfg({resName:FB_ME.name}); }
+    else if (FB_ROLE === 'reseller') { resStart(); if (FB_ME?.name && DCFG.resName !== FB_ME.name) setCfg({resName:FB_ME.name}); alertsSetupFor('reseller'); }
     else if (FB_ROLE === 'owner' && !(DESK && MODE === 'desktop' && APP_ROLE !== 'owner')) { ownerListen(); if (DESK && APP_ROLE === 'owner' && DCFG.ownerUid) alertsSetupFor('owner'); }
     render(true);
   });
@@ -2255,11 +2267,20 @@ function ownerListen(){
   OWN.unsubs.push(FB.listen('applications', 'status', 'new', list => { const old = new Set((OWN.apps || []).map(x => x.id)); OWN.apps = list.sort((a, b) => (a.at || '').localeCompare(b.at || ''));
     if (appsPrimed) list.filter(x => !old.has(x.id)).forEach(x => { appNotify('New reseller application', `${x.name} (${x.town || ''})`); toast(`New reseller application: ${x.name}`); });
     appsPrimed = true; if (route() === 'portal') render(true); else updatePortalBadge(); }));
+  OWN.shopReqs = {}; locs().filter(l => l.keeperUid).forEach(l => {
+    OWN.unsubs.push(FB.listen(`shops/${l.id}/sales`, 'status', 'new', list => list.forEach(q => shopSaleImport(l.id, q))));
+    OWN.unsubs.push(FB.listen(`shops/${l.id}/requests`, 'status', 'pending', list => { const old = new Set((OWN.shopReqs[l.id] || []).map(x => x.id)); OWN.shopReqs[l.id] = list.map(q => ({...q, sid:l.id})); list.filter(q => !old.has(q.id) && OWN.shopPrimed?.[l.id]).forEach(q => { appNotify('Shop stock request', l.name); toast(`${l.name} asks for stock`); }); (OWN.shopPrimed = OWN.shopPrimed || {})[l.id] = true; if (route() === 'shops') render(true); else updatePortalBadge(); }));
+  });
+  let ordPrimed = false;
+  OWN.unsubs.push(FB.listen('orders', null, null, list => { const old = new Set((OWN.orders || []).map(o => o.id)), cut = iso(addDays(new Date(), -60)); OWN.orders = list.filter(o => (o.at || '') >= cut || o.status === 'new' || o.status === 'confirmed');
+    if (ordPrimed) list.filter(o => !old.has(o.id) && o.status === 'new').forEach(o => { appNotify('New online order', `${o.name}: ${money(o.total)}`); toast(`New online order from ${o.name}`); });
+    ordPrimed = true; if (route() === 'orders') render(true); else updatePortalBadge(); }));
+  setTimeout(() => { publishStore(); publishShops(); }, 6000);
   setTimeout(maybeAutoRemind, 4000);
   setTimeout(() => { if (cloudBackupDue()) cloudBackup(false); }, 20000);
 }
 const pendingAll = () => Object.entries(OWN.reqs).flatMap(([rid, l]) => l.map(q => ({...q, rid}))).sort((a, b) => (a.at || '').localeCompare(b.at || ''));
-function updatePortalBadge(){ const n = pendingAll().length + (OWN.apps || []).length; document.querySelectorAll('a[href="#portal"]').forEach(a => a.dataset.badge = n || ''); }
+function updatePortalBadge(){ const n = pendingAll().length + (OWN.apps || []).length + (OWN.orders || []).filter(o => o.status === 'new').length + Object.values(OWN.shopReqs || {}).flat().length; document.querySelectorAll('a[href="#portal"]').forEach(a => a.dataset.badge = n || ''); }
 function snapshotFor(rid){
   const r = S.resellers[rid], C = compute(), a = C.acc[rid] || {sales:0, remit:0, earned:0, paid:0, net:0}, st = statement(rid);
   const held = heldOf(rid, C).map(([p, q]) => { const pr = S.products[p] || {}; return {productId:p, name:pr.name || pName(p), size:pr.size || '', category:pr.category || '', qty:q, price:resPrice(rid, p, C)}; }).sort((x, y) => x.name.localeCompare(y.name));
@@ -2284,6 +2305,7 @@ async function publishAll(quiet){
     const ops = sortedRes(true).filter(r => r.portalUid).map(r => ['set', `portal/${r.id}`, snapshotFor(r.id)]);
     const pub = publicDocs(); Object.entries(pub).forEach(([k, v]) => ops.push(['set', `public/${k}`, v]));
     for (let i = 0; i < ops.length; i += 400) await FB.batch(ops.slice(i, i + 400));
+    publishStore(); publishShops();
     try { const cat = await catalogOps(); for (let i = 0; i < cat.ops.length; i += 6) await FB.batch(cat.ops.slice(i, i + 6)); if (cat.ops.length) localStorage.setItem('if-catsig', cat.sig); } catch(e) {}
     OWN.published = nowISO(); try { localStorage.setItem('if-published', OWN.published); } catch(e) {}
     if (!quiet) toast('Resellers updated');
@@ -2296,13 +2318,13 @@ PAGES.portal = () => {
   if (!cfg && !window.__FB_MOCK) return head('Online reseller accounts', 'Give each reseller their own login. They see only their own stock, record sales and payments, order stock and return bottles. Nothing counts until you approve it.') + `<div class="card"><h2>Connect your Firebase project</h2><p class="hint">Paste the <b>firebaseConfig</b> block from Firebase (Project settings → Your apps → Web app).</p><label for="f-fbc">Firebase config<textarea id="f-fbc" rows="8" placeholder="const firebaseConfig = { apiKey: &quot;…&quot;, authDomain: &quot;…&quot;, projectId: &quot;…&quot;, … };"></textarea></label><div class="actions">${btn('Connect', 'fbSaveCfg', {}, 'pri')}</div></div>`;
   if (!FB_AUTH_STARTED) setTimeout(fbStart, 0);
   if (FB_ERR && !FB_USER) return head('Online reseller accounts', '') + `<div class="card"><p class="neg"><b>Could not connect:</b> ${esc(FB_ERR)}</p><p class="hint">${MODE === 'live' ? 'This version may not be allowed to reach Firebase. Use the PC or Android app for online accounts.' : 'Check your internet connection.'}</p><div class="actions">${btn('Try again', 'fbRetry', {}, 'pri')}</div></div>`;
-  if (!FB_USER) return head('Online reseller accounts', 'Sign in with your owner account. The first time, type your email and choose a password (at least 8 characters), then tap Create owner account.') + `<div class="card" style="max-width:520px"><form class="fb-form" onsubmit="return false">
+  if (!FB_USER) return head('Online reseller accounts', 'Sign in with your admin account. The first time, type your email and choose a password (at least 8 characters), then tap Create admin account.') + `<div class="card" style="max-width:520px"><form class="fb-form" onsubmit="return false">
       <label for="f-oe">Email<input id="f-oe" type="email" autocomplete="username" value="${esc(UI.fbEmail ?? S.settings.email ?? '')}"></label>
       <label for="f-op">Password${pwField('f-op', 'current-password')}</label>
       <p class="m-err" id="fb-err">${esc(UI.fbErr || '')}</p>
-      <div class="fb-btns">${btn('Sign in', 'fbOwnerIn', {}, 'pri')}${btn('Create owner account', 'fbOwnerUp')}</div>
+      <div class="fb-btns">${btn('Sign in', 'fbOwnerIn', {}, 'pri')}${btn('Create admin account', 'fbOwnerUp')}</div>
       ${canGoogle() ? `<div class="fb-or"><span>or</span></div>${btn('Continue with Google', 'fbGoogle', {}, 'gbtn')}` : ''}</form></div>`;
-  if (FB_ROLE !== 'owner') return head('Online reseller accounts', '') + `<div class="card"><p>You are signed in as <b>${esc(FB_USER.email || 'a Google account')}</b>, which is not the owner account.</p><div class="actions">${btn('Make this the owner account', 'fbClaim', {}, 'pri')}${btn('Sign out', 'fbOut')}</div><p class="hint">Only works if no owner has been set up yet.</p></div>`;
+  if (FB_ROLE !== 'owner') return head('Online reseller accounts', '') + `<div class="card"><p>You are signed in as <b>${esc(FB_USER.email || 'a Google account')}</b>, which is not the admin account.</p><div class="actions">${btn('Make this the admin account', 'fbClaim', {}, 'pri')}${btn('Sign out', 'fbOut')}</div><p class="hint">Only works if no admin has been set up yet.</p></div>`;
   if (!OWN.autoDone) { OWN.autoDone = true; setTimeout(() => publishAll(true), 500); }
   const rs = sortedRes(true), pend = pendingAll(), last = OWN.published || (() => { try { return localStorage.getItem('if-published') || ''; } catch(e) { return ''; } })();
   return head('Online reseller accounts', `Signed in as ${esc(FB_USER.email)}. Resellers see only their own stock and statement. Their sales, payments, orders and returns wait here for your approval.`, btn('Update resellers now', 'fbPublish', {}, 'pri') + (canGoogle() && !(FB.providers?.() || []).includes('google.com') ? btn('Link Google account', 'fbLinkGoogle', {}, 'ghost') : '') + btn('Sign out', 'fbOut', {}, 'ghost'))
@@ -2381,7 +2403,8 @@ const resPendingQty = () => { const m = {}; RES.reqs.filter(q => q.status === 'p
 const resAvail = () => { const pend = resPendingQty(); return (RES.snap?.held || []).map(x => ({...x, avail:Math.max(0, x.qty - (pend[x.productId] || 0))})); };
 async function resSubmit(type, data){
   try { await FB.add(`portal/${FB_ME.resellerId}/requests`, {...data, type, status:'pending', by:FB_USER.uid, at:FB.now()}); fbNotify('owner', `${RES.snap?.name || 'A reseller'}: new ${(REQ_TYPES[type] || 'request').toLowerCase()}`); toast('Sent. Waiting for approval.');
-    if (type === 'order') { RES.cart = {}; RES.note = ''; } if (type === 'payment') RES.proof = ''; RES.tab = 'home'; render(true); }
+    if (type === 'order') { RES.cart = {}; RES.note = ''; } if (type === 'payment') RES.proof = ''; RES.tab = 'home'; render(true);
+    if (type === 'sale') { const s0 = RES.snap || {}, now = new Date(), tot = r2(data.lines.reduce((t, l) => t + num(l.qty) * num(l.price), 0)); const p = {...rcptPublic({no:'RS-' + Date.now().toString(36).toUpperCase().slice(-6), date:data.date || today(), time:now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}), customer:data.customer, lines:data.lines, total:tot, pay:''}), biz:s0.business || bizName(), phone:s0.phone || s0.businessPhone || '', seller:s0.name || ''}; setTimeout(() => rcptModal(p, {phone:data.phone || '', print:true}), 300); } }
   catch(e) { toast(fbMsg(e), true); }
 }
 function resLogin(){ return signInScreen(); }
@@ -2403,7 +2426,7 @@ function resUI(){
       <p class="hint">Updated by ${esc(s.business)} on ${esc(fmtDateTime(s.updatedAt))}.</p>`;
   } else if (RES.tab === 'sell') {
     const av = resAvail().filter(x => x.avail > 0);
-    body = `<div class="card"><h2>Record a sale</h2>${av.length ? `<form id="res-form" data-type="sale"><div class="grid2"><label for="rs-d">Date<input id="rs-d" type="date" name="date" value="${today()}"></label><label for="rs-c">Customer (optional)<input id="rs-c" name="customer" placeholder="Name"></label></div>
+    body = `<div class="card"><h2>Record a sale</h2>${av.length ? `<form id="res-form" data-type="sale"><div class="grid2"><label for="rs-d">Date<input id="rs-d" type="date" name="date" value="${today()}"></label><label for="rs-c">Customer (optional)<input id="rs-c" name="customer" placeholder="Name"></label><label for="rs-ph">Customer phone (for the receipt)<input id="rs-ph" name="phone" type="tel" placeholder="0977 123456"></label></div>
       <div class="tw"><table class="t"><thead><tr><th>Perfume</th><th class="n">Available</th><th class="n">Price</th><th class="n">Sold</th></tr></thead><tbody>${av.map(x => `<tr><td>${esc(x.name)}</td><td class="n">${x.avail}</td><td class="n">${money(x.price)}</td><td class="n"><input type="number" name="q_${x.productId}" min="0" max="${x.avail}" placeholder="0" style="width:70px;text-align:right"></td></tr>`).join('')}</tbody></table></div>
       <div class="actions" style="margin-top:10px">${btn('Send sale', 'resSend', {}, 'pri')}</div></form><p class="hint">Your commission: ${esc(s.commRule)}.</p>` : '<p class="mut">You have no bottles available to sell.</p>'}</div>`;
   } else if (RES.tab === 'pay') {
@@ -2431,7 +2454,7 @@ function resUI(){
   } else if (RES.tab === 'team') {
     body = `<div class="card"><h2>My recruits</h2><p class="hint">You earn 2.5% of the selling price on every bottle your recruits sell.</p>${s.recruits.length ? `<ul class="list">${s.recruits.map(k => `<li><span><b>${esc(k.name)}</b> <span class="small mut">${esc(k.town)}</span><div class="small mut">${int(k.bottlesThisMonth)} bottles this month</div></span><b>${money(k.bonusTotal)} bonus</b></li>`).join('')}</ul>` : '<p class="mut">No recruits yet. Bring in a new reseller and earn on their sales!</p>'}</div>`;
   } else if (RES.tab === 'account') {
-    body = `<div class="card"><h2>${esc(s.name)}</h2><p>${esc(s.town)} · login <code>${esc(FB_ME.login || '')}</code></p><h3>Change PIN</h3><div class="grid2"><label for="ra-p">New PIN (6 digits or more)<input id="ra-p" type="password" inputmode="numeric"></label><label for="ra-p2">Repeat<input id="ra-p2" type="password" inputmode="numeric"></label></div><div class="actions">${btn('Change PIN', 'resPin', {}, 'pri')}${canGoogle() ? ((FB.providers?.() || []).includes('google.com') ? '<span class="pill good">Google linked</span>' : btn('Link Google account', 'fbLinkGoogle')) : ''}${btn('Sign out', 'appOut', {}, 'ghost')}</div></div>${lookCard()}${deviceCard()}${updCard()}<div><p class="hint">Questions? Call ${esc(s.business)} on ${esc(s.businessPhone)}.</p></div>`;
+    body = `<div class="card"><h2>${esc(s.name)}</h2><p>${esc(s.town)} · login <code>${esc(FB_ME.login || '')}</code></p><h3>Change PIN</h3><div class="grid2"><label for="ra-o">Current PIN<input id="ra-o" type="password" inputmode="numeric" autocomplete="current-password"></label><label for="ra-p">New PIN (6 digits or more)<input id="ra-p" type="password" inputmode="numeric"></label><label for="ra-p2">Repeat<input id="ra-p2" type="password" inputmode="numeric"></label></div><div class="actions">${btn('Change PIN', 'resPin', {}, 'pri')}${canGoogle() ? ((FB.providers?.() || []).includes('google.com') ? '<span class="pill good">Google linked</span>' : btn('Link Google account', 'fbLinkGoogle')) : ''}${btn('Sign out', 'appOut', {}, 'ghost')}</div></div>${lookCard()}${deviceCard()}${updCard()}<div><p class="hint">Questions? Call ${esc(s.business)} on ${esc(s.businessPhone)}.</p></div>`;
   }
   return `<div class="res-wrap"><div class="res-head"><img src="${LOGO}" alt=""><div><div class="serif" style="font-size:22px;line-height:1">${esc(s.business)}</div><div class="small mut">${esc(s.name)} · ${esc(s.town)}${pend.length ? ` · ${pend.length} waiting` : ''}</div></div></div>${nav}${body}</div>`;
 }
@@ -2440,7 +2463,7 @@ function resCollect(form){
   if (type === 'sale' || type === 'return') {
     const lines = av.map(x => ({productId:x.productId, name:x.name, qty:Math.round(num(d['q_' + x.productId])), price:x.price, max:x.avail})).filter(l => l.qty > 0);
     if (!lines.length) throw Error('Enter how many bottles.'); const over = lines.find(l => l.qty > l.max); if (over) throw Error(`You have only ${over.max} × ${over.name} available.`);
-    return type === 'sale' ? {lines:lines.map(({max, ...l}) => l), customer:(d.customer || '').trim(), date:d.date || today()} : {lines:lines.map(({max, price, ...l}) => l), note:(d.note || '').trim()};
+    return type === 'sale' ? {lines:lines.map(({max, ...l}) => l), customer:(d.customer || '').trim(), phone:(d.phone || '').trim(), date:d.date || today()} : {lines:lines.map(({max, price, ...l}) => l), note:(d.note || '').trim()};
   }
   if (type === 'order') { const pl = RES.pub.prices?.list || [], cart = RES.cart || {}; const lines = pl.filter(p => cart[p.id] > 0).map(p => ({productId:p.id, name:p.name + (p.size ? ' ' + p.size + 'ml' : ''), qty:cart[p.id], price:p.promo ? p.promo.price : p.price})); if (!lines.length) throw Error('Tap + on the perfumes you want.');
     return {lines, note:($('#ro-n')?.value || '').trim()}; }
@@ -2481,18 +2504,29 @@ async function appSignOut(msg){
   await setCfg({appRole:'', ownerUid:'', resPinHash:'', resSalt:'', resName:''});
   APP_ROLE = ''; SESSION = null; try { sessionStorage.removeItem('if-session'); } catch(e) {}
   RES_UNLOCKED = false; PIN_FAILS = 0; OWNER_SIGNING = false; UI.signMsg = msg || ''; UI.signTab = ''; UI.applied = false;
-  document.body.classList.remove('res-mode'); closeModal(); render(true);
+  document.body.classList.remove('res-mode'); resSkinOn(false); closeModal(); render(true);
 }
 
 /* ---- the one sign-in page (phone and computer apps) ---- */
+const IS_IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const IS_STANDALONE = () => !!(navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches));
+function installScreen(){
+  const ios = IS_IOS;
+  return `<div class="lockwrap"><div class="lockcard sign-card"><img src="${LOGO}" alt="" style="width:96px;height:96px"><h1 class="serif" style="margin:10px 0 4px">Install the app</h1><p class="mut" style="margin:0 0 16px">${esc(bizName())} works best from your home screen: full screen, offline, and your records stay safely on this phone.</p>
+    <ol class="install-steps">${ios ? `<li>Tap the <b>Share</b> button <span class="ios-share" aria-hidden="true"></span> at the bottom of Safari (on iPad, at the top).</li><li>Scroll down and tap <b>Add to Home Screen</b>.</li><li>Tap <b>Add</b>, then open <b>Infinity Fragrances</b> from your home screen.</li>`
+      : `<li>Open your browser menu (⋮).</li><li>Tap <b>Install app</b> or <b>Add to Home screen</b>.</li><li>Open <b>Infinity Fragrances</b> from your home screen.</li>`}</ol>
+    ${ios ? '<p class="small mut">Use Safari. Records typed here in the browser are kept separately from the home-screen app, so install first.</p>' : ''}
+    <p style="margin-top:14px"><button type="button" class="link small" data-act="skipInstall">Continue in the browser instead</button></p><p class="small mut">Version ${APP_VERSION}</p></div></div>`;
+}
 function gateHTML(){
+  if (window.__IF_PWA && !IS_STANDALONE() && !UI.skipInstall) return installScreen();
   if (!APP_ROLE || (APP_ROLE === 'owner' && !DCFG.ownerUid)) return signInScreen();
   if (APP_ROLE === 'owner' && !lockOn()) return pinSetupScreen();
   return '';
 }
 function signInScreen(){
   const tab = UI.signTab || (APP_ROLE === 'owner' ? 'owner' : 'reseller');
-  const note = UI.signMsg ? `<p class="sign-note">${esc(UI.signMsg)}</p>` : (APP_ROLE === 'owner' && !DCFG.ownerUid ? '<p class="sign-note">For your security, confirm once that you are the owner. After that you open the app with your PIN or fingerprint.</p>' : '');
+  const note = UI.signMsg ? `<p class="sign-note">${esc(UI.signMsg)}</p>` : (APP_ROLE === 'owner' && !DCFG.ownerUid ? '<p class="sign-note">For your security, confirm once that you are the admin. After that you open the app with your PIN or fingerprint.</p>' : '');
   let body = '';
   if (tab === 'apply') body = UI.applied ? `<div style="text-align:center"><p style="font-size:40px;margin:6px 0">🎉</p><h2>Application sent</h2><p class="mut">Thank you! ${esc(bizName())} will contact you on WhatsApp. When you are approved you will get a login ID and PIN.</p>${btn('Back to sign in', 'signTab', {k:'reseller'}, 'pri wide')}</div>`
     : `<form class="fb-form" onsubmit="return false" style="text-align:left"><h2 style="margin:0 0 4px">Sell for ${esc(bizName())}</h2><p class="small mut" style="margin:0 0 12px">Fill this in and we will get back to you.</p>
@@ -2501,38 +2535,38 @@ function signInScreen(){
       <label for="ap-m">Anything else (optional)<input id="ap-m" placeholder="e.g. I already sell clothes at the market"></label>
       <p class="m-err" id="fb-err"></p><div class="fb-btns">${btn('Send application', 'applySend', {}, 'pri')}${btn('Back to sign in', 'signTab', {k:'reseller'}, 'ghost')}</div></form>`;
   else if (tab === 'owner') body = `<form class="fb-form" onsubmit="return false" style="text-align:left">
-      <label for="f-oe">Owner email<input id="f-oe" type="email" autocomplete="username" value="${esc(UI.fbEmail ?? S.settings.email ?? '')}"></label>
+      <label for="f-oe">Admin email<input id="f-oe" type="email" autocomplete="username" value="${esc(UI.fbEmail ?? S.settings.email ?? '')}"></label>
       <label for="f-op">Password${pwField('f-op', 'current-password')}</label>
       <p class="m-err" id="fb-err">${esc(FB_ERR && OWNER_SIGNING ? FB_ERR : '')}</p>
       <div class="fb-btns">${btn('Sign in', 'fbOwnerIn', {}, 'pri')}</div>
       ${canGoogle() ? `<div class="fb-or"><span>or</span></div>${btn('Continue with Google', 'fbGoogle', {}, 'gbtn')}` : ''}
-      <p class="small" style="margin-top:12px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><button type="button" class="link" data-act="fbForgot">Forgot password?</button><button type="button" class="link" data-act="fbOwnerUp">First time? Create the owner account</button></p></form>`;
+      <p class="small" style="margin-top:12px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><button type="button" class="link" data-act="fbForgot">Forgot password?</button><button type="button" class="link" data-act="fbOwnerUp">First time? Create the admin account</button></p></form>`;
   else body = `<form class="fb-form" onsubmit="return false" style="text-align:left"><label for="r-login">Login ID<input id="r-login" placeholder="e.g. annie4821" autocapitalize="none" autocomplete="username" value="${esc(UI.rLogin || '')}"></label>
       <label for="r-pin">PIN${pwField('r-pin', 'current-password', 'numeric')}</label>
       <p class="m-err" id="fb-err">${esc(!OWNER_SIGNING && APP_ROLE === 'reseller' ? FB_ERR : '')}</p><div class="fb-btns">${btn('Sign in', 'resIn', {}, 'pri')}</div>
       ${canGoogle() ? `<div class="fb-or"><span>or</span></div>${btn('Continue with Google', 'fbGoogle', {}, 'gbtn')}<p class="small mut" style="margin-top:6px">Google works after you link it once in Account.</p>` : ''}
       <p style="margin-top:14px;text-align:center"><button type="button" class="link" data-act="signTab" data-k="apply">Want to sell for us? Apply here</button></p></form>`;
   return `<div class="lockwrap"><div class="lockcard sign-card"><img src="${LOGO}" alt="" style="width:84px;height:84px"><h1 class="serif" style="margin:10px 0 2px">${tab === 'apply' ? 'Join the team' : 'Sign in'}</h1><p class="mut" style="margin:0 0 14px">${esc(bizName())}</p>${note}
-    ${tab !== 'apply' ? `<div class="seg sign-tabs" role="tablist"><button type="button" role="tab" data-act="signTab" data-k="reseller" class="${tab === 'reseller' ? 'on' : ''}">I'm a reseller</button><button type="button" role="tab" data-act="signTab" data-k="owner" class="${tab === 'owner' ? 'on' : ''}">Owner</button></div>` : ''}
+    ${tab !== 'apply' ? `<div class="seg sign-tabs" role="tablist"><button type="button" role="tab" data-act="signTab" data-k="reseller" class="${tab === 'reseller' ? 'on' : ''}">Reseller / shop</button><button type="button" role="tab" data-act="signTab" data-k="owner" class="${tab === 'owner' ? 'on' : ''}">Admin</button></div>` : ''}
     ${body}<p class="small mut" style="margin-top:16px">Version ${APP_VERSION}</p></div></div>`;
 }
 function pinSetupScreen(){
   return `<div class="lockwrap"><div class="lockcard sign-card"><img src="${LOGO}" alt="" style="width:72px;height:72px"><h1 class="serif" style="margin:10px 0 4px">Create your app PIN</h1><p class="mut" style="margin:0 0 14px">You will enter this PIN (or use your fingerprint) every time you open the app.</p>
-    <form class="fb-form" onsubmit="return false" style="text-align:left"><label for="ps-n">Your name<input id="ps-n" value="${esc(S.settings.ownerName || 'Owner')}"></label>
+    <form class="fb-form" onsubmit="return false" style="text-align:left"><label for="ps-n">Your name<input id="ps-n" value="${esc(S.settings.ownerName || 'Admin')}"></label>
     <label for="ps-p">PIN (4 to 8 digits)${pwField('ps-p', 'new-password', 'numeric')}</label><label for="ps-p2">Repeat PIN<input id="ps-p2" type="password" inputmode="numeric" autocomplete="new-password"></label>
     <p class="m-err" id="fb-err"></p><div class="fb-btns">${btn('Save PIN and open', 'pinSetupSave', {}, 'pri')}</div></form></div></div>`;
 }
 const recoveryKey = () => Array.from(crypto.getRandomValues(new Uint8Array(8))).map(b => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[b % 32]).join('').replace(/(.{4})/, '$1-');
 async function pinSetupSave(){
-  const name = $('#ps-n').value.trim() || 'Owner', a = $('#ps-p').value, b = $('#ps-p2').value, err = $('#fb-err');
+  const name = $('#ps-n').value.trim() || 'Admin', a = $('#ps-p').value, b = $('#ps-p2').value, err = $('#fb-err');
   if (!/^\d{4,8}$/.test(a)) return err.textContent = 'The PIN must be 4 to 8 digits.'; if (a !== b) return err.textContent = 'The two PINs do not match.';
   const rec = {id:uid(), name, role:'owner', salt:uid()}; rec.pin = await sha(rec.salt + a);
   const key = recoveryKey(); await putSettings({users:users().concat(rec), recoveryHash:await sha('rk:' + key)});
   SESSION = {id:rec.id, name, role:'owner'}; render(true);
-  setTimeout(() => modal('Write down your recovery key', `<p>If you forget your PIN you can also sign in again with your owner email and password. This key is a second way back in. Keep it somewhere safe; it will not be shown again.</p><div style="font-size:32px;font-weight:800;letter-spacing:.12em;text-align:center;padding:16px;border:2px dashed var(--gold);border-radius:12px">${key}</div>`, null, {nofocus:true}), 80);
+  setTimeout(() => modal('Write down your recovery key', `<p>If you forget your PIN you can also sign in again with your admin email and password. This key is a second way back in. Keep it somewhere safe; it will not be shown again.</p><div style="font-size:32px;font-weight:800;letter-spacing:.12em;text-align:center;padding:16px;border:2px dashed var(--gold);border-radius:12px">${key}</div>`, null, {nofocus:true}), 80);
 }
 async function ownerVerified(u){
-  OWNER_SIGNING = false; APP_ROLE = 'owner'; await setCfg({appRole:'owner', ownerUid:u.uid}); UI.signMsg = ''; UI.signTab = ''; PIN_FAILS = 0; FB_ERR = '';
+  OWNER_SIGNING = false; APP_ROLE = 'owner'; resSkinOn(false); await setCfg({appRole:'owner', ownerUid:u.uid}); UI.signMsg = ''; UI.signTab = ''; PIN_FAILS = 0; FB_ERR = '';
   document.body.classList.remove('res-mode'); try { LIC = await licCheck(); } catch(e) {}
   const o = users().find(x => x.role === 'owner'); if (o) { SESSION = {id:o.id, name:o.name, role:'owner'}; touchIdle(); }
   ownerListen(); alertsSetupFor('owner'); render(true);
@@ -2543,10 +2577,10 @@ async function ownerAuthCheck(u){
     let ow = null; try { ow = await FB.get('meta/owner'); } catch(e) {}
     if (ow && ow.uid === u.uid) { FB_ROLE = 'owner'; return ownerVerified(u); }
     if (!ow) { try { await FB.batch([['set', 'meta/owner', {uid:u.uid, email:u.email || '', at:FB.now()}], ['set', `users/${u.uid}`, {role:'owner', email:u.email || '', at:FB.now()}]]); FB_ROLE = 'owner'; return ownerVerified(u); } catch(e) { FB_ERR = fbMsg(e); } }
-    OWNER_SIGNING = false; UI.signMsg = 'That account is not the owner account of this business.'; try { await FB.signOut(); } catch(e) {}
+    OWNER_SIGNING = false; UI.signMsg = 'That account is not the admin account of this business.'; try { await FB.signOut(); } catch(e) {}
     return;
   }
-  if (APP_ROLE === 'owner' && DCFG.ownerUid && (!u || u.uid !== DCFG.ownerUid)) { await setCfg({ownerUid:''}); SESSION = null; UI.signMsg = 'You were signed out. Sign in again with your owner email.'; }
+  if (APP_ROLE === 'owner' && DCFG.ownerUid && (!u || u.uid !== DCFG.ownerUid)) { await setCfg({ownerUid:''}); SESSION = null; UI.signMsg = 'You were signed out. Sign in again with your admin email.'; }
 }
 /* reseller quick unlock */
 function resUnlockScreen(){
@@ -2573,7 +2607,7 @@ function deviceCard(){
   return `<div class="card"><h2>Sign-in &amp; security on this ${DEV_NAME}</h2><p class="hint">The app asks for your PIN every time it opens${bio ? ' (or your fingerprint)' : ''}, and again when you leave it for a while. After ${MAX_FAILS} wrong PINs it signs out and needs the full sign-in.</p>
     <div class="grid2"><label class="small" for="f-locks">Lock when I leave the app for<select id="f-locks">${[[0, 'Straight away'], [60, '1 minute'], [300, '5 minutes'], [900, '15 minutes']].map(([v, l]) => `<option value="${v}" ${lockSecs() === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
     ${bio ? `<label class="small chk" for="f-bio" style="align-self:end"><input id="f-bio" type="checkbox" ${DCFG.bio ? 'checked' : ''}> Unlock with fingerprint</label>` : ''}</div>
-    <div class="actions">${btn('Sign out of this ' + DEV_NAME, 'appOut', {}, 'ghost danger')}</div></div>`;
+    <div class="actions">${SESSION ? btn('Change my PIN', 'myPin', {}, 'pri') : ''}${btn('Sign out of this ' + DEV_NAME, 'appOut', {}, 'ghost danger')}</div></div>`;
 }
 
 /* ---- alerts ---- */
@@ -2631,9 +2665,9 @@ const proofModal = (src, title = 'Payment slip') => modal(title, `<img src="${sr
 function thumbOf(data, max = 220){
   return new Promise(res => { const im = new Image(); im.onload = () => { const k = Math.min(1, max / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.max(1, Math.round(im.width * k)); c.height = Math.max(1, Math.round(im.height * k)); const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(im, 0, 0, c.width, c.height); res(c.toDataURL('image/jpeg', 0.72)); }; im.onerror = () => res(''); im.src = data; });
 }
-async function catalogOps(){
+async function catalogOps(key = 'if-catsig'){
   const ps = sortedProds().filter(p => (p.status || 'active') !== 'inactive' && imgOf(p.id));
-  const sig = 'v2|' + ps.map(p => p.id + ':' + imgOf(p.id).length).join('|'); let last = ''; try { last = localStorage.getItem('if-catsig') || ''; } catch(e) {}
+  const sig = 'v2|' + ps.map(p => p.id + ':' + imgOf(p.id).length).join('|'); let last = ''; try { last = localStorage.getItem(key) || ''; } catch(e) {}
   if (sig === last) return {ops:[], sig};
   const parts = []; let cur = {}, size = 0;
   for (const p of ps) { const t = await thumbOf(imgOf(p.id), 360); if (!t) continue; if (size + t.length > 800000) { parts.push(cur); cur = {}; size = 0; } cur[p.id] = t; size += t.length; }
@@ -2673,7 +2707,7 @@ function lowStockCard(C){
 const lastCloudBk = () => { try { return localStorage.getItem('if-cloudbk') || ''; } catch(e) { return ''; } };
 function cloudBackupDue(){ const l = lastCloudBk(); if (!l) return true; const h = (Date.now() - new Date(l)) / 3600000; return (new Date().getHours() >= 18 && iso(new Date(l)) !== today()) || h > 26; }
 async function cloudBackup(manual){
-  if (FB_ROLE !== 'owner' || CB_BUSY) { if (manual && FB_ROLE !== 'owner') toast('Sign in to your owner account first.', true); return; } CB_BUSY = true;
+  if (FB_ROLE !== 'owner' || CB_BUSY) { if (manual && FB_ROLE !== 'owner') toast('Sign in to your admin account first.', true); return; } CB_BUSY = true;
   try {
     const txt = JSON.stringify({...snapshotData(), savedBy:'Infinity Fragrances Hub ' + APP_VERSION, savedAt:nowISO()}), SZ = 600000, n = Math.max(1, Math.ceil(txt.length / SZ));
     const id = nowISO().replace(/[-:]/g, '').slice(0, 15);
@@ -2688,7 +2722,7 @@ async function cloudBackup(manual){
 }
 setInterval(() => { if (FB_ROLE === 'owner' && cloudBackupDue()) cloudBackup(false); }, 15 * 60000);
 async function cloudList(){
-  if (FB_ROLE !== 'owner') return toast('Sign in to your owner account first (Resellers → Online reseller accounts).', true);
+  if (FB_ROLE !== 'owner') return toast('Sign in to your admin account first (Resellers → Online reseller accounts).', true);
   let list; try { list = (await FB.list('backups')).sort((a, b) => b.id.localeCompare(a.id)); } catch(e) { return toast(fbMsg(e), true); }
   modal('Online backups', list.length ? `<p class="hint">The last 7 are kept. Restoring brings back the records from that day; records with the same ID are replaced.</p><ul class="list">${list.map(b => `<li><span><b>${esc(fmtDateTime(b.at))}</b><div class="small mut">${int(b.records || 0)} records · ${esc(b.device || '')} · version ${esc(b.version || '')}</div></span>${btn('Restore', 'cloudRestore', {id:b.id}, 'sm')}</li>`).join('')}</ul>` : '<p class="mut">No online backups yet.</p>', null, {nofocus:true});
 }
@@ -2699,8 +2733,8 @@ async function cloudRestore(id){
 function cloudCard(){
   if (!fbCfg() && !window.__FB_MOCK) return '';
   const l = lastCloudBk();
-  return `<div class="card"><h2>Online backup</h2><p class="hint">While you are signed in as owner, the app backs up all your records to your own Firebase account once a day (in the evening), and keeps the last 7. If you lose your phone or computer, sign in on the new one and restore.</p>
-    <p>Last online backup: <b>${l ? esc(fmtDateTime(l)) : 'not yet'}</b>${FB_ROLE === 'owner' ? '' : ' <span class="small mut">(sign in as owner to turn this on)</span>'}</p>
+  return `<div class="card"><h2>Online backup</h2><p class="hint">While you are signed in as admin, the app backs up all your records to your own Firebase account once a day (in the evening), and keeps the last 7. If you lose your phone or computer, sign in on the new one and restore.</p>
+    <p>Last online backup: <b>${l ? esc(fmtDateTime(l)) : 'not yet'}</b>${FB_ROLE === 'owner' ? '' : ' <span class="small mut">(sign in as admin to turn this on)</span>'}</p>
     <div class="actions">${btn('Back up online now', 'cloudNow', {}, 'pri')}${btn('Restore from online…', 'cloudList')}</div></div>`;
 }
 function alertsCard(){
@@ -2796,6 +2830,36 @@ service cloud.firestore {
         && request.resource.data.status == 'new' && request.resource.data.name is string && request.resource.data.name.size() > 1 && request.resource.data.name.size() < 80
         && request.resource.data.phone is string && request.resource.data.phone.size() < 30 && request.resource.data.message.size() < 301;
       allow read, update, delete: if isOwner();
+    }
+    function isShop(sid) { return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && me().role == 'shop' && me().shopId == sid; }
+    match /shops/{sid} {
+      allow read: if isOwner() || isShop(sid);
+      allow write: if isOwner();
+      match /sales/{id} {
+        allow read: if isOwner() || isShop(sid);
+        allow create: if isShop(sid) && request.resource.data.by == request.auth.uid && request.resource.data.status == 'new';
+        allow update, delete: if isOwner();
+      }
+      match /requests/{id} {
+        allow read: if isOwner() || isShop(sid);
+        allow create: if isShop(sid) && request.resource.data.by == request.auth.uid && request.resource.data.status == 'pending';
+        allow update, delete: if isOwner();
+      }
+    }
+    match /store/{doc} {
+      allow read: if true;
+      allow write: if isOwner();
+    }
+    match /orders/{id} {
+      allow get: if true;
+      allow list, update, delete: if isOwner();
+      allow create: if request.resource.data.status == 'new' && request.resource.data.name is string && request.resource.data.name.size() > 1 && request.resource.data.name.size() < 80
+        && request.resource.data.phone is string && request.resource.data.phone.size() < 30 && request.resource.data.lines is list && request.resource.data.lines.size() > 0 && request.resource.data.lines.size() < 40;
+    }
+    match /rcpt/{id} {
+      allow get: if true;
+      allow create: if signedIn();
+      allow update, delete: if isOwner();
     }
     match /backups/{id} {
       allow read, write: if isOwner();
@@ -2966,10 +3030,11 @@ const LOOKS = [
   ['obsidian', 'Obsidian', 'Dark graphite and gold', 'radial-gradient(circle at 0% 0%,#26262e,transparent 60%),linear-gradient(160deg,#121216,#08080a)', 'linear-gradient(135deg,#f1d590,#9a7530)']
 ];
 function getLook(){ try { return JSON.parse(localStorage.getItem('if-look') || '{}') || {}; } catch(e) { return {}; } }
-function applyLook(){ const l = getLook(), R = document.documentElement; R.dataset.skin = l.skin || 'classic'; if (l.mode && l.mode !== 'auto') R.dataset.theme = l.mode; else delete R.dataset.theme; R.dataset.text = l.text || 'normal'; if (l.motion === false) R.dataset.motion = 'off'; else delete R.dataset.motion; }
+function applyLook(){ const l = getLook(), R = document.documentElement; let fs = ''; try { fs = localStorage.getItem('if-forceskin') || ''; } catch(e) {} R.dataset.skin = fs || l.skin || 'classic'; if (l.mode && l.mode !== 'auto') R.dataset.theme = l.mode; else delete R.dataset.theme; R.dataset.text = l.text || 'normal'; if (l.motion === false) R.dataset.motion = 'off'; else delete R.dataset.motion; }
 function setLook(p){ const l = {...getLook(), ...p}; try { localStorage.setItem('if-look', JSON.stringify(l)); } catch(e) {} applyLook(); }
 function lookCard(){
   const l = getLook(), cur = l.skin || 'classic';
+  if (APP_ROLE === 'reseller') return `<div class="card" id="look-card"><h2>Look &amp; feel</h2><p class="hint">Your app uses the ${esc(bizName())} Rose Quartz look.</p><div class="grid2"><label class="small" for="lk-text">Text size<select id="lk-text"><option value="normal" ${(l.text || 'normal') === 'normal' ? 'selected' : ''}>Normal</option><option value="large" ${l.text === 'large' ? 'selected' : ''}>Large (easier to read)</option></select></label><label class="small chk" for="lk-motion" style="align-self:end"><input id="lk-motion" type="checkbox" ${l.motion !== false ? 'checked' : ''}> Moving background and 3D effects</label></div></div>`;
   return `<div class="card" id="look-card"><h2>Look &amp; feel</h2><p class="hint">Choose a theme for this ${DESK ? DEV_NAME : 'device'}. It changes colours, depth and buttons only; your records stay the same.</p>
     <div class="look-grid">${LOOKS.map(([k, n, d, bg, b]) => `<button type="button" class="look-opt ${cur === k ? 'on' : ''}" data-act="lookSkin" data-k="${k}" aria-pressed="${cur === k}"><div class="look-sw" style="background:${bg}"><i></i><u style="background:${b}"></u></div><b>${n}</b><span>${d}</span></button>`).join('')}</div>
     <div class="grid2" style="margin-top:12px">${cur === 'classic' ? `<label class="small" for="lk-mode">Light or dark<select id="lk-mode"><option value="auto" ${!l.mode || l.mode === 'auto' ? 'selected' : ''}>Follow my phone / computer</option><option value="light" ${l.mode === 'light' ? 'selected' : ''}>Always light</option><option value="dark" ${l.mode === 'dark' ? 'selected' : ''}>Always dark</option></select></label>` : ''}
@@ -3022,11 +3087,245 @@ function updCard(){
     <div class="actions">${UPD.state === 'ready' ? btn('Restart now', 'updGo', {}, 'pri') : btn('Check for updates now', 'updCheck', {}, 'pri')}</div></div>`;
 }
 function updSchedule(){
-  if (!canAutoUpdate()) return;
   try { const lv = localStorage.getItem('if-lastver'); if (lv && cmpV(APP_VERSION, lv) > 0) setTimeout(() => { const c = CHANGELOG.find(x => x[0] === APP_VERSION); toast(`Updated to version ${APP_VERSION}${c ? ': ' + c[2][0] : ''}`); }, 2500); localStorage.setItem('if-lastver', APP_VERSION); } catch(e) {}
+  if (!canAutoUpdate()) return;
   const auto = () => DCFG.autoUpd !== false;
   setTimeout(() => { if (auto()) checkUpdate(false); }, 15000);
   setInterval(() => { if (auto()) checkUpdate(false); }, 6 * 3600000);
+}
+
+
+/* ---- reseller phone menu & fixed Rose Quartz look ---- */
+const RES_TABS = [['home', 'My stock'], ['sell', 'Record sale'], ['pay', 'Report payment'], ['parcels', 'Parcels'], ['order', 'Order / return'], ['ads', 'Adverts'], ['statement', 'Statement'], ['slips', 'Payslips'], ['board', 'Leaderboard'], ['promos', 'Prices & promotions'], ['team', 'My recruits'], ['account', 'Account']];
+const RES_ICONS = {sell:'<path d="M6 7h12l-1 13H7z"/><path d="M9 7a3 3 0 0 1 6 0"/>', order:'<circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/><path d="M2.5 3.5h3l2.4 11.5h10.6l2-8H6.7"/>', pay:'<rect x="2.5" y="5.5" width="19" height="13" rx="2.5"/><path d="M2.5 10h19M6.5 15h3"/>'};
+function resBottomBar(){
+  const bb = $('#bottombar'); if (!bb) return; const main = [['home', 'Home', ICONS.home], ['sell', 'Sell', RES_ICONS.sell], ['order', 'Order', RES_ICONS.order], ['pay', 'Pay', RES_ICONS.pay]];
+  bb.innerHTML = main.map(([k, l, ic]) => `<button type="button" data-act="resTab" data-k="${k}" class="${RES.tab === k ? 'on' : ''}" ${RES.tab === k ? 'aria-current="page"' : ''}><svg viewBox="0 0 24 24" aria-hidden="true">${ic}</svg>${l}</button>`).join('')
+    + `<button type="button" data-act="resDrawer" class="${main.some(x => x[0] === RES.tab) ? '' : 'on'}" aria-label="More"><svg viewBox="0 0 24 24" aria-hidden="true">${ICONS.more}</svg>More</button>`;
+  document.body.classList.add('nav-on');
+}
+function openResDrawer(){
+  const s = RES.snap || {}, el = $('#modal'); el.classList.add('drawer-on');
+  el.innerHTML = `<div class="drawer-sheet" role="dialog" aria-modal="true" aria-label="All pages"><div class="drawer-head"><img src="${LOGO}" alt=""><b>${esc(s.business || bizName())}</b><button type="button" class="x" data-act="close" style="margin-left:auto" aria-label="Close">×</button></div>
+    <div class="small mut" style="margin:-2px 4px 6px">${esc(s.name || '')}${s.town ? ' · ' + esc(s.town) : ''}</div>
+    <div class="drawer-links">${RES_TABS.map(([k, l]) => `<a href="javascript:void 0" data-act="resTab" data-k="${k}" class="${RES.tab === k ? 'on' : ''}">${esc(l)}</a>`).join('')}</div>
+    <div class="drawer-foot"><span class="small mut">Version ${APP_VERSION}</span><span class="actions">${btn('Lock', 'resLock', {}, 'sm')}${btn('Sign out', 'appOut', {}, 'sm ghost')}</span></div></div>`;
+  el.hidden = false;
+}
+const resSkinOn = on => { try { on ? localStorage.setItem('if-forceskin', 'rose') : localStorage.removeItem('if-forceskin'); } catch(e) {} applyLook(); };
+
+
+/* ======================= 2.7: receipts out, shops & shopkeepers, online shop ======================= */
+const STORE_URL = 'https://infinitytimetable.github.io/infinity-fragrances-updates/shop/';
+const smsLink = (phone, text) => `sms:${String(phone || '').replace(/[^\d+]/g, '')}?body=${encodeURIComponent(text)}`;
+const rToken = () => Array.from(crypto.getRandomValues(new Uint8Array(15))).map(b => 'abcdefghijkmnpqrstuvwxyz23456789'[b % 32]).join('');
+const PAYL = {cash:'Cash', momo:'Mobile money', bank:'Bank', credit:'Credit (to pay later)', account:'Reseller account', cod:'Cash on delivery'};
+
+/* ---- one receipt format that every sender understands ---- */
+function rcptPublic(r, extra = {}){
+  return {biz:bizName(), phone:S.settings.phone || extra.phone || '', tagline:S.settings.tagline || '', no:r.no, date:r.date, time:r.time || '', customer:String(r.customer || '').split(' ')[0],
+    lines:(r.lines || []).map(l => ({name:l.name || pName(l.productId), qty:num(l.qty), price:num(l.price)})), subtotal:num(r.subtotal ?? r.total), discount:num(r.discount), total:num(r.total), pay:PAYL[r.pay] || r.pay || '', seller:extra.seller || '', at:nowISO()};
+}
+function rcptText(p, link){
+  return `*${p.biz}* receipt ${p.no}\n${fmtDate(p.date)} ${p.time}\n` + p.lines.map(l => `${l.name} ${l.qty} × ${money(l.price)}`).join('\n') + (p.discount ? `\nDiscount −${money(p.discount)}` : '') + `\n*TOTAL ${money(p.total)}*${p.pay ? ` (${p.pay})` : ''}` + (link ? `\n\nYour receipt: ${link}` : '') + `\n\nThank you for shopping with us!`;
+}
+async function rcptLink(p, token){
+  if (!FB || !FB_USER) throw Error('Sign in online first (receipt links are kept in your Firebase account).');
+  token = token || rToken(); await FB.set('rcpt/' + token, p); return {token, url:STORE_URL + '#r=' + token};
+}
+/* the "send receipt" panel used by the till, shops and resellers */
+function sendPanel(p, opts = {}){
+  const ph = opts.phone || '';
+  return `<div class="send-panel"><label for="sr-ph" class="small">Customer's phone (for WhatsApp / SMS)<input id="sr-ph" type="tel" placeholder="0977 123456" value="${esc(ph)}"></label>
+    <div class="actions">${btn('WhatsApp', 'rcWa', {}, 'pri sm')}${btn('SMS', 'rcSms', {}, 'sm')}${btn('Copy link', 'rcLink', {}, 'sm')}${opts.print !== false ? btn('Print', 'printDoc', {}, 'sm') : ''}${opts.image !== false ? btn('Picture', 'expDoc', {fmt:'png', name:p.no}, 'sm') : ''}</div>
+    <p class="small mut" id="sr-note">WhatsApp and SMS open on this phone with the receipt ready to send. The link lets the customer open and save the receipt.</p></div>`;
+}
+let RC = null;   // receipt being sent: {p, token, onToken}
+async function rcSend(kind){
+  if (!RC) return; const ph = ($('#sr-ph')?.value || '').trim(); RC.phone = ph;
+  let link = RC.token ? STORE_URL + '#r=' + RC.token : '';
+  if (!link && FB && FB_USER) { try { const r = await rcptLink(RC.p); RC.token = r.token; link = r.url; RC.onToken && RC.onToken(r.token); } catch(e) {} }
+  const text = rcptText(RC.p, link);
+  if (kind === 'link') { if (!link) return toast('Receipt links need you to be signed in online.', true); try { await navigator.clipboard.writeText(link); toast('Link copied. Paste it in any chat.'); } catch(e) { prompt('Copy this link:', link); } return; }
+  if ((kind === 'wa' || kind === 'sms') && !ph) toast('Tip: type the customer’s number first so it opens their chat.');
+  const url = kind === 'wa' ? waLink(ph, text) : smsLink(ph, text); EXT_T = Date.now();
+  const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; document.body.appendChild(a); a.click(); a.remove();
+  RC.onSent && RC.onSent(kind, ph);
+}
+function rcptDocPublic(p){
+  const H = 420 + p.lines.length * 46 + (p.discount ? 26 : 0);
+  return `<div class="doc" data-w="420" data-h="${H}" style="width:420px;height:${H}px;padding:26px 28px;font-size:14px"><div style="text-align:center"><img src="${LOGO}" style="width:70px;height:70px" alt=""><div class="serif" style="font-size:25px;margin-top:6px">${esc(p.biz)}</div><div style="font-size:12px;color:#6e675c">${esc(p.phone)}</div></div>
+    <div style="border-top:1px dashed #b9b1a1;margin:14px 0 10px"></div><div style="display:flex;justify-content:space-between;font-size:13px"><span>Receipt <b>${esc(p.no)}</b></span><span>${fmtDate(p.date)} ${esc(p.time)}</span></div>${p.seller ? `<div style="font-size:13px;margin-top:4px">Sold by: ${esc(p.seller)}</div>` : ''}
+    <div style="border-top:1px dashed #b9b1a1;margin:10px 0"></div>${p.lines.map(l => `<div style="padding:5px 0"><div style="font-weight:700">${esc(l.name)}</div><div style="display:flex;justify-content:space-between;color:#4b463d"><span>${l.qty} × ${money(l.price)}</span><span>${money(l.qty * l.price)}</span></div></div>`).join('')}
+    <div style="border-top:1px dashed #b9b1a1;margin:10px 0"></div>${p.discount ? `<div style="display:flex;justify-content:space-between"><span>Discount</span><span>−${money(p.discount)}</span></div>` : ''}
+    <div style="display:flex;justify-content:space-between;font-size:20px;font-weight:800;margin-top:6px"><span>TOTAL</span><span>${money(p.total)}</span></div><div style="display:flex;justify-content:space-between;margin-top:6px"><span>Paid by</span><span>${esc(p.pay)}</span></div>
+    <div style="border-top:1px dashed #b9b1a1;margin:14px 0 10px"></div><div style="text-align:center;font-size:13px">Thank you for shopping with us!</div></div>`;
+}
+function rcptModal(p, opts = {}){
+  RC = {p, token:opts.token || '', onToken:opts.onToken, onSent:opts.onSent};
+  modal(`Receipt ${p.no}`, sendPanel(p, opts) + `<div class="preview" id="doc-prev"><div class="docwrap" data-maxw="420">${opts.doc || rcptDocPublic(p)}</div></div>`, null, {nofocus:true});
+  requestAnimationFrame(() => fitDocs($('#doc-prev')));
+}
+
+/* ---- shops (stock locations with a shopkeeper) ---- */
+const shopOf = id => locs().find(l => l.id === id) || null;
+const shopCode = l => (l.code || String(l.name || 'SHOP').replace(/[^A-Za-z]/g, '').slice(0, 3) || 'SHP').toUpperCase();
+async function saveLoc(rec){ const list = locs().some(l => l.id === rec.id) ? locs().map(l => l.id === rec.id ? rec : l) : locs().concat(rec); await putSettings({locations:list}); }
+function shopStats(sid, C){
+  const st = (C.storeLoc[sid] || {}), bottles = Object.values(st).reduce((t, q) => t + Math.max(0, q), 0), value = Object.entries(st).reduce((t, [p, q]) => t + Math.max(0, q) * num(S.products[p]?.sellPrice), 0);
+  const t = today(), m = t.slice(0, 7); let td = 0, mo = 0; const by = {};
+  Object.values(S.receipts).forEach(r => { if ((r.shop || (r.seller ? '' : (r.loc || S.settings.posLoc || 'main'))) !== sid) return; if (r.date === t) { td += num(r.total); by[r.pay] = (by[r.pay] || 0) + num(r.total); } if (r.date?.startsWith(m)) mo += num(r.total); });
+  return {bottles, value:r2(value), today:r2(td), month:r2(mo), by};
+}
+PAGES.shops = C => {
+  const list = locs(), pend = Object.values(OWN.shopReqs || {}).flat();
+  return head('Shops', 'Each shop has its own stock. Give a shopkeeper a login and they sell from their own phone: their sales, receipts and cash appear here straight away, and the shop’s stock goes down.', btn('+ Add shop', 'shopNew', {}, 'pri') + btn('Move stock to a shop', 'stockMove'))
+    + (pend.length ? `<div class="card"><h2>Shop stock requests <span class="pill warn">${pend.length}</span></h2><ul class="list">${pend.map(q => `<li><span><b>${esc(shopOf(q.sid)?.name || '')}</b> asks for ${(q.lines || []).map(l => `${l.qty} × ${esc(l.name)}`).join(', ')}${q.note ? `<div class="small mut">“${esc(q.note)}”</div>` : ''}</span><span class="actions">${btn('Send stock', 'shopReqOk', {sid:q.sid, id:q.id}, 'sm pri')}${btn('Decline', 'shopReqNo', {sid:q.sid, id:q.id}, 'sm ghost')}</span></li>`).join('')}</ul></div>` : '')
+    + `<div class="shop-grid">${list.map(l => { const s = shopStats(l.id, C); return `<div class="card shop-card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div><h2 style="margin:0">${esc(l.name)}</h2><div class="small mut">${esc([l.town, l.address].filter(Boolean).join(' · ') || (l.id === 'main' ? 'Your main store' : ''))}</div></div>${l.keeperUid ? '<span class="pill good">Shopkeeper app on</span>' : ''}</div>
+      <div class="kv" style="margin:10px 0"><dt>Shopkeeper</dt><dd>${esc(l.keeper || '—')}${l.phone ? ` · ${esc(l.phone)}` : ''}</dd><dt>Stock</dt><dd>${int(s.bottles)} bottles · ${money(s.value)}</dd><dt>Sales today</dt><dd><b>${money(s.today)}</b>${Object.keys(s.by).length ? ` <span class="small mut">(${Object.entries(s.by).map(([k, v]) => `${PAYL[k] || k} ${money(v)}`).join(', ')})</span>` : ''}</dd><dt>This month</dt><dd>${money(s.month)}</dd>${l.keeperLogin ? `<dt>Login ID</dt><dd>${esc(l.keeperLogin)}</dd>` : ''}</div>
+      <div class="actions">${btn('Edit', 'shopEdit', {id:l.id}, 'sm')}${btn('Sales', 'shopSales', {id:l.id}, 'sm ghost')}${FB_ROLE === 'owner' ? (l.keeperUid ? btn('New PIN', 'shopAcc', {id:l.id, reset:1}, 'sm ghost') : btn('Make shopkeeper login', 'shopAcc', {id:l.id}, 'sm pri')) : ''}</div></div>`; }).join('')}</div>`
+    + (FB_ROLE === 'owner' ? '' : `<p class="hint">To give shopkeepers their own app, first sign in under Resellers → Online accounts.</p>`);
+};
+function shopForm(l = {}){
+  const isNew = !l.id;
+  modal(isNew ? 'Add shop' : `Edit ${l.name}`, `<div class="grid2"><label for="f-sn">Shop name<input id="f-sn" name="name" value="${esc(l.name || '')}" required placeholder="e.g. Kitwe shop"></label><label for="f-st">Town<input id="f-st" name="town" value="${esc(l.town || '')}"></label>
+    <label for="f-sa">Address / landmark<input id="f-sa" name="address" value="${esc(l.address || '')}"></label><label for="f-sc">Receipt code (3 letters)<input id="f-sc" name="code" maxlength="4" value="${esc(l.code || '')}" placeholder="${esc(shopCode({name:l.name || 'Shop'}))}"></label>
+    <label for="f-sk">Shopkeeper's name<input id="f-sk" name="keeper" value="${esc(l.keeper || '')}"></label><label for="f-sp">Shopkeeper's phone<input id="f-sp" name="phone" type="tel" value="${esc(l.phone || '')}"></label>
+    <label class="chk" for="f-so"><input id="f-so" name="online" type="checkbox" ${l.online !== false ? 'checked' : ''}> Customers can collect online orders here</label></div>`,
+  async d => { const rec = {...l, id:l.id || uid(), name:d.name.trim(), town:d.town.trim(), address:d.address.trim(), code:d.code.trim().toUpperCase(), keeper:d.keeper.trim(), phone:d.phone.trim(), online:!!d.online, shop:true}; await saveLoc(rec); if (rec.keeperUid && FB_ROLE === 'owner') publishShop(rec.id); toast('Shop saved'); }, {label:'Save shop'});
+}
+async function shopAccCreate(sid, reset){
+  const l = shopOf(sid); if (!l) return; if (!l.keeper) return toast('Add the shopkeeper’s name first (Edit).', true);
+  const base = String(l.keeper.split(' ')[0]).toLowerCase().replace(/[^a-z]/g, '') || 'shop', login = base + String(1000 + Math.floor(Math.random() * 9000)), pin = String(100000 + Math.floor(Math.random() * 900000));
+  try {
+    const u = await FB.createUser(`${login}@${RES_DOMAIN}`, pin), ops = [['set', `users/${u}`, {role:'shop', shopId:sid, name:l.keeper, login, createdAt:FB.now()}]];
+    if (reset && l.keeperUid) ops.push(['del', `users/${l.keeperUid}`]);
+    await FB.batch(ops); await saveLoc({...l, keeperUid:u, keeperLogin:login}); await publishShop(sid); ownerListen();
+    const msg = `Hello ${l.keeper.split(' ')[0]}! Your ${bizName()} shop login for ${l.name} is ready.\n\n1. Install the Infinity Fragrances app.\n2. Open it and choose "Reseller / shop".\n3. Login ID: ${login}\n   PIN: ${pin}\n\nIn the app you sell, send receipts to customers, see your shop's stock and ask for more stock. Change your PIN in the app.`;
+    modal(`${l.name}: shopkeeper login`, `<p>Send these to ${esc(l.keeper)}. The PIN is shown only now.</p><div style="font-size:20px;padding:14px;border:2px dashed var(--gold);border-radius:12px;line-height:1.7">Login ID: <b>${login}</b><br>PIN: <b>${pin}</b></div><div class="actions" style="margin-top:12px">${l.phone ? `<a class="btn pri" href="${waLink(l.phone, msg)}" target="_blank" rel="noopener">Send on WhatsApp</a>` : ''}</div>`, null, {nofocus:true});
+  } catch(e) { toast(fbMsg(e), true); }
+}
+function shopSnapshot(sid){
+  const l = shopOf(sid), C = compute(), st = C.storeLoc[sid] || {};
+  const stock = sortedProds().filter(p => (p.status || 'active') !== 'inactive').map(p => { const bp = bestPromo(p.id, num(p.sellPrice), 'pos'); return {id:p.id, name:p.name, size:p.size || '', category:p.category || '', qty:Math.max(0, st[p.id] || 0), price:num(p.sellPrice), promo:bp && bp.price < num(p.sellPrice) ? {price:r2(bp.price), badge:promoBadge(bp.pr)} : null}; });
+  const t = today(), recent = Object.values(S.receipts).filter(r => r.shop === sid && r.date >= iso(addDays(new Date(), -2))).sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time)).slice(0, 60)
+    .map(r => ({id:r.id, no:r.no, date:r.date, time:r.time, total:num(r.total), pay:r.pay, customer:r.customer || '', bottles:(r.lines || []).reduce((s2, x) => s2 + num(x.qty), 0), token:r.token || ''}));
+  const lastNo = Object.values(S.receipts).filter(r => r.shop === sid).reduce((m, r) => Math.max(m, parseInt(String(r.no).split('-').pop()) || 0), 0);
+  return {name:l.name, town:l.town || '', address:l.address || '', code:shopCode(l), keeper:l.keeper || '', stock, recent, lastNo, today:t, business:bizName(), businessPhone:S.settings.phone || '', tagline:S.settings.tagline || '', updatedAt:nowISO()};
+}
+async function publishShop(sid){ const l = shopOf(sid); if (!l || !l.keeperUid || FB_ROLE !== 'owner') return; try { await FB.set('shops/' + sid, shopSnapshot(sid)); } catch(e) {} }
+const publishShops = () => locs().filter(l => l.keeperUid).forEach(l => publishShop(l.id));
+/* admin side: shop sales arrive and are booked automatically */
+async function shopSaleImport(sid, q){
+  if (OWN.importing?.has(q.id)) return; (OWN.importing = OWN.importing || new Set()).add(q.id);
+  try {
+    if (Object.values(S.receipts).some(r => r.extId === q.id)) { await FB.update(`shops/${sid}/sales/${q.id}`, {status:'recorded'}); return; }
+    const rc = {id:uid(), no:q.no, date:q.date || today(), time:q.time || '', shop:sid, loc:sid, pay:q.pay || 'cash', customer:q.customer || '', phone:q.phone || '', lines:(q.lines || []).map(l => ({productId:l.productId, qty:num(l.qty), price:num(l.price)})), subtotal:num(q.subtotal ?? q.total), discount:num(q.discount), total:num(q.total), seller:'', soldBy:q.byName || shopOf(sid)?.keeper || '', token:q.token || '', extId:q.id, moveIds:[]};
+    for (const l of rc.lines) { const mv = await put('moves', {kind:'sale', date:rc.date, loc:sid, productId:l.productId, qty:l.qty, unitPrice:l.price, unitCost:num(S.products[l.productId]?.costPrice), customer:rc.customer, pay:rc.pay, note:`${shopOf(sid)?.name || 'Shop'} · ${rc.no}`}); rc.moveIds.push(mv.id); }
+    if (rc.pay !== 'credit') { const c = await put('cash', {kind:'in', date:rc.date, channel:rc.pay, amount:rc.total, category:'Shop sale', shop:sid, customer:rc.customer, description:`${shopOf(sid)?.name || 'Shop'} receipt ${rc.no}`, receiptId:rc.id}); rc.cashId = c.id; }
+    await put('receipts', rc); await FB.update(`shops/${sid}/sales/${q.id}`, {status:'recorded', recordedAt:nowISO()});
+    if (route() === 'shops' || route() === 'pos') render(true);
+  } catch(e) { toast('A shop sale could not be booked: ' + fbMsg(e), true); }
+  finally { OWN.importing.delete(q.id); clearTimeout(OWN.shopPubT); OWN.shopPubT = setTimeout(() => publishShop(sid), 1500); }
+}
+
+/* ---- shopkeeper app ---- */
+let SHOP = {snap:null, sales:[], reqs:[], tab:'sell', cart:{}, pay:'cash', unsubs:[], q:''};
+function shopStart(){
+  SHOP.unsubs.forEach(f => { try { f(); } catch(e) {} }); SHOP.unsubs = []; const sid = FB_ME.shopId; let first = true;
+  SHOP.unsubs.push(FB.watch('shops/' + sid, d => { SHOP.snap = d; if (!first && SHOP.tab !== 'sell') render(true); else if (first) render(true); first = false; }));
+  SHOP.unsubs.push(FB.listen(`shops/${sid}/sales`, 'by', FB_USER.uid, list => { SHOP.sales = list.sort((a, b) => (b.at || '').localeCompare(a.at || '')); if (SHOP.tab !== 'sell') render(true); }));
+  SHOP.unsubs.push(FB.listen(`shops/${sid}/requests`, 'by', FB_USER.uid, list => { SHOP.reqs = list.sort((a, b) => (b.at || '').localeCompare(a.at || '')); if (SHOP.tab === 'order') render(true); }));
+}
+function shopAvail(){ const s = SHOP.snap; if (!s) return []; const pend = {}; SHOP.sales.filter(x => x.status === 'new').forEach(x => (x.lines || []).forEach(l => pend[l.productId] = (pend[l.productId] || 0) + num(l.qty)));
+  return s.stock.map(p => ({...p, avail:Math.max(0, p.qty - (pend[p.id] || 0)), unit:p.promo ? p.promo.price : p.price})); }
+function shopCartTotals(){ const av = shopAvail(); let n = 0, t = 0; av.forEach(p => { const q = SHOP.cart[p.id] || 0; n += q; t += q * p.unit; }); return {n, t:r2(t)}; }
+function shopCartBar(){ const {n, t} = shopCartTotals(); return n ? `<span><b>${n}</b> bottle${n === 1 ? '' : 's'} · <b>${money(t)}</b></span>${btn('Complete sale', 'shopSell', {}, 'pri')}` : '<span class="mut">Tap + to add perfumes</span>'; }
+function shopUI(){
+  const s = SHOP.snap;
+  if (!s) return `<div class="res-wrap"><div class="card"><p>${FB_ERR ? esc(FB_ERR) : 'Loading your shop…'}</p><p class="hint">If this takes long, ask the admin to open Shops in their app.</p></div></div>`;
+  const av = shopAvail(), t = today(), mine = SHOP.sales.filter(x => x.date === t);
+  let body = '';
+  if (SHOP.tab === 'sell') {
+    const cats = [...new Set(av.map(p => p.category).filter(Boolean))];
+    body = `<div class="card"><h2>New sale</h2><input id="shop-q" type="search" placeholder="Search perfumes…" style="width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:10px;font-size:16px;margin-bottom:8px;background:var(--surface);color:var(--ink)">
+      ${cats.length > 1 ? `<div class="seg" style="flex-wrap:wrap;margin-bottom:10px"><button type="button" data-act="shopCat" data-k="" class="on">All</button>${cats.map(c => `<button type="button" data-act="shopCat" data-k="${esc(c)}">${esc(c)}</button>`).join('')}</div>` : ''}
+      <div class="cat-grid">${av.filter(p => p.avail > 0).map(p => `<div class="cat-card" data-name="${esc((p.name + ' ' + (p.category || '')).toLowerCase())}" data-cat="${esc(p.category || '')}"><div class="cat-name">${esc(p.name)}${p.size ? ` <span class="small mut">${esc(p.size)}ml</span>` : ''}</div><div class="small mut">${p.avail} in shop</div>
+        <div class="cat-price">${p.promo ? `<s class="small mut">${money(p.price)}</s> <b>${money(p.promo.price)}</b> <span class="pill acc">${esc(p.promo.badge)}</span>` : `<b>${money(p.price)}</b>`}</div><div class="stepper"><button type="button" data-act="shopMinus" data-id="${p.id}" aria-label="One less">−</button><span id="sq-${p.id}">${SHOP.cart[p.id] || 0}</span><button type="button" data-act="shopPlus" data-id="${p.id}" aria-label="One more">+</button></div></div>`).join('') || '<p class="mut">No stock in the shop. Ask for stock in the Order tab.</p>'}</div>
+      <div class="grid2" style="margin-top:12px"><label for="sh-c">Customer name (optional)<input id="sh-c" value="${esc(SHOP.cust || '')}"></label><label for="sh-p">Customer phone (for the receipt)<input id="sh-p" type="tel" value="${esc(SHOP.phone || '')}"></label></div>
+      <div class="seg" style="margin-top:8px;flex-wrap:wrap">${[['cash', 'Cash'], ['momo', 'Mobile money'], ['bank', 'Bank'], ['credit', 'Credit']].map(([k, l]) => `<button type="button" data-act="shopPay" data-k="${k}" class="${SHOP.pay === k ? 'on' : ''}">${l}</button>`).join('')}</div></div>
+      <div class="cart-bar" id="shop-cart">${shopCartBar()}</div>`;
+  } else if (SHOP.tab === 'today') {
+    const tot = mine.reduce((x, r) => x + num(r.total), 0), by = {}; mine.forEach(r => by[r.pay] = (by[r.pay] || 0) + num(r.total));
+    body = `<div class="tiles">${tile('Sales today', money(tot), `${mine.length} receipt${mine.length === 1 ? '' : 's'}`)}${tile('Bottles sold', int(mine.reduce((x, r) => x + (r.lines || []).reduce((y, l) => y + num(l.qty), 0), 0)))}${Object.entries(by).map(([k, v]) => tile(PAYL[k] || k, money(v))).join('')}</div>
+      <div class="card"><h2>Today's receipts</h2>${mine.length ? `<ul class="list">${mine.map(r => `<li><span><b>${esc(r.no)}</b> · ${esc(r.time || '')}${r.customer ? ' · ' + esc(r.customer) : ''}<div class="small mut">${(r.lines || []).map(l => `${l.qty} × ${esc(l.name)}`).join(', ')} · ${esc(PAYL[r.pay] || r.pay)}${r.status === 'new' ? ' · <span class="pill warn">sending…</span>' : ''}</div></span><span class="actions"><b>${money(r.total)}</b>${btn('Receipt', 'shopRc', {id:r.id}, 'sm ghost')}</span></li>`).join('')}</ul>` : '<p class="mut">No sales yet today.</p>'}</div>`;
+  } else if (SHOP.tab === 'stock') {
+    body = `<div class="card"><h2>Stock in ${esc(s.name)}</h2><div class="tw"><table class="t"><thead><tr><th>Perfume</th><th class="n">In shop</th><th class="n">Price</th></tr></thead><tbody>${av.map(p => `<tr><td>${esc(p.name)}${p.size ? ` <span class="small mut">${esc(p.size)}ml</span>` : ''}</td><td class="n">${p.avail}</td><td class="n">${money(p.unit)}</td></tr>`).join('')}</tbody></table></div><p class="small mut">Updated ${esc(fmtDateTime(s.updatedAt))}</p></div>`;
+  } else if (SHOP.tab === 'order') {
+    body = `<div class="card"><h2>Ask for stock</h2><form id="shop-ord"><div class="tw"><table class="t"><thead><tr><th>Perfume</th><th class="n">In shop</th><th class="n">Want</th></tr></thead><tbody>${av.map(p => `<tr><td>${esc(p.name)}</td><td class="n">${p.avail}</td><td class="n"><input type="number" min="0" name="o_${p.id}" placeholder="0" style="width:70px;text-align:right"></td></tr>`).join('')}</tbody></table></div>
+      <label for="so-n">Note (optional)<input id="so-n" name="note"></label><div class="actions" style="margin-top:10px">${btn('Send request', 'shopOrder', {}, 'pri')}</div></form></div>
+      <div class="card"><h2>My requests</h2>${SHOP.reqs.length ? `<ul class="list">${SHOP.reqs.slice(0, 20).map(q => `<li><span>${(q.lines || []).map(l => `${l.qty} × ${esc(l.name)}`).join(', ')}<div class="small mut">${esc(fmtDateTime(q.at))}${q.reason ? ' · ' + esc(q.reason) : ''}</div></span><span class="pill ${q.status === 'approved' ? 'good' : q.status === 'rejected' ? 'bad' : 'warn'}">${q.status === 'approved' ? 'Sent' : q.status === 'rejected' ? 'Declined' : 'Waiting'}</span></li>`).join('')}</ul>` : '<p class="mut">No requests yet.</p>'}</div>`;
+  } else {
+    body = `<div class="card"><h2>Account</h2><p>${esc(FB_ME?.name || '')} · ${esc(s.name)}</p><div class="grid2"><label for="ra-o">Current PIN<input id="ra-o" type="password" inputmode="numeric"></label><span></span><label for="ra-p">New PIN (6 digits or more)<input id="ra-p" type="password" inputmode="numeric"></label><label for="ra-p2">Repeat new PIN<input id="ra-p2" type="password" inputmode="numeric"></label></div><div class="actions">${btn('Change PIN', 'resPin', {}, 'pri')}${btn('Sign out', 'appOut', {}, 'ghost')}</div></div>${lookCard()}${deviceCard()}${updCard()}<p class="hint">Questions? Call ${esc(s.business)} on ${esc(s.businessPhone)}.</p>`;
+  }
+  return `<div class="res-wrap"><div class="res-head"><img src="${LOGO}" alt=""><div><div class="serif" style="font-size:22px;line-height:1">${esc(s.name)}</div><div class="small mut">${esc(s.business)} · ${esc(FB_ME?.name || '')}</div></div></div>${body}</div>`;
+}
+function shopBottomBar(){
+  const bb = $('#bottombar'); if (!bb) return; const I = {sell:RES_ICONS.sell, today:'<rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/><path d="M3.5 9.5h17M8 2.5v4M16 2.5v4"/>', stock:ICONS.box, order:RES_ICONS.order, account:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.4 4.2-6.5 8-6.5s7 2.1 8 6.5"/>'};
+  bb.innerHTML = [['sell', 'Sell'], ['today', 'Today'], ['stock', 'Stock'], ['order', 'Order'], ['account', 'Account']].map(([k, l]) => `<button type="button" data-act="shopTab" data-k="${k}" class="${SHOP.tab === k ? 'on' : ''}"><svg viewBox="0 0 24 24" aria-hidden="true">${I[k]}</svg>${l}</button>`).join('');
+  document.body.classList.add('nav-on');
+}
+async function shopSell(){
+  const av = shopAvail(), lines = av.filter(p => SHOP.cart[p.id] > 0).map(p => ({productId:p.id, name:p.name + (p.size ? ' ' + p.size + 'ml' : ''), qty:SHOP.cart[p.id], price:p.unit}));
+  if (!lines.length) return toast('Tap + on what the customer is buying.', true);
+  const over = lines.find(l => l.qty > (av.find(p => p.id === l.productId)?.avail || 0)); if (over) return toast(`Only ${av.find(p => p.id === over.productId)?.avail} × ${over.name} in the shop.`, true);
+  const cust = ($('#sh-c')?.value || '').trim(), phone = ($('#sh-p')?.value || '').trim(); if (SHOP.pay === 'credit' && !cust) return toast('Type the customer’s name for a credit sale.', true);
+  const s = SHOP.snap, n = Math.max(num(s.lastNo), num(DCFG.shopLastNo)) + 1, now = new Date(), total = r2(lines.reduce((t, l) => t + l.qty * l.price, 0));
+  const sale = {no:`${s.code}-${String(n).padStart(5, '0')}`, date:today(), time:now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}), lines, subtotal:total, discount:0, total, pay:SHOP.pay, customer:cust, phone, byName:FB_ME?.name || '', status:'new', by:FB_USER.uid, at:nowISO()};
+  const p = {...rcptPublic(sale), biz:s.business, phone:s.businessPhone, seller:s.name};
+  try { const r = await rcptLink(p); sale.token = r.token; } catch(e) {}
+  try { await FB.add(`shops/${FB_ME.shopId}/sales`, sale); } catch(e) { return toast('The sale was not sent: ' + fbMsg(e), true); }
+  await setCfg({shopLastNo:n}); SHOP.cart = {}; SHOP.cust = ''; SHOP.phone = ''; render(true);
+  rcptModal(p, {token:sale.token, phone, print:true});
+}
+
+/* ---- online shop (customers order from a web link) ---- */
+async function publishStore(){
+  if (FB_ROLE !== 'owner') return; const st = S.settings, C = compute();
+  const avail = pid => Object.values(C.storeLoc).reduce((t, o) => t + Math.max(0, o[pid] || 0), 0);
+  const list = sortedProds().filter(p => (p.status || 'active') !== 'inactive' && avail(p.id) > 0).map(p => { const bp = bestPromo(p.id, num(p.sellPrice), 'pos'); return {id:p.id, name:p.name, size:p.size || '', category:p.category || '', price:num(p.sellPrice), promo:bp && bp.price < num(p.sellPrice) ? {price:r2(bp.price), badge:promoBadge(bp.pr)} : null, stock:Math.min(avail(p.id), 20)}; });
+  const doc = {open:st.storeOpen !== false, biz:bizName(), tagline:st.tagline || '', phone:st.phone || '', whatsapp:st.storeWhatsapp || st.phone || '', momo:st.storeMomo || '', momoName:st.storeMomoName || '', delivery:st.storeDelivery || 'Delivery fee depends on your area; we will confirm it on WhatsApp.', shops:locs().filter(l => l.online !== false).map(l => ({id:l.id, name:l.name, town:l.town || '', address:l.address || ''})), list, updatedAt:nowISO()};
+  try { await FB.set('store/catalog', doc); const cat = await catalogOps('if-storesig'); for (const op of cat.ops) { if (op[1].startsWith('public/cat_')) await FB.set(op[1].replace('public/', 'store/'), op[2]); if (op[1] === 'public/catalog') await FB.set('store/images', op[2]); } if (cat.ops.length) localStorage.setItem('if-storesig', cat.sig); } catch(e) {}
+}
+const ORD_ST = {new:['New', 'warn'], confirmed:['Confirmed', 'acc'], done:['Delivered', 'good'], cancelled:['Cancelled', '']};
+PAGES.orders = () => {
+  const list = (OWN.orders || []).slice().sort((a, b) => (b.at || '').localeCompare(a.at || '')), st = S.settings;
+  return head('Online shop', `Customers order from your shop link, then pay on delivery or by mobile money. Share the link on WhatsApp, Facebook or your status.`, btn('Copy shop link', 'storeCopy', {}, 'pri') + btn('Shop settings', 'storeSet'))
+    + `<div class="card"><p style="margin:0">Your shop link: <a href="${STORE_URL}" target="_blank" rel="noopener"><b>${STORE_URL.replace('https://', '')}</b></a> ${st.storeOpen === false ? '<span class="pill bad">Closed</span>' : '<span class="pill good">Open</span>'}</p>${FB_ROLE !== 'owner' ? '<p class="hint">Sign in under Resellers → Online accounts so orders can arrive here.</p>' : ''}</div>`
+    + (list.length ? `<div class="card"><div class="tw"><table class="t"><thead><tr><th>Order</th><th>Customer</th><th>Perfumes</th><th class="n">Total</th><th>How</th><th>Status</th><th></th></tr></thead><tbody>${list.map(o => { const s2 = ORD_ST[o.status] || ['?', '']; return `<tr><td><b>${esc(o.no || '')}</b><div class="small mut">${esc(fmtDateTime(o.at))}</div></td><td>${esc(o.name)}<div class="small mut">${esc(o.phone)} · ${esc(o.town || '')}</div></td><td class="small">${(o.lines || []).map(l => `${l.qty} × ${esc(l.name)}`).join('<br>')}</td><td class="n"><b>${money(o.total)}</b></td><td class="small">${o.method === 'pickup' ? 'Collect: ' + esc(shopOf(o.shopId)?.name || '') : 'Delivery'}<br>${o.payBy === 'momo' ? 'Mobile money' : 'Cash on delivery'}</td><td><span class="pill ${s2[1]}">${s2[0]}</span></td><td><div class="actions">${o.status === 'new' ? btn('Confirm', 'ordOk', {id:o.id}, 'sm pri') : ''}${o.status === 'new' || o.status === 'confirmed' ? btn('Delivered & paid', 'ordDone', {id:o.id}, 'sm') + btn('Cancel', 'ordNo', {id:o.id}, 'sm ghost') : ''}<a class="btn sm ghost" href="${waLink(o.phone, `Hello ${String(o.name).split(' ')[0]}, thank you for your ${bizName()} order ${o.no}.`)}" target="_blank" rel="noopener">WhatsApp</a></div></td></tr>`; }).join('')}</tbody></table></div></div>` : empty('No online orders yet. Share your shop link to get started.'));
+};
+function storeSettings(){
+  const st = S.settings;
+  modal('Online shop settings', `<label class="chk" for="f-so1"><input id="f-so1" name="open" type="checkbox" ${st.storeOpen !== false ? 'checked' : ''}> Shop is open for orders</label>
+    <div class="grid2"><label for="f-so2">WhatsApp number customers can message<input id="f-so2" name="wa" type="tel" value="${esc(st.storeWhatsapp || st.phone || '')}"></label><label for="f-so3">Mobile money number to pay to<input id="f-so3" name="momo" type="tel" value="${esc(st.storeMomo || '')}"></label>
+    <label for="f-so4">Name on the mobile money account<input id="f-so4" name="momoName" value="${esc(st.storeMomoName || '')}"></label><label for="f-so5">Delivery note shown to customers<input id="f-so5" name="delivery" value="${esc(st.storeDelivery || 'Delivery fee depends on your area; we will confirm it on WhatsApp.')}"></label></div>
+    <p class="hint">Only perfumes you have in stock show in the online shop, with your normal selling price and any promotion marked for shop customers. Cost prices are never shown.</p>`,
+  async d => { await putSettings({storeOpen:!!d.open, storeWhatsapp:d.wa.trim(), storeMomo:d.momo.trim(), storeMomoName:d.momoName.trim(), storeDelivery:d.delivery.trim()}); await publishStore(); toast('Online shop updated'); }, {label:'Save'});
+}
+function ordDone(id){
+  const o = (OWN.orders || []).find(x => x.id === id); if (!o) return; const C = compute();
+  const opts = locs().map(l => `<option value="${l.id}" ${(o.shopId || 'main') === l.id ? 'selected' : ''}>${esc(l.name)}</option>`).join('');
+  modal(`Order ${o.no}: delivered & paid`, `<div class="grid2">${fDate()}<label for="f-od1">Stock taken from<select id="f-od1" name="loc">${opts}</select></label><label for="f-od2">Paid by<select id="f-od2" name="pay"><option value="cash" ${o.payBy !== 'momo' ? 'selected' : ''}>Cash</option><option value="momo" ${o.payBy === 'momo' ? 'selected' : ''}>Mobile money</option><option value="bank">Bank</option></select></label><label for="f-od3">Amount received<input id="f-od3" name="amount" type="number" step="0.01" value="${num(o.total)}"></label></div>
+    <p class="hint">This books the sale, takes the bottles out of that stock, records the money and makes a receipt you can send.</p>`,
+  async d => {
+    const have = C.storeLoc[d.loc] || {}; for (const l of o.lines) if (num(l.qty) > (have[l.productId] || 0)) throw Error(`Only ${have[l.productId] || 0} × ${l.name} at ${locName(d.loc)}.`);
+    const n = Object.values(S.receipts).reduce((m, r) => Math.max(m, parseInt(String(r.no).replace(/\D/g, '')) || 0), 0), f = o.total ? num(d.amount) / num(o.total) : 1;
+    const rc = {id:uid(), no:'R-' + String(n + 1).padStart(5, '0'), date:d.date, time:new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}), loc:d.loc, shop:d.loc === 'main' ? '' : d.loc, pay:d.pay, customer:o.name, phone:o.phone, lines:o.lines.map(l => ({productId:l.productId, qty:num(l.qty), price:r2(num(l.price) * f)})), subtotal:num(d.amount), discount:0, total:num(d.amount), orderId:o.id, moveIds:[]};
+    for (const l of rc.lines) { const mv = await put('moves', {kind:'sale', date:rc.date, loc:d.loc, productId:l.productId, qty:l.qty, unitPrice:l.price, unitCost:num(S.products[l.productId]?.costPrice), customer:o.name, pay:d.pay, note:`Online order ${o.no}`}); rc.moveIds.push(mv.id); }
+    const c = await put('cash', {kind:'in', date:rc.date, channel:d.pay, amount:num(d.amount), category:'Online sale', shop:rc.shop, customer:o.name, description:`Online order ${o.no} · receipt ${rc.no}`, receiptId:rc.id}); rc.cashId = c.id;
+    await put('receipts', rc); await FB.update('orders/' + o.id, {status:'done', receiptNo:rc.no, doneAt:nowISO()}); publishStore(); if (rc.shop) publishShop(rc.shop);
+    setTimeout(() => { const p = rcptPublic(rc); rcptModal(p, {phone:o.phone, onToken:t => put('receipts', {...S.receipts[rc.id], token:t})}); }, 200);
+  }, {label:'Book the sale'});
 }
 
 /* ---------- images, documents & export ---------- */
@@ -4170,7 +4469,7 @@ POS.renderCart = function(){
     <div class="small pos" id="pos-saved" style="text-align:right" ${s.saved ? '' : 'hidden'}>Customer saves ${money(s.saved)} with promotions</div>
     <div class="seg" data-seg="pay" style="margin-top:10px">${(res ? [['account','On their account (pay on the ' + sDay() + 'th)']] : [['cash','Cash'],['momo','Mobile money'],['bank','Bank'],['credit','Credit']]).map(([k, v]) => `<button type="button" class="${POS.pay === k ? 'on' : ''}" data-v="${k}">${v}</button>`).join('')}</div>
     ${POS.pay === 'cash' ? `<div class="sumrow"><label for="pos-tend">Cash received</label><input id="pos-tend" type="number" min="0" step="0.01" value="${esc(POS.tendered)}" style="max-width:130px"></div><div class="sumrow"><span>Change</span><b id="pos-change" class="${POS.tendered === '' ? 'mut' : s.change < 0 ? 'neg' : 'pos'}">${POS.tendered === '' ? '—' : money(s.change)}</b></div>` : ''}
-    <label for="pos-cust" class="small mut" style="display:block;font-weight:600;margin-top:8px">Customer${POS.pay === 'credit' ? ' (needed for credit)' : ' (optional)'}</label><input id="pos-cust" list="cust-list" autocomplete="off" value="${esc(POS.customer)}" style="margin-top:4px"><datalist id="cust-list">${Object.values(S.customers).map(c => `<option value="${esc(c.name)}">`).join('')}</datalist>
+    <label for="pos-cust" class="small mut" style="display:block;font-weight:600;margin-top:8px">Customer${POS.pay === 'credit' ? ' (needed for credit)' : ' (optional)'}</label><input id="pos-cust" list="cust-list" autocomplete="off" value="${esc(POS.customer)}" style="margin-top:4px"><label for="pos-phone" class="small mut" style="display:block;font-weight:600;margin-top:8px">Customer phone (to send the receipt)</label><input id="pos-phone" type="tel" autocomplete="off" value="${esc(POS.phone || '')}" style="margin-top:4px"><datalist id="cust-list">${Object.values(S.customers).map(c => `<option value="${esc(c.name)}">`).join('')}</datalist>
     <div class="actions" style="margin-top:12px">${btn('Complete sale', 'posDone', {}, 'pri big')}${btn('Clear', 'posClear', {}, 'ghost')}</div>`;
   POS.float();
 };
@@ -4209,7 +4508,7 @@ async function posDone(){
   const b = document.querySelector('[data-act=posDone]'); if (b) b.disabled = true;
   try {
     const n = Object.values(S.receipts).reduce((m, r) => Math.max(m, parseInt(String(r.no).replace(/\D/g, '')) || 0), 0);
-    const now = new Date(), rc = {id:uid(), no:'R-' + String(n + 1).padStart(5, '0'), date:today(), time:now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}), seller:POS.seller, pay:POS.pay, customer:POS.customer.trim(),
+    const now = new Date(), rc = {id:uid(), no:'R-' + String(n + 1).padStart(5, '0'), date:today(), time:now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}), seller:POS.seller, pay:POS.pay, customer:POS.customer.trim(), phone:(POS.phone || '').trim(),
       lines:POS.cart.map(l => ({productId:l.pid, qty:l.qty, price:num(l.price)})), subtotal:s.sub, discount:r2(s.auto + s.disc), promo:[...new Set(POS.cart.map(l => l.promo).filter(Boolean)), ...s.notes].join('; '), saved:s.saved, total:s.total, tendered:POS.pay === 'cash' && POS.tendered !== '' ? num(POS.tendered) : null, change:POS.pay === 'cash' && POS.tendered !== '' ? s.change : null, moveIds:[]};
     const f = s.sub ? s.total / s.sub : 1;
     for (const l of POS.cart) {
@@ -4219,7 +4518,7 @@ async function posDone(){
     }
     if (!POS.seller && POS.pay !== 'credit') { const c = await put('cash', {kind:'in', date:rc.date, channel:POS.pay, amount:s.total, category:'Direct sale', customer:rc.customer, description:`Receipt ${rc.no}`, receiptId:rc.id}); rc.cashId = c.id; }
     await put('receipts', rc);
-    POS.cart = []; POS.disc = ''; POS.tendered = ''; POS.customer = ''; POS.renderCart(); POS.grid(); POS.today();
+    POS.cart = []; POS.disc = ''; POS.tendered = ''; POS.customer = ''; POS.phone = ''; POS.renderCart(); POS.grid(); POS.today();
     showReceipt(rc.id);
   } catch(e) { toast('The sale was not finished. Check the Sales book before trying again.', true); }
   finally { if (b) b.disabled = false; }
@@ -4246,10 +4545,8 @@ function receiptDoc(r){
 }
 function showReceipt(id){
   const r = S.receipts[id]; if (!r) return;
-  const msg = `*${S.settings.businessName || 'Infinity Fragrances'}* receipt ${r.no}\n${fmtDate(r.date)} ${r.time}\n` + (r.lines || []).map(l => `${pName(l.productId)} ${l.qty} × ${money(l.price)}`).join('\n') + `${r.discount ? `\nDiscount −${money(r.discount)}` : ''}\nTOTAL ${money(r.total)}\nThank you!`;
-  modal(`Receipt ${r.no}`, `<div class="actions" style="margin-bottom:12px">${btn('Download image', 'expDoc', {fmt:'png', name:r.no}, 'pri sm')}${btn('Download PDF', 'expDoc', {fmt:'pdf', name:r.no}, 'sm')}<a class="btn sm" href="${waLink('', msg)}" target="_blank" rel="noopener">Send on WhatsApp</a>${btn('New sale', 'close', {}, 'sm ghost')}</div>
-    <div class="preview" id="doc-prev"><div class="docwrap" data-maxw="420">${receiptDoc(r)}</div></div>`, null, {nofocus:true});
-  requestAnimationFrame(() => fitDocs($('#doc-prev')));
+  const p = rcptPublic(r, {seller:r.seller ? rName(r.seller) : (r.shop ? shopOf(r.shop)?.name || '' : '')});
+  rcptModal(p, {doc:receiptDoc(r), token:r.token, phone:r.phone || '', onToken:t => put('receipts', {...S.receipts[id], token:t}), onSent:(k, ph) => { if (ph && ph !== r.phone) put('receipts', {...S.receipts[id], phone:ph}); }});
 }
 TOOLS.pos = {
   mount(){ POS.grid(); POS.renderCart(); POS.today(); setTimeout(() => $('#pos-scan')?.focus(), 50); },
@@ -4261,6 +4558,7 @@ TOOLS.pos = {
     else if (t.id === 'pos-disc') { POS.disc = t.value; POS.totals(); }
     else if (t.id === 'pos-tend') { POS.tendered = t.value; POS.totals(); }
     else if (t.id === 'pos-cust') POS.customer = t.value;
+    else if (t.id === 'pos-phone') POS.phone = t.value;
   },
   seg(k, v){ if (k === 'cat') { POS.cat = v; POS.grid(); } if (k === 'pay') { POS.pay = v; POS.renderCart(); } }
 };
@@ -4710,16 +5008,16 @@ const ACT = {
   roleReset: async () => { await DESK.setConfig({appRole:''}); APP_ROLE = ''; document.body.classList.remove('res-mode'); render(true); },
   fbSaveCfg: async () => { const t = $('#f-fbc').value, o = {}; for (const k of ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId']) { const m = t.match(new RegExp(k + '\\s*:\\s*["\']([^"\']+)["\']')); if (m) o[k] = m[1]; } if (!o.apiKey || !o.projectId) return toast('That does not look like a Firebase config. Copy the whole firebaseConfig block.', true); await putSettings({firebase:o}); toast('Firebase connected'); render(true); },
   pwToggle: d => { const i = $('#' + d.id), b = document.querySelector(`[data-act=pwToggle][data-id="${d.id}"]`); if (!i) return; const show = i.type === 'password'; i.type = show ? 'text' : 'password'; if (b) { b.textContent = show ? 'Hide' : 'Show'; b.setAttribute('aria-label', show ? 'Hide password' : 'Show password'); } },
-  fbGoogle: async () => { const own = (UI.signTab || (APP_ROLE === 'owner' ? 'owner' : 'reseller')) === 'owner'; try { await fbLoad(); if (DESK && MODE === 'desktop' && !FB_USER) { if (own) OWNER_SIGNING = true; else { APP_ROLE = 'reseller'; RES_UNLOCKED = true; } fbStart(); } const t = await googleToken(); await FB.googleIn(t); if (!own && DESK) await setCfg({appRole:'reseller'}); } catch(x) { const el = $('#fb-err'); if (el) el.textContent = fbMsg(x); else toast(fbMsg(x), true); } },
+  fbGoogle: async () => { const own = (UI.signTab || (APP_ROLE === 'owner' ? 'owner' : 'reseller')) === 'owner'; try { await fbLoad(); if (DESK && MODE === 'desktop' && !FB_USER) { if (own) OWNER_SIGNING = true; else { APP_ROLE = 'reseller'; RES_UNLOCKED = true; } fbStart(); } const t = await googleToken(); await FB.googleIn(t); if (!own && DESK) { await setCfg({appRole:'reseller'}); resSkinOn(true); } } catch(x) { const el = $('#fb-err'); if (el) el.textContent = fbMsg(x); else toast(fbMsg(x), true); } },
   fbLinkGoogle: async () => { try { const t = await googleToken(); await FB.googleLink(t); toast('Google account linked. Next time tap Continue with Google.'); render(true); } catch(x) { toast(fbMsg(x), true); } },
   resGot: d => resSubmit('received', {dispatchId:d.id, no:d.no, date:today()}),
   signTab: d => { UI.signTab = d.k; UI.signMsg = ''; FB_ERR = ''; UI.applied = false; render(true); },
-  applySend: () => applySend(), pinSetupSave: () => pinSetupSave(), resUnlock: () => resUnlock(), appOut: () => confirmBox(`Sign out of this ${DEV_NAME}? You will need ${APP_ROLE === 'reseller' ? 'your login ID and PIN' : 'your owner email and password'} to open the app again.`, () => appSignOut(), 'Sign out'),
+  applySend: () => applySend(), pinSetupSave: () => pinSetupSave(), resUnlock: () => resUnlock(), appOut: () => confirmBox(`Sign out of this ${DEV_NAME}? You will need ${APP_ROLE === 'reseller' ? 'your login ID and PIN' : 'your admin email and password'} to open the app again.`, () => appSignOut(), 'Sign out'),
   bioUnlock: async () => { if (!bioReady()) return; const ok = await DESK.bioAuth('Unlock Infinity Fragrances'); if (!ok) return;
     if (APP_ROLE === 'reseller') { RES_UNLOCKED = true; PIN_FAILS = 0; render(true); }
     else { const o = users().find(x => x.role === 'owner'); if (o) { SESSION = {id:o.id, name:o.name, role:'owner'}; PIN_FAILS = 0; touchIdle(); if (!allowed(route())) location.hash = firstAllowed(); render(true); toast(`Welcome, ${o.name}`); } } },
-  lockEmail: async () => { await setCfg({ownerUid:''}); UI.signTab = 'owner'; UI.signMsg = 'Sign in with your owner email and password. Then set a new PIN in Settings → Users & PINs.'; try { FB && await FB.signOut(); } catch(e) {} render(true); },
-  fbForgot: async () => { const e = ($('#f-oe')?.value || '').trim(); if (!e) return $('#fb-err').textContent = 'Type your owner email first.'; try { await fbLoad(); await FB.resetPassword(e); $('#fb-err').textContent = ''; toast('Check your email for a link to set a new password.'); } catch(x) { $('#fb-err').textContent = fbMsg(x); } },
+  lockEmail: async () => { await setCfg({ownerUid:''}); UI.signTab = 'owner'; UI.signMsg = 'Sign in with your admin email and password. Then set a new PIN in Settings → Users & PINs.'; try { FB && await FB.signOut(); } catch(e) {} render(true); },
+  fbForgot: async () => { const e = ($('#f-oe')?.value || '').trim(); if (!e) return $('#fb-err').textContent = 'Type your admin email first.'; try { await fbLoad(); await FB.resetPassword(e); $('#fb-err').textContent = ''; toast('Check your email for a link to set a new password.'); } catch(x) { $('#fb-err').textContent = fbMsg(x); } },
   catPlus: d => { RES.cart = RES.cart || {}; RES.cart[d.id] = (RES.cart[d.id] || 0) + 1; $('#cq-' + d.id).textContent = RES.cart[d.id]; $('#cart-bar').innerHTML = cartBarHTML(); },
   catMinus: d => { RES.cart = RES.cart || {}; RES.cart[d.id] = Math.max(0, (RES.cart[d.id] || 0) - 1); $('#cq-' + d.id).textContent = RES.cart[d.id]; $('#cart-bar').innerHTML = cartBarHTML(); },
   catCat: (d, el) => { document.querySelectorAll('[data-act=catCat]').forEach(b => b.classList.toggle('on', b.dataset.k === d.k)); document.querySelectorAll('.cat-card').forEach(c => c.hidden = !!d.k && c.dataset.cat !== d.k); },
@@ -4739,18 +5037,41 @@ const ACT = {
   resSlip: d => { RES.slip = RES.slip === d.id ? '' : d.id; render(true); },
   psMake: () => psMake(), psNew: () => psForm(), psView: d => psView(d.id), psEdit: d => psForm(S.payslips[d.id]),
   psRefresh: d => { const p = S.payslips[d.id]; if (!p) return; const f = payslipFigures(p.rid, p.month); $('#f-pso').value = f.own; $('#f-psb').value = f.bonus; $('#f-psv').value = f.received; toast('Figures refreshed. Save to keep them.'); },
-  psSend: async d => { const p = S.payslips[d.id], r = S.resellers[p.rid]; if (FB_ROLE !== 'owner') return toast('Sign in to your owner account first (Resellers → Online accounts).', true);
+  psSend: async d => { const p = S.payslips[d.id], r = S.resellers[p.rid]; if (FB_ROLE !== 'owner') return toast('Sign in to your admin account first (Resellers → Online accounts).', true);
     await put('payslips', {...p, status:p.status === 'paid' ? 'paid' : 'sent', sentAt:nowISO(), sentVia:'App'}); await publishOne(p.rid); await fbNotify(r.portalUid, `Your payslip for ${monthLabel(p.month)} is ready: ${money(psTotals(p).net)} due to you.`); toast('Payslip sent in the app'); psView(d.id); },
   psPaid: d => psPayForm(d.id),
   psDel: d => { const p = S.payslips[d.id]; confirmBox(`Delete payslip ${p.no}?${p.payCashId ? ' The payment in the cash book stays; delete it there if needed.' : ''}`, async () => { await del('payslips', d.id); closeModal(); if (S.resellers[p.rid]?.portalUid && FB_ROLE === 'owner') publishOne(p.rid); toast('Deleted'); }, 'Delete'); },
   drawer: () => openDrawer(),
+  rcWa: () => rcSend('wa'), rcSms: () => rcSend('sms'), rcLink: () => rcSend('link'),
+  myPin: () => { const me = users().find(u => u.id === SESSION?.id); if (!me) return; modal('Change my PIN', `<label for="f-mp0">Current PIN<input id="f-mp0" name="old" type="password" inputmode="numeric" required></label><div class="grid2"><label for="f-mp1">New PIN (4 to 8 digits)<input id="f-mp1" name="pin" type="password" inputmode="numeric" required></label><label for="f-mp2">Repeat new PIN<input id="f-mp2" name="pin2" type="password" inputmode="numeric" required></label></div>`, async d => { if (await sha(me.salt + d.old) !== me.pin) throw Error('Your current PIN is not right.'); if (!/^\d{4,8}$/.test(d.pin)) throw Error('The new PIN must be 4 to 8 digits.'); if (d.pin !== d.pin2) throw Error('The two new PINs do not match.'); const salt = uid(), h = await sha(salt + d.pin); await putSettings({users:users().map(u => u.id === me.id ? {...u, salt, pin:h} : u)}); toast('PIN changed. Use the new PIN next time.'); }, {label:'Change PIN'}); },
+  shopNew: () => shopForm(), shopEdit: d => shopForm(shopOf(d.id)), shopAcc: d => shopAccCreate(d.id, !!d.reset),
+  shopSales: d => { const l = shopOf(d.id), cut = iso(addDays(new Date(), -30)), list = Object.values(S.receipts).filter(r => (r.shop || (r.seller ? '' : (r.loc || 'main'))) === d.id && r.date >= cut).sort((a, b) => (b.date + (b.time || '')).localeCompare(a.date + (a.time || '')));
+    modal(`${l?.name || 'Shop'}: last 30 days`, list.length ? `<p><b>${money(list.reduce((t, r) => t + num(r.total), 0))}</b> from ${list.length} sale${list.length === 1 ? '' : 's'}</p><div class="tw"><table class="t"><thead><tr><th>Receipt</th><th>When</th><th>Customer</th><th class="n">Total</th><th>Paid</th><th></th></tr></thead><tbody>${list.map(r => `<tr><td><b>${esc(r.no)}</b></td><td class="small">${fmtDate(r.date)} ${esc(r.time || '')}</td><td>${esc(r.customer || '')}</td><td class="n">${money(r.total)}</td><td class="small">${esc(PAYL[r.pay] || r.pay)}</td><td>${btn('Receipt', 'rcptView', {id:r.id}, 'sm ghost')}</td></tr>`).join('')}</tbody></table></div>` : '<p class="mut">No sales in the last 30 days.</p>', null, {wide:true, nofocus:true}); },
+  shopReqOk: async d => { const q = (OWN.shopReqs[d.sid] || []).find(x => x.id === d.id); if (!q) return; try { await FB.update(`shops/${d.sid}/requests/${d.id}`, {status:'approved', decidedAt:FB.now()}); } catch(e) { return toast(fbMsg(e), true); } ACT.stockMove(); setTimeout(() => { const t = document.querySelector('#m-form [name=to]'); if (t) t.value = d.sid; }, 50); toast(`Choose the perfumes to send to ${shopOf(d.sid)?.name}: ${(q.lines || []).map(l => l.qty + ' × ' + l.name).join(', ')}`); },
+  shopReqNo: d => modal('Decline the request', `<label for="f-srr">Reason<input id="f-srr" name="why" required></label>`, async x => { await FB.update(`shops/${d.sid}/requests/${d.id}`, {status:'rejected', reason:x.why.trim(), decidedAt:FB.now()}); toast('Declined'); }, {label:'Decline'}),
+  shopTab: d => { closeModal(); SHOP.tab = d.k; window.scrollTo(0, 0); render(true); },
+  shopPlus: d => { const p = shopAvail().find(x => x.id === d.id); const q = (SHOP.cart[d.id] || 0) + 1; if (p && q > p.avail) return toast(`Only ${p.avail} in the shop.`, true); SHOP.cart[d.id] = q; $('#sq-' + d.id).textContent = q; $('#shop-cart').innerHTML = shopCartBar(); },
+  shopMinus: d => { SHOP.cart[d.id] = Math.max(0, (SHOP.cart[d.id] || 0) - 1); $('#sq-' + d.id).textContent = SHOP.cart[d.id]; $('#shop-cart').innerHTML = shopCartBar(); },
+  shopCat: d => { document.querySelectorAll('[data-act=shopCat]').forEach(b => b.classList.toggle('on', b.dataset.k === d.k)); document.querySelectorAll('.cat-card').forEach(c => c.hidden = !!d.k && c.dataset.cat !== d.k); },
+  shopPay: d => { SHOP.pay = d.k; document.querySelectorAll('[data-act=shopPay]').forEach(b => b.classList.toggle('on', b.dataset.k === d.k)); },
+  shopSell: () => shopSell(),
+  shopRc: d => { const r = SHOP.sales.find(x => x.id === d.id); if (!r) return; const s0 = SHOP.snap; rcptModal({...rcptPublic(r), biz:s0.business, phone:s0.businessPhone, seller:s0.name}, {token:r.token, phone:r.phone || ''}); },
+  shopOrder: async () => { const f = $('#shop-ord'), d = Object.fromEntries(new FormData(f)), lines = shopAvail().map(p => ({productId:p.id, name:p.name, qty:Math.round(num(d['o_' + p.id]))})).filter(l => l.qty > 0); if (!lines.length) return toast('Type how many bottles you need.', true);
+    try { await FB.add(`shops/${FB_ME.shopId}/requests`, {type:'order', lines, note:(d.note || '').trim(), status:'pending', by:FB_USER.uid, at:FB.now()}); fbNotify('owner', `${SHOP.snap?.name || 'A shop'} asks for stock`); toast('Request sent'); render(true); } catch(e) { toast(fbMsg(e), true); } },
+  storeCopy: async () => { try { await navigator.clipboard.writeText(STORE_URL); toast('Shop link copied. Paste it on WhatsApp or Facebook.'); } catch(e) { prompt('Copy your shop link:', STORE_URL); } },
+  storeSet: () => storeSettings(),
+  ordOk: async d => { const o = (OWN.orders || []).find(x => x.id === d.id); if (!o) return; try { await FB.update('orders/' + o.id, {status:'confirmed', confirmedAt:nowISO()}); } catch(e) { return toast(fbMsg(e), true); } const st = S.settings;
+    const msg = `Hello ${String(o.name).split(' ')[0]}, your ${bizName()} order ${o.no} is confirmed: ${(o.lines || []).map(l => l.qty + ' × ' + l.name).join(', ')}. Total ${money(o.total)}.` + (o.payBy === 'momo' && st.storeMomo ? `\nPlease pay by mobile money to ${st.storeMomo}${st.storeMomoName ? ' (' + st.storeMomoName + ')' : ''} and send the reference.` : '\nYou pay when you receive it.') + (o.method === 'pickup' ? `\nCollect at ${shopOf(o.shopId)?.name || 'our shop'}.` : `\nWe will deliver to ${o.address || o.town || 'you'}.`);
+    const a = document.createElement('a'); a.href = waLink(o.phone, msg); a.target = '_blank'; a.rel = 'noopener'; EXT_T = Date.now(); document.body.appendChild(a); a.click(); a.remove(); toast('Order confirmed'); },
+  ordDone: d => ordDone(d.id),
+  ordNo: d => confirmBox('Cancel this order?', async () => { try { await FB.update('orders/' + d.id, {status:'cancelled', cancelledAt:nowISO()}); toast('Order cancelled'); } catch(e) { toast(fbMsg(e), true); } }, 'Cancel order'), resDrawer: () => openResDrawer(), resLock: () => { closeModal(); RES_UNLOCKED = false; BIO_TRIED = false; render(true); }, skipInstall: () => { UI.skipInstall = true; render(true); },
   updCheck: () => checkUpdate(true), updLater: () => { const b = $('#upd-bar'); if (b) b.remove(); },
   updGo: async () => { try { if (DESK_T) { clearTimeout(DESK_T); DESK_T = 0; await deskSave(); } } catch(e) {} toast('Restarting…'); setTimeout(() => DESK.relaunch(), 400); }, posGo: () => $('#pos-cart')?.scrollIntoView({behavior:'smooth', block:'start'}),
   lookOpen: () => { closeModal(); if (APP_ROLE === 'reseller') { RES.tab = 'account'; render(true); } else location.hash = 'setup'; setTimeout(() => $('#look-card')?.scrollIntoView({behavior:'smooth', block:'start'}), 150); },
   lookSkin: d => { setLook({skin:d.k}); const c = $('#look-card'); if (c) c.outerHTML = lookCard(); toast(LOOKS.find(x => x[0] === d.k)?.[1] + ' theme on'); },
   fbRetry: () => { FB_ERR = ''; FB_AUTH_STARTED = false; FB = null; fbStart(); render(true); },
-  fbOwnerIn: async () => { const e = $('#f-oe').value.trim(), pw = $('#f-op').value; UI.fbEmail = e; if (!e || !pw) return $('#fb-err').textContent = 'Type your email and password.'; const gate = DESK && MODE === 'desktop' && route() !== 'portal' || (DESK && !DCFG.ownerUid); if (gate) { OWNER_SIGNING = true; UI.signMsg = ''; } try { await fbLoad(); if (gate) fbStart(); await FB.signIn(e, pw); if (gate && OWNER_SIGNING && FB_USER && FB_ROLE === 'owner' && FB_USER.email === e) return ownerVerified(FB_USER); } catch(x) { OWNER_SIGNING = false; const el = $('#fb-err'); const m = fbMsg(x); if (el) el.textContent = (/login ID or PIN/.test(m) ? 'Wrong email or password.' : m) + ' First time? Tap "Create the owner account".'; } },
-  fbOwnerUp: async () => { const e = $('#f-oe').value.trim(), pw = $('#f-op').value; UI.fbEmail = e; if (!e) return $('#fb-err').textContent = 'Type your email.'; if (pw.length < 8) return $('#fb-err').textContent = 'Use a password of at least 8 characters.'; if (DESK && MODE === 'desktop') { OWNER_SIGNING = true; await fbLoad(); fbStart(); } try { const owner = await FB.get('meta/owner').catch(() => null); const c = await FB.signUp(e, pw); const uid = (c && c.user && c.user.uid) || FB_USER?.uid; if (!owner) { await FB.batch([['set', 'meta/owner', {uid, email:e, at:FB.now()}], ['set', `users/${uid}`, {role:'owner', email:e, at:FB.now()}]]); FB_ROLE = 'owner'; FB_ME = {role:'owner'}; ownerListen(); toast('Owner account created'); render(true); } else toast('An owner account already exists. Sign in with it instead.', true); } catch(x) { $('#fb-err').textContent = fbMsg(x); } },
+  fbOwnerIn: async () => { const e = $('#f-oe').value.trim(), pw = $('#f-op').value; UI.fbEmail = e; if (!e || !pw) return $('#fb-err').textContent = 'Type your email and password.'; const gate = DESK && MODE === 'desktop' && route() !== 'portal' || (DESK && !DCFG.ownerUid); if (gate) { OWNER_SIGNING = true; UI.signMsg = ''; } try { await fbLoad(); if (gate) fbStart(); await FB.signIn(e, pw); if (gate && OWNER_SIGNING && FB_USER && FB_ROLE === 'owner' && FB_USER.email === e) return ownerVerified(FB_USER); } catch(x) { OWNER_SIGNING = false; const el = $('#fb-err'); const m = fbMsg(x); if (el) el.textContent = (/login ID or PIN/.test(m) ? 'Wrong email or password.' : m) + ' First time? Tap "Create the admin account".'; } },
+  fbOwnerUp: async () => { const e = $('#f-oe').value.trim(), pw = $('#f-op').value; UI.fbEmail = e; if (!e) return $('#fb-err').textContent = 'Type your email.'; if (pw.length < 8) return $('#fb-err').textContent = 'Use a password of at least 8 characters.'; if (DESK && MODE === 'desktop') { OWNER_SIGNING = true; await fbLoad(); fbStart(); } try { const owner = await FB.get('meta/owner').catch(() => null); const c = await FB.signUp(e, pw); const uid = (c && c.user && c.user.uid) || FB_USER?.uid; if (!owner) { await FB.batch([['set', 'meta/owner', {uid, email:e, at:FB.now()}], ['set', `users/${uid}`, {role:'owner', email:e, at:FB.now()}]]); FB_ROLE = 'owner'; FB_ME = {role:'owner'}; ownerListen(); toast('Admin account created'); render(true); } else toast('An admin account already exists. Sign in with it instead.', true); } catch(x) { $('#fb-err').textContent = fbMsg(x); } },
   fbClaim: async () => { try { await FB.batch([['set', 'meta/owner', {uid:FB_USER.uid, email:FB_USER.email, at:FB.now()}], ['set', `users/${FB_USER.uid}`, {role:'owner', email:FB_USER.email, at:FB.now()}]]); FB_ROLE = 'owner'; ownerListen(); render(true); } catch(x) { toast(fbMsg(x), true); } },
   fbOut: async () => { if (DESK && MODE === 'desktop') return ACT.appOut(); try { await FB.signOut(); } catch(e) {} },
   fbPublish: () => publishAll(false),
@@ -4759,19 +5080,19 @@ const ACT = {
   accRemove: d => { const r = S.resellers[d.id]; confirmBox(`Remove ${esc(r.name)}'s online access? They will no longer be able to sign in.`, async () => { try { await FB.del(`users/${r.portalUid}`); await FB.del(`portal/${r.id}`); } catch(e) {} await put('resellers', {...r, portalUid:'', portalLogin:''}); ownerListen(); toast('Access removed'); }, 'Remove access'); },
   resIn: async () => { const id = $('#r-login').value.trim().toLowerCase().replace(/\s+/g, ''), pin = $('#r-pin').value.trim(); if (!id || !pin) return $('#fb-err').textContent = 'Type your login ID and PIN.'; FB_ERR = ''; OWNER_SIGNING = false;
     const prevRole = APP_ROLE; APP_ROLE = 'reseller'; RES_UNLOCKED = true; PIN_FAILS = 0;
-    try { await fbLoad(); fbStart(); await FB.signIn(id.includes('@') ? id : `${id}@${RES_DOMAIN}`, pin); await setCfg({appRole:'reseller'}); await savePinHash(pin); }
+    try { await fbLoad(); fbStart(); await FB.signIn(id.includes('@') ? id : `${id}@${RES_DOMAIN}`, pin); await setCfg({appRole:'reseller'}); await savePinHash(pin); resSkinOn(true); }
     catch(x) { APP_ROLE = prevRole; RES_UNLOCKED = false; const el = $('#fb-err'); if (el) el.textContent = fbMsg(x); else { FB_ERR = fbMsg(x); render(true); } } },
-  resTab: d => { RES.tab = d.k; render(true); window.scrollTo(0, 0); },
+  resTab: d => { closeModal(); window.scrollTo(0, 0); RES.tab = d.k; render(true); window.scrollTo(0, 0); },
   resSend: () => { const f = $('#res-form'); try { resSubmit(f.dataset.type, resCollect(f)); } catch(e) { toast(e.message, true); } },
   resSend2: () => { const f = $('#res-form2'); try { resSubmit(f.dataset.type, resCollect(f)); } catch(e) { toast(e.message, true); } },
   resCancel: async d => { try { await FB.update(`portal/${FB_ME.resellerId}/requests/${d.id}`, {status:'cancelled'}); toast('Cancelled'); } catch(e) { toast(fbMsg(e), true); } },
-  resPin: async () => { const a = $('#ra-p').value, b = $('#ra-p2').value; if (a.length < 6) return toast('Use at least 6 digits.', true); if (a !== b) return toast('The two PINs do not match.', true); try { await FB.changePassword(a); if (DESK) await savePinHash(a); toast('PIN changed'); } catch(e) { toast(fbMsg(e) + (String(e.code || '').includes('recent') ? ' Sign out and in again, then try.' : ''), true); } },
+  resPin: async () => { const o = ($('#ra-o')?.value || '').trim(), a = $('#ra-p').value.trim(), b = $('#ra-p2').value.trim(); if (!o) return toast('Type your current PIN first.', true); if (!/^\d{6,}$/.test(a)) return toast('The new PIN must be at least 6 digits.', true); if (a !== b) return toast('The two new PINs do not match.', true); try { try { await FB.reauth(o); } catch(x) { return toast('Your current PIN is not right.', true); } await FB.changePassword(a); $('#ra-o').value = $('#ra-p').value = $('#ra-p2').value = ''; if (DESK) await savePinHash(a); toast('PIN changed'); } catch(e) { toast(fbMsg(e) + (String(e.code || '').includes('recent') ? ' Sign out and in again, then try.' : ''), true); } },
   printDoc: () => printDocs([...document.querySelectorAll('#doc-prev .doc')]),
   lockPick: d => { UI.lockUser = d.id; render(true); }, lockNow: () => lockNow(),
   pinKey: d => { const el = $('#lock-pin'); if (!el) return; if (d.k === '⌫') el.value = el.value.slice(0, -1); else if (d.k === 'OK') tryUnlock(); else if (el.value.length < 8) { el.value += d.k; if (el.value.length >= 4) { const u = users().find(x => x.id === (UI.lockUser || users()[0]?.id)); if (u) sha(u.salt + el.value).then(h => { if (h === u.pin) tryUnlock(); }); } } },
-  lockRecover: () => modal('Unlock with recovery key', `<label for="f-rk">Recovery key<input id="f-rk" name="key" placeholder="XXXX-XXXX" required style="text-transform:uppercase"></label>`, async d => { if (await sha('rk:' + d.key.trim().toUpperCase()) !== S.settings.recoveryHash) throw Error('That recovery key is not right.'); const o = users().find(u => u.role === 'owner'); SESSION = {id:o.id, name:o.name, role:'owner'}; try { sessionStorage.setItem('if-session', JSON.stringify(SESSION)); } catch(e) {} toast('Unlocked as Owner. Set a new PIN in Settings.'); location.hash = 'setup'; render(true); }, {label:'Unlock'}),
+  lockRecover: () => modal('Unlock with recovery key', `<label for="f-rk">Recovery key<input id="f-rk" name="key" placeholder="XXXX-XXXX" required style="text-transform:uppercase"></label>`, async d => { if (await sha('rk:' + d.key.trim().toUpperCase()) !== S.settings.recoveryHash) throw Error('That recovery key is not right.'); const o = users().find(u => u.role === 'owner'); SESSION = {id:o.id, name:o.name, role:'owner'}; try { sessionStorage.setItem('if-session', JSON.stringify(SESSION)); } catch(e) {} toast('Unlocked as Admin. Set a new PIN in Settings.'); location.hash = 'setup'; render(true); }, {label:'Unlock'}),
   userNew: () => userForm(), userEdit: d => userForm(users().find(u => u.id === d.id)),
-  userDel: d => { const u = users().find(x => x.id === d.id); if (!u) return; if (u.role === 'owner' && users().filter(x => x.role === 'owner').length < 2 && users().length > 1) return toast('Remove the other users first, or make someone else Owner.', true); confirmBox(`Remove ${esc(u.name)}?${users().length === 1 ? ' This turns the PIN lock off.' : ''}`, async () => { const list = users().filter(x => x.id !== u.id); await putSettings({users:list, ...(list.length ? {} : {recoveryHash:''})}); if (SESSION?.id === u.id) { SESSION = null; sessionStorage.removeItem('if-session'); } toast('User removed'); }, 'Remove'); },
+  userDel: d => { const u = users().find(x => x.id === d.id); if (!u) return; if (u.role === 'owner' && users().filter(x => x.role === 'owner').length < 2 && users().length > 1) return toast('Remove the other users first, or make someone else Admin.', true); confirmBox(`Remove ${esc(u.name)}?${users().length === 1 ? ' This turns the PIN lock off.' : ''}`, async () => { const list = users().filter(x => x.id !== u.id); await putSettings({users:list, ...(list.length ? {} : {recoveryHash:''})}); if (SESSION?.id === u.id) { SESSION = null; sessionStorage.removeItem('if-session'); } toast('User removed'); }, 'Remove'); },
   locNew: () => modal('Add stock location', `<label for="f-ln">Name<input id="f-ln" name="name" required placeholder="e.g. Kitwe depot"></label>`, async d => { await putSettings({locations:[...locs(), {id:uid(), name:d.name.trim()}]}); toast('Location added'); }, {label:'Add'}),
   locEdit: d => { const l = locs().find(x => x.id === d.id); modal('Rename location', `<label for="f-ln">Name<input id="f-ln" name="name" required value="${esc(l.name)}"></label>`, async x => { await putSettings({locations:locs().map(y => y.id === l.id ? {...y, name:x.name.trim()} : y)}); toast('Saved'); }, {label:'Save'}); },
   locPos: d => { putSettings({posLoc:d.id}); toast(`Point of sale now sells from ${locName(d.id)}`); },
@@ -4925,6 +5246,8 @@ document.addEventListener('input', e => {
   if (t.id === 'f-q') { UI.q = t.value; render(); }
   if (t.id === 'f-oe') UI.fbEmail = t.value; if (t.id === 'r-login') UI.rLogin = t.value; if (t.id === 'ro-n') RES.note = t.value;
   if (t.closest && t.closest('#ad-form') && !t.classList.contains('ad-pick')) adRedraw();
+  if (t.id === 'shop-q') { const q = t.value.toLowerCase().trim(); document.querySelectorAll('.cat-card').forEach(c => c.hidden = !!q && !c.dataset.name.includes(q)); }
+  if (t.id === 'sh-c') SHOP.cust = t.value; if (t.id === 'sh-p') SHOP.phone = t.value;
   if (t.id === 'cat-q') { const q = t.value.toLowerCase().trim(); document.querySelectorAll('.cat-card').forEach(c => c.hidden = !!q && !c.dataset.name.includes(q)); }
   if (t.id === 'bc-msg') { UI.bc.msg = t.value; document.querySelectorAll('.bc-go').forEach(a => { const x = bcAudience().find(y => y.id === a.dataset.id); if (x) a.href = waLink(x.phone, bcFill(UI.bc.msg, x)); }); }
 });
