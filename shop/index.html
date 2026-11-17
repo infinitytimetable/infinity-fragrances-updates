@@ -67,6 +67,7 @@ input,select,textarea{font:inherit;font-size:16px;padding:11px 12px;border:1px s
 .paynum{display:flex;flex-direction:column;gap:2px;background:#fff;border:1px dashed var(--acc);border-radius:10px;padding:10px 12px}.paynum span{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}.paynum b{font-size:22px;letter-spacing:.04em}.paynum small{color:var(--muted)}
 .proof{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0}.proof img{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
 .seg.pays{flex-wrap:wrap}.seg.pays button{flex:1 1 30%}
+.rate{text-align:center}.rate .st{display:flex;justify-content:center;gap:6px;margin:8px 0}.rate .st button{background:none;border:0;font-size:38px;line-height:1;color:var(--line);cursor:pointer;padding:2px;transition:transform .12s}.rate .st button.on{color:#d8a635}.rate .st button:active{transform:scale(1.25)}.rate textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit;margin:6px 0}.rate .lbl{min-height:20px;font-weight:600;color:var(--acc)}
 </style>
 </head>
 <body>
@@ -161,10 +162,34 @@ input,select,textarea{font:inherit;font-size:16px;padding:11px 12px;border:1px s
     } else if (step === 'done') {
       var o = window.__lastOrder;
       A.innerHTML = head() + '<div class="card center"><p style="font-size:44px;margin:4px 0">🎉</p><h2>Thank you, ' + esc(o.name.split(' ')[0]) + '!</h2><p>Your order <b>' + esc(o.no) + '</b> for <b>' + money(o.total) + '</b> has been sent.</p><p class="mut">We will confirm it on WhatsApp.</p>' + payNote(o) + '<p class="small">' + (o.method === 'pickup' ? 'Collection' : 'Delivery') + ' date: <b>' + esc(fmtDate(o.wantDate)) + '</b></p>' +
-        (CAT.whatsapp ? '<a class="btn wa" href="' + wa(CAT.whatsapp, 'Hello! I just placed order ' + o.no + ' (' + money(o.total) + ') on your website.') + '">Message us on WhatsApp</a> ' : '') + '<a class="btn pri" href="#o=' + esc(o.id) + '">Follow my order</a><p><button class="btn" id="more">Shop again</button></p></div>';
-      $('#more').onclick = function () { step = 'shop'; location.hash = ''; render(); };
+        (CAT.whatsapp ? '<a class="btn wa" href="' + wa(CAT.whatsapp, 'Hello! I just placed order ' + o.no + ' (' + money(o.total) + ') on your website.') + '">Message us on WhatsApp</a> ' : '') + '<a class="btn pri" href="#o=' + esc(o.id) + '">Follow my order</a><p><button class="btn" id="more">Shop again</button></p></div>' + rateBox(o);
+      $('#more').onclick = function () { step = 'shop'; location.hash = ''; render(); }; rateWire(o);
     }
     bar();
+  }
+  var RATE = {s: 0, t: ''}, RATE_TXT = ['', 'Poor', 'Not great', 'Okay', 'Good', 'Excellent!'];
+  function rated(id) { try { return JSON.parse(localStorage.getItem('if-rated') || '{}')[id] || 0; } catch (e) { return 0; } }
+  function rateBox(o) {
+    if (!o || o.status === 'cancelled') return '';
+    var r = rated(o.id);
+    if (r) return '<div class="card rate"><p style="margin:0">You rated this order <b style="color:#d8a635">' + '★★★★★'.slice(0, r) + '</b>. Thank you!</p></div>';
+    return '<div class="card rate" id="rate"><h3 style="margin:0">How was your experience?</h3><p class="small mut" style="margin:4px 0 0">Tap the stars to rate ordering with us.</p><div class="st">' + [1, 2, 3, 4, 5].map(function (n) { return '<button type="button" data-star="' + n + '" class="' + (n <= RATE.s ? 'on' : '') + '" aria-label="' + n + ' star' + (n > 1 ? 's' : '') + '">★</button>'; }).join('') + '</div><div class="lbl" id="rate-l">' + RATE_TXT[RATE.s] + '</div>' +
+      '<textarea id="rate-t" rows="3" maxlength="500" placeholder="Tell us more (optional)">' + esc(RATE.t) + '</textarea><button class="btn pri" id="rate-go" type="button">Send rating</button><p class="small" id="rate-e" style="color:#b00020"></p></div>';
+  }
+  function rateWire(o) {
+    var box = $('#rate'); if (!box) return;
+    box.querySelectorAll('[data-star]').forEach(function (b) { b.onclick = function () { RATE.s = +b.getAttribute('data-star'); box.querySelectorAll('[data-star]').forEach(function (x) { x.classList.toggle('on', +x.getAttribute('data-star') <= RATE.s); }); $('#rate-l').textContent = RATE_TXT[RATE.s]; }; });
+    $('#rate-t').oninput = function () { RATE.t = this.value; };
+    $('#rate-go').onclick = function () {
+      if (!RATE.s) { $('#rate-e').textContent = 'Tap a star first.'; return; }
+      var btn = this; btn.disabled = true; btn.textContent = 'Sending…';
+      var d = {orderId: String(o.id || ''), no: String(o.no || ''), name: String(o.name || 'Customer').slice(0, 79), stars: RATE.s, comment: RATE.t.trim().slice(0, 500), at: new Date().toISOString()};
+      db.collection('ratings').add(d).then(function () {
+        try { var m = JSON.parse(localStorage.getItem('if-rated') || '{}'); m[o.id] = RATE.s; localStorage.setItem('if-rated', JSON.stringify(m)); } catch (e) {}
+        db.doc('notify/owner').set({at: d.at, msg: d.name + ' rated their order ' + d.stars + ' stars' + (d.comment ? ': ' + d.comment.slice(0, 100) : '')}).catch(function () {});
+        box.outerHTML = rateBox(o); RATE = {s: 0, t: ''};
+      }, function () { btn.disabled = false; btn.textContent = 'Send rating'; $('#rate-e').textContent = 'Could not send. Check your internet and try again.'; });
+    };
   }
   function payNote(o) {
     var via = o.payBy === 'cod' ? o.depositVia : o.payBy, w = via ? payNum(via) : null, amt = o.payBy === 'cod' ? o.deposit : o.total;
@@ -235,7 +260,8 @@ input,select,textarea{font:inherit;font-size:16px;padding:11px 12px;border:1px s
       (o.payBy === 'cod' && o.deposit ? '<p class="small">' + (o.depositPaid ? '✓ First payment of ' + money(o.deposit) + ' received. Pay ' + money(Math.round((o.total - o.deposit) * 100) / 100) + ' on ' + (o.method === 'pickup' ? 'collection' : 'delivery') + '.' : 'Waiting for your first payment of ' + money(o.deposit) + '.') + '</p>' : '') +
       ((o.payBy === 'momo' || o.payBy === 'airtel') ? '<p class="small">' + (o.paid ? '✓ Payment received. Thank you!' : 'Waiting for your ' + esc(PAYN[o.payBy]) + ' payment of ' + money(o.total) + '.') + '</p>' : '');
     var live = o.status === 'done' || o.status === 'cancelled' ? '' : '<div class="card" style="background:var(--soft)"><p style="margin:0 0 8px"><b>Keep this page open.</b> It updates by itself as your order moves: no need to refresh.</p>' + notifBox() + '</div>';
-    $('#app').innerHTML = head('Your order') + '<div class="card"><h2 style="margin-top:0">Order ' + esc(o.no) + '</h2>' + tl + note + '<ul class="list">' + (o.lines || []).map(function (l) { return '<li><span>' + l.qty + ' × ' + esc(l.name) + '</span><b>' + money(l.qty * l.price) + '</b></li>'; }).join('') + (o.deliveryFee ? '<li><span>Transport contribution' + (o.area && o.area !== '__other' ? ' (' + esc(o.area) + ')' : '') + '</span><b>' + money(o.deliveryFee) + '</b></li>' : '') + '</ul><div class="tot"><span>Total</span><span>' + money(o.total) + '</span></div><p class="small mut">Placed ' + fmtDate(o.at) + '</p></div>' + rider + live + '<p class="center"><a class="btn" href="./">Back to the shop</a></p>';
+    $('#app').innerHTML = head('Your order') + '<div class="card"><h2 style="margin-top:0">Order ' + esc(o.no) + '</h2>' + tl + note + '<ul class="list">' + (o.lines || []).map(function (l) { return '<li><span>' + l.qty + ' × ' + esc(l.name) + '</span><b>' + money(l.qty * l.price) + '</b></li>'; }).join('') + (o.deliveryFee ? '<li><span>Transport contribution' + (o.area && o.area !== '__other' ? ' (' + esc(o.area) + ')' : '') + '</span><b>' + money(o.deliveryFee) + '</b></li>' : '') + '</ul><div class="tot"><span>Total</span><span>' + money(o.total) + '</span></div><p class="small mut">Placed ' + fmtDate(o.at) + '</p></div>' + rider + live + rateBox(Object.assign({id: id}, o)) + '<p class="center"><a class="btn" href="./">Back to the shop</a></p>';
+    rateWire(Object.assign({id: id}, o));
     var nb = $('#notif'); if (nb) nb.onclick = function () {
       var go = function () { Notification.requestPermission().then(function () { drawOrder(o, id); }); };
       if (navigator.serviceWorker && navigator.serviceWorker.register) navigator.serviceWorker.register('sw.js').then(go, go); else go();
