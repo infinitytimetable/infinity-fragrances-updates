@@ -1,19 +1,19 @@
 {
- "version": "2.12.0",
+ "version": "2.13.0",
  "date": "2026-11-17",
  "notes": [
-  "Sell page redesigned for phones with a checkout screen and digital watch; scientific calculator; tidier Home page; bigger charts and a new Sales insights card."
+  "Online shop: pre-orders, delivery dates, wholesale prices, MoMo and Airtel Money, 50% first for cash on delivery, proof of payment. Slimmer clock on the Sell page."
  ],
  "android": {
-  "file": "android-2.12.0.html",
-  "sig": "UYdW8fYE2bVSC7IWvuFBXqkmM85SClKThktK7fCgpzsfSqpo7OoTPTpNdAg+Tznz01BJtjfScoQAdSQc68gXHw==",
-  "size": 2262710,
+  "file": "android-2.13.0.html",
+  "sig": "nQRnt8LzM1p9Y4agk3IVkaC0iTFnBwRfqPK+RDx4mjSHgd12k6bLrI8iyJ8Hf4fxWgoT+R2ie5DLUTA8hmymUA==",
+  "size": 2268644,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.12.0.html",
-  "sig": "FzUHJ4tZfd42gDW2dSEOqkTYArGZoUsy+bTZUcXJE5aU55Y7yKetB9E5G6xRimE3Pd4oAusp4FkyRiRVEWmiYQ==",
-  "size": 2258977,
+  "file": "desktop-2.13.0.html",
+  "sig": "jMewdg3+20BUKatPt/ISp4i9EvXB5HjTcH99DXy8BH2pgX2pJww9p6onJPz+B44edCl8b1PMisDWZiukiV5kHg==",
+  "size": 2264911,
   "minShell": "2.5.0"
  },
  "apk": {
