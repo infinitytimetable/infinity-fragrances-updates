@@ -1,19 +1,19 @@
 {
- "version": "2.11.1",
- "date": "2026-11-16",
+ "version": "2.12.0",
+ "date": "2026-11-17",
  "notes": [
-  "Company profile: choose between three cover designs."
+  "Sell page redesigned for phones with a checkout screen and digital watch; scientific calculator; tidier Home page; bigger charts and a new Sales insights card."
  ],
  "android": {
-  "file": "android-2.11.1.html",
-  "sig": "rBaxfRaCkfCPHw4yZBJ1Ql/FDIwpt5x7eC18lai+Vu8ZmQYoxlECYxvmfJTP3w3q5+aCgfbbnGlxJ98VEM9Myg==",
-  "size": 2237866,
+  "file": "android-2.12.0.html",
+  "sig": "UYdW8fYE2bVSC7IWvuFBXqkmM85SClKThktK7fCgpzsfSqpo7OoTPTpNdAg+Tznz01BJtjfScoQAdSQc68gXHw==",
+  "size": 2262710,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.11.1.html",
-  "sig": "y/L9r9P20aoJh0njEeUt6/JR80pcxfEMOO+tRFhAhG/QrGmUMAuFFcVb7ejXZSFdYNDJu9zFJrCQ4ygJT0qL0A==",
-  "size": 2234133,
+  "file": "desktop-2.12.0.html",
+  "sig": "FzUHJ4tZfd42gDW2dSEOqkTYArGZoUsy+bTZUcXJE5aU55Y7yKetB9E5G6xRimE3Pd4oAusp4FkyRiRVEWmiYQ==",
+  "size": 2258977,
   "minShell": "2.5.0"
  },
  "apk": {
