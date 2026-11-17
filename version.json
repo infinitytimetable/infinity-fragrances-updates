@@ -1,25 +1,25 @@
 {
- "version": "2.13.0",
+ "version": "2.14.0",
  "date": "2026-11-17",
  "notes": [
-  "Online shop: pre-orders, delivery dates, wholesale prices, MoMo and Airtel Money, 50% first for cash on delivery, proof of payment. Slimmer clock on the Sell page."
+  "Instant order alerts (even with the app closed), transport contribution, wholesale flyers, edit categories, hide or delete old orders, tidier activity log"
  ],
  "android": {
-  "file": "android-2.13.0.html",
-  "sig": "nQRnt8LzM1p9Y4agk3IVkaC0iTFnBwRfqPK+RDx4mjSHgd12k6bLrI8iyJ8Hf4fxWgoT+R2ie5DLUTA8hmymUA==",
-  "size": 2268644,
+  "file": "android-2.14.0.html",
+  "sig": "6Puz83qodHGGisHMnOL2tAxsmXrVw49iBXvn2ECI7rUsSsg31dPdByvWJ2PtyOfRyDXi/TQsjn4fklDQvI21YQ==",
+  "size": 2282523,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.13.0.html",
-  "sig": "jMewdg3+20BUKatPt/ISp4i9EvXB5HjTcH99DXy8BH2pgX2pJww9p6onJPz+B44edCl8b1PMisDWZiukiV5kHg==",
-  "size": 2264911,
+  "file": "desktop-2.14.0.html",
+  "sig": "su/EdPZKIO/uurLMLIiUICX4e8K1D9ocedeuEU6jVnCEMshnsgNquzoFbWJwIw19m5W+RqE0bk7ntjGLpems2Q==",
+  "size": 2278235,
   "minShell": "2.5.0"
  },
  "apk": {
-  "version": "2.8.0",
-  "file": "apk/infinity-fragrances-2.8.0.apk",
-  "sha256": "6b41964929d6a17de355bc7655a684f50e88e2035d54ab466a1df09bdfcf2730",
-  "size": 4726018
+  "version": "2.14.0",
+  "file": "apk/infinity-fragrances-2.14.0.apk",
+  "sha256": "79290388bca6a976dad26d32dd34bd573a0a23ce5a9b86284b2fc9a7432073ec",
+  "size": 4951250
  }
 }
