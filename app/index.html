@@ -761,6 +761,7 @@ body.nav-on #shop-cart{bottom:calc(80px + env(safe-area-inset-bottom))}
 }
 .catlist{display:flex;flex-direction:column;gap:8px}.catrow{display:grid;grid-template-columns:1fr auto auto auto auto;gap:6px;align-items:center}.catrow input{min-width:0}
 .stars{color:#d8a635;letter-spacing:1px;white-space:nowrap}.stars span{color:var(--line)}.stars.big{font-size:22px}.idea-reply{background:rgba(216,166,53,.1);border-left:3px solid var(--gold);padding:6px 10px;border-radius:6px;margin:6px 0;font-size:14px}.rate-sum{display:flex;gap:22px;align-items:center;flex-wrap:wrap}.rate-bars{flex:1;min-width:180px;display:flex;flex-direction:column;gap:5px}.rate-bars div{display:grid;grid-template-columns:30px 1fr 30px;gap:8px;align-items:center;font-size:13px}.rate-bars i{height:8px;border-radius:5px;background:var(--line);overflow:hidden}.rate-bars b{display:block;height:100%;background:#d8a635;border-radius:5px}
+.pos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}.pos-card{margin:0}.pos-card.on{border-left:4px solid var(--s3,#1b7f4c)}.pos-duties{margin:6px 0 10px;padding-left:18px;color:var(--muted)}.app-files{display:flex;flex-wrap:wrap;gap:12px}.app-files figure{margin:0;text-align:center}.app-files img{width:150px;height:150px;object-fit:cover;border-radius:10px;border:1px solid var(--line)}.app-files figcaption{font-size:12px;color:var(--muted)}.res-sc{grid-template-columns:repeat(4,1fr)}.res-sc .qa-b:first-child{background:linear-gradient(180deg,var(--surface),color-mix(in srgb,var(--surface) 86%,var(--ink) 14%));color:var(--ink);border-color:color-mix(in srgb,var(--line) 55%,var(--ink) 45%)}.res-sc .qa-b span{font-size:11.5px;text-align:center;line-height:1.15}
 </style>
 <script>try{var L=JSON.parse(localStorage.getItem('if-look')||'{}'),R=document.documentElement;var F=localStorage.getItem('if-forceskin');R.dataset.skin=F||L.skin||'classic';if(L.mode&&L.mode!=='auto')R.dataset.theme=L.mode;R.dataset.text=L.text||'normal';if(L.motion===false)R.dataset.motion='off';}catch(e){}</script>
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Infinity"><meta name="theme-color" content="#0b0a08">
@@ -904,7 +905,7 @@ const DEFAULT_SETTINGS = {
   defaultCommType:'fixed', defaultCommValue:20, tierMin:200, tierFixed:20, tierPct:10, settlementDay:10, courier:'Platinum', tagline:'Smell good. Live infinitely.', lowStock:5,
   opening:{cash:0, momo:0, bank:0}, openingDate:''
 };
-const COLS = ['towns','resellers','products','moves','cash','dispatches','images','receipts','promos','customers','invoices','suppliers','payslips','cashups','logs'];
+const COLS = ['towns','resellers','products','moves','cash','dispatches','images','receipts','promos','customers','invoices','suppliers','payslips','cashups','logs','positions','staff','spay'];
 const S = {towns:{}, resellers:{}, products:{}, moves:{}, cash:{}, dispatches:{}, images:{}, receipts:{}, promos:{}, customers:{}, invoices:{}, suppliers:{}, payslips:{}, cashups:{}, logs:{}, settings:{...DEFAULT_SETTINGS}};
 let DB = null, MODE = 'connecting', DL = null;
 const loaded = {};
@@ -1263,13 +1264,13 @@ function monthStats(m){
 
 /* ---------- render ---------- */
 const PAGES = {};
-const ROUTES = ['dashboard','feedback','pos','orders','customers','portal','invoices','suppliers','broadcast','activity','settlement','leaderboard','team','planner','profit','reminders','agreements','resellers','commissions','payslips','debtors','products','stocktake','shops','stock','purchases','dispatch','sales','cashbook','expenses','promos','catalogue','adverts','studio','prospects','monthreport','reports','setup','company'];
+const ROUTES = ['dashboard','feedback','hiring','staff','pos','orders','customers','portal','invoices','suppliers','broadcast','activity','settlement','leaderboard','team','planner','profit','reminders','agreements','resellers','commissions','payslips','debtors','products','stocktake','shops','stock','purchases','dispatch','sales','cashbook','expenses','promos','catalogue','adverts','studio','prospects','monthreport','reports','setup','company'];
 function route(){ const h = location.hash.slice(1); return ROUTES.includes(h) ? h : 'dashboard'; }
 const GROUPS = [
   {label:'Dashboard', tabs:[['dashboard','Dashboard']]},
   {label:'Sell', tabs:[['pos','Point of sale'],['orders','Online shop'],['customers','Customers & loyalty'],['sales','Sales book']]},
   {label:'Resellers', tabs:[['resellers','Towns & resellers'],['portal','Requests & logins'],['settlement','Settlement day'],['debtors','Money owed'],['reminders','Reminders'],['agreements','Agreements'],['feedback','Suggestions & ratings']]},
-  {label:'Team & pay', tabs:[['commissions','Commissions'],['payslips','Payslips'],['team','Recruits & bonuses'],['leaderboard','Leaderboard']]},
+  {label:'Team & pay', tabs:[['hiring','Hiring'],['staff','Staff & payslips'],['commissions','Commissions'],['payslips','Payslips'],['team','Recruits & bonuses'],['leaderboard','Leaderboard']]},
   {label:'Stock', tabs:[['products','Products'],['stock','Stock register'],['stocktake','Stock-take'],['purchases','Purchases'],['suppliers','Suppliers'],['planner','Reorder planner']]},
   {label:'Shops & delivery', tabs:[['shops','Shops'],['dispatch','Dispatch & delivery']]},
   {label:'Money', tabs:[['cashbook','Cash book'],['expenses','Expenses'],['invoices','Invoices & quotes']]},
@@ -2229,8 +2230,9 @@ function fixNumbers(o){
 }
 
 /* ======================= Version 2.0 ======================= */
-const APP_VERSION = '2.15.0';
+const APP_VERSION = '2.16.0';
 const CHANGELOG = [
+  ['2.16.0', '18 Nov 2026', ['Hiring: post positions, open or close applications, and an online application page for jobs (full or part time) and resellers', 'Applications go New → Shortlisted → Interview → Hired, with WhatsApp messages and uploaded NRC, photo, CV and certificates', 'Staff & payslips: staff list with basic pay, commission and NAPSA payslips', 'Full time and part time employment agreements', "Job flyers: We're hiring and single job adverts with a QR code", 'Reseller app: shortcuts at the bottom of Home']],
   ['2.15.0', '17 Nov 2026', ['Online shop customers can give their order a 5-star rating with a comment', 'Suggestions tab for resellers and shopkeepers; read, reply, hide or delete them under Resellers → Suggestions & ratings']],
   ['2.14.0', '17 Nov 2026', ['Instant alerts: new orders and requests reach your phone within a minute, even with the app closed (needs the app update)', 'Transport contribution by area for online orders, with an amount for other areas', 'Wholesale flyer designs: Wholesale offer and Wholesale price list', 'Edit categories: add, rename, reorder and remove', 'Online orders: hide or delete finished ones', 'Activity log: shows the latest 30 with older ones behind a button, and you can hide old entries']],
   ['2.13.0', '17 Nov 2026', ['Online shop: all perfumes shown, out-of-stock ones as pre-orders', 'Customers pick a delivery or collection date', 'Retail and two wholesale price levels, worked out automatically', 'Pay by MTN MoMo or Airtel Money (number shown only after choosing), or cash on delivery with 50% paid first', 'Customers can upload proof of payment; you mark payments received', 'Sell page clock is now a slim pill']],
@@ -2794,9 +2796,14 @@ function ownerListen(){
     primed[r.id] = true;
     if (route() === 'portal') render(true); else updatePortalBadge(); })));
   let appsPrimed = false;
-  OWN.unsubs.push(FB.listen('applications', 'status', 'new', list => { const old = new Set((OWN.apps || []).map(x => x.id)); OWN.apps = list.sort((a, b) => (a.at || '').localeCompare(b.at || ''));
+  OWN.unsubs.push(FB.listen('applications', 'status', 'new', list => { list = list.filter(x => x.kind !== 'job'); const old = new Set((OWN.apps || []).map(x => x.id)); OWN.apps = list.sort((a, b) => (a.at || '').localeCompare(b.at || ''));
     if (appsPrimed) list.filter(x => !old.has(x.id)).forEach(x => { appNotify('New reseller application', `${x.name} (${x.town || ''})`); toast(`New reseller application: ${x.name}`); });
     appsPrimed = true; if (route() === 'portal') render(true); else updatePortalBadge(); }));
+  let jobsPrimed = false;
+  OWN.unsubs.push(FB.listen('applications', 'kind', 'job', list => { const old = new Set((OWN.jobApps || []).map(x => x.id)); OWN.jobApps = list.sort((a, b) => (b.at || '').localeCompare(a.at || ''));
+    if (jobsPrimed) list.filter(x => !old.has(x.id)).forEach(x => { appNotify('New job application', `${x.name}: ${x.positionTitle || ''} (${x.type === 'pt' ? 'part time' : 'full time'})`); toast(`New job application from ${x.name}`); });
+    jobsPrimed = true; if (route() === 'hiring') render(true); else updatePortalBadge(); }));
+  setTimeout(() => publishJobs(), 7000);
   let ideasPrimed = false, ratesPrimed = false;
   OWN.unsubs.push(FB.listen('suggestions', null, null, list => { const old = new Set((OWN.ideas || []).map(x => x.id)); OWN.ideas = list.sort((a, b) => (b.at || '').localeCompare(a.at || ''));
     if (ideasPrimed) list.filter(x => !old.has(x.id) && x.status === 'new').forEach(x => { appNotify('New suggestion', `${x.byName || 'Someone'}: ${String(x.text).slice(0, 80)}`); toast(`New suggestion from ${x.byName || 'a reseller'}`); });
@@ -2829,7 +2836,7 @@ async function autoSale(rid, q){
   finally { setTimeout(() => OWN.auto.delete(q.id), 120000); }
 }
 const pendingAll = () => Object.entries(OWN.reqs).flatMap(([rid, l]) => l.map(q => ({...q, rid}))).sort((a, b) => (a.at || '').localeCompare(b.at || ''));
-function updatePortalBadge(){ const fb = (OWN.ideas || []).filter(x => x.status === 'new').length + (OWN.rates || []).filter(x => !x.seen).length; document.querySelectorAll('a[href="#feedback"]').forEach(a => a.dataset.badge = fb || ''); const n = pendingAll().length + (OWN.apps || []).length + (OWN.orders || []).filter(o => o.status === 'new').length + Object.values(OWN.shopReqs || {}).flat().length; document.querySelectorAll('a[href="#portal"]').forEach(a => a.dataset.badge = n || ''); }
+function updatePortalBadge(){ const fb = (OWN.ideas || []).filter(x => x.status === 'new').length + (OWN.rates || []).filter(x => !x.seen).length; document.querySelectorAll('a[href="#feedback"]').forEach(a => a.dataset.badge = fb || ''); const hj = (OWN.jobApps || []).filter(x => x.status === 'new').length; document.querySelectorAll('a[href="#hiring"]').forEach(a => a.dataset.badge = hj || ''); const n = pendingAll().length + (OWN.apps || []).length + (OWN.orders || []).filter(o => o.status === 'new').length + Object.values(OWN.shopReqs || {}).flat().length; document.querySelectorAll('a[href="#portal"]').forEach(a => a.dataset.badge = n || ''); }
 function snapshotFor(rid){
   const r = S.resellers[rid], C = compute(), a = C.acc[rid] || {sales:0, remit:0, earned:0, paid:0, net:0}, st = statement(rid);
   const held = heldOf(rid, C).map(([p, q]) => { const pr = S.products[p] || {}; return {productId:p, name:pr.name || pName(p), size:pr.size || '', category:pr.category || '', qty:q, price:resPrice(rid, p, C)}; }).sort((x, y) => x.name.localeCompare(y.name));
@@ -2985,7 +2992,7 @@ function resUI(){
     body = banner + low + prog + `<div class="tiles">${tile('Perfume with you', int(s.heldBottles) + ' bottles')}${tile('Worth at selling price', money(s.heldValue))}${tile('You owe now', money(s.owes), s.credit ? `we owe you ${money(s.credit)}` : '', s.owes > 0)}${tile('Next settlement', fmtDate(s.nextDue), `late after the ${ord(s.graceDay)}`)}</div>
       <div class="card"><h2>Your perfumes</h2>${s.held.length ? `<div class="tw"><table class="t"><thead><tr><th>Perfume</th><th class="n">With you</th><th class="n">Price</th></tr></thead><tbody>${resAvail().map(x => `<tr><td>${esc(x.name)}${x.size ? ' ' + esc(x.size) + 'ml' : ''}</td><td class="n">${x.qty}${x.avail !== x.qty ? `<div class="small mut">${x.qty - x.avail} waiting</div>` : ''}</td><td class="n"><b>${money(x.price)}</b></td></tr>`).join('')}</tbody></table></div>` : '<p class="mut">No perfume with you right now. Use “Order / return” to ask for stock.</p>'}</div>
       <div class="card"><h2>Your requests</h2>${RES.reqs.length ? `<ul class="list">${RES.reqs.slice(0, 25).map(q => `<li><span><b>${REQ_TYPES[q.type]}</b> · <span class="small">${reqText(q)}</span><div class="small mut">${esc(fmtDateTime(q.at))}${q.reason ? ` · ${esc(q.reason)}` : ''}</div></span><span>${`<span class="pill ${ST[q.status]?.[1] || ''}">${ST[q.status]?.[0] || esc(q.status)}</span>`}${q.status === 'pending' ? ' ' + btn('Cancel', 'resCancel', {id:q.id}, 'sm ghost') : ''}</span></li>`).join('')}</ul>` : '<p class="mut">Nothing yet.</p>'}</div>
-      <p class="hint">Updated by ${esc(s.business)} on ${esc(fmtDateTime(s.updatedAt))}.</p>`;
+      <p class="hint">Updated by ${esc(s.business)} on ${esc(fmtDateTime(s.updatedAt))}.</p>` + resShortcuts();
   } else if (RES.tab === 'sell') {
     const av = resAvail().filter(x => x.avail > 0), sc = RES.sc || (RES.sc = {});
     body = `<div class="card"><h2>New sale</h2>${av.length ? `<input id="shop-q" type="search" placeholder="Search your perfumes…" style="width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:10px;font-size:16px;margin-bottom:10px;background:var(--surface);color:var(--ink)">
@@ -3065,7 +3072,7 @@ function appLock(){
 async function appSignOut(msg){
   try { FB && await FB.signOut(); } catch(e) {}
   try { DESK && DESK.alertsStop && DESK.alertsStop(); } catch(e) {}
-  OWN.unsubs.forEach(f => { try { f(); } catch(e) {} }); OWN.unsubs = []; OWN.reqs = {}; OWN.apps = []; OWN.ideas = []; OWN.rates = [];
+  OWN.unsubs.forEach(f => { try { f(); } catch(e) {} }); OWN.unsubs = []; OWN.reqs = {}; OWN.apps = []; OWN.ideas = []; OWN.rates = []; OWN.jobApps = [];
   RES.unsubs.forEach(f => { try { f(); } catch(e) {} }); RES.unsubs = []; RES.snap = null; RES.reqs = [];
   const wasMgr = APP_ROLE === 'manager'; syncStop(); syncCfgSet({on:false, joined:false, last:0, uid:''});
   if (wasMgr) { COLS.forEach(c => S[c] = {}); S.settings = {...DEFAULT_SETTINGS}; saveLocal(); }
@@ -3408,10 +3415,15 @@ service cloud.firestore {
       allow write: if isAdmin() || (who == 'owner' && request.resource.data.keys().hasOnly(['at', 'msg']) && request.resource.data.msg is string && request.resource.data.msg.size() < 200);
     }
     match /applications/{id} {
-      allow create: if request.resource.data.keys().hasOnly(['name', 'phone', 'town', 'referrer', 'message', 'status', 'at'])
-        && request.resource.data.status == 'new' && request.resource.data.name is string && request.resource.data.name.size() > 1 && request.resource.data.name.size() < 80
-        && request.resource.data.phone is string && request.resource.data.phone.size() < 30 && request.resource.data.message.size() < 301;
+      allow create: if request.resource.data.status == 'new' && request.resource.data.size() < 45
+        && request.resource.data.name is string && request.resource.data.name.size() > 1 && request.resource.data.name.size() < 80
+        && request.resource.data.phone is string && request.resource.data.phone.size() < 30;
       allow read, update, delete: if isAdmin();
+    }
+    match /appfiles/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['appId', 'kind', 'name', 'type', 'data', 'at'])
+        && request.resource.data.kind in ['nrc', 'photo', 'cv', 'cert'] && request.resource.data.data is string && request.resource.data.data.size() < 1000000;
+      allow read, delete: if isAdmin();
     }
     function isShop(sid) { return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && me().role == 'shop' && me().shopId == sid; }
     match /shops/{sid} {
@@ -4260,6 +4272,264 @@ function coForm(){
     await putSettings({company:c}); toast('Company details saved'); render(true); }, {label:'Save details', wide:true});
 }
 
+/* ======================= 2.16: hiring, staff, staff payslips, employee agreements ======================= */
+const APPLY_URL = 'https://infinitytimetable.github.io/infinity-fragrances-updates/apply/';
+const POS_DEF = [
+  ['Shop Keeper / Shop Manager', 'Open and close the shop on time and keep it clean and attractive\nServe customers, let them test perfumes and recommend scents\nRecord every sale in the app and keep the cash safe\nCount stock and cash at the end of each day\nReport low stock and customer requests to the office', 'Grade 12 certificate\nAt least 1 year in sales or retail\nHonest, friendly and well presented\nCan use a smartphone'],
+  ['Cashier', 'Take payments in cash, MTN MoMo and Airtel Money\nGive correct change and receipts for every sale\nRecord each sale in the till app\nBalance the cash at the end of the day\nHelp customers choose perfumes when the shop is busy', 'Grade 12 certificate with a pass in Mathematics\nGood with numbers and careful with money\nHonest and reliable\nCan use a smartphone'],
+  ['Operations Assistant', 'Pack and prepare orders for resellers, shops and online customers\nKeep records of parcels sent and received\nHelp with stock counts and receiving new stock\nFollow up deliveries with riders and bus couriers\nSupport the office with daily admin', 'Grade 12 certificate\nOrganised and good at following up\nCan use a smartphone and WhatsApp\nWilling to work flexible hours'],
+  ['Rider', 'Deliver online orders and parcels on time\nCollect payments on delivery and hand them in the same day\nTake care of the motorbike or bicycle\nUpdate customers and the office on WhatsApp\nCollect returns and stock transfers', 'Valid riding licence\nKnows Lusaka roads well\nHas a smartphone\nHonest and polite with customers'],
+  ['Stock Manager', 'Receive, check and record new stock\nKeep the stock register accurate in the app\nRun weekly and monthly stock-takes\nPrepare stock for resellers and shops\nPlan reorders before perfumes run out', 'Diploma or certificate in stores, logistics or business\nAt least 1 year handling stock\nCareful, organised and honest\nGood with spreadsheets or apps'],
+  ['Chief Visionary Officer', 'Set the long-term vision and growth plan for the business\nFind new markets, towns and partnerships\nLead branding and marketing direction\nGuide the management team and review results every month\nRepresent the company to partners and investors', 'Degree in business, marketing or a related field\nAt least 5 years in business growth or leadership\nStrong network and communication skills\nCreative, strategic and results driven'],
+  ['General Manager', 'Run the day-to-day business across shops, resellers and online sales\nSupervise staff and set monthly targets\nApprove stock orders, prices and promotions\nCheck daily sales, cash-ups and stock reports\nSolve customer and reseller problems', 'Degree or diploma in business management\nAt least 3 years managing people and sales\nStrong leader with good record keeping\nHonest and hands-on'],
+  ['Secretary', 'Answer calls, WhatsApp messages and emails\nKeep files, agreements and records in order\nBook appointments and take meeting notes\nPrepare letters, quotations and invoices\nWelcome visitors and applicants', 'Grade 12 certificate and a secretarial or office certificate\nGood English, written and spoken\nComputer and smartphone skills\nWell organised and discreet']
+];
+const posOpenNow = p => p.open && (!p.closes || p.closes >= today());
+const posAll = () => Object.values(S.positions || {}).sort((a, b) => num(a.order) - num(b.order) || (a.title || '').localeCompare(b.title || ''));
+const lines = t => String(t || '').split('\n').map(x => x.trim()).filter(Boolean);
+const JOB_ST = {new:['New', 'warn'], short:['Shortlisted', 'acc'], interview:['Interview', 'acc'], hired:['Hired', 'good'], declined:['Declined', '']};
+const typeName = t => t === 'pt' ? 'Part time' : 'Full time';
+async function posSeed(){
+  if (UI.posSeeding || posAll().length || S.settings.posSeeded) return; UI.posSeeding = true;
+  let i = 0; for (const [title, duties, reqs] of POS_DEF) await put('positions', {title, place:'Lusaka', duties, reqs, ft:true, pt:true, ftHours:'Monday to Saturday, 08:00 to 17:00', ptHours:'Negotiable', ftPay:'Basic pay + commission', ptPay:'Negotiable', openings:1, closes:'', open:false, order:++i});
+  await putSettings({posSeeded:true}); UI.posSeeding = false; render(true);
+}
+async function publishJobs(){
+  if (!ADM() || !FB) return;
+  const list = posAll().filter(posOpenNow).map(p => ({id:p.id, title:p.title, place:p.place || '', duties:lines(p.duties), reqs:lines(p.reqs), ft:!!p.ft, pt:!!p.pt, ftHours:p.ftHours || '', ptHours:p.ptHours || '', ftPay:p.ftPay || '', ptPay:p.ptPay || '', openings:num(p.openings) || 1, closes:p.closes || ''}));
+  try { await FB.set('store/jobs', {biz:bizName(), tagline:S.settings.tagline || '', whatsapp:S.settings.storeWhatsapp || bizPhone() || '', resellers:S.settings.hireResellers !== false, list, at:nowISO()}); } catch(e) {}
+}
+function posForm(id){
+  const p = id ? S.positions[id] : {ft:true, pt:true, ptHours:'Negotiable', ptPay:'Negotiable', openings:1, place:'Lusaka'};
+  modal(id ? `Edit ${esc(p.title)}` : 'Add a position', `<label for="f-pt">Position title<input id="f-pt" name="title" value="${esc(p.title || '')}" required placeholder="e.g. Cashier"></label>
+    <label for="f-pp">Town / shop<input id="f-pp" name="place" value="${esc(p.place || '')}" placeholder="e.g. Lusaka, Cairo Road shop"></label>
+    <label for="f-pd">Duties (one per line)<textarea id="f-pd" name="duties" rows="5">${esc(p.duties || '')}</textarea></label>
+    <label for="f-pr">Requirements (one per line)<textarea id="f-pr" name="reqs" rows="4">${esc(p.reqs || '')}</textarea></label>
+    <h3>Full time</h3><label class="check"><input type="checkbox" name="ft" ${p.ft ? 'checked' : ''}> Offer full time</label>
+    <div class="grid2"><label for="f-fh">Hours<input id="f-fh" name="ftHours" value="${esc(p.ftHours || '')}" placeholder="Mon to Sat, 08:00 to 17:00"></label><label for="f-fp">Pay<input id="f-fp" name="ftPay" value="${esc(p.ftPay || '')}" placeholder="K3,000 basic + commission"></label></div>
+    <h3>Part time</h3><label class="check"><input type="checkbox" name="pt" ${p.pt ? 'checked' : ''}> Offer part time</label>
+    <div class="grid2"><label for="f-qh">Hours<input id="f-qh" name="ptHours" value="${esc(p.ptHours || '')}" placeholder="Negotiable"></label><label for="f-qp">Pay<input id="f-qp" name="ptPay" value="${esc(p.ptPay || '')}" placeholder="Negotiable"></label></div>
+    <div class="grid2"><label for="f-po">People needed<input id="f-po" name="openings" type="number" min="1" value="${num(p.openings) || 1}"></label><label for="f-pc">Closing date (optional)<input id="f-pc" name="closes" type="date" value="${esc(p.closes || '')}"></label></div>`,
+  async d => { if (!d.ft && !d.pt) throw Error('Tick full time, part time or both.');
+    await put('positions', {...(id ? p : {open:false, order:posAll().length + 1}), title:d.title.trim(), place:d.place.trim(), duties:d.duties.trim(), reqs:d.reqs.trim(), ft:!!d.ft, pt:!!d.pt, ftHours:d.ftHours.trim(), ftPay:d.ftPay.trim(), ptHours:d.ptHours.trim(), ptPay:d.ptPay.trim(), openings:Math.max(1, num(d.openings)), closes:d.closes || ''}, id);
+    publishJobs(); toast('Position saved'); }, {label:'Save position'});
+}
+function appDetails(x){
+  const r = (k, v) => v ? `<tr><td style="color:var(--muted);padding:4px 10px 4px 0;vertical-align:top;white-space:nowrap">${k}</td><td style="padding:4px 0">${esc(v)}</td></tr>` : '';
+  return `<table style="width:100%;font-size:14px;border-collapse:collapse">${r('Applying for', x.kind === 'job' ? `${x.positionTitle || ''} · ${typeName(x.type)}` : 'Reseller')}${r('Phone', x.phone)}${r('WhatsApp', x.whatsapp)}${r('Town', x.town)}${r('Address', x.address)}${r('Date of birth', x.dob ? fmtDate(x.dob) : '')}${r('Gender', x.gender)}${r('NRC number', x.nrc)}
+    ${r('Willing to do sales', x.willSell)}${r('Education', x.education)}${r('Languages', x.languages)}${r('Skills', x.skills)}${r('Experience', x.experience)}${r('Can start', x.start ? fmtDate(x.start) : '')}${r('Days & hours available', x.days)}${r('Expected pay', x.expectPay)}${r('Reference 1', x.ref1)}${r('Reference 2', x.ref2)}${r('Heard about us', x.referrer)}${r('Message', x.message)}${r('Applied', fmtDateTime(x.at))}${x.interviewAt ? r('Interview', fmtDateTime(x.interviewAt)) : ''}${r('Notes', x.notes)}</table>`;
+}
+const FILE_NAME = {nrc:'NRC', photo:'Passport photo', cv:'CV', cert:'Certificate'};
+async function appView(id){
+  const x = (OWN.jobApps || []).concat(OWN.apps || []).find(a => a.id === id); if (!x) return;
+  modal(esc(x.name), `${appDetails(x)}<h3>Documents</h3><div id="app-files" class="app-files"><p class="mut small">Loading documents…</p></div>`, null, {wide:true, nofocus:true});
+  try { const f = await FB.list('appfiles', 'appId', id), el = $('#app-files'); if (!el) return; UI.appFiles = f;
+    el.innerHTML = f.length ? f.map((d, i) => /^data:image\//.test(d.data) ? `<figure><a href="javascript:void 0" data-act="appFile" data-i="${i}"><img src="${d.data}" alt="${esc(FILE_NAME[d.kind] || d.kind)}"></a><figcaption>${esc(FILE_NAME[d.kind] || d.kind)}</figcaption></figure>` : `<figure><a class="btn sm" href="javascript:void 0" data-act="appFile" data-i="${i}">Open ${esc(FILE_NAME[d.kind] || d.kind)} (PDF)</a><figcaption>${esc(d.name || '')}</figcaption></figure>`).join('') : '<p class="mut small">No documents uploaded.</p>'; }
+  catch(e) { const el = $('#app-files'); if (el) el.innerHTML = `<p class="small">${esc(fbMsg(e))}</p>`; }
+}
+function appFileOpen(i){ const d = (UI.appFiles || [])[i]; if (!d) return; const a = document.createElement('a'); a.href = d.data; a.download = `${(d.name || FILE_NAME[d.kind] || 'document').replace(/[^\w.-]+/g, '-')}`; a.target = '_blank'; document.body.appendChild(a); a.click(); a.remove(); }
+const jobMsg = (x, k) => { const f = String(x.name || '').split(' ')[0], biz = bizName(), job = x.positionTitle || 'the position';
+  return k === 'short' ? `Hello ${f}, thank you for applying for ${job} at ${biz}. Good news: you have been shortlisted. We will contact you soon about an interview.`
+    : k === 'interview' ? `Hello ${f}, ${biz} would like to invite you for an interview for ${job} on ${fmtDateTime(x.interviewAt)}${x.interviewPlace ? ' at ' + x.interviewPlace : ''}. Please bring your NRC and certificates. Reply to confirm.`
+    : k === 'hired' ? `Hello ${f}, congratulations! ${biz} is pleased to offer you the ${job} position (${typeName(x.type).toLowerCase()}). We will share your agreement and start date.`
+    : k === 'declined' ? `Hello ${f}, thank you for applying for ${job} at ${biz}. We have chosen other applicants this time, but we will keep your details for future openings. We wish you all the best.`
+    : `Hello ${f}, this is ${biz} about your application for ${job}.`; };
+async function appSet(id, st, extra = {}){ await FB.update('applications/' + id, {status:st, ...extra, decidedAt:nowISO()}); logNote(st === 'declined' ? 'decline' : st === 'hired' ? 'approve' : 'edit', 'applications', `Job application from ${(OWN.jobApps || []).find(a => a.id === id)?.name || ''}: ${JOB_ST[st]?.[0] || st}`); }
+function appInterview(id){
+  const x = (OWN.jobApps || []).find(a => a.id === id); if (!x) return;
+  modal(`Interview with ${esc(x.name)}`, `<div class="grid2"><label for="f-id">Date<input id="f-id" name="d" type="date" value="${esc((x.interviewAt || '').slice(0, 10) || iso(addDays(new Date(), 2)))}" required></label><label for="f-it">Time<input id="f-it" name="t" type="time" value="${esc((x.interviewAt || '').slice(11, 16) || '10:00')}" required></label></div>
+    <label for="f-ip">Place<input id="f-ip" name="place" value="${esc(x.interviewPlace || S.settings.interviewPlace || bizAddress() || '')}" placeholder="e.g. Head office, Cairo Road"></label>`,
+  async d => { const at = `${d.d}T${d.t}:00`; await appSet(id, 'interview', {interviewAt:at, interviewPlace:d.place.trim()}); putSettings({interviewPlace:d.place.trim()});
+    if (x.phone) window.open(waLink(x.whatsapp || x.phone, jobMsg({...x, interviewAt:at, interviewPlace:d.place.trim()}, 'interview')), '_blank'); toast('Interview booked'); }, {label:'Book and send on WhatsApp'});
+}
+function staffForm(id, fromApp){
+  const x = fromApp ? (OWN.jobApps || []).find(a => a.id === fromApp) : null, pos = x ? S.positions[x.positionId] : null;
+  const st = id ? S.staff[id] : x ? {name:x.name, phone:x.phone, nrc:x.nrc, dob:x.dob, gender:x.gender, address:x.address, title:x.positionTitle, positionId:x.positionId, type:x.type || 'ft', start:x.start || today(), hours:(x.type === 'pt' ? pos?.ptHours : pos?.ftHours) || '', payText:(x.type === 'pt' ? pos?.ptPay : pos?.ftPay) || '', appId:x.id, place:pos?.place || ''} : {type:'ft', start:today()};
+  modal(id ? `Edit ${esc(st.name)}` : x ? `Hire ${esc(x.name)}` : 'Add a staff member', `<div class="grid2"><label for="f-sn">Full name<input id="f-sn" name="name" value="${esc(st.name || '')}" required></label><label for="f-sp">Phone<input id="f-sp" name="phone" value="${esc(st.phone || '')}"></label>
+    <label for="f-stt">Position<input id="f-stt" name="title" list="pos-l" value="${esc(st.title || '')}" required><datalist id="pos-l">${posAll().map(p => `<option value="${esc(p.title)}">`).join('')}</datalist></label>
+    <label for="f-sty">Type<select id="f-sty" name="type"><option value="ft" ${st.type !== 'pt' ? 'selected' : ''}>Full time</option><option value="pt" ${st.type === 'pt' ? 'selected' : ''}>Part time</option></select></label>
+    <label for="f-sw">Work place<input id="f-sw" name="place" value="${esc(st.place || '')}" placeholder="e.g. Lusaka shop"></label><label for="f-ss">Start date<input id="f-ss" name="start" type="date" value="${esc(st.start || '')}"></label>
+    <label for="f-sh">Working hours<input id="f-sh" name="hours" value="${esc(st.hours || '')}" placeholder="Mon to Sat, 08:00 to 17:00"></label><label for="f-sb">Basic pay a month (K)<input id="f-sb" name="basic" type="number" min="0" step="any" value="${num(st.basic) || ''}"></label>
+    <label for="f-sc">Commission per bottle sold (K)<input id="f-sc" name="commRate" type="number" min="0" step="any" value="${num(st.commRate) || ''}" placeholder="0 for none"></label><label for="f-spt">Pay as written in the agreement<input id="f-spt" name="payText" value="${esc(st.payText || '')}" placeholder="e.g. K2,500 basic + K10 per bottle"></label>
+    <label for="f-sni">NRC number<input id="f-sni" name="nrc" value="${esc(st.nrc || '')}"></label><label for="f-sa">Address<input id="f-sa" name="address" value="${esc(st.address || '')}"></label>
+    <label for="f-snp">NAPSA number<input id="f-snp" name="napsaNo" value="${esc(st.napsaNo || '')}" placeholder="optional"></label><label class="check" style="align-self:end"><input type="checkbox" name="napsa" ${st.napsa !== false ? 'checked' : ''}> Deduct NAPSA (5%) on payslips</label></div>`,
+  async d => { const rec = await put('staff', {...st, name:d.name.trim(), phone:d.phone.trim(), title:d.title.trim(), type:d.type, place:d.place.trim(), start:d.start, hours:d.hours.trim(), basic:num(d.basic), commRate:num(d.commRate), payText:d.payText.trim(), nrc:d.nrc.trim(), address:d.address.trim(), napsaNo:d.napsaNo.trim(), napsa:!!d.napsa, status:st.status || 'active'}, id);
+    if (x) { await appSet(x.id, 'hired', {staffId:rec.id}); if (x.phone) window.open(waLink(x.whatsapp || x.phone, jobMsg(x, 'hired')), '_blank'); }
+    toast(x ? `${d.name} hired and added to Staff` : 'Staff member saved'); }, {label:x ? 'Hire' : 'Save', wide:true});
+}
+PAGES.hiring = () => {
+  if (!posAll().length && !S.settings.posSeeded) setTimeout(posSeed, 50);
+  const tab = UI.hireTab || 'pos', apps = OWN.jobApps || [], ps = posAll(), cnt = id => apps.filter(a => a.positionId === id && !['declined'].includes(a.status)).length;
+  const online = !!FB && ADM(), openN = ps.filter(posOpenNow).length;
+  let body = '';
+  if (tab === 'pos') body = `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div><b>Application page</b><div class="small mut" style="word-break:break-all">${APPLY_URL}</div></div><div class="actions">${btn('Copy link', 'copyTxt', {t:APPLY_URL}, 'sm')}<a class="btn sm" target="_blank" rel="noopener" href="${waLink('', `We're hiring at ${bizName()}! See the open positions and apply here: ${APPLY_URL}`)}">Share on WhatsApp</a><a class="btn sm" target="_blank" rel="noopener" href="${APPLY_URL}">Open</a>${btn('Make a job flyer', 'jobFlyer', {}, 'sm')}</div></div>
+      <p class="hint" style="margin:8px 0 0">${openN ? `${openN} position${openN === 1 ? '' : 's'} open on the page.` : 'No positions are open yet: press Open applications on a position to show it on the page.'} ${S.settings.hireResellers !== false ? 'Reseller applications are also on the page.' : ''} ${online ? '' : '<b>Sign in online (Requests & logins) so the page updates.</b>'}</p>
+      <label class="check" style="margin-top:6px"><input type="checkbox" id="f-hres" ${S.settings.hireResellers !== false ? 'checked' : ''}> Let people apply as resellers on the same page</label></div>`
+    + (ps.length ? `<div class="pos-grid">${ps.map(p => { const on = posOpenNow(p), exp = p.open && p.closes && p.closes < today(); return `<div class="card pos-card${on ? ' on' : ''}"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div><h3 style="margin:0">${esc(p.title)}</h3><div class="small mut">${esc(p.place || '')}${p.closes ? ` · closes ${fmtDate(p.closes)}` : ''} · ${int(p.openings || 1)} needed</div></div><span class="pill ${on ? 'good' : exp ? 'warn' : ''}">${on ? 'Open' : exp ? 'Closing date passed' : 'Closed'}</span></div>
+        <div class="small" style="margin:6px 0">${p.ft ? `<span class="pill acc">Full time</span> ` : ''}${p.pt ? `<span class="pill acc">Part time</span>` : ''} · ${int(cnt(p.id))} application${cnt(p.id) === 1 ? '' : 's'}</div>
+        <ul class="small pos-duties">${lines(p.duties).slice(0, 3).map(l => `<li>${esc(l)}</li>`).join('')}</ul>
+        <div class="actions">${on ? btn('Close applications', 'posOpen', {id:p.id, v:''}, 'sm') : btn('Open applications', 'posOpen', {id:p.id, v:'1'}, 'sm pri')}${btn('Edit', 'posEdit', {id:p.id}, 'sm ghost')}${btn('Flyer', 'jobFlyer', {id:p.id}, 'sm ghost')}${btn('Delete', 'posDel', {id:p.id}, 'sm ghost danger')}</div></div>`; }).join('')}</div>` : empty('Setting up the suggested positions…'));
+  else {
+    const f = UI.appSt || 'active', fl = apps.filter(a => f === 'all' ? true : f === 'active' ? ['new', 'short', 'interview'].includes(a.status) : a.status === f);
+    body = `<div class="filters"><div class="seg">${[['active', 'In progress'], ['new', 'New'], ['short', 'Shortlisted'], ['interview', 'Interview'], ['hired', 'Hired'], ['declined', 'Declined'], ['all', 'All']].map(([k, l]) => btn(`${l} (${(k === 'all' ? apps : k === 'active' ? apps.filter(a => ['new', 'short', 'interview'].includes(a.status)) : apps.filter(a => a.status === k)).length})`, 'appSt', {v:k}, f === k ? 'on' : '')).join('')}</div></div>`
+      + (fl.length ? `<div class="card"><ul class="list">${fl.map(x => { const [sl, sc] = JOB_ST[x.status] || [x.status, '']; return `<li style="display:block"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><span><b>${esc(x.name)}</b> · ${esc(x.positionTitle || '')} <span class="pill acc">${typeName(x.type)}</span></span><span class="small mut">${esc(x.town || '')} · ${esc(fmtDateTime(x.at))} <span class="pill ${sc}">${sl}</span></span></div>
+        <div class="small mut">${esc(x.phone || '')}${x.willSell ? ` · willing to do sales: ${esc(x.willSell)}` : ''}${x.expectPay ? ` · expects ${esc(x.expectPay)}` : ''}${x.interviewAt && x.status === 'interview' ? ` · <b>interview ${esc(fmtDateTime(x.interviewAt))}</b>` : ''}${num(x.files) ? ` · ${int(x.files)} document${num(x.files) === 1 ? '' : 's'}` : ''}</div>
+        <div class="actions" style="margin-top:6px">${btn('View', 'appView', {id:x.id}, 'sm pri')}${x.status === 'new' ? btn('Shortlist', 'appShort', {id:x.id}, 'sm') : ''}${['new', 'short', 'interview'].includes(x.status) ? btn(x.status === 'interview' ? 'Move interview' : 'Interview', 'appIv', {id:x.id}, 'sm') + btn('Hire', 'appHire', {id:x.id}, 'sm') + btn('Decline', 'appNo', {id:x.id}, 'sm ghost') : ''}${x.phone ? `<a class="btn sm ghost" target="_blank" rel="noopener" href="${waLink(x.whatsapp || x.phone, jobMsg(x, ''))}">WhatsApp</a>` : ''}${btn('Delete', 'appDel', {id:x.id}, 'sm ghost danger')}</div></li>`; }).join('')}</ul></div>`
+      : empty(apps.length ? 'Nothing here.' : 'No job applications yet. Open a position and share the application link or flyer.'));
+  }
+  const nNew = apps.filter(a => a.status === 'new').length;
+  return head('Hiring', 'Post positions, open or close applications, and take applicants from New to Hired. Hired people join Staff & payslips.', btn('Add position', 'posAdd', {}, 'pri'))
+    + `<div class="filters"><div class="seg">${btn(`Positions (${ps.length})`, 'hireTab', {v:'pos'}, tab === 'pos' ? 'on' : '')}${btn(`Applications${nNew ? ` (${nNew} new)` : ` (${apps.length})`}`, 'hireTab', {v:'apps'}, tab === 'apps' ? 'on' : '')}</div></div>` + body;
+};
+
+/* ---- staff, payslips ---- */
+function spayTotals(p){ const add = (p.lines || []).filter(l => l.type !== 'deduct').reduce((t, l) => t + num(l.amount), 0), ded = (p.lines || []).filter(l => l.type === 'deduct').reduce((t, l) => t + num(l.amount), 0);
+  const comm = r2(num(p.bottles) * num(p.commRate)), gross = r2(num(p.basic) + comm + add), napsa = p.napsa ? r2(Math.min(gross * 0.05, num(S.settings.napsaCap) || 1708.2)) : 0; return {comm, add:r2(add), gross, napsa, ded:r2(ded + napsa), net:r2(gross - ded - napsa)}; }
+function spayForm(sid, id){
+  const s = S.staff[sid], p = id ? S.spay[id] : {month:UI.month, basic:num(s.basic), commRate:num(s.commRate), bottles:0, napsa:s.napsa !== false, lines:[]};
+  const L = (p.lines || []).map(l => `${l.type === 'deduct' ? '-' : '+'} ${l.label} = ${l.amount}`).join('\n');
+  modal(`Payslip · ${esc(s.name)}`, `<div class="grid2"><label for="f-qm">Month<input id="f-qm" name="month" type="month" value="${esc(p.month)}" required></label><label for="f-qb">Basic pay (K)<input id="f-qb" name="basic" type="number" min="0" step="any" value="${num(p.basic)}"></label>
+    <label for="f-qbo">Bottles sold<input id="f-qbo" name="bottles" type="number" min="0" value="${num(p.bottles)}"></label><label for="f-qcr">Commission per bottle (K)<input id="f-qcr" name="commRate" type="number" min="0" step="any" value="${num(p.commRate)}"></label></div>
+    <label for="f-ql">Other pay and deductions, one per line: <b>+ Transport allowance = 200</b> or <b>- Advance = 300</b>, <b>- PAYE = 120</b><textarea id="f-ql" name="lines" rows="4">${esc(L)}</textarea></label>
+    <label class="check"><input type="checkbox" name="napsa" ${p.napsa ? 'checked' : ''}> Deduct NAPSA employee share (5%)</label><label for="f-qn">Note<input id="f-qn" name="note" value="${esc(p.note || '')}"></label>`,
+  async d => { const ls = lines(d.lines).map(x => { const m = x.match(/^([+-])?\s*(.+?)\s*=\s*([\d.,]+)\s*$/); return m ? {type:m[1] === '-' ? 'deduct' : 'add', label:m[2], amount:num(m[3].replace(/,/g, ''))} : null; }).filter(Boolean);
+    const no = id ? p.no : 'SP-' + String(Object.keys(S.spay || {}).length + 1).padStart(4, '0');
+    const rec = await put('spay', {...p, no, staffId:sid, month:d.month, date:p.date || today(), basic:num(d.basic), bottles:num(d.bottles), commRate:num(d.commRate), lines:ls, napsa:!!d.napsa, note:d.note.trim(), status:p.status || 'due'}, id); toast('Payslip saved'); setTimeout(() => spayView(rec.id), 150); }, {label:'Save payslip'});
+}
+function spayDoc(p){
+  const s = S.staff[p.staffId] || {}, t = spayTotals(p);
+  const rows = [['Basic pay', p.basic], [`Commission (${int(p.bottles)} bottle${num(p.bottles) === 1 ? '' : 's'} × ${money(p.commRate)})`, t.comm], ...(p.lines || []).filter(l => l.type !== 'deduct').map(l => [l.label, l.amount])].filter(x => num(x[1])).map(([a, b]) => `<tr><td>${esc(a)}</td><td class="n">${money(b)}</td></tr>`);
+  const ded = [...(t.napsa ? [['NAPSA (employee 5%)', t.napsa]] : []), ...(p.lines || []).filter(l => l.type === 'deduct').map(l => [l.label, l.amount])].map(([a, b]) => `<tr><td>${esc(a)}</td><td class="n">−${money(b)}</td></tr>`);
+  const firstTop = `${docHeader('Payslip', contactBlock())}<div style="padding:18px 44px 0;display:flex;justify-content:space-between;gap:20px;font-size:13.5px"><div><div style="font-size:11px;letter-spacing:.1em;font-weight:800;color:#6e675c">EMPLOYEE</div><div style="font-size:17px;font-weight:700;margin-top:4px">${esc(s.name || '')}</div><div>${esc(s.title || '')} · ${typeName(s.type)}</div>${s.nrc ? `<div>NRC ${esc(s.nrc)}</div>` : ''}${s.napsaNo ? `<div>NAPSA ${esc(s.napsaNo)}</div>` : ''}</div>
+    <div style="text-align:right"><div class="serif" style="font-size:30px;line-height:1">${esc(p.no)}</div><div style="margin-top:6px">Period: <b>${monthLabel(p.month)}</b></div><div>Date: <b>${fmtDate(p.date)}</b></div></div></div>`;
+  const tot = `<div style="padding:12px 44px 0">${ded.length ? `<table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:8px"><tr><th style="text-align:left;font-size:11px;letter-spacing:.08em;color:#6e675c">DEDUCTIONS</th><th></th></tr>${ded.join('')}</table>` : ''}
+    <table style="width:100%;border-collapse:collapse;font-size:14px"><tr><td>Gross pay</td><td style="text-align:right">${money(t.gross)}</td></tr><tr><td>Total deductions</td><td style="text-align:right">−${money(t.ded)}</td></tr><tr><td style="font-weight:800;font-size:18px;border-top:2px solid #16130f;padding-top:6px">NET PAY</td><td style="text-align:right;font-weight:800;font-size:18px;border-top:2px solid #16130f;padding-top:6px">${money(t.net)}</td></tr></table>
+    ${p.note ? `<p style="font-size:13px;margin-top:10px"><b>Note:</b> ${esc(p.note)}</p>` : ''}${p.status === 'paid' ? `<div style="display:flex;justify-content:flex-end;margin-top:8px">${stampSVG('PAID', p.paidDate || today(), '#1b7f4c', 120)}</div>` : ''}
+    <div style="display:flex;gap:30px;margin-top:26px;font-size:13px"><div style="flex:1">Employee signature: <span style="display:inline-block;width:150px;border-bottom:1px solid #b9b0a0">&nbsp;</span></div><div style="flex:1">For ${esc(bizName())}: <span style="display:inline-block;width:150px;border-bottom:1px solid #b9b0a0">&nbsp;</span></div></div></div>`;
+  return pagedDoc({title:'Payslip', firstTop, firstH:290, blocks:[{title:'', head:'<tr><th>Earnings</th><th class="n">Amount</th></tr>', rows}, {html:tot, h:p.status === 'paid' ? 330 : 240}]});
+}
+function spayText(p){ const s = S.staff[p.staffId] || {}, t = spayTotals(p); return `Hello ${String(s.name || '').split(' ')[0]}, here is your ${bizName()} payslip ${p.no} for ${monthLabel(p.month)}:\n\nBasic pay: ${money(p.basic)}${t.comm ? `\nCommission: ${money(t.comm)}` : ''}${(p.lines || []).map(l => `\n${l.type === 'deduct' ? 'Less ' : ''}${l.label}: ${l.type === 'deduct' ? '−' : ''}${money(l.amount)}`).join('')}${t.napsa ? `\nLess NAPSA: −${money(t.napsa)}` : ''}\n\nNET PAY: ${money(t.net)}`; }
+function spayView(id){
+  const p = S.spay[id]; if (!p) return; const s = S.staff[p.staffId] || {}, name = `${bizName().replace(/\s+/g, '-')}-${p.no}-${String(s.name || '').replace(/\s+/g, '-')}`;
+  modal(`Payslip ${esc(p.no)} · ${esc(s.name || '')}`, `<div class="actions" style="margin-bottom:12px">${btn('Print', 'printDoc', {}, 'pri sm')}${btn('Download PDF', 'expDoc', {fmt:'pdf', name}, 'sm')}${btn('Image', 'expDoc', {fmt:'png', name}, 'sm')}${s.phone ? `<a class="btn sm" href="${waLink(s.phone, spayText(p))}" target="_blank" rel="noopener">WhatsApp</a>` : ''}${p.status !== 'paid' ? btn('Mark as paid', 'spayPaid', {id}, 'sm') + btn('Edit', 'spayEdit', {id}, 'sm ghost') : ''}${btn('Delete', 'spayDel', {id}, 'sm ghost danger')}</div>
+    <div class="preview" id="doc-prev">${spayDoc(p).map(pg => `<div class="docwrap">${pg}</div>`).join('')}</div>`, null, {wide:true, nofocus:true});
+  requestAnimationFrame(() => fitDocs($('#doc-prev')));
+}
+PAGES.staff = () => {
+  const all = Object.values(S.staff || {}).sort((a, b) => (a.name || '').localeCompare(b.name || '')), showLeft = !!UI.staffLeft, list = all.filter(x => showLeft ? x.status === 'left' : x.status !== 'left');
+  const m = UI.month, slips = Object.values(S.spay || {}).filter(p => p.month === m), tot = slips.reduce((t, p) => t + spayTotals(p).net, 0), paid = slips.filter(p => p.status === 'paid').reduce((t, p) => t + spayTotals(p).net, 0);
+  return head('Staff & payslips', 'Your employees, their agreements and monthly payslips (basic pay plus commission, NAPSA and other deductions).', btn('Add staff member', 'staffAdd', {}, 'pri') + btn('Staff agreements', 'goAgree'))
+    + `<div class="filters"><label class="mlabel">Payslip month <input type="month" id="f-month" value="${m}"></label><div class="seg">${btn(`Working (${all.filter(x => x.status !== 'left').length})`, 'staffLeft', {v:''}, showLeft ? '' : 'on')}${btn(`Left (${all.filter(x => x.status === 'left').length})`, 'staffLeft', {v:'1'}, showLeft ? 'on' : '')}</div></div>`
+    + `<div class="tiles">${tile('Staff working', int(all.filter(x => x.status !== 'left').length))}${tile(`Net pay · ${monthLabel(m)}`, money(tot), `${slips.length} payslip${slips.length === 1 ? '' : 's'}`)}${tile('Still to pay', money(tot - paid), '', tot - paid > 0)}</div>`
+    + (list.length ? `<div class="card"><div class="tw"><table class="t"><thead><tr><th>Name</th><th>Position</th><th>Started</th><th class="n">Basic</th><th>Agreement</th><th>Payslip ${esc(monthLabel(m))}</th><th></th></tr></thead><tbody>${list.map(x => { const sl = slips.find(p => p.staffId === x.id); return `<tr><td><b>${esc(x.name)}</b><div class="small mut">${esc(x.phone || '')}</div></td><td>${esc(x.title || '')}<div class="small mut">${typeName(x.type)}${x.place ? ' · ' + esc(x.place) : ''}</div></td><td class="small">${x.start ? fmtDate(x.start) : ''}</td><td class="n">${money(x.basic)}</td>
+      <td>${x.agreementSigned ? `<span class="pill good">Signed ${fmtDate(x.agreementSigned)}</span>` : '<span class="pill warn">Not signed</span>'}</td><td>${sl ? `<a href="javascript:void 0" data-act="spayOpen" data-id="${sl.id}">${esc(sl.no)} · ${money(spayTotals(sl).net)}</a> <span class="pill ${sl.status === 'paid' ? 'good' : 'warn'}">${sl.status === 'paid' ? 'Paid' : 'Due'}</span>` : btn('Make payslip', 'spayNew', {id:x.id}, 'sm')}</td>
+      <td><div class="actions">${btn('Agreement', 'empAgree', {id:x.id}, 'sm')}${btn('Edit', 'staffEdit', {id:x.id}, 'sm ghost')}${x.status === 'left' ? btn('Back to work', 'staffSt', {id:x.id, v:'active'}, 'sm ghost') : btn('Left', 'staffSt', {id:x.id, v:'left'}, 'sm ghost')}${btn('Delete', 'staffDel', {id:x.id}, 'sm ghost danger')}</div></td></tr>`; }).join('')}</tbody></table></div></div>`
+      : empty(showLeft ? 'Nobody has left.' : 'No staff yet. Hire from Hiring → Applications, or add someone yourself.'));
+};
+
+/* ---- employee agreements (full time and part time) ---- */
+const EMP_COMMON = `# Probation
+The first {probation} months are a probation period. During probation either side may end this agreement with {probnotice} written notice.
+At the end of probation the Company will confirm the appointment in writing or extend probation once, for not more than another 3 months.
+# Stock and cash
+The Employee is responsible for the perfumes, cash and mobile money in their care and must record every sale in the Company app at the time of sale.
+Stock and cash are counted at the end of each day or shift. Any shortage must be explained in writing the same day.
+A shortage caused by the Employee's negligence or dishonesty may be recovered from pay after a fair hearing, within the limits allowed by law.
+The Employee may not sell on credit, give discounts or lend stock without written approval from a manager.
+# Conduct and confidentiality
+The Employee must be punctual, well presented, polite to customers and follow the dress code and lawful instructions of the Company.
+Prices, suppliers, customer lists, sales figures and business plans are confidential, during and after employment.
+The Employee may not run a competing perfume business or sell other perfumes to the Company's customers while employed.
+Theft, fraud, violence, being drunk at work or serious damage to the Company's name are gross misconduct and may lead to summary dismissal after a hearing.
+# Discipline and grievances
+For other misconduct the Company will follow a fair process: a verbal warning, then a written warning, then a final written warning, before dismissal.
+The Employee will always be told the complaint and given a chance to answer it, and may bring a fellow worker to a hearing.
+The Employee may raise any complaint with the General Manager or the owner, who will respond within 7 days.
+# Statutory rights
+The Company will register the Employee with NAPSA and pay contributions as the law requires. Income tax (PAYE) is deducted where it applies.
+Public holidays are paid. Work on a public holiday or rest day is paid as the Employment Code requires, or replaced with another day off by agreement.
+The Employee is entitled to sick leave on a medical certificate, maternity or paternity leave, and compassionate leave as set out in the Employment Code Act No. 3 of 2019.
+The Employer will provide a safe workplace and will not discriminate on any ground listed in the Employment Code.
+# Ending the agreement
+After probation either side may end this agreement by giving {notice} written notice, or pay in place of notice.
+On leaving, the Employee must return all Company stock, cash, keys, phones and documents, and final pay will be settled within the time set by law.
+# General
+This agreement follows the Employment Code Act No. 3 of 2019 of Zambia. Where the law gives the Employee a better right than this agreement, the law applies.
+Any change to this agreement must be in writing and signed by both sides.`;
+const EMP_DEF = {
+ft:`# Position and place of work
+{business} employs {name} as {position}, working full time at {place}, starting on {start}.
+The main duties are listed in the job description attached to this agreement. The Employee will also do other reasonable tasks related to the business.
+# Hours of work
+Normal hours are {hours}, not more than 48 hours a week, with a one-hour break each working day and at least one full rest day each week.
+Overtime is only worked when a manager asks for it, and is paid or given back as time off as the Employment Code requires.
+# Pay
+Pay: {pay}. Basic pay of {basic} a month is paid by the last working day of each month, by mobile money or bank transfer, with a payslip.
+Commission of {comm} per bottle sold is paid with the monthly pay, based on the sales recorded in the Company app.
+# Leave
+The Employee earns 2 days of paid annual leave for each month worked (24 days a year). Leave dates are agreed with a manager in advance.
+` + EMP_COMMON,
+pt:`# Position and place of work
+{business} employs {name} as {position}, working part time at {place}, starting on {start}.
+The main duties are listed in the job description attached to this agreement. The Employee will also do other reasonable tasks related to the business.
+# Hours of work
+Working days and hours are {hours}. The Company will share the schedule at least one week ahead, and changes are agreed by both sides.
+The Employee may take other work on days they are not scheduled, as long as it is not with a competing perfume business.
+# Pay
+Pay: {pay}. Pay is calculated for the days and hours actually worked and is paid monthly by mobile money or bank transfer, with a payslip.
+Commission of {comm} per bottle sold, where it applies, is paid with the monthly pay, based on the sales recorded in the Company app.
+# Leave
+Paid annual leave is earned in proportion to the days worked, based on 2 days a month for full time staff.
+` + EMP_COMMON
+};
+function empClauses(st, type){
+  const s = S.settings, txt = (type === 'pt' ? s.empTextPT : s.empTextFT) || EMP_DEF[type === 'pt' ? 'pt' : 'ft'], blank = '______________';
+  const vars = {business:bizName(), name:st?.name || blank, position:st?.title || blank, place:st?.place || 'the Company\'s premises', start:st?.start ? fmtDate(st.start) : blank, hours:st?.hours || (type === 'pt' ? 'as agreed in the schedule' : 'Monday to Saturday, 08:00 to 17:00'), pay:st?.payText || blank, basic:st?.basic ? money(st.basic) : blank, comm:st?.commRate ? money(st.commRate) : 'K0', probation:num(s.empProbation) || 3, probnotice:s.empProbNotice || '7 days', notice:s.empNotice || 'one month'};
+  const secs = []; String(txt).split('\n').forEach(l => { l = l.trim(); if (!l) return; if (l.startsWith('#')) secs.push({title:l.replace(/^#+\s*/, ''), lines:[]}); else { if (!secs.length) secs.push({title:'Terms', lines:[]}); secs[secs.length - 1].lines.push(l.replace(/\{(\w+)\}/g, (m, k) => vars[k] != null ? String(vars[k]) : m)); } });
+  return secs;
+}
+function empAgreementPages(sid, type){
+  const st = sid ? S.staff[sid] : null; type = st?.type || type || 'ft'; const pos = st ? posAll().find(p => p.title === st.title) : null;
+  const blank = '<span style="display:inline-block;min-width:220px;border-bottom:1px solid #b9b0a0">&nbsp;</span>', v = x => x ? esc(x) : blank, biz = bizName();
+  const row = (k, x) => `<tr><td style="width:190px;color:#6e675c;font-weight:600;padding:5px 0">${k}</td><td style="padding:5px 0">${x}</td></tr>`;
+  const firstTop = `${docHeader(`${typeName(type)} employment agreement`, contactBlock())}
+    <div style="padding:14px 44px 0;font-size:13.5px;line-height:1.55">This agreement is made between <b>${esc(biz)}</b>${S.settings.coPacra ? ` (PACRA ${esc(S.settings.coPacra)})` : ''} (“the Company”) and the employee named below (“the Employee”).</div>
+    <div class="rh">Employee details</div><div style="padding:0 44px"><table style="width:100%;border-collapse:collapse;font-size:13.5px">
+    ${row('Full name', v(st?.name))}${row('Phone number', v(st?.phone))}${row('NRC number', v(st?.nrc))}${row('Physical address', v(st?.address))}${row('Position', v(st?.title))}${row('Type', typeName(type))}${row('Start date', v(st?.start ? fmtDate(st.start) : ''))}</table></div>`;
+  const blocks = []; let n = 0;
+  for (const sc of empClauses(st, type)) { n++; blocks.push({html:`<div class="rh">${n}. ${esc(sc.title)}</div>`, h:44}); sc.lines.forEach((l, i) => blocks.push({html:`<div style="display:flex;gap:10px;padding:0 44px 8px;font-size:13.5px;line-height:20px"><span style="flex:none;width:30px;color:#6e675c;font-weight:700">${n}.${i + 1}</span><span>${esc(l)}</span></div>`, h:Math.ceil(l.length / 112) * 20 + 8})); }
+  if (pos) { blocks.push({html:`<div class="rh">Job description: ${esc(pos.title)}</div><div style="padding:0 44px;font-size:13px;color:#6e675c;font-weight:700">Duties</div>`, h:66}); lines(pos.duties).forEach(l => blocks.push({html:`<div style="padding:0 44px 4px 60px;font-size:13.5px;line-height:20px">• ${esc(l)}</div>`, h:26}));
+    if (lines(pos.reqs).length) { blocks.push({html:`<div style="padding:8px 44px 0;font-size:13px;color:#6e675c;font-weight:700">Requirements</div>`, h:30}); lines(pos.reqs).forEach(l => blocks.push({html:`<div style="padding:0 44px 4px 60px;font-size:13.5px;line-height:20px">• ${esc(l)}</div>`, h:26})); } }
+  const sig = (who, name) => `<div style="flex:1;border:1px solid #e6e1d6;border-radius:10px;padding:14px 16px;font-size:13px"><div style="font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:11.5px;margin-bottom:14px">${who}</div><div style="margin-bottom:16px">Name: ${name ? `<b>${esc(name)}</b>` : blank}</div><div style="margin-bottom:16px">Signature: <span style="display:inline-block;min-width:200px;border-bottom:1px solid #b9b0a0">&nbsp;</span></div><div>Date: ${st?.agreementSigned ? fmtDate(st.agreementSigned) : blank}</div></div>`;
+  blocks.push({html:`<div class="rh">Agreement</div><div style="padding:0 44px;font-size:13.5px;line-height:1.5">Both parties have read this agreement, understand it and agree to keep to it. Each party keeps a signed copy.</div><div style="display:flex;gap:16px;padding:16px 44px 0">${sig('For the Company', S.settings.ownerName || '')}${sig('The Employee', st?.name || '')}</div><div style="padding:14px 44px 0;font-size:12px;color:#6e675c">Witness: ${blank} &nbsp; Signature: ${blank}</div>`, h:300});
+  return pagedDoc({title:'Employment agreement', firstTop, firstH:420, blocks});
+}
+function empAgreeView(sid, type){
+  const st = sid ? S.staff[sid] : null; type = st?.type || type || 'ft';
+  const name = `${bizName().replace(/\s+/g, '-')}-${typeName(type).replace(' ', '-')}-agreement${st ? '-' + st.name.replace(/\s+/g, '-') : ''}`;
+  modal(st ? `${esc(st.name)}: employment agreement` : `Blank ${typeName(type).toLowerCase()} agreement`, `<div class="actions" style="margin-bottom:12px">${btn('Download PDF', 'expDoc', {fmt:'pdf', name}, 'pri sm')}${btn('Print', 'printDoc', {}, 'sm')}${btn('Word file', 'expDoc', {fmt:'doc', name}, 'sm')}${st && !st.agreementSigned ? btn('Mark as signed', 'empSigned', {id:sid}, 'sm') : ''}${st?.phone ? `<a class="btn sm" target="_blank" rel="noopener" href="${waLink(st.phone, `Hello ${st.name.split(' ')[0]}, please find your ${bizName()} employment agreement. Read it, sign it and bring it on your first day.`)}">WhatsApp</a>` : ''}</div>
+    <div class="preview" id="doc-prev">${empAgreementPages(sid, type).map(pg => `<div class="docwrap">${pg}</div>`).join('')}</div><p class="hint">Print two copies. Both sides sign both copies, and each keeps one. Have the wording checked by a lawyer or the Labour Office before first use.</p>`, null, {wide:true, nofocus:true});
+  requestAnimationFrame(() => fitDocs($('#doc-prev')));
+}
+function empTermsForm(type){
+  const st = S.settings, k = type === 'pt' ? 'empTextPT' : 'empTextFT';
+  modal(`${typeName(type)} agreement wording`, `<p class="hint">One rule per line. Start a line with <b>#</b> to begin a new section. These fill in automatically: {business} {name} {position} {place} {start} {hours} {pay} {basic} {comm} {probation} {probnotice} {notice}.</p>
+    <div class="grid2"><label for="f-epr">Probation (months)<input id="f-epr" name="prob" type="number" min="1" max="6" value="${num(st.empProbation) || 3}"></label><label for="f-epn">Notice during probation<input id="f-epn" name="probnotice" value="${esc(st.empProbNotice || '7 days')}"></label>
+    <label for="f-enn">Notice after probation<input id="f-enn" name="notice" value="${esc(st.empNotice || 'one month')}"></label><label for="f-eow">Signs for the Company<input id="f-eow" name="owner" value="${esc(st.ownerName || '')}" placeholder="Your full name"></label></div>
+    <label for="f-ett">Rules<textarea id="f-ett" name="text" rows="18" style="font-size:13px">${esc(st[k] || EMP_DEF[type === 'pt' ? 'pt' : 'ft'])}</textarea></label>
+    <div class="actions">${btn('Put back the original wording', 'empReset', {k}, 'sm ghost')}</div>`,
+  async d => { await putSettings({[k]:d.text.trim() === EMP_DEF[type === 'pt' ? 'pt' : 'ft'].trim() ? '' : d.text, empProbation:num(d.prob) || 3, empProbNotice:d.probnotice.trim(), empNotice:d.notice.trim(), ownerName:d.owner.trim()}); toast('Agreement wording saved'); }, {label:'Save wording', wide:true});
+}
+
+/* ---- reseller app: shortcuts on Home ---- */
+const RES_SC_ICONS = {parcels:'<path d="M3.5 7.5L12 3l8.5 4.5v9L12 21l-8.5-4.5z"/><path d="M3.5 7.5L12 12l8.5-4.5M12 12v9"/>', order:'<circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/><path d="M2.5 3.5h3l2.4 11.5h10.6l2-8H6.7"/>', sell:'<path d="M6 7h12l-1 13H7z"/><path d="M9 7a3 3 0 0 1 6 0"/>', pay:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 15h3"/>',
+  ads:'<path d="M4 10v4l11 5V5L4 10z"/><path d="M15 9a3 3 0 0 1 0 6M7 14l1 5h3"/>', promos:'<path d="M20.5 12.5l-8 8-9-9V3.5h8z"/><circle cx="7.5" cy="7.5" r="1.4"/>', statement:'<path d="M6 2.5h12v19l-2-1.4-2 1.4-2-1.4-2 1.4-2-1.4-2 1.4z"/><path d="M9 7.5h6M9 11h6M9 14.5h4"/>', slips:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>',
+  board:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/>', team:'<circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.5a5 5 0 0 1 5.5 5"/>', ideas:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2h5c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/>', account:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'};
+function resShortcuts(){
+  const ks = ['parcels', 'order', 'pay', 'ads', 'promos', 'statement', 'slips', 'board', 'team', 'ideas', 'account'], lab = {parcels:'Parcels', order:'Order / return', pay:'Report payment', ads:'Adverts', promos:'Promotions', statement:'Statement', slips:'Payslips', board:'Leaderboard', team:'Recruits', ideas:'Suggestions', account:'Account'};
+  return `<div class="card"><h2>Shortcuts</h2><div class="qa res-sc">${ks.filter(k => RES_TABS.some(t => t[0] === k)).map(k => `<button type="button" class="qa-b" data-act="resTab" data-k="${k}"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${RES_SC_ICONS[k] || ''}</svg><span>${lab[k]}</span></button>`).join('')}</div></div>`;
+}
+
 /* ---------- reviewing requested orders: availability, quantities, export with photos ---------- */
 let ORV = null;
 function reviewOrder(kind, owner, id){
@@ -4966,8 +5236,15 @@ function agreeTermsForm(){
   async d => { await putSettings({agreementText:d.text.trim() === DEFAULT_AGREEMENT.trim() ? '' : d.text, graceDay:num(d.graceDay), maxMarkup:num(d.maxMarkup), noticeDays:num(d.noticeDays), exitSettleDays:num(d.exitSettleDays)}); toast('Agreement wording saved'); }, {label:'Save wording', wide:true});
 }
 PAGES.agreements = () => {
+  const stf = Object.values(S.staff || {}).filter(x => x.status !== 'left').sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+  const empCard = `<div class="card"><h2>Employee agreements</h2><p class="hint">Full time and part time employment agreements, filled in from each staff member's details. They follow the Employment Code Act No. 3 of 2019; have the wording checked before first use.</p>
+    <div class="actions" style="margin-bottom:10px">${btn('Edit full time wording', 'empTerms', {t:'ft'}, 'sm')}${btn('Edit part time wording', 'empTerms', {t:'pt'}, 'sm')}${btn('Blank full time', 'empBlank', {t:'ft'}, 'sm ghost')}${btn('Blank part time', 'empBlank', {t:'pt'}, 'sm ghost')}</div>
+    ${stf.length ? `<div class="tw"><table class="t"><thead><tr><th>Employee</th><th>Position</th><th>Type</th><th>Agreement</th><th></th></tr></thead><tbody>${stf.map(x => `<tr><td><b>${esc(x.name)}</b></td><td>${esc(x.title || '')}</td><td>${typeName(x.type)}</td><td>${x.agreementSigned ? `<span class="pill good">Signed ${fmtDate(x.agreementSigned)}</span>` : '<span class="pill warn">Not signed</span>'}</td><td>${btn('Agreement', 'empAgree', {id:x.id}, 'sm')}</td></tr>`).join('')}</tbody></table></div>` : '<p class="mut">No staff yet. Hired people appear here.</p>'}</div>`;
+  return agreeResellers() + empCard;
+};
+function agreeResellers(){
   const rs = sortedRes(), signed = rs.filter(r => r.agreementSigned).length;
-  return head('Reseller agreements', 'Print an agreement for each reseller, get both sides to sign it, then mark it signed here.', btn('Edit wording', 'agreeTerms') + btn('Edit translations', 'agreeTr', {lang:'ny'}) + btn('Blank form', 'agreeView', {id:''}))
+  return head('Agreements', 'Print an agreement for each reseller, get both sides to sign it, then mark it signed here.', btn('Edit wording', 'agreeTerms') + btn('Edit translations', 'agreeTr', {lang:'ny'}) + btn('Blank form', 'agreeView', {id:''}))
     + `<div class="tiles">${tile('Signed', `${signed} of ${rs.length}`)}${tile('Still to sign', int(rs.length - signed))}${tile('Payment due', `the ${ord(sDay())}`, `late after the ${ord(num(S.settings.graceDay) || 15)}`)}</div>`
     + (rs.length ? `<div class="card"><div class="tw"><table class="t"><thead><tr><th>Reseller</th><th>Town</th><th>Phone</th><th>Address</th><th>Commission</th><th>Language</th><th>Agreement</th><th></th></tr></thead><tbody>
       ${rs.map(r => `<tr><td><b>${esc(r.name)}</b></td><td>${esc(tName(r.townId))}</td><td>${r.phone ? esc(r.phone) : '<span class="pill warn">needed</span>'}</td><td class="small">${r.address ? esc(r.address) : '<span class="mut">not added</span>'}</td>
@@ -4976,7 +5253,7 @@ PAGES.agreements = () => {
         <td><div class="actions">${btn('Agreement', 'agreeView', {id:r.id}, 'sm')}${btn(r.agreementSigned ? 'Details' : 'Details & sign', 'agreeEdit', {id:r.id}, 'sm ghost')}</div></td></tr>`).join('')}</tbody></table></div></div>` : empty('Add resellers first.'))
     + `<div class="card"><h2>What the agreement says</h2>${agreementClauses(null).map((s, i) => `<h3 style="margin:12px 0 4px">${i + 1}. ${esc(s.title)}</h3><ol class="small" style="margin:0;padding-left:20px">${s.lines.map(l => `<li>${esc(l)}</li>`).join('')}</ol>`).join('')}
 </div>`;
-};
+}
 
 let SETTLE_RID = '';
 /* ================= After-break features ================= */
@@ -5202,6 +5479,8 @@ const AD_TPL = {
   pricelist:{label:'Price list', head:'Price list', sub:'Original fragrances · Delivered to your town', offer:'', n:12},
   promo:{label:'Promotion / sale', head:'Black Friday', sub:'', offer:'', n:6},
   wholesale:{label:'Wholesale offer', head:'Wholesale prices', sub:'Buy more, pay less · Mix and match any perfumes', offer:'', n:6},
+  hiring:{label:"We're hiring", head:"We're hiring", sub:'Join the Infinity Fragrances team', offer:'', n:6},
+  job:{label:'Job advert', head:'', sub:'', offer:'', n:1},
   wslist:{label:'Wholesale price list', head:'Wholesale prices', sub:'Price per bottle · Mix and match any perfumes', offer:'', n:14}
 };
 UI.ad = {tpl:'product', size:'square', style:'black', head:AD_TPL.product.head, sub:'', offer:'', cta:'', picks:[], promoId:''};
@@ -5234,17 +5513,18 @@ function adProducts(){
   if (!sel.length) sel = ps.slice(0, n).map(p => p.id);
   return sel.slice(0, n).map(id => S.products[id]);
 }
+function adJobs(){ const open = posAll().filter(posOpenNow), all = posAll(), sel = (UI.ad.jobs || []).map(id => S.positions[id]).filter(Boolean); if (UI.ad.tpl === 'job') return sel.length ? sel.slice(0, 1) : (open.length ? open : all).slice(0, 1); return sel.length ? sel : (open.length ? open : all).slice(0, 6); }
 function advertDoc(){
   const a = UI.ad, [W, H] = AD_SIZES[a.size], u = W / 100, tall = H / W > 1.3, ps = adProducts();
   const dark = a.style === 'black' || a.style === 'red', gold = a.style === 'red' ? '#e2313c' : dark ? '#d8b464' : '#b0883a', panel = dark ? '#1c1914' : a.style === 'blush' ? '#fffaf8' : '#ffffff';
-  const cta = a.cta || `WhatsApp ${bizPhone() || 'us'} to order`;
+  const cta = a.cta || ((a.tpl === 'hiring' || a.tpl === 'job') ? 'Apply online today' : `WhatsApp ${bizPhone() || 'us'} to order`);
   const pr = adPromo(), k0 = n => money(n).replace(' ', '');
   const promoP = p => pr && pr.kind !== 'bxgy' && p.id && promoApplies(pr, p.id) ? promoUnit(pr, num(p.sellPrice)) : null;
   const priceTag = p => { const np = promoP(p); return np != null && np < num(p.sellPrice) ? `<s style="opacity:.55;font-weight:600;font-size:.72em;margin-right:.3em;color:${dark ? '#f3ead6' : '#16130f'}">${k0(p.sellPrice)}</s>${k0(np)}` : k0(p.sellPrice); };
   const logoRow = `<div style="display:flex;align-items:center;gap:${2 * u}px;justify-content:center"><img src="${LOGO}" style="width:${11 * u}px;height:${11 * u}px" alt=""><div class="serif" style="font-size:${5.4 * u}px;line-height:1;text-align:left">${esc(S.settings.businessName || 'Infinity Fragrances')}</div></div>`;
   const ctaBar = `<div style="background:${gold};color:#14110c;border-radius:${10 * u}px;padding:${2.6 * u}px ${5 * u}px;font-weight:800;font-size:${3.6 * u}px;text-align:center">${esc(cta)}</div>`;
   const badge = a.offer && a.tpl !== 'promo' ? `<div style="position:absolute;right:${5 * u}px;top:${5 * u}px;width:${22 * u}px;height:${22 * u}px;border-radius:50%;background:${gold};color:#14110c;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:${3.2 * u}px;line-height:1.15;padding:${2.5 * u}px;transform:rotate(-8deg);box-shadow:0 ${u}px ${3 * u}px rgba(0,0,0,.25)">${esc(a.offer)}</div>` : '';
-  const headline = `<div class="serif" style="font-size:${((a.tpl === 'wholesale' || a.tpl === 'wslist') && !tall ? 6.5 : a.tpl === 'promo' && !tall ? 8.5 : a.head.length > 26 ? 8.5 : 11) * u}px;line-height:.98;text-align:center;text-wrap:balance">${esc(a.head)}</div>`;
+  const headline = a.tpl === 'hiring' && !tall ? `<div class="serif" style="font-size:${7.5 * u}px;line-height:1;text-align:center">${esc(a.head)}</div>` : a.tpl === 'job' && !a.head ? `<div style="text-align:center;font-size:${4 * u}px;letter-spacing:.3em;font-weight:800;color:${gold}">WE'RE HIRING</div>` : `<div class="serif" style="font-size:${((a.tpl === 'wholesale' || a.tpl === 'wslist') && !tall ? 6.5 : a.tpl === 'promo' && !tall ? 8.5 : a.head.length > 26 ? 8.5 : 11) * u}px;line-height:.98;text-align:center;text-wrap:balance">${esc(a.head)}</div>`;
   const sub = a.sub ? `<div style="font-size:${3.6 * u}px;text-align:center;opacity:.85;margin-top:${1.5 * u}px">${esc(a.sub)}</div>` : '';
   let body = '';
   if (a.tpl === 'product') {
@@ -5271,6 +5551,22 @@ function advertDoc(){
     body = `<div style="text-align:center;margin-top:${(tall ? 2.5 : 1.5) * u}px"><div style="display:inline-block;background:${gold};color:${a.style === 'red' ? '#fff' : '#14110c'};font-weight:900;letter-spacing:.04em;font-size:${(tall ? 9 : 5.6) * u}px;line-height:1;padding:${(tall ? 1.6 : 1) * u}px ${4 * u}px;border-radius:${1.5 * u}px">${esc(big)}</div>${scope && tall ? `<div style="font-size:${3 * u}px;opacity:.8;margin-top:${u}px;text-transform:uppercase;letter-spacing:.12em">${esc(scope)}</div>` : ''}</div>
       <div style="flex:1;min-height:0;display:grid;grid-template-columns:repeat(${cols},1fr);grid-auto-rows:1fr;gap:${2 * u}px;margin:${3 * u}px 0">${ps.map(p => `<div style="background:${panel};border-radius:${3 * u}px;padding:${1.4 * u}px;display:flex;flex-direction:column;min-height:0;overflow:hidden">
       <div class="imgbox" style="flex:1;min-height:0"><img src="${imgOrPh(p.id)}" alt=""></div><div style="text-align:center;padding-top:${0.8 * u}px;color:${fg}"><div class="serif" style="font-size:${(cols > 2 ? 3.6 : 4.6) * u}px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.name)}</div><div style="font-weight:800;color:${gold};font-size:${(cols > 2 ? 3.4 : 4) * u}px">${priceTag(p)}</div></div></div>`).join('')}</div>`;
+  } else if (a.tpl === 'hiring' || a.tpl === 'job') {
+    const fg = dark ? '#f3ead6' : '#16130f', js = adJobs(), qr = coQR(APPLY_URL), qs = (tall ? 24 : 14) * u;
+    const qrBox = `<div style="display:flex;align-items:center;gap:${3 * u}px;background:${panel};color:${fg};border-radius:${3 * u}px;padding:${(tall ? 2 : 1.4) * u}px ${3 * u}px;margin-bottom:${(tall ? 2 : 1.4) * u}px">${qr ? `<div style="width:${qs}px;height:${qs}px;flex:none;background:#fff;padding:${u}px;border-radius:${u}px">${qr}</div>` : ''}<div style="font-size:${(tall ? 3.3 : 2.4) * u}px;line-height:1.3"><b>How to apply</b><br>Scan the code or visit<br><span style="font-weight:700;word-break:break-all;font-size:.82em">${esc(APPLY_URL.replace('https://', ''))}</span>${bizPhone() ? `<br>Questions: WhatsApp ${esc(bizPhone())}` : ''}</div></div>`;
+    const tag = (t) => `<span style="display:inline-block;border:${0.3 * u}px solid ${gold};color:${gold};border-radius:${4 * u}px;padding:0 ${1.4 * u}px;font-size:${2.3 * u}px;font-weight:700;margin-right:${u}px">${t}</span>`;
+    if (a.tpl === 'job') {
+      const p = js[0] || {title:'Add a position', duties:'', reqs:''}, li = (t, max) => lines(t).slice(0, max).map(l => `<li style="margin:${0.4 * u}px 0">${esc(l)}</li>`).join('');
+      body = `<div style="text-align:center;margin-top:${-1 * u}px"><div class="serif" style="font-size:${(p.title.length > 22 ? 7 : tall ? 9.5 : 8) * u}px;line-height:1;color:${gold}">${esc(p.title)}</div><div style="margin-top:${1.4 * u}px">${p.ft ? tag('Full time') : ''}${p.pt ? tag('Part time') : ''}${p.place ? tag(esc(p.place)) : ''}</div></div>
+        <div style="flex:1;min-height:0;overflow:hidden;display:grid;grid-template-columns:${tall ? '1fr' : '1fr 1fr'};gap:${2 * u}px;margin:${(tall ? 2.5 : 1.5) * u}px 0;font-size:${(tall ? 3.2 : 2.25) * u}px;line-height:1.25;color:${fg}">
+          <div style="background:${panel};border-radius:${3 * u}px;padding:${2 * u}px ${3 * u}px"><b style="color:${gold};letter-spacing:.06em;text-transform:uppercase;font-size:.85em">Duties</b><ul style="margin:${u}px 0 0;padding-left:${4 * u}px">${li(p.duties, tall ? 6 : 3)}</ul></div>
+          <div style="background:${panel};border-radius:${3 * u}px;padding:${2 * u}px ${3 * u}px"><b style="color:${gold};letter-spacing:.06em;text-transform:uppercase;font-size:.85em">Requirements</b><ul style="margin:${u}px 0 0;padding-left:${4 * u}px">${li(p.reqs, tall ? 5 : 3)}</ul>
+          ${tall ? `<div style="margin-top:${1.5 * u}px">${p.ft && p.ftPay ? `<div><b>Full time:</b> ${esc(p.ftPay)}${p.ftHours ? ' · ' + esc(p.ftHours) : ''}</div>` : ''}${p.pt ? `<div><b>Part time:</b> ${esc(p.ptPay || 'Negotiable')}${p.ptHours && p.ptHours !== p.ptPay ? ' · ' + esc(p.ptHours) : ''}</div>` : ''}${p.closes ? `<div><b>Apply by:</b> ${fmtDate(p.closes)}</div>` : ''}</div>` : ''}</div></div>` + qrBox;
+    } else {
+      const show = js.slice(0, tall ? 6 : 4), cols = tall ? 1 : 2;
+      body = `<div style="flex:1;min-height:0;overflow:hidden;display:grid;grid-template-columns:repeat(${cols},1fr);align-content:start;gap:${(tall ? 1.6 : 1.4) * u}px;margin:${(tall ? 3 : 2) * u}px 0">${show.map(p => `<div style="background:${panel};color:${fg};border-radius:${2.5 * u}px;padding:${(tall ? 1.8 : 1.2) * u}px ${2.5 * u}px;border-left:${u}px solid ${gold}"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:${u}px"><b style="font-size:${(tall ? 3.8 : 3) * u}px;line-height:1.15">${esc(p.title)}</b><span style="white-space:nowrap">${p.ft ? tag('FT') : ''}${p.pt ? tag('PT') : ''}</span></div>${tall ? `<div style="font-size:${(show.length <= 3 ? 3 : 2.6) * u}px;opacity:.8;margin-top:${0.4 * u}px;line-height:1.35">${show.length <= 3 ? lines(p.duties).slice(0, 3).map(l => '• ' + esc(l)).join('<br>') : esc(lines(p.duties).slice(0, 2).join(' · '))}</div>` : ''}</div>`).join('')}
+        ${S.settings.hireResellers !== false && show.length < (tall ? 6 : 4) ? `<div style="grid-column:1/-1;background:${gold};color:#14110c;border-radius:${2.5 * u}px;padding:${(tall ? 1.8 : 1.2) * u}px ${2.5 * u}px"><b style="font-size:${(tall ? 3.8 : 3) * u}px">Resellers in every town</b><div style="font-size:${(tall ? 2.6 : 2.2) * u}px">Earn commission selling our perfumes</div></div>` : ''}</div>` + qrBox;
+    }
   } else if (a.tpl === 'wholesale' || a.tpl === 'wslist') {
     const fg = dark ? '#f3ead6' : '#16130f', m1 = wsMin(1), m2 = wsMin(2), K = n => money(n).replace(' ', '').replace('.00', '');
     const tiers = `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:${1.6 * u}px;margin:${(tall ? 3.5 : 2.2) * u}px 0 ${1.2 * u}px">${[['Retail', `1–${m1 - 1} bottle${m1 - 1 === 1 ? '' : 's'}`], ['Wholesale', `${m1}–${m2 - 1} bottles`], [`Wholesale ${m2}+`, `${m2} bottles or more`]].map(([t, x], i) => `<div style="text-align:center;border:${0.35 * u}px solid ${gold};border-radius:${2 * u}px;padding:${(tall ? 1.6 : 1) * u}px ${0.6 * u}px;${i === 2 ? `background:${gold};color:${a.style === 'red' ? '#fff' : '#14110c'};` : ''}"><div style="font-weight:800;font-size:${(tall ? 3.4 : 2.9) * u}px;line-height:1.1">${t}</div><div style="font-size:${(tall ? 2.6 : 2.2) * u}px;opacity:.85">${x}</div></div>`).join('')}</div>`;
@@ -5300,13 +5596,18 @@ TOOLS.adverts = {
   mount(){ this.picks(); this.draw(); },
   refresh(){ this.picks(); this.draw(); },
   picks(){
-    const el = $('#ad-picks'); if (!el) return; const n = AD_TPL[UI.ad.tpl].n, cur = adProducts().map(p => p.id);
+    const el = $('#ad-picks'); if (!el) return; const n = AD_TPL[UI.ad.tpl].n;
+    if (UI.ad.tpl === 'hiring' || UI.ad.tpl === 'job') { const cur = adJobs().map(p => p.id); if (!window.ZXing && !UI.adZx) { UI.adZx = 1; loadAny(ZX_SRCS).then(() => this.draw()).catch(() => {}); }
+      $('#ad-pick-h').textContent = UI.ad.tpl === 'job' ? 'Position' : 'Positions (up to 6)';
+      el.innerHTML = posAll().map(p => `<label><input type="${n === 1 ? 'radio' : 'checkbox'}" name="ad-j" data-jid="${p.id}" ${cur.includes(p.id) ? 'checked' : ''}> ${esc(p.title)}${posOpenNow(p) ? '' : ' <span class="pill">closed</span>'}</label>`).join('') || '<p class="mut small">Add positions in Team & pay → Hiring first.</p>'; return; }
+    const cur = adProducts().map(p => p.id);
     $('#ad-pick-h').textContent = n === 1 ? 'Perfume' : `Perfumes (up to ${n})`;
     el.innerHTML = sortedProds().map(p => `<label><input type="${n === 1 ? 'radio' : 'checkbox'}" name="ad-p" data-pid="${p.id}" ${cur.includes(p.id) ? 'checked' : ''}> ${esc(pName(p.id))}${imgOf(p.id) ? '' : ' <span class="pill warn">no photo</span>'}</label>`).join('') || '<p class="mut small">Add products first.</p>';
   },
   draw(){ const el = $('#ad-prev'); if (!el) return; el.innerHTML = advertDoc(); fitDocs(el); },
   input(t){
-    if (t.dataset.pid) {
+    if (t.dataset.jid) { if (UI.ad.tpl === 'job') UI.ad.jobs = [t.dataset.jid]; else { const cur = adJobs().map(p => p.id).filter(id => id !== t.dataset.jid); if (t.checked) cur.push(t.dataset.jid); UI.ad.jobs = cur.slice(-6); } this.picks(); }
+    else if (t.dataset.pid) {
       const n = AD_TPL[UI.ad.tpl].n;
       if (n === 1) UI.ad.picks = [t.dataset.pid];
       else { const cur = adProducts().map(p => p.id).filter(id => id !== t.dataset.pid); if (t.checked) cur.push(t.dataset.pid); if (cur.length > n) { cur.shift(); } UI.ad.picks = cur.length ? cur : ['__none']; this.picks(); }
@@ -6322,6 +6623,26 @@ const ACT = {
   logShowHid: () => { UI.logHid = !UI.logHid; render(true); },
   logHideOld: () => confirmBox('Hide every activity entry before now? They stay saved and you can show them again at any time.', async () => { UI.logHid = false; await putSettings({logHideBefore:nowISO()}); toast('Older entries hidden'); }, 'Hide'),
   logUnhide: async () => { UI.logHid = false; await putSettings({logHideBefore:''}); toast('All entries shown again'); },
+  hireTab: d => { UI.hireTab = d.v; render(true); }, appSt: d => { UI.appSt = d.v; render(true); },
+  posAdd: () => posForm(), posEdit: d => posForm(d.id),
+  posOpen: async d => { const p = S.positions[d.id]; if (!p) return; if (d.v && p.closes && p.closes < today()) { toast('The closing date has passed. Edit the position to change it first.', true); return posForm(d.id); } await put('positions', {...p, open:!!d.v}, d.id); logNote('edit', 'positions', `Applications ${d.v ? 'opened' : 'closed'}: ${p.title}`); await publishJobs(); toast(d.v ? `${p.title} is now open on the application page` : `${p.title} closed`); },
+  posDel: d => { const p = S.positions[d.id]; if (!p) return; confirmBox(`Delete the position ${esc(p.title)}? Applications already received stay.`, async () => { await del('positions', d.id); publishJobs(); toast('Position deleted'); }, 'Delete'); },
+  jobFlyer: d => { UI.ad.tpl = d.id ? 'job' : 'hiring'; adDefaults(UI.ad.tpl); UI.ad.jobs = d.id ? [d.id] : []; location.hash = 'adverts'; },
+  copyTxt: d => { navigator.clipboard?.writeText(d.t).then(() => toast('Link copied'), () => toast(d.t)); },
+  appView: d => appView(d.id), appFile: d => appFileOpen(+d.i),
+  appShort: async d => { const x = (OWN.jobApps || []).find(a => a.id === d.id); try { await appSet(d.id, 'short'); toast(`${x?.name || ''} shortlisted`); if (x?.phone) window.open(waLink(x.whatsapp || x.phone, jobMsg(x, 'short')), '_blank'); } catch(e) { toast(fbMsg(e), true); } },
+  appIv: d => appInterview(d.id), appHire: d => staffForm(null, d.id),
+  appNo: d => { const x = (OWN.jobApps || []).find(a => a.id === d.id); if (!x) return; confirmBox(`Decline ${esc(x.name)}? You can send them a polite message on WhatsApp next.`, async () => { await appSet(d.id, 'declined'); if (x.phone) window.open(waLink(x.whatsapp || x.phone, jobMsg(x, 'declined')), '_blank'); }, 'Decline'); },
+  appDel: d => { const x = (OWN.jobApps || []).find(a => a.id === d.id); confirmBox(`Delete ${esc(x?.name || 'this')} application and its documents for good?`, async () => { try { const f = await FB.list('appfiles', 'appId', d.id); for (const y of f) await FB.del('appfiles/' + y.id); await FB.del('applications/' + d.id); logNote('delete', 'applications', `Job application from ${x?.name || ''} deleted`); toast('Application deleted'); } catch(e) { toast(fbMsg(e), true); } }, 'Delete'); },
+  staffAdd: () => staffForm(), staffEdit: d => staffForm(d.id), staffLeft: d => { UI.staffLeft = !!d.v; render(true); },
+  staffSt: async d => { const x = S.staff[d.id]; await put('staff', {...x, status:d.v, leftDate:d.v === 'left' ? today() : ''}, d.id); toast(d.v === 'left' ? `${x.name} moved to Left` : `${x.name} is back at work`); },
+  staffDel: d => { const x = S.staff[d.id]; confirmBox(`Delete ${esc(x.name)} from Staff? Their payslips stay. If they only stopped working, use Left instead.`, async () => { await del('staff', d.id); toast('Deleted'); }, 'Delete'); },
+  spayNew: d => spayForm(d.id), spayOpen: d => spayView(d.id), spayEdit: d => { const p = S.spay[d.id]; closeModal(); spayForm(p.staffId, d.id); },
+  spayPaid: async d => { const p = S.spay[d.id]; await put('spay', {...p, status:'paid', paidDate:today()}, d.id); closeModal(); toast('Marked as paid'); setTimeout(() => spayView(d.id), 150); },
+  spayDel: d => confirmBox('Delete this payslip?', async () => { await del('spay', d.id); closeModal(); toast('Payslip deleted'); }, 'Delete'),
+  empAgree: d => empAgreeView(d.id), empBlank: d => empAgreeView('', d.t), empTerms: d => empTermsForm(d.t), goAgree: () => { location.hash = 'agreements'; },
+  empSigned: async d => { const x = S.staff[d.id]; await put('staff', {...x, agreementSigned:today()}, d.id); closeModal(); toast('Agreement marked as signed'); },
+  empReset: d => { const el = $('#f-ett'); if (el) el.value = EMP_DEF[d.k === 'empTextPT' ? 'pt' : 'ft']; },
   ideaKind: d => { UI.ideaKind = d.k; document.querySelectorAll('[data-act=ideaKind]').forEach(b => b.classList.toggle('on', b.dataset.k === d.k)); },
   ideaSend: () => ideaSend(), fbGo: () => { UI.fbTab = 'rates'; location.hash = 'feedback'; },
   fbTab: d => { UI.fbTab = d.v; render(true); }, fbShowHid: () => { UI.fbHid = !UI.fbHid; render(true); },
@@ -6539,6 +6860,7 @@ document.addEventListener('change', async e => {
   if (t0.id === 'rq-all') { document.querySelectorAll('.rq-sel').forEach(c => c.checked = t0.checked); return; }
   if (t0.id === 'f-locks') { await setCfg({lockSecs:num(t0.value)}); toast('Saved'); return; }
   if (t0.id === 'f-bio') { if (t0.checked) { const ok = await DESK.bioAuth('Confirm your fingerprint'); if (!ok) { t0.checked = false; return toast('Fingerprint not confirmed', true); } } await setCfg({bio:t0.checked}); toast(t0.checked ? 'Fingerprint unlock is on' : 'Fingerprint unlock is off'); return; }
+  if (t0.id === 'f-hres') { putSettings({hireResellers:t0.checked}).then(() => publishJobs()); toast(t0.checked ? 'Reseller applications shown on the page' : 'Reseller applications hidden'); return; }
   if (t0.id === 'f-live') { DESK.liveAlerts && DESK.liveAlerts(t0.checked); toast(t0.checked ? 'Instant alerts on' : 'Instant alerts off'); return; }
   if (t0.id === 'f-alerts') { await setCfg({alerts:t0.checked}); if (t0.checked) alertsSetupFor(ADM() ? 'owner' : 'reseller'); else DESK.alertsStop && DESK.alertsStop(); toast('Saved'); return; }
   if (t0.id === 'f-autor' || t0.id === 'f-autor2') { await putSettings({autoRemind:t0.checked}); toast('Saved'); return; }

@@ -1,19 +1,19 @@
 {
- "version": "2.15.0",
- "date": "2026-11-17",
+ "version": "2.16.0",
+ "date": "2026-11-18",
  "notes": [
-  "Customers can rate their order with 5 stars; Suggestions tab for resellers and shopkeepers"
+  "Hiring and job applications, staff payslips, employment agreements, job flyers, reseller Home shortcuts"
  ],
  "android": {
-  "file": "android-2.15.0.html",
-  "sig": "CMnSSvKMi3w9okZy5oqVu5xgi1TJwGixWlsqLRrZlUopskLTY3lR6NqabWrnMdalMyvHUEdZ3PvqsSQT2OTpzw==",
-  "size": 2295229,
+  "file": "android-2.16.0.html",
+  "sig": "nq3q5TYhYYIUQfaiiSAT2UxlebihAvhctQxvuexAj3aHDRhYYASDhA0g4Yrz59bQpMqn/36hzJoFpC8ieJGmyQ==",
+  "size": 2354825,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.15.0.html",
-  "sig": "egBaboXNwtJJ4Uvlh1WcAJqZr8lkm07eYjR3LZqHrkZfcdZScJf5YhKyLUc1d/cog3Qu7pIgzPCrIc6JnvN3zg==",
-  "size": 2290941,
+  "file": "desktop-2.16.0.html",
+  "sig": "e/Ipefl+dI2/DS7Y5otO9FO0wuKGCzpXT3tbNEaC5C6kcoyjT8sk2aL8CHYKHTTQ1UMneCpCasckLQn06CWiEA==",
+  "size": 2350537,
   "minShell": "2.5.0"
  },
  "apk": {
