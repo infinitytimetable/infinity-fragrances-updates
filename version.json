@@ -1,19 +1,19 @@
 {
- "version": "2.17.0",
+ "version": "2.18.0",
  "date": "2026-11-18",
  "notes": [
-  "Staff logins and access rights, approvals, notifications bell, rider links, shop Home and POS, hide and edit, contacts, section settings; fixes POS tapping"
+  "New menus: Sales, Online Business, Shops, Operations, Human Resources, Finance, Users & Access and more, plus new shop, rider, login and help pages"
  ],
  "android": {
-  "file": "android-2.17.0.html",
-  "sig": "PmbE+CW5QdOqjgT4+xscUeB1bsBkT91ootBOmyffkOJm/Z5PT1McEE4vPEWL018UdeJE2Y9IQcoes+98ihuMfw==",
-  "size": 2410115,
+  "file": "android-2.18.0.html",
+  "sig": "XOIax3DfkJ/gYOo1LzQrqZZeYzggZeMPkcx5YoMlAY67i5bCauhyL8a/fp4ayrYfD9LO5Q61Ixl7jlDLoDbawg==",
+  "size": 2447837,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.17.0.html",
-  "sig": "/ahm1m2Pi91Hwkb4PU2bbm0adDyD8zmUWFFBOmyNSbT1d2ghan63HEoqZzIGIKmmPK1OiJrdgsRCC3gnKY2Abg==",
-  "size": 2405827,
+  "file": "desktop-2.18.0.html",
+  "sig": "jjKofPTFxX3yZxwmvXJX3+GR0AvzyPk3CYvWjn6+39ougMpKnYCOyhAqJMmEWu0kt27SiYO+AVBeaYPkcwQi3A==",
+  "size": 2443549,
   "minShell": "2.5.0"
  },
  "apk": {

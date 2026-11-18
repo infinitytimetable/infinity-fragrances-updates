@@ -772,6 +772,11 @@ body.bell-on .head,body.bell-on .res-head,body.bell-on .sec-row{padding-right:52
 .pos2-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-top:10px}.pos2-p{display:flex;flex-direction:column;gap:3px;text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:14px;padding:8px;cursor:pointer;font:inherit}.pos2-p[hidden]{display:none}.pos2-p.in{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent)}.pos2-p.out{opacity:.5}
 .pos2-img{position:relative;aspect-ratio:1;border-radius:10px;background:color-mix(in srgb,var(--surface) 85%,var(--ink) 15%);display:flex;align-items:center;justify-content:center;overflow:hidden}.pos2-img img{width:100%;height:100%;object-fit:contain;background:#fff}.pos2-img>span{font-size:34px;font-weight:700;opacity:.4}.pos2-q{position:absolute;top:6px;right:6px;background:var(--accent);color:var(--accent-ink);border-radius:999px;min-width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:13px}.pos2-q[hidden]{display:none}
 .pos2-n{font-weight:700;font-size:14px;line-height:1.2}.pos2-n small{font-weight:500;opacity:.7}.pos2-pr s{opacity:.55;font-size:12px}.tot-row{display:flex;justify-content:space-between;font-size:19px;font-weight:800;margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+.sec-parts{display:flex;flex-direction:column;gap:4px}.sec-row.part .part-l{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);min-width:92px}
+.lnk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}.lnk{display:flex;gap:14px;justify-content:space-between;align-items:flex-start;margin:0}.lnk-qr{width:120px;height:120px;flex:none;background:#fff;padding:6px;border-radius:10px;display:flex;align-items:center;justify-content:center}.lnk-qr svg{width:100%;height:100%}
+.tips-list{margin:0;padding-left:22px}.tips-list li{margin:6px 0}td.warnc{background:color-mix(in srgb,#f59f00 22%,transparent);font-weight:700}
+@media (max-width:640px){.sec-row.part{flex-direction:column;align-items:flex-start;gap:2px}.lnk{flex-direction:column}}
+.part-chips{display:flex;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:8px}.part-chips a{flex:1;text-align:center;padding:9px 6px;font-weight:700;font-size:13px;color:var(--ink);text-decoration:none;background:var(--surface)}.part-chips a+a{border-left:1px solid var(--line)}.part-chips a.on{background:var(--accent);color:var(--accent-ink)}
 </style>
 <script>try{var L=JSON.parse(localStorage.getItem('if-look')||'{}'),R=document.documentElement;var F=localStorage.getItem('if-forceskin');R.dataset.skin=F||L.skin||'classic';if(L.mode&&L.mode!=='auto')R.dataset.theme=L.mode;R.dataset.text=L.text||'normal';if(L.motion===false)R.dataset.motion='off';}catch(e){}</script>
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Infinity"><meta name="theme-color" content="#0b0a08">
@@ -1056,7 +1061,7 @@ function syncPush(c, rec, x){
 }
 function syncFlush(){ const q = SYNC.q.splice(0); if (!q.length) return; try { FB.syncWrite(q, e => { SYNC.err = fbMsg(e); syncStatus(); }); } catch(e) { SYNC.err = e.message || String(e); SYNC.q = q.concat(SYNC.q); } }
 const syncParse = it => { try { return it.j ? JSON.parse(it.j) : null; } catch(e) { return null; } };
-const listenSig = () => Object.values(S.resellers).map(r => r.portalUid || '').join(',') + '|' + locs().map(l => l.keeperUid || '').join(',');
+const listenSig = () => Object.values(S.resellers).map(r => r.portalUid || '').join(',') + '|' + locs().map(l => l.keeperUid || '').join(',') + '|' + Object.values(S.staff || {}).map(x => (x.loginUid || '') + (x.shopId || '') + (x.riderToken || '')).join(',');
 function syncApply(items, opts = {}){
   let ch = 0; const me = devId();
   for (const it of items) {
@@ -1274,19 +1279,24 @@ function monthStats(m){
 
 /* ---------- render ---------- */
 const PAGES = {};
-const ROUTES = ['dashboard','approvals','contacts','feedback','hiring','staff','pos','orders','customers','portal','invoices','suppliers','broadcast','activity','settlement','leaderboard','team','planner','profit','reminders','agreements','resellers','commissions','payslips','debtors','products','stocktake','shops','stock','purchases','dispatch','sales','cashbook','expenses','promos','catalogue','adverts','studio','prospects','monthreport','reports','setup','company'];
+const ROUTES = ['dashboard','approvals','contacts','feedback','hiring','staff','ratings','riders','links','shopsales','shopstock','shopstaff','shopcust','ideas','resapps','empagree','payroll','logins','access','updates','help','pos','orders','customers','portal','invoices','suppliers','broadcast','activity','settlement','leaderboard','team','planner','profit','reminders','agreements','resellers','commissions','payslips','debtors','products','stocktake','shops','stock','purchases','dispatch','sales','cashbook','expenses','promos','catalogue','adverts','studio','prospects','monthreport','reports','setup','company'];
 function route(){ const h = location.hash.slice(1); return ROUTES.includes(h) ? h : 'dashboard'; }
 const GROUPS = [
-  {label:'Dashboard', tabs:[['dashboard','Dashboard'],['approvals','Approvals'],['contacts','Contacts']]},
-  {label:'Sell', tabs:[['pos','Point of sale'],['orders','Online shop'],['customers','Customers & loyalty'],['sales','Sales book']]},
-  {label:'Resellers', tabs:[['resellers','Towns & resellers'],['portal','Requests & logins'],['settlement','Settlement day'],['debtors','Money owed'],['reminders','Reminders'],['agreements','Agreements'],['feedback','Suggestions & ratings']]},
-  {label:'Team & pay', tabs:[['hiring','Hiring'],['staff','Staff & payslips'],['commissions','Commissions'],['payslips','Payslips'],['team','Recruits & bonuses'],['leaderboard','Leaderboard']]},
-  {label:'Stock', tabs:[['products','Products'],['stock','Stock register'],['stocktake','Stock-take'],['purchases','Purchases'],['suppliers','Suppliers'],['planner','Reorder planner']]},
-  {label:'Shops & delivery', tabs:[['shops','Shops'],['dispatch','Dispatch & delivery']]},
-  {label:'Money', tabs:[['cashbook','Cash book'],['expenses','Expenses'],['invoices','Invoices & quotes']]},
-  {label:'Marketing', tabs:[['promos','Promotions'],['adverts','Flyers & adverts'],['catalogue','Catalogue'],['broadcast','WhatsApp broadcast'],['studio','Photo studio'],['prospects','Prospects & advice']]},
-  {label:'Reports & settings', tabs:[['monthreport','Monthly report'],['reports','Profit & reports'],['profit','Profit by perfume'],['activity','Activity log'],['company','Company profile'],['setup','Settings & backup']]}
+  {label:'Dashboard', tabs:[['dashboard','Dashboard'],['approvals','Approvals'],['feedback','Suggestions'],['contacts','Contacts']]},
+  {label:'Sales', tabs:[['pos','Point of sale'],['sales','Sales book'],['customers','Customers & loyalty']]},
+  {label:'Online Business', tabs:[['orders','Online shop orders'],['ratings','Customer ratings'],['riders','Deliveries & riders'],['catalogue','Online catalogue'],['links','Online pages & links']]},
+  {label:'Shops', tabs:[['shops','Shops'],['shopsales','Sales & cash-ups'],['shopstock','Stock in shops'],['shopstaff','Shop staff'],['shopcust','Shop customers'],['ideas','Business ideas']]},
+  {label:'Stock', tabs:[['products','Products'],['stock','Stock register']]},
+  {label:'Operations', tabs:[['dispatch','Dispatch & delivery'],['stocktake','Stock-take'],['planner','Reorder planner'],['purchases','Purchases'],['suppliers','Suppliers']]},
+  {label:'Resellers', tabs:[['resellers','Towns & resellers'],['portal','Requests & logins'],['resapps','Applications'],['settlement','Settlement day'],['reminders','Reminders'],['team','Recruits & bonuses'],['leaderboard','Leaderboard'],['agreements','Reseller agreements']]},
+  {label:'Human Resources', tabs:[['hiring','Careers & applications'],['staff','Staff'],['empagree','Employee agreements']]},
+  {label:'Finance', parts:[['Money', [['cashbook','Cash book'],['expenses','Expenses'],['invoices','Invoices & quotes'],['debtors','Money owed']]], ['Pay', [['payroll','Payroll'],['commissions','Reseller commissions'],['payslips','Reseller payslips']]], ['Reports & tax', [['monthreport','Monthly report'],['reports','Profit & reports'],['profit','Profit by perfume'],['company','Company profile & tax']]]]},
+  {label:'Marketing', tabs:[['promos','Promotions'],['adverts','Flyers & adverts'],['broadcast','WhatsApp broadcast'],['studio','Photo studio'],['prospects','Prospects & advice']]},
+  {label:'Users & Access', tabs:[['logins','All logins'],['access','Access by position'],['activity','Activity log']]},
+  {label:'Settings', tabs:[['setup','Settings & backup'],['updates','App updates'],['help','Help']]}
 ];
+GROUPS.forEach(g => { if (g.parts) g.tabs = g.parts.flatMap(x => x[1]); });
+const SCREEN_ALIAS = {payroll:'staff', empagree:'agreements', ratings:'feedback', resapps:'portal', shopsales:'shops', shopstock:'shops', shopstaff:'shops', shopcust:'shops', ideas:'shops', riders:'orders', links:'orders'};
 const groupOf = r => GROUPS.find(g => g.tabs.some(t => t[0] === r)) || GROUPS[0];
 const LAST_TAB = {};
 function navHTML(r){
@@ -1297,6 +1307,9 @@ function navHTML(r){
 }
 function tabsHTML(r){
   const g = groupOf(r), tabs = g.tabs.filter(t => allowed(t[0])), gear = SECTION_SET[r] && !FB_ME?.limited ? `<button type="button" class="btn sm ghost sec-gear" data-act="secSet" data-r="${r}" title="Settings for this section">⚙ Settings</button>` : '';
+  if (g.parts && SMALL()) { const cp = g.parts.find(x => x[1].some(t => t[0] === r)) || g.parts[0], vis = g.parts.filter(x => x[1].some(t => allowed(t[0]))), t2 = cp[1].filter(t => allowed(t[0]));
+    return `<div class="sec-parts"><nav class="part-chips">${vis.map(x => `<a href="#${x === cp ? r : x[1].find(t => allowed(t[0]))[0]}" class="${x === cp ? 'on' : ''}">${esc(x[0])}</a>`).join('')}</nav><div class="sec-row"><nav class="tabs" aria-label="${esc(g.label + ' · ' + cp[0])}">${t2.map(([id, l]) => `<a href="#${id}" class="${id === r ? 'on' : ''}">${esc(l)}</a>`).join('')}</nav>${gear}</div></div>`; }
+  if (g.parts) return `<div class="sec-parts">${g.parts.map(([pl, pt], i) => { const t2 = pt.filter(t => allowed(t[0])); return t2.length ? `<div class="sec-row part"><span class="part-l">${esc(pl)}</span><nav class="tabs" aria-label="${esc(g.label + ' · ' + pl)}">${t2.map(([id, l]) => `<a href="#${id}" class="${id === r ? 'on' : ''}">${esc(l)}</a>`).join('')}</nav>${i === 0 ? gear : ''}</div>` : ''; }).join('')}</div>`;
   if (tabs.length < 2) return gear ? `<div class="sec-row">${gear}</div>` : '';
   return `<div class="sec-row"><nav class="tabs" aria-label="${esc(g.label)}">${tabs.map(([id, l]) => `<a href="#${id}" class="${id === r ? 'on' : ''}">${esc(l)}</a>`).join('')}</nav>${gear}</div>`;
 }
@@ -2241,8 +2254,9 @@ function fixNumbers(o){
 }
 
 /* ======================= Version 2.0 ======================= */
-const APP_VERSION = '2.17.0';
+const APP_VERSION = '2.18.0';
 const CHANGELOG = [
+  ['2.18.0', '18 Nov 2026', ['New menus: Dashboard, Sales, Online Business, Shops, Stock, Operations, Resellers, Human Resources, Finance (Money, Pay, Reports & tax), Marketing, Users & Access, Settings', 'New pages: Online pages & links, Deliveries & riders, Shop sales & cash-ups, Stock in shops, Shop staff, Shop customers, Business ideas, All logins, Access by position, Reseller applications, App updates, Help', 'Payroll now in Finance; Staff and Employee agreements in Human Resources', 'Shop app Home shows business ideas and insights']],
   ['2.17.0', '18 Nov 2026', ['Staff logins with access rights per position: limited admin app for office staff, shopkeeper app for shop staff and cashiers, manager logins for senior staff', 'Approvals: stock and money changes by limited staff wait for the admin', 'Notifications bell with unread count in every app', 'Rider links: each rider gets one personal delivery link', 'Shopkeeper app Home and a new POS with photos, discounts, scanner and calculator', 'Hide finished items, show older, edit or cancel pending requests in the reseller and shop apps', 'Contacts directory', 'Settings for each section (gear button) and Marketing Assistant position']],
   ['2.16.0', '18 Nov 2026', ['Hiring: post positions, open or close applications, and an online application page for jobs (full or part time) and resellers', 'Applications go New → Shortlisted → Interview → Hired, with WhatsApp messages and uploaded NRC, photo, CV and certificates', 'Staff & payslips: staff list with basic pay, commission and NAPSA payslips', 'Full time and part time employment agreements', "Job flyers: We're hiring and single job adverts with a QR code", 'Reseller app: shortcuts at the bottom of Home']],
   ['2.15.0', '17 Nov 2026', ['Online shop customers can give their order a 5-star rating with a comment', 'Suggestions tab for resellers and shopkeepers; read, reply, hide or delete them under Resellers → Suggestions & ratings']],
@@ -2292,10 +2306,10 @@ const lockOn = () => APP_ROLE !== 'manager' && users().length > 0;
 async function sha(s){ const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
 function allowed(r){
   if (r === 'approvals' && FB_ME?.limited && APP_ROLE === 'manager') return false;
-  if (APP_ROLE === 'manager') return !!SESSION && (FB_ME?.limited ? (r === 'setup' || (FB_ME.screens || []).includes(r)) : r !== 'activity');
+  if (APP_ROLE === 'manager') return !!SESSION && (FB_ME?.limited ? (r === 'setup' || r === 'help' || r === 'updates' || (FB_ME.screens || []).some(k => k === r || SCREEN_ALIAS[r] === k)) : !['activity', 'logins', 'access'].includes(r));
   if (!lockOn()) return true; if (!SESSION) return false;
   if (SESSION.role === 'owner') return true;
-  if (SESSION.role === 'manager') return !['setup', 'activity'].includes(r);
+  if (SESSION.role === 'manager') return !['setup', 'activity', 'logins', 'access'].includes(r);
   return ['pos', 'customers'].includes(r);
 }
 const firstAllowed = () => ROUTES.find(allowed) || 'pos';
@@ -2829,7 +2843,7 @@ function ownerListen(){
     ideasPrimed = true; if (route() === 'feedback') render(true); else updatePortalBadge(); }));
   OWN.unsubs.push(FB.listen('ratings', null, null, list => { const old = new Set((OWN.rates || []).map(x => x.id)); OWN.rates = list.sort((a, b) => (b.at || '').localeCompare(a.at || ''));
     if (ratesPrimed) list.filter(x => !old.has(x.id)).forEach(x => { appNotify('New customer rating', `${x.name}: ${'★'.repeat(x.stars)}${x.comment ? ' ' + String(x.comment).slice(0, 60) : ''}`); toast(`${x.name} rated their order ${x.stars}★`); });
-    ratesPrimed = true; if (['feedback', 'orders'].includes(route())) render(true); else updatePortalBadge(); }));
+    ratesPrimed = true; if (['ratings', 'orders'].includes(route())) render(true); else updatePortalBadge(); }));
   OWN.shopReqs = {}; locs().filter(shopLive).forEach(l => {
     OWN.unsubs.push(FB.listen(`shops/${l.id}/sales`, 'status', 'new', list => list.forEach(q => shopSaleImport(l.id, q))));
     OWN.unsubs.push(FB.listen(`shops/${l.id}/requests`, 'status', 'pending', async list => { for (const q of list.filter(x => x.type === 'received')) { try { if (!(await claimDoc(`shops/${l.id}/requests/${q.id}`, 'pending'))) continue; await dnReceive(q.dispatchId, q.date || today(), q.byName || l.keeper || ''); await FB.update(`shops/${l.id}/requests/${q.id}`, {status:'approved', decidedAt:FB.now()}); toast(`${l.name} received parcel ${S.dispatches[q.dispatchId]?.no || ''}`); } catch(e) {} } list = list.filter(x => x.type !== 'received'); const old = new Set((OWN.shopReqs[l.id] || []).map(x => x.id)); OWN.shopReqs[l.id] = list.map(q => ({...q, sid:l.id})); list.filter(q => !old.has(q.id) && OWN.shopPrimed?.[l.id]).forEach(q => { appNotify('Shop stock request', l.name); toast(`${l.name} asks for stock`); }); (OWN.shopPrimed = OWN.shopPrimed || {})[l.id] = true; if (route() === 'shops') render(true); else updatePortalBadge(); }));
@@ -2855,7 +2869,7 @@ async function autoSale(rid, q){
   finally { setTimeout(() => OWN.auto.delete(q.id), 120000); }
 }
 const pendingAll = () => Object.entries(OWN.reqs).flatMap(([rid, l]) => l.map(q => ({...q, rid}))).sort((a, b) => (a.at || '').localeCompare(b.at || ''));
-function updatePortalBadge(){ const fb = (OWN.ideas || []).filter(x => x.status === 'new').length + (OWN.rates || []).filter(x => !x.seen).length; document.querySelectorAll('a[href="#feedback"]').forEach(a => a.dataset.badge = fb || ''); const hj = (OWN.jobApps || []).filter(x => x.status === 'new').length; document.querySelectorAll('a[href="#hiring"]').forEach(a => a.dataset.badge = hj || ''); const ap = (OWN.approvals || []).length; document.querySelectorAll('a[href="#approvals"]').forEach(a => a.dataset.badge = ap || ''); const n = pendingAll().length + (OWN.apps || []).length + (OWN.orders || []).filter(o => o.status === 'new').length + Object.values(OWN.shopReqs || {}).flat().length; document.querySelectorAll('a[href="#portal"]').forEach(a => a.dataset.badge = n || ''); }
+function updatePortalBadge(){ const fb = (OWN.ideas || []).filter(x => x.status === 'new').length, fr = (OWN.rates || []).filter(x => !x.seen).length; document.querySelectorAll('a[href="#feedback"]').forEach(a => a.dataset.badge = fb || ''); document.querySelectorAll('a[href="#ratings"]').forEach(a => a.dataset.badge = fr || ''); document.querySelectorAll('a[href="#resapps"]').forEach(a => a.dataset.badge = (OWN.apps || []).length || ''); const hj = (OWN.jobApps || []).filter(x => x.status === 'new').length; document.querySelectorAll('a[href="#hiring"]').forEach(a => a.dataset.badge = hj || ''); const ap = (OWN.approvals || []).length; document.querySelectorAll('a[href="#approvals"]').forEach(a => a.dataset.badge = ap || ''); const n = pendingAll().length + (OWN.apps || []).length + (OWN.orders || []).filter(o => o.status === 'new').length + Object.values(OWN.shopReqs || {}).flat().length; document.querySelectorAll('a[href="#portal"]').forEach(a => a.dataset.badge = n || ''); }
 function snapshotFor(rid){
   const r = S.resellers[rid], C = compute(), a = C.acc[rid] || {sales:0, remit:0, earned:0, paid:0, net:0}, st = statement(rid);
   const held = heldOf(rid, C).map(([p, q]) => { const pr = S.products[p] || {}; return {productId:p, name:pr.name || pName(p), size:pr.size || '', category:pr.category || '', qty:q, price:resPrice(rid, p, C)}; }).sort((x, y) => x.name.localeCompare(y.name));
@@ -3673,7 +3687,7 @@ const ICONS = {home:'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d=
 const groupFirst = label => { const g = GROUPS.find(x => x.label === label); if (!g) return ''; return (LAST_TAB[label] && allowed(LAST_TAB[label])) ? LAST_TAB[label] : (g.tabs.find(t => allowed(t[0])) || [])[0] || ''; };
 function bottomBar(r){
   const bb = $('#bottombar'); if (!bb) return; const g = groupOf(r).label;
-  const items = [[groupFirst('Dashboard'), 'Home', 'home', 'Dashboard'], [groupFirst('Sell'), 'Sell', 'sell', 'Sell'], [groupFirst('Resellers'), 'Resellers', 'people', 'Resellers'], [groupFirst('Stock'), 'Stock', 'box', 'Stock']].filter(x => x[0]);
+  const items = [[groupFirst('Dashboard'), 'Home', 'home', 'Dashboard'], [groupFirst('Sales'), 'Sell', 'sell', 'Sales'], [groupFirst('Resellers'), 'Resellers', 'people', 'Resellers'], [groupFirst('Stock'), 'Stock', 'box', 'Stock']].filter(x => x[0]);
   bb.innerHTML = items.map(([id, l, ic, grp]) => `<a href="#${id}" class="${g === grp ? 'on' : ''}" ${g === grp ? 'aria-current="page"' : ''}><svg viewBox="0 0 24 24" aria-hidden="true">${ico(ic)}</svg>${l}</a>`).join('')
     + `<button type="button" data-act="drawer" class="${items.some(x => x[3] === g) ? '' : 'on'}" aria-label="More pages"><svg viewBox="0 0 24 24" aria-hidden="true">${ico('more')}</svg>More</button>`;
 }
@@ -3880,7 +3894,7 @@ function shopSnapshot(sid){
     .map(r => ({id:r.id, no:r.no, date:r.date, time:r.time, total:num(r.total), pay:r.pay, customer:r.customer || '', bottles:(r.lines || []).reduce((s2, x) => s2 + num(x.qty), 0), token:r.token || ''}));
   const lastNo = Object.values(S.receipts).filter(r => r.shop === sid).reduce((m, r) => Math.max(m, parseInt(String(r.no).split('-').pop()) || 0), 0);
   const parcels = Object.values(S.dispatches).filter(d => d.toLoc === sid).sort((a, b) => (b.date || '').localeCompare(a.date || '') || (b.no || '').localeCompare(a.no || '')).slice(0, 15).map(d => ({id:d.id, no:d.no, date:d.date, courier:d.courier || '', waybill:d.waybill || '', status:d.status, deliveredDate:d.deliveredDate || '', items:(d.lines || []).map(x => ({name:pName(x.productId), qty:num(x.qty)}))}));
-  return {name:l.name, town:l.town || '', address:l.address || '', code:shopCode(l), keeper:l.keeper || '', stock, recent, parcels, festive:S.settings.festive || 'auto', festOff:S.settings.festOff || [], festIcon:S.settings.festIcon !== false, lastCashup:(c => c ? {date:c.date, diff:c.diff} : null)(lastCashup(sid)), lastNo, today:t, business:bizName(), businessPhone:S.settings.phone || '', tagline:S.settings.tagline || '', notice:S.settings.shopNotice || '', target:num(S.settings.shopTarget) || 0, low:num(S.settings.shopLowLevel || S.settings.lowStock || 2), discMax:num(S.settings.shopDiscMax ?? 10), credit:S.settings.shopCredit !== false, momoNo:S.settings.storeMomo || '', airtelNo:S.settings.storeAirtel || '', month:(m => ({bottles:Object.values(S.receipts).filter(r => r.shop === sid && (r.date || '').startsWith(m)).reduce((a, r) => a + (r.lines || []).reduce((b, x) => b + num(x.qty), 0), 0)}))(t.slice(0, 7)), updatedAt:nowISO()};
+  return {name:l.name, town:l.town || '', address:l.address || '', code:shopCode(l), keeper:l.keeper || '', stock, recent, parcels, festive:S.settings.festive || 'auto', festOff:S.settings.festOff || [], festIcon:S.settings.festIcon !== false, lastCashup:(c => c ? {date:c.date, diff:c.diff} : null)(lastCashup(sid)), lastNo, today:t, business:bizName(), businessPhone:S.settings.phone || '', tagline:S.settings.tagline || '', notice:S.settings.shopNotice || '', tips:shopTips(), insights:shopInsights(sid).slice(0, 6), target:num(S.settings.shopTarget) || 0, low:num(S.settings.shopLowLevel || S.settings.lowStock || 2), discMax:num(S.settings.shopDiscMax ?? 10), credit:S.settings.shopCredit !== false, momoNo:S.settings.storeMomo || '', airtelNo:S.settings.storeAirtel || '', month:(m => ({bottles:Object.values(S.receipts).filter(r => r.shop === sid && (r.date || '').startsWith(m)).reduce((a, r) => a + (r.lines || []).reduce((b, x) => b + num(x.qty), 0), 0)}))(t.slice(0, 7)), updatedAt:nowISO()};
 }
 async function publishShop(sid){ const l = shopOf(sid); if (!l || !shopLive(l) || !ADM() || FB_ME?.limited) return; try { await FB.set('shops/' + sid, shopSnapshot(sid)); } catch(e) {} }
 const publishShops = () => locs().filter(shopLive).forEach(l => publishShop(l.id));
@@ -3890,7 +3904,7 @@ async function shopSaleImport(sid, q){
   try {
     if (Object.values(S.receipts).some(r => r.extId === q.id)) { await FB.update(`shops/${sid}/sales/${q.id}`, {status:'recorded'}); return; }
     const cl = await claimDoc(`shops/${sid}/sales/${q.id}`, 'new'); if (cl === null) { setTimeout(() => shopSaleImport(sid, {...q}), 60000); return; } if (!cl) return; q.claimed = true;
-    const rc = {id:uid(), no:q.no, date:q.date || today(), time:q.time || '', shop:sid, loc:sid, pay:q.pay || 'cash', customer:q.customer || '', phone:q.phone || '', lines:(q.lines || []).map(l => ({productId:l.productId, qty:num(l.qty), price:num(l.price)})), subtotal:num(q.subtotal ?? q.total), discount:num(q.discount), total:num(q.total), seller:'', soldBy:q.byName || shopOf(sid)?.keeper || '', token:q.token || '', extId:q.id, moveIds:[]};
+    const rc = {id:uid(), no:q.no, date:q.date || today(), time:q.time || '', shop:sid, loc:sid, pay:q.pay || 'cash', customer:q.customer || '', phone:q.phone || '', byName:q.byName || '', byUid:q.by || '', lines:(q.lines || []).map(l => ({productId:l.productId, qty:num(l.qty), price:num(l.price)})), subtotal:num(q.subtotal ?? q.total), discount:num(q.discount), total:num(q.total), seller:'', soldBy:q.byName || shopOf(sid)?.keeper || '', token:q.token || '', extId:q.id, moveIds:[]};
     for (const l of rc.lines) { const mv = await put('moves', {kind:'sale', date:rc.date, loc:sid, productId:l.productId, qty:l.qty, unitPrice:l.price, unitCost:num(S.products[l.productId]?.costPrice), customer:rc.customer, pay:rc.pay, note:`${shopOf(sid)?.name || 'Shop'} · ${rc.no}`}); rc.moveIds.push(mv.id); }
     if (rc.pay !== 'credit') { const c = await put('cash', {kind:'in', date:rc.date, channel:rc.pay, amount:rc.total, category:'Shop sale', shop:sid, customer:rc.customer, description:`${shopOf(sid)?.name || 'Shop'} receipt ${rc.no}`, receiptId:rc.id}); rc.cashId = c.id; }
     if (rc.phone || rc.customer) { try { rc.points = await addPoints(rc.customer, rc.phone, rc.total, rc.no); } catch(e) {} }
@@ -3918,7 +3932,7 @@ async function ideaSend(){
   catch(e) { toast(fbMsg(e), true); }
 }
 PAGES.feedback = () => {
-  const tab = UI.fbTab || 'ideas', ideas = OWN.ideas || [], rates = OWN.rates || [], showH = !!UI.fbHid;
+  const tab = route() === 'ratings' ? 'rates' : 'ideas', ideas = OWN.ideas || [], rates = OWN.rates || [], showH = !!UI.fbHid;
   const iv = ideas.filter(x => showH ? x.hidden : !x.hidden), rv = rates.filter(x => showH ? x.hidden : !x.hidden);
   const avg = rates.length ? rates.reduce((t, x) => t + num(x.stars), 0) / rates.length : 0, newI = ideas.filter(x => x.status === 'new').length, newR = rates.filter(x => !x.seen).length;
   const dist = [5, 4, 3, 2, 1].map(n => [n, rates.filter(x => x.stars === n).length]);
@@ -3930,8 +3944,8 @@ PAGES.feedback = () => {
   else body = `<div class="card rate-sum"><div><div class="serif" style="font-size:44px;line-height:1">${rates.length ? avg.toFixed(1) : '–'}</div>${stars(avg, true)}<div class="small mut">${int(rates.length)} rating${rates.length === 1 ? '' : 's'}</div></div><div class="rate-bars">${dist.map(([n, c]) => `<div><span>${n}★</span><i><b style="width:${rates.length ? c / rates.length * 100 : 0}%"></b></i><span>${c}</span></div>`).join('')}</div></div>`
       + (rv.length ? `<div class="card"><ul class="list">${rv.map(x => `<li style="display:block"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><span><b>${esc(x.name)}</b> ${stars(x.stars)}</span><span class="small mut">Order ${esc(x.no || '')} · ${esc(fmtDateTime(x.at))}${x.seen ? '' : ' · <span class="pill warn">New</span>'}</span></div>${x.comment ? `<p style="margin:6px 0">${esc(x.comment)}</p>` : ''}
       <div class="actions">${x.seen ? '' : btn('Mark seen', 'rateSeen', {id:x.id}, 'sm')}${btn(x.hidden ? 'Show again' : 'Hide', 'fbHide', {c:'ratings', id:x.id, v:x.hidden ? '' : '1'}, 'sm ghost')}${btn('Delete', 'fbDel', {c:'ratings', id:x.id}, 'sm ghost danger')}</div></li>`).join('')}</ul></div>` : empty(showH ? 'No hidden ratings.' : 'No ratings yet. Customers can rate their order on the order page after they buy.'));
-  return head('Suggestions & ratings', 'Suggestions from your resellers and shopkeepers, and star ratings from online shop customers.')
-    + `<div class="filters"><div class="seg">${btn(`Suggestions${newI ? ` (${newI} new)` : ''}`, 'fbTab', {v:'ideas'}, tab === 'ideas' ? 'on' : '')}${btn(`Customer ratings${newR ? ` (${newR} new)` : ''}`, 'fbTab', {v:'rates'}, tab === 'rates' ? 'on' : '')}</div>${btn(showH ? 'Back to current' : `Show hidden (${(tab === 'ideas' ? ideas : rates).filter(x => x.hidden).length})`, 'fbShowHid', {}, 'sm ghost')}</div>` + body;
+  return head(tab === 'rates' ? 'Customer ratings' : 'Suggestions', tab === 'rates' ? 'Star ratings and comments from online shop customers.' : 'Suggestions from your resellers, shopkeepers and staff.')
+    + `<div class="filters">${btn(showH ? 'Back to current' : `Show hidden (${(tab === 'ideas' ? ideas : rates).filter(x => x.hidden).length})`, 'fbShowHid', {}, 'sm ghost')}</div>` + body;
 };
 
 /* ---- shopkeeper app ---- */
@@ -4395,9 +4409,9 @@ function appInterview(id){
   async d => { const at = `${d.d}T${d.t}:00`; await appSet(id, 'interview', {interviewAt:at, interviewPlace:d.place.trim()}); putSettings({interviewPlace:d.place.trim()});
     if (x.phone) window.open(waLink(x.whatsapp || x.phone, jobMsg({...x, interviewAt:at, interviewPlace:d.place.trim()}, 'interview')), '_blank'); toast('Interview booked'); }, {label:'Book and send on WhatsApp'});
 }
-function staffForm(id, fromApp){
+function staffForm(id, fromApp, preTitle){
   const x = fromApp ? (OWN.jobApps || []).find(a => a.id === fromApp) : null, pos = x ? S.positions[x.positionId] : null;
-  const st = id ? S.staff[id] : x ? {name:x.name, phone:x.phone, nrc:x.nrc, dob:x.dob, gender:x.gender, address:x.address, title:x.positionTitle, positionId:x.positionId, type:x.type || 'ft', start:x.start || today(), hours:(x.type === 'pt' ? pos?.ptHours : pos?.ftHours) || '', payText:(x.type === 'pt' ? pos?.ptPay : pos?.ftPay) || '', appId:x.id, place:pos?.place || ''} : {type:'ft', start:today()};
+  const st = id ? S.staff[id] : x ? {name:x.name, phone:x.phone, nrc:x.nrc, dob:x.dob, gender:x.gender, address:x.address, title:x.positionTitle, positionId:x.positionId, type:x.type || 'ft', start:x.start || today(), hours:(x.type === 'pt' ? pos?.ptHours : pos?.ftHours) || '', payText:(x.type === 'pt' ? pos?.ptPay : pos?.ftPay) || '', appId:x.id, place:pos?.place || ''} : {type:'ft', start:today(), title:preTitle || ''};
   modal(id ? `Edit ${esc(st.name)}` : x ? `Hire ${esc(x.name)}` : 'Add a staff member', `<div class="grid2"><label for="f-sn">Full name<input id="f-sn" name="name" value="${esc(st.name || '')}" required></label><label for="f-sp">Phone<input id="f-sp" name="phone" value="${esc(st.phone || '')}"></label>
     <label for="f-stt">Position<input id="f-stt" name="title" list="pos-l" value="${esc(st.title || '')}" required><datalist id="pos-l">${posAll().map(p => `<option value="${esc(p.title)}">`).join('')}</datalist></label>
     <label for="f-sty">Type<select id="f-sty" name="type"><option value="ft" ${st.type !== 'pt' ? 'selected' : ''}>Full time</option><option value="pt" ${st.type === 'pt' ? 'selected' : ''}>Part time</option></select></label>
@@ -4586,7 +4600,7 @@ function resShortcuts(){
 
 /* ======================= 2.17: staff access, approvals, bell, contacts, riders, shop home & POS ======================= */
 const SHOP_SCREENS = [['home', 'Home'], ['sell', 'Sell (POS)'], ['today', 'Today & close the day'], ['stock', 'Stock count & parcels'], ['order', 'Order stock'], ['ideas', 'Suggestions'], ['account', 'Account']];
-const ADMIN_SCREENS = () => GROUPS.flatMap(g => g.tabs.map(([k, l]) => [k, l, g.label])).filter(([k]) => !['setup', 'activity', 'approvals', 'company'].includes(k));
+const ADMIN_SCREENS = () => GROUPS.flatMap(g => g.tabs.map(([k, l]) => [k, l, g.label])).filter(([k]) => !['setup', 'activity', 'approvals', 'company', 'logins', 'access', 'updates', 'help'].includes(k));
 const APP_TYPES = {none:'No app', admin:'Admin app (limited screens)', manager:'Admin app (full manager)', shop:'Shopkeeper app', rider:'Rider link (no login)'};
 function accessDef(title){
   const t = String(title || '').toLowerCase(), A = l => ({app:'admin', screens:l});
@@ -4594,10 +4608,10 @@ function accessDef(title){
   if (/shop ?keeper|shop manager|sales assistant/.test(t)) return {app:'shop', screens:SHOP_SCREENS.map(x => x[0])};
   if (/rider|driver|delivery/.test(t)) return {app:'rider', screens:[]};
   if (/general manager|visionary|ceo|director|managing/.test(t)) return {app:'manager', screens:[]};
-  if (/stock|store ?keeper|warehouse/.test(t)) return A(['dashboard', 'products', 'stock', 'stocktake', 'purchases', 'suppliers', 'planner', 'dispatch', 'shops', 'contacts']);
-  if (/operation/.test(t)) return A(['dashboard', 'orders', 'dispatch', 'stock', 'customers', 'contacts', 'feedback']);
-  if (/secretary|admin|receptionist/.test(t)) return A(['dashboard', 'hiring', 'customers', 'invoices', 'contacts', 'feedback', 'agreements']);
-  if (/marketing/.test(t)) return A(['dashboard', 'adverts', 'catalogue', 'studio', 'promos', 'broadcast', 'prospects', 'customers', 'contacts']);
+  if (/stock|store ?keeper|warehouse/.test(t)) return A(['dashboard', 'products', 'stock', 'stocktake', 'purchases', 'suppliers', 'planner', 'dispatch', 'shopstock', 'contacts']);
+  if (/operation/.test(t)) return A(['dashboard', 'orders', 'riders', 'dispatch', 'stock', 'customers', 'contacts', 'feedback']);
+  if (/secretary|admin|receptionist/.test(t)) return A(['dashboard', 'hiring', 'customers', 'invoices', 'contacts', 'feedback', 'empagree', 'agreements']);
+  if (/marketing/.test(t)) return A(['dashboard', 'adverts', 'catalogue', 'studio', 'promos', 'broadcast', 'prospects', 'customers', 'contacts', 'links', 'ratings']);
   return {app:'none', screens:[]};
 }
 const posOfTitle = t => posAll().find(p => (p.title || '').toLowerCase() === String(t || '').toLowerCase());
@@ -4798,6 +4812,7 @@ function shopHome(av, mine){
     + `<div class="tiles">${tile('Sales today', money(tot), `${mine.length} receipt${mine.length === 1 ? '' : 's'}`)}${tile('Bottles today', int(bottles))}${tile('Cash · MoMo · Airtel', `${money(by.cash || 0)}`, `MoMo ${money(by.momo || 0)} · Airtel ${money(by.airtel || 0)}`)}${tile('Last closed', s.lastCashup ? fmtDate(s.lastCashup.date) : 'Not yet', s.lastCashup?.diff ? (s.lastCashup.diff < 0 ? 'short ' : 'over ') + money(Math.abs(s.lastCashup.diff)) : '')}</div>`
     + (tg ? `<div class="card"><h2>This month</h2><div style="background:var(--line);border-radius:8px;height:14px;overflow:hidden"><div style="width:${pc}%;height:100%;background:${pc >= 100 ? 'var(--s3)' : 'var(--gold)'}"></div></div><p style="margin:6px 0 0"><b>${int(mo)}</b> of ${int(tg)} bottles${pc >= 100 ? ' · <b>Target hit! 🎯</b>' : ` · ${int(Math.max(0, tg - mo))} to go`}</p></div>` : '')
     + `<div class="card"><h2>Stock alerts</h2>${wait.length ? `<p style="margin:0 0 6px">📦 <b>${wait.length} parcel${wait.length === 1 ? '' : 's'}</b> on the way to you. ${shopCan('stock') ? btn('Receive', 'shopTab', {k:'stock'}, 'sm') : ''}</p>` : ''}${low.length ? `<ul class="list">${low.slice(0, 6).map(p => `<li><span>${esc(p.name)}${p.size ? ` <span class="small mut">${esc(p.size)}ml</span>` : ''}</span><span class="pill ${p.avail <= 0 ? 'bad' : 'warn'}">${p.avail <= 0 ? 'Out' : p.avail + ' left'}</span></li>`).join('')}</ul>${low.length > 6 ? `<p class="small mut">and ${low.length - 6} more</p>` : ''}` : wait.length ? '' : '<p class="mut" style="margin:0 0 6px">Nothing is running low.</p>'}${outN ? `<p class="small mut" style="margin:6px 0">${outN} perfume${outN === 1 ? ' is' : 's are'} not in the shop.</p>` : ''}${(low.length || outN) && shopCan('order') ? btn('Order stock', 'shopTab', {k:'order'}, 'sm') : ''}</div>`
+    + ((s.tips || []).length || (s.insights || []).length ? `<div class="card ideas-card"><h2>Business ideas</h2>${(s.insights || []).length ? `<ul class="list">${s.insights.slice(0, 3).map(x => `<li><span>📊 ${esc(x)}</span></li>`).join('')}</ul>` : ''}${(s.tips || []).length ? `<p style="margin:8px 0 0">💡 <b>Tip of the day:</b> ${esc(s.tips[Math.floor(Date.now() / 864e5) % s.tips.length])}</p>${btn('More ideas', 'shopTips', {}, 'sm ghost')}` : ''}</div>` : '')
     + `<div class="card"><h2>Messages</h2>${msgs.length ? `<ul class="list">${msgs.map(x => `<li><span>${x.title ? `<b>${esc(x.title)}</b> ` : ''}${esc(x.body)}<div class="small mut">${esc(fmtDateTime(x.at))}</div></span></li>`).join('')}</ul>` : '<p class="mut" style="margin:0">No messages yet.</p>'}${BELL.items.length > 3 ? btn('All notifications', 'bellOpen', {}, 'sm ghost') : ''}</div>`
     + `<div class="card"><h2>Shortcuts</h2><div class="qa res-sc">${shopTabs().filter(([k]) => k !== 'home').map(([k]) => `<button type="button" class="qa-b" data-act="${k === 'stock' ? 'shopCountGo' : 'shopTab'}" data-k="${k}"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${SCI[k] || ''}</svg><span>${SC[k]?.[0] || k}</span></button>`).join('')}${shopCan('stock') ? `<button type="button" class="qa-b" data-act="shopTab" data-k="stock"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${RES_SC_ICONS.parcels}</svg><span>Parcels</span></button>` : ''}<button type="button" class="qa-b" data-act="calcOpen"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><path d="M8 6.5h8M8.5 11h.01M12 11h.01M15.5 11h.01M8.5 14.5h.01M12 14.5h.01M15.5 14.5h.01M8.5 18h.01M12 18h3.5"/></svg><span>Calculator</span></button></div></div>`;
 }
@@ -4822,9 +4837,12 @@ const SECTION_SET = {
   shops:{title:'Shopkeeper app settings', f:[['shopNotice', 'Message shown on every shop Home', 'text'], ['shopTarget', 'Monthly target per shop (bottles, 0 for none)', 'number'], ['shopLowLevel', 'Low stock alert at (bottles)', 'number'], ['shopDiscMax', 'Most discount a shop may give (%)', 'number', 10], ['shopCredit', 'Allow credit sales in shops', 'check', true]], after:() => publishShops()},
   pos:{title:'Point of sale settings', f:[['lowStock', 'Low stock level for alerts (bottles)', 'number']]},
   hiring:{title:'Hiring settings', f:[['interviewPlace', 'Usual interview place', 'text'], ['hireResellers', 'Show reseller applications on the page', 'check', true], ['hireIntro', 'Welcome words at the top of the application page', 'text']], after:() => publishJobs()},
+  payroll:{title:'Payroll settings', f:[['napsaRate', 'NAPSA employee share (%)', 'number', 5], ['napsaCap', 'NAPSA most per month (K)', 'number', 1708.2], ['payDay', 'Pay day (words used in agreements)', 'text', 'the last working day of each month']]},
   staff:{title:'Staff & payslip settings', f:[['napsaRate', 'NAPSA employee share (%)', 'number', 5], ['napsaCap', 'NAPSA most per month (K)', 'number', 1708.2], ['payDay', 'Pay day (words used in agreements)', 'text', 'the last working day of each month'], ['empProbation', 'Probation (months)', 'number', 3], ['empNotice', 'Notice after probation', 'text', 'one month']]},
   orders:{title:'Online orders & riders', f:[['riderNote', 'Instructions shown on the rider link', 'text'], ['storeDeposit', 'Deposit for cash on delivery (%)', 'number', 50]], after:() => { publishStore(); riders().forEach(x => riderPublish(x.id)); }},
   contacts:{title:'Contacts', f:[['city', 'Head office town', 'text']]},
+  ideas:{title:'Business ideas', f:[['tipsDefault', 'Include the built-in tips', 'check', true]], after:() => publishShops()},
+  riders:{title:'Online orders & riders', f:[['riderNote', 'Instructions shown on the rider link', 'text']], after:() => riders().forEach(x => riderPublish(x.id))},
   approvals:{title:'Approvals', f:[['apprNotify', 'Send me a phone alert for each approval', 'check', true]]}
 };
 function secSet(r){
@@ -4832,6 +4850,154 @@ function secSet(r){
   modal(c.title, c.f.map(([k, l, t, def]) => t === 'check' ? `<label class="chk"><input type="checkbox" name="${k}" ${(st[k] ?? def) !== false ? 'checked' : ''}> ${esc(l)}</label>` : `<label for="ss-${k}">${esc(l)}<input id="ss-${k}" name="${k}" type="${t}" ${t === 'number' ? 'step="any" min="0"' : ''} value="${esc(st[k] ?? def ?? '')}"></label>`).join('') + '<p class="hint">Settings that affect everything are in Reports &amp; settings → Settings.</p>',
   async d => { const patch = {}; c.f.forEach(([k, l, t]) => patch[k] = t === 'check' ? !!d[k] : t === 'number' ? (d[k] === '' ? '' : num(d[k])) : String(d[k] || '').trim()); await putSettings(patch); c.after && c.after(); toast('Settings saved'); }, {label:'Save settings'});
 }
+
+/* ======================= 2.18: new menus and pages ======================= */
+const TIPS_DEF = [
+  'Greet every customer within 10 seconds and offer a free test spray. People who smell a perfume on their skin buy more often.',
+  'Ask "Who else is it for?" Many customers buy a second bottle as a gift.',
+  'Put your 3 best sellers at eye level near the door, and move slow perfumes next to them.',
+  'Save every customer\'s phone number on the receipt. Send a WhatsApp thank-you the same day.',
+  'Message customers who have not bought in 30 days with a new arrival or a small offer.',
+  'Post your shop on WhatsApp status every morning: one perfume, the price and the shop location.',
+  'Offer a bundle: 2 perfumes for a small discount. Bundles lift the average sale.',
+  'Know 3 words for every perfume (fresh, sweet, woody…). Describing scents sells them.',
+  'Keep the shop bright, clean and smelling good. Wipe testers and shelves every morning.',
+  'Close the day properly: count cash and MoMo, and report any difference straight away.',
+  'Count stock every week. Finding a missing bottle early is much cheaper than finding it at month end.',
+  'Order stock before you run out: anything with 2 bottles or fewer should be on your next order.',
+  'Ask happy customers to send a voice note or photo review you can share on status.',
+  'Paydays and month end are busy. Make sure the best sellers are in stock before then.',
+  'Invite regular customers to become resellers: they already love the perfumes.'
+];
+const shopTips = () => { const c = String(S.settings.shopTips || '').split('\n').map(x => x.trim()).filter(Boolean); return S.settings.tipsDefault === false ? c : [...c, ...TIPS_DEF]; };
+function shopInsights(sid){
+  const from = iso(addDays(new Date(), -30)), rs = Object.values(S.receipts || {}).filter(r => r.shop === sid && (r.date || '') >= from), out = [];
+  if (!rs.length) return ['No sales recorded in the last 30 days yet. Every sale you record helps us give better ideas.'];
+  const tot = rs.reduce((a, r) => a + num(r.total), 0), bot = rs.reduce((a, r) => a + (r.lines || []).reduce((b, l) => b + num(l.qty), 0), 0), byP = {}, byD = {}, byH = {}, cust = {};
+  rs.forEach(r => { (r.lines || []).forEach(l => byP[l.productId] = (byP[l.productId] || 0) + num(l.qty)); const d = new Date((r.date || today()) + 'T12:00:00').getDay(); byD[d] = (byD[d] || 0) + num(r.total); const h = parseInt(String(r.time || '').slice(0, 2), 10); if (!isNaN(h)) byH[h] = (byH[h] || 0) + 1; const k = r.phone || r.customer; if (k) cust[k] = (cust[k] || 0) + 1; });
+  const top = Object.entries(byP).sort((a, b) => b[1] - a[1]), DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], bd = Object.entries(byD).sort((a, b) => b[1] - a[1])[0], bh = Object.entries(byH).sort((a, b) => b[1] - a[1])[0];
+  out.push(`Last 30 days: ${money(tot)} from ${rs.length} sale${rs.length === 1 ? '' : 's'} (${int(bot)} bottles). Average sale ${money(tot / rs.length)}.`);
+  if (top[0]) out.push(`Best seller: ${pName(top[0][0])} (${int(top[0][1])} sold)${top[1] ? `, then ${pName(top[1][0])}` : ''}. Keep them in stock and at the front.`);
+  if (bd) out.push(`${DAYS[bd[0]]} is your busiest day. Be fully stocked and staffed then.`);
+  if (bh) out.push(`Most sales happen around ${String(bh[0]).padStart(2, '0')}:00. Post on WhatsApp status an hour before.`);
+  const C = compute(), st = C.storeLoc[sid] || {}, slow = Object.keys(st).filter(id => st[id] > 0 && !byP[id]);
+  if (slow.length) out.push(`${slow.length} perfume${slow.length === 1 ? ' has' : 's have'} not sold in 30 days (e.g. ${pName(slow[0])}). Try a tester at the counter or a bundle offer.`);
+  const rep = Object.values(cust).filter(n => n > 1).length, known = Object.keys(cust).length;
+  out.push(known ? `${rep} of ${known} named customers came back more than once. Send a thank-you message to bring the others back.` : 'Few sales have a customer phone number. Ask for it on every sale to follow up later.');
+  return out;
+}
+PAGES.ideas = () => {
+  const ls = locs().filter(l => l.id !== 'main'), st = S.settings;
+  return head('Business ideas', 'Tips and insights on running each shop and selling more. Shop staff see these on the Home of their app.', btn('Edit tips', 'tipsEdit', {}, 'pri') + btn('Send a tip to all shops', 'tipSend'))
+    + (ls.length ? ls.map(l => `<div class="card"><h2>${esc(l.name)}</h2><ul class="list">${shopInsights(l.id).map(x => `<li><span>📊 ${esc(x)}</span></li>`).join('')}</ul></div>`).join('') : empty('Add a shop to see insights for it.'))
+    + `<div class="card"><h2>Tips shown to shop staff <span class="small mut">${shopTips().length}</span></h2><ol class="tips-list">${shopTips().map(t => `<li>${esc(t)}</li>`).join('')}</ol></div>`;
+};
+
+PAGES.payroll = () => {
+  const all = Object.values(S.staff || {}).filter(x => x.status !== 'left').sort((a, b) => (a.name || '').localeCompare(b.name || '')), m = UI.month, slips = Object.values(S.spay || {}).filter(p => p.month === m), tot = slips.reduce((t, p) => t + spayTotals(p).net, 0), paid = slips.filter(p => p.status === 'paid').reduce((t, p) => t + spayTotals(p).net, 0), napsa = slips.reduce((t, p) => t + spayTotals(p).napsa, 0);
+  return head('Payroll', 'Monthly payslips for your staff: basic pay, commission, allowances, NAPSA and other deductions.')
+    + `<div class="filters"><label class="mlabel">Month <input type="month" id="f-month" value="${m}"></label></div>`
+    + `<div class="tiles">${tile(`Net pay · ${monthLabel(m)}`, money(tot), `${slips.length} of ${all.length} payslips made`)}${tile('Paid', money(paid))}${tile('Still to pay', money(tot - paid), '', tot - paid > 0)}${tile('NAPSA (employee share)', money(napsa))}</div>`
+    + (all.length ? `<div class="card"><div class="tw"><table class="t"><thead><tr><th>Name</th><th>Position</th><th class="n">Basic</th><th class="n">Gross</th><th class="n">Net</th><th>Status</th><th></th></tr></thead><tbody>${all.map(x => { const sl = slips.find(p => p.staffId === x.id), t = sl && spayTotals(sl); return `<tr><td><b>${esc(x.name)}</b></td><td>${esc(x.title || '')}<div class="small mut">${typeName(x.type)}</div></td><td class="n">${money(x.basic)}</td><td class="n">${t ? money(t.gross) : '—'}</td><td class="n">${t ? `<b>${money(t.net)}</b>` : '—'}</td><td>${sl ? `<span class="pill ${sl.status === 'paid' ? 'good' : 'warn'}">${sl.status === 'paid' ? 'Paid ' + fmtDate(sl.paidDate) : 'Due'}</span>` : '<span class="pill">Not made</span>'}</td><td>${sl ? btn('Open', 'spayOpen', {id:sl.id}, 'sm') : btn('Make payslip', 'spayNew', {id:x.id}, 'sm pri')}</td></tr>`; }).join('')}</tbody></table></div></div>` : empty('No staff yet. Add staff in Human Resources → Staff.'));
+};
+PAGES.staff = () => {
+  const all = Object.values(S.staff || {}).sort((a, b) => (a.name || '').localeCompare(b.name || '')), showLeft = !!UI.staffLeft, list = all.filter(x => showLeft ? x.status === 'left' : x.status !== 'left');
+  return head('Staff', 'Your employees, their positions, app logins and agreements. Pay is in Finance → Payroll.', btn('Add staff member', 'staffAdd', {}, 'pri') + btn('Payroll', 'goPayroll') + btn('Employee agreements', 'goEmpAgree', {}, 'ghost'))
+    + `<div class="filters"><div class="seg">${btn(`Working (${all.filter(x => x.status !== 'left').length})`, 'staffLeft', {v:''}, showLeft ? '' : 'on')}${btn(`Left (${all.filter(x => x.status === 'left').length})`, 'staffLeft', {v:'1'}, showLeft ? 'on' : '')}</div></div>`
+    + (list.length ? `<div class="card"><div class="tw"><table class="t"><thead><tr><th>Name</th><th>Position</th><th>Started</th><th>App</th><th>Agreement</th><th></th></tr></thead><tbody>${list.map(x => `<tr><td><b>${esc(x.name)}</b><div class="small mut">${esc(x.phone || '')}</div></td><td>${esc(x.title || '')}<div class="small mut">${typeName(x.type)}${x.shopId ? ' · ' + esc(shopOf(x.shopId)?.name || '') : x.place ? ' · ' + esc(x.place) : ''}</div></td><td class="small">${x.start ? fmtDate(x.start) : ''}</td><td class="small">${esc(APP_TYPES[staffAccess(x).app] || '')}</td>
+      <td>${x.agreementSigned ? `<span class="pill good">Signed ${fmtDate(x.agreementSigned)}</span>` : '<span class="pill warn">Not signed</span>'}</td><td><div class="actions">${staffLoginBtns(x)}${btn('Agreement', 'empAgree', {id:x.id}, 'sm')}${btn('Edit', 'staffEdit', {id:x.id}, 'sm ghost')}${x.status === 'left' ? btn('Back to work', 'staffSt', {id:x.id, v:'active'}, 'sm ghost') : btn('Left', 'staffSt', {id:x.id, v:'left'}, 'sm ghost')}${btn('Delete', 'staffDel', {id:x.id}, 'sm ghost danger')}</div></td></tr>`).join('')}</tbody></table></div></div>`
+      : empty(showLeft ? 'Nobody has left.' : 'No staff yet. Hire from Careers & applications, or add someone yourself.'));
+};
+PAGES.resapps = () => {
+  const a = OWN.apps || [];
+  return head('Reseller applications', 'People who applied to sell your perfumes, from the app sign-in screen or your careers page.', `<a class="btn" target="_blank" rel="noopener" href="${APPLY_URL}">Open the application page</a>`)
+    + (!FB || !ADM() ? `<div class="card"><p>Sign in online first (Resellers → Requests & logins) to see applications.</p></div>` : a.length ? appsCard() : empty('No new reseller applications. Share your careers page to get more.'));
+};
+function qrBox(url){ const q = window.ZXing ? coQR(url) : ''; if (!window.ZXing && !UI.lnkZx) { UI.lnkZx = 1; loadAny(ZX_SRCS).then(() => render(true)).catch(() => {}); } return q ? `<div class="lnk-qr">${q}</div>` : '<div class="lnk-qr mut small">QR code…</div>'; }
+PAGES.links = () => {
+  const L = [['Online shop', STORE_URL, 'Customers browse every perfume and order with delivery or pickup.', `Shop Infinity Fragrances online: ${STORE_URL}`],
+    ['Careers & applications', APPLY_URL, 'Open positions and the reseller application form.', `We're hiring at ${bizName()}! Apply here: ${APPLY_URL}`],
+    ['App download', GET_URL, 'For resellers, shopkeepers and staff to install the app on Android or iPhone.', `Get the ${bizName()} app here: ${GET_URL}`]];
+  const rs = riders().filter(x => x.riderToken && x.riderOn !== false);
+  return head('Online pages & links', 'All your public pages in one place, with QR codes you can print or post.')
+    + `<div class="lnk-grid">${L.map(([t, u, d, msg]) => `<div class="card lnk"><div><h2>${esc(t)}</h2><p class="small mut">${esc(d)}</p><p class="small" style="word-break:break-all"><a href="${u}" target="_blank" rel="noopener">${u}</a></p><div class="actions">${btn('Copy', 'copyTxt', {t:u}, 'sm')}<a class="btn sm" target="_blank" rel="noopener" href="${waLink('', msg)}">Share on WhatsApp</a><a class="btn sm ghost" target="_blank" rel="noopener" href="${u}">Open</a></div></div>${qrBox(u)}</div>`).join('')}</div>`
+    + `<div class="card"><h2>Rider links</h2>${rs.length ? `<ul class="list">${rs.map(x => `<li><span><b>${esc(x.name)}</b><div class="small mut">Private link, only for this rider</div></span>${btn('Open', 'riderLink', {id:x.id}, 'sm')}</li>`).join('')}</ul>` : '<p class="mut">No rider links yet. Make one in Online Business → Deliveries & riders.</p>'}</div>`
+    + `<p class="hint">Order tracking links are made for each online order and sent to the customer automatically.</p>`;
+};
+PAGES.riders = () => {
+  const rs = riders(), t = today(), os = OWN.orders || [], mine = id => os.filter(o => o.courier?.staffId === id && (['confirmed', 'shipped'].includes(o.status) || (o.doneAt || o.shippedAt || '').slice(0, 10) === t));
+  const waiting = os.filter(o => o.status === 'confirmed' && o.method !== 'pickup' && !o.courier?.staffId), ext = os.filter(o => o.status === 'shipped' && o.courier && !o.courier.staffId);
+  return head('Deliveries & riders', 'Your riders, their private links and today\'s deliveries. Give an order to a rider with Send on the order.', btn('Add a rider', 'riderAdd', {}, 'pri'))
+    + (!FB || !ADM() ? `<div class="card"><p>Sign in online first (Resellers → Requests & logins) so orders and rider links work.</p></div>` : '')
+    + (rs.length ? `<div class="pos-grid">${rs.map(x => { const l = mine(x.id), done = l.filter(o => o.riderDelivered || o.status === 'done').length, cash = l.reduce((a, o) => a + num(o.riderCash), 0); return `<div class="card pos-card"><div style="display:flex;justify-content:space-between;gap:8px"><div><h3 style="margin:0">${esc(x.name)}</h3><div class="small mut">${esc(x.phone || '')}</div></div><span class="pill ${x.riderToken && x.riderOn !== false ? 'good' : 'warn'}">${x.riderToken && x.riderOn !== false ? 'Link on' : 'No link'}</span></div>
+        <div class="tiles" style="margin:8px 0">${tile('Today', `${done}/${l.length}`, 'delivered')}${tile('Cash collected', money(cash))}</div>${l.length ? `<ul class="list small">${l.map(o => `<li><span>${esc(o.no || '')} · ${esc(o.name)}<div class="mut">${esc([o.area, o.town].filter(Boolean).join(', '))}</div></span><span class="pill ${o.riderDelivered || o.status === 'done' ? 'good' : o.riderPicked ? 'acc' : ''}">${o.status === 'done' ? 'Booked' : o.riderDelivered ? 'Delivered' : o.riderPicked ? 'On the way' : 'To pick up'}</span></li>`).join('')}</ul>` : '<p class="mut small">No deliveries today.</p>'}
+        <div class="actions">${btn(x.riderToken && x.riderOn !== false ? 'Rider link' : 'Make rider link', 'riderLink', {id:x.id}, 'sm pri')}</div></div>`; }).join('')}</div>` : empty('No riders yet. Add a rider, or hire one through Careers & applications.'))
+    + `<div class="card"><h2>Orders waiting for a rider <span class="small mut">${waiting.length}</span></h2>${waiting.length ? `<ul class="list">${waiting.map(o => `<li><span><b>${esc(o.no || '')}</b> · ${esc(o.name)}<div class="small mut">${esc([o.area, o.town].filter(Boolean).join(', '))} · ${money(o.total)}</div></span>${btn('Send', 'ordShip', {id:o.id}, 'sm pri')}</li>`).join('')}</ul>` : '<p class="mut">None. Confirmed delivery orders appear here.</p>'}</div>`
+    + (ext.length ? `<div class="card"><h2>With other couriers</h2><ul class="list">${ext.map(o => `<li><span>${esc(o.no || '')} · ${esc(o.name)}</span><span class="small mut">${esc(o.courier.name || '')} ${esc(o.courier.phone || '')}</span></li>`).join('')}</ul></div>` : '');
+};
+PAGES.logins = () => {
+  const f = UI.lgF || 'all', rows = [];
+  if (FB_USER && FB_ROLE === 'owner') rows.push({k:'admin', name:S.settings.ownerName || 'You (owner)', what:'Owner · admin app', login:FB_USER.email || '', btns:''});
+  users().filter(u => u.loginUid).forEach(u => rows.push({k:'admin', name:u.name, what:'Manager · admin app', login:u.login || '', btns:btn('New PIN', 'mgrAcc', {id:u.id}, 'sm ghost') + btn('Turn off', 'mgrOff', {id:u.id}, 'sm ghost')}));
+  Object.values(S.staff || {}).filter(x => x.loginUid).forEach(x => { const a = staffAccess(x); rows.push({k:a.app === 'shop' ? 'shop' : 'staff', name:x.name, what:`${x.title} · ${APP_TYPES[a.app]}${x.shopId ? ' · ' + (shopOf(x.shopId)?.name || '') : ''}`, login:x.login || '', btns:btn('New PIN', 'staffLogin', {id:x.id}, 'sm ghost') + btn('Turn off', 'staffLoginOff', {id:x.id}, 'sm ghost')}); });
+  locs().filter(l => l.keeperUid).forEach(l => rows.push({k:'shop', name:l.keeper || l.name, what:`Shopkeeper · ${l.name}`, login:l.keeperLogin || '', btns:btn('New PIN', 'shopAcc', {id:l.id, reset:1}, 'sm ghost')}));
+  sortedRes().filter(r => r.portalUid).forEach(r => rows.push({k:'reseller', name:r.name, what:`Reseller · ${tName(r.townId)}`, login:r.portalLogin || '', btns:btn('New PIN', 'accReset', {id:r.id}, 'sm ghost') + btn('Turn off', 'accRemove', {id:r.id}, 'sm ghost')}));
+  riders().filter(x => x.riderToken && x.riderOn !== false).forEach(x => rows.push({k:'staff', name:x.name, what:'Rider · private link (no login)', login:'link', btns:btn('Link', 'riderLink', {id:x.id}, 'sm ghost')}));
+  const list = rows.filter(r => f === 'all' || r.k === f), cnt = k => rows.filter(r => k === 'all' || r.k === k).length;
+  return head('All logins', 'Everyone who can sign in to one of your apps, with PIN resets and turning access off. Make new logins from Staff, Shops or Towns & resellers.')
+    + (!FB || FB_ROLE !== 'owner' ? `<div class="card"><p>Sign in to your admin account first (Resellers → Requests & logins) to manage logins.</p></div>` : '')
+    + `<div class="filters"><div class="seg">${[['all', 'Everyone'], ['admin', 'Admin app'], ['staff', 'Staff'], ['shop', 'Shops'], ['reseller', 'Resellers']].map(([k, l]) => btn(`${l} (${cnt(k)})`, 'lgF', {v:k}, f === k ? 'on' : '')).join('')}</div></div>`
+    + (list.length ? `<div class="card"><div class="tw"><table class="t"><thead><tr><th>Name</th><th>Access</th><th>Login ID</th><th></th></tr></thead><tbody>${list.map(r => `<tr><td><b>${esc(r.name)}</b></td><td class="small">${esc(r.what)}</td><td class="small"><code>${esc(r.login)}</code></td><td><div class="actions">${r.btns}</div></td></tr>`).join('')}</tbody></table></div></div>` : empty('No logins here yet.'));
+};
+PAGES.access = () => {
+  const ps = posAll(), labA = Object.fromEntries(ADMIN_SCREENS().map(x => [x[0], x[1]])), labS = Object.fromEntries(SHOP_SCREENS);
+  return head('Access by position', 'What each position can open. Changes apply to everyone in that position the next time their app syncs.', btn('Add position', 'jobPosAdd', {}, 'ghost'))
+    + (ps.length ? `<div class="card"><div class="tw"><table class="t"><thead><tr><th>Position</th><th>App</th><th>Screens</th><th>Logins</th><th></th></tr></thead><tbody>${ps.map(p => { const a = posAccess(p), n = Object.values(S.staff || {}).filter(x => x.loginUid && (x.title || '').toLowerCase() === (p.title || '').toLowerCase()).length; return `<tr><td><b>${esc(p.title)}</b></td><td class="small">${esc(APP_TYPES[a.app])}</td><td>${a.app === 'manager' ? '<span class="small mut">Everything except users and settings</span>' : a.app === 'rider' ? '<span class="small mut">Their deliveries only</span>' : a.screens.length ? a.screens.map(k => `<span class="pill">${esc((a.app === 'shop' ? labS : labA)[k] || k)}</span>`).join(' ') : '<span class="small mut">None</span>'}</td><td class="n">${n}</td><td>${btn('Edit access', 'accEdit', {id:p.id}, 'sm pri')}</td></tr>`; }).join('')}</tbody></table></div></div>` : empty('No positions yet. Add them in Human Resources → Careers & applications.'));
+};
+function accEdit(id){ const p = S.positions[id]; if (!p) return; modal(`Access: ${esc(p.title)}`, accessFields(p), async d => { await put('positions', {...p, ...accessRead(d)}); await accessSync(p.title); toast('Access saved'); }, {label:'Save access', wide:true}); }
+PAGES.shopsales = () => {
+  const m = UI.month, sh = UI.ssShop || '', ls = locs().filter(l => l.id !== 'main'), rs = Object.values(S.receipts || {}).filter(r => r.shop && (r.date || '').startsWith(m) && (!sh || r.shop === sh)).sort((a, b) => (b.date + (b.time || '')).localeCompare(a.date + (a.time || ''))), cu = Object.values(S.cashups || {}).filter(c => (c.date || '').startsWith(m) && (!sh || (c.shop || c.loc) === sh)).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  const by = {}; rs.forEach(r => { by[r.shop] = by[r.shop] || {t:0, n:0}; by[r.shop].t += num(r.total); by[r.shop].n++; });
+  return head('Shop sales & cash-ups', 'Every receipt from your shops and each day\'s close, with shortages and overs.')
+    + `<div class="filters"><label class="mlabel">Month <input type="month" id="f-month" value="${m}"></label><select id="f-ssshop"><option value="">All shops</option>${ls.map(l => `<option value="${l.id}" ${sh === l.id ? 'selected' : ''}>${esc(l.name)}</option>`).join('')}</select></div>`
+    + `<div class="tiles">${(sh ? ls.filter(l => l.id === sh) : ls).map(l => tile(l.name, money(by[l.id]?.t || 0), `${by[l.id]?.n || 0} receipts`)).join('')}${tile('Shortages', money(-cu.filter(c => num(c.diff) < 0).reduce((a, c) => a + num(c.diff), 0)), `${cu.filter(c => num(c.diff) < 0).length} day(s) short`, cu.some(c => num(c.diff) < 0))}</div>`
+    + `<div class="card"><h2>Cash-ups</h2>${cu.length ? `<div class="tw"><table class="t"><thead><tr><th>Date</th><th>Shop</th><th class="n">Expected</th><th class="n">Counted</th><th class="n">Difference</th></tr></thead><tbody>${cu.map(c => `<tr><td>${fmtDate(c.date)}</td><td>${esc(shopOf(c.shop || c.loc)?.name || '')}</td><td class="n">${money(c.expectedTotal)}</td><td class="n">${money(c.countedTotal)}</td><td class="n ${num(c.diff) < 0 ? 'neg' : ''}">${num(c.diff) ? (num(c.diff) < 0 ? '−' : '+') + money(Math.abs(c.diff)) : 'Exact'}</td></tr>`).join('')}</tbody></table></div>` : '<p class="mut">No cash-ups this month.</p>'}</div>`
+    + `<div class="card"><h2>Receipts <span class="small mut">${rs.length}</span></h2>${rs.length ? `<div class="tw"><table class="t"><thead><tr><th>Receipt</th><th>Shop</th><th>Sold by</th><th>Customer</th><th>Paid by</th><th class="n">Total</th></tr></thead><tbody>${rs.slice(0, 300).map(r => `<tr><td><a href="javascript:void 0" data-act="rcptView" data-id="${r.id}">${esc(r.no || '')}</a><div class="small mut">${fmtDate(r.date)} ${esc(r.time || '')}</div></td><td>${esc(shopOf(r.shop)?.name || '')}</td><td class="small">${esc(r.byName || '')}</td><td class="small">${esc(r.customer || '')}${r.phone ? '<br>' + esc(r.phone) : ''}</td><td class="small">${esc(PAY_NAME?.[r.pay] || r.pay || '')}</td><td class="n">${money(r.total)}</td></tr>`).join('')}</tbody></table></div>` : '<p class="mut">No shop sales this month.</p>'}</div>`;
+};
+PAGES.shopstock = () => {
+  const ls = locs().filter(l => l.id !== 'main'), C = compute(), q = String(UI.skQ || '').toLowerCase(), ps = Object.values(S.products).filter(p => !p.archived && (!q || (p.name + ' ' + (p.category || '')).toLowerCase().includes(q))).sort((a, b) => a.name.localeCompare(b.name)), low = num(S.settings.shopLowLevel || S.settings.lowStock || 2);
+  if (!ls.length) return head('Stock in shops', 'What each shop holds.') + empty('Add a shop first in Shops.');
+  const on = l => Object.values(C.storeLoc[TRANSIT(l.id)] || {}).reduce((a, x) => a + Math.max(0, x), 0);
+  return head('Stock in shops', `What every shop holds. Amber means ${low} or fewer bottles left.`, btn('Send stock', 'shopDn', {}, 'pri'))
+    + `<div class="tiles">${ls.map(l => { const st = C.storeLoc[l.id] || {}, b = Object.values(st).reduce((a, x) => a + Math.max(0, x), 0), lw = Object.values(st).filter(x => x > 0 && x <= low).length; return tile(l.name, `${int(b)} bottles`, `${lw} low${on(l) ? ` · ${int(on(l))} on the way` : ''}`, lw > 0); }).join('')}</div>`
+    + `<div class="filters"><input type="search" id="sk-q" placeholder="Search perfumes" value="${esc(UI.skQ || '')}"></div>`
+    + `<div class="card"><div class="tw"><table class="t"><thead><tr><th>Perfume</th><th class="n">Main store</th>${ls.map(l => `<th class="n">${esc(l.name)}</th>`).join('')}</tr></thead><tbody>${ps.map(p => `<tr><td>${esc(p.name)}${p.size ? ` <span class="small mut">${esc(p.size)}ml</span>` : ''}</td><td class="n">${int(Math.max(0, C.storeLoc.main?.[p.id] || 0))}</td>${ls.map(l => { const v = Math.max(0, C.storeLoc[l.id]?.[p.id] || 0); return `<td class="n ${v > 0 && v <= low ? 'warnc' : ''}${v === 0 ? ' mut' : ''}">${v ? int(v) : '·'}</td>`; }).join('')}</tr>`).join('')}</tbody></table></div></div>`;
+};
+PAGES.shopstaff = () => {
+  const ls = locs().filter(l => l.id !== 'main'), t = today(), m = t.slice(0, 7), rs = Object.values(S.receipts || {}).filter(r => r.shop && (r.date || '').startsWith(m));
+  const sum = (sid, name, d) => rs.filter(r => r.shop === sid && (!name || r.byName === name) && (!d || r.date === d)).reduce((a, r) => a + num(r.total), 0);
+  return head('Shop staff', 'Shopkeepers and cashiers at each shop, with their sales today and this month.', btn('Add staff member', 'staffAdd', {}, 'pri'))
+    + (ls.length ? ls.map(l => { const st = Object.values(S.staff || {}).filter(x => x.shopId === l.id && x.status !== 'left'); return `<div class="card"><h2>${esc(l.name)} <span class="small mut">${money(sum(l.id, '', t))} today · ${money(sum(l.id, '', ''))} this month</span></h2><ul class="list">
+      ${l.keeper ? `<li><span><b>${esc(l.keeper)}</b><div class="small mut">Shopkeeper${l.keeperUid ? ' · shop login on' : ''}${l.phone ? ' · ' + esc(l.phone) : ''}</div></span><span class="small">${money(sum(l.id, l.keeper, t))} today · ${money(sum(l.id, l.keeper, ''))} month</span></li>` : ''}
+      ${st.map(x => `<li><span><b>${esc(x.name)}</b><div class="small mut">${esc(x.title)} · ${typeName(x.type)}${x.loginUid ? ' · app login on' : ' · no login yet'}</div></span><span class="actions"><span class="small">${money(sum(l.id, x.name, t))} today · ${money(sum(l.id, x.name, ''))} month</span>${x.loginUid ? '' : btn('Make app login', 'staffLogin', {id:x.id}, 'sm pri')}</span></li>`).join('')}
+      ${!l.keeper && !st.length ? '<li class="mut">Nobody linked to this shop yet. Edit a staff member and choose this shop.</li>' : ''}</ul></div>`; }).join('') : empty('Add a shop first in Shops.'));
+};
+PAGES.shopcust = () => {
+  const sh = UI.scShop || '', q = String(UI.scQ || '').toLowerCase(), f = UI.scF || 'all', cut30 = iso(addDays(new Date(), -30)), ls = locs().filter(l => l.id !== 'main'), map = {};
+  Object.values(S.receipts || {}).filter(r => r.shop && (r.phone || r.customer) && (!sh || r.shop === sh)).forEach(r => { const k = (r.phone || '').replace(/\D/g, '').slice(-9) || r.customer.toLowerCase(); const c = map[k] = map[k] || {name:r.customer || '', phone:r.phone || '', shops:new Set(), visits:0, bottles:0, spent:0, last:'', likes:{}}; if (r.customer && !c.name) c.name = r.customer; if (r.phone && !c.phone) c.phone = r.phone; c.shops.add(r.shop); c.visits++; c.spent += num(r.total); if ((r.date || '') > c.last) c.last = r.date; (r.lines || []).forEach(l => { c.bottles += num(l.qty); c.likes[l.productId] = (c.likes[l.productId] || 0) + num(l.qty); }); });
+  let list = Object.values(map).filter(c => !q || `${c.name} ${c.phone}`.toLowerCase().includes(q)); if (f === 'away') list = list.filter(c => c.last < cut30); if (f === 'regular') list = list.filter(c => c.visits > 1);
+  list.sort((a, b) => b.spent - a.spent); const fav = c => { const e = Object.entries(c.likes).sort((a, b) => b[1] - a[1])[0]; return e ? pName(e[0]) : ''; };
+  return head('Shop customers', 'Who buys at each shop, what they like and when they last came. Follow up on WhatsApp to bring them back.')
+    + `<div class="filters"><input type="search" id="sc-q" placeholder="Search name or phone" value="${esc(UI.scQ || '')}"><select id="f-scshop"><option value="">All shops</option>${ls.map(l => `<option value="${l.id}" ${sh === l.id ? 'selected' : ''}>${esc(l.name)}</option>`).join('')}</select><div class="seg">${[['all', 'Everyone'], ['regular', 'Came back'], ['away', 'Not seen 30+ days']].map(([k, l]) => btn(l, 'scF', {v:k}, f === k ? 'on' : '')).join('')}</div></div>`
+    + (list.length ? `<div class="card"><div class="tw"><table class="t"><thead><tr><th>Customer</th><th>Shop</th><th class="n">Visits</th><th class="n">Bottles</th><th class="n">Spent</th><th>Last visit</th><th>Favourite</th><th></th></tr></thead><tbody>${list.slice(0, 400).map(c => `<tr><td><b>${esc(c.name || 'Customer')}</b><div class="small mut">${esc(c.phone || '')}</div></td><td class="small">${[...c.shops].map(id => esc(shopOf(id)?.name || '')).join(', ')}</td><td class="n">${c.visits}</td><td class="n">${int(c.bottles)}</td><td class="n">${money(c.spent)}</td><td class="small">${fmtDate(c.last)}${c.last < cut30 ? ' <span class="pill warn">away</span>' : ''}</td><td class="small">${esc(fav(c))}</td><td>${c.phone ? `<a class="btn sm" target="_blank" rel="noopener" href="${waLink(c.phone, `Hello ${String(c.name || '').split(' ')[0] || 'there'}, thank you for shopping at ${bizName()}! ${fav(c) ? `We have your favourite ${fav(c)} in stock.` : 'We have new perfumes in stock.'} Come and see us soon.`)}">WhatsApp</a>` : ''}</td></tr>`).join('')}</tbody></table></div></div>` : empty('No shop customers yet. Ask for the customer\'s name and phone on each sale in the shop app.'));
+};
+const MENU_HELP = {'Dashboard':'Today at a glance, approvals waiting for you, suggestions from your team and everyone\'s contacts.', 'Sales':'Sell at the counter, see every sale and look after your customers and loyalty points.', 'Online Business':'Online shop orders, customer ratings, riders and deliveries, the online catalogue and all your public links.', 'Shops':'Each shop\'s details, sales and cash-ups, stock, staff, customers and ideas for selling more.', 'Stock':'Your perfumes and every stock movement.', 'Operations':'Sending parcels, counting stock, planning reorders, buying stock and your suppliers.', 'Resellers':'Resellers by town, their requests and logins, applications, settlement day, reminders, recruits, the leaderboard and agreements.', 'Human Resources':'Positions and job applications, your staff and their employment agreements.', 'Finance':'Money in and out, invoices, money owed, pay for staff and resellers, reports and your company and tax details.', 'Marketing':'Promotions, flyers, WhatsApp broadcasts, product photos and prospects.', 'Users & Access':'Every login, what each position can open and the record of who did what.', 'Settings':'Business settings, backups, app updates and this help.'};
+PAGES.help = () => head('Help', 'What is in each menu. Tap a menu name to go there.')
+  + GROUPS.filter(g => g.tabs.some(t => allowed(t[0]))).map(g => `<div class="card"><h2><a href="#${g.tabs.find(t => allowed(t[0]))[0]}">${esc(g.label)}</a></h2><p style="margin:0 0 8px">${esc(MENU_HELP[g.label] || '')}</p><div class="small">${g.tabs.filter(t => allowed(t[0])).map(([k, l]) => `<a class="pill" href="#${k}">${esc(l)}</a>`).join(' ')}</div></div>`).join('')
+  + `<div class="card"><h2>Good to know</h2><ul class="list small"><li>The ⚙ Settings button on a page changes settings for that part of the hub.</li><li>The bell at the top shows notifications. Tap one to go to it.</li><li>Back up your records regularly from Settings & backup.</li></ul></div>`;
+PAGES.ratings = () => PAGES.feedback();
+PAGES.updates = () => head('App updates', `You are on version ${APP_VERSION}.`, btn('Check for updates', 'updCheck', {}, 'pri'))
+  + CHANGELOG.slice(0, 12).map(([v, d, l]) => `<div class="card"><h2>${esc(v)} <span class="small mut">${esc(d)}</span>${v === APP_VERSION ? ' <span class="pill good">This version</span>' : ''}</h2><ul class="list small">${l.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>`).join('');
 
 /* ---------- reviewing requested orders: availability, quantities, export with photos ---------- */
 let ORV = null;
@@ -5538,16 +5704,17 @@ function agreeTermsForm(){
     <div class="actions">${btn('Put back the original wording', 'agreeReset', {}, 'sm ghost')}</div>`,
   async d => { await putSettings({agreementText:d.text.trim() === DEFAULT_AGREEMENT.trim() ? '' : d.text, graceDay:num(d.graceDay), maxMarkup:num(d.maxMarkup), noticeDays:num(d.noticeDays), exitSettleDays:num(d.exitSettleDays)}); toast('Agreement wording saved'); }, {label:'Save wording', wide:true});
 }
-PAGES.agreements = () => {
+PAGES.empagree = () => {
   const stf = Object.values(S.staff || {}).filter(x => x.status !== 'left').sort((a, b) => (a.name || '').localeCompare(b.name || ''));
   const empCard = `<div class="card"><h2>Employee agreements</h2><p class="hint">Full time and part time employment agreements, filled in from each staff member's details. They follow the Employment Code Act No. 3 of 2019; have the wording checked before first use.</p>
     <div class="actions" style="margin-bottom:10px">${btn('Edit full time wording', 'empTerms', {t:'ft'}, 'sm')}${btn('Edit part time wording', 'empTerms', {t:'pt'}, 'sm')}${btn('Blank full time', 'empBlank', {t:'ft'}, 'sm ghost')}${btn('Blank part time', 'empBlank', {t:'pt'}, 'sm ghost')}</div>
     ${stf.length ? `<div class="tw"><table class="t"><thead><tr><th>Employee</th><th>Position</th><th>Type</th><th>Agreement</th><th></th></tr></thead><tbody>${stf.map(x => `<tr><td><b>${esc(x.name)}</b></td><td>${esc(x.title || '')}</td><td>${typeName(x.type)}</td><td>${x.agreementSigned ? `<span class="pill good">Signed ${fmtDate(x.agreementSigned)}</span>` : '<span class="pill warn">Not signed</span>'}</td><td>${btn('Agreement', 'empAgree', {id:x.id}, 'sm')}</td></tr>`).join('')}</tbody></table></div>` : '<p class="mut">No staff yet. Hired people appear here.</p>'}</div>`;
-  return agreeResellers() + empCard;
+  return head('Employee agreements', 'Full time and part time employment agreements for your staff.') + empCard;
 };
+PAGES.agreements = () => agreeResellers();
 function agreeResellers(){
   const rs = sortedRes(), signed = rs.filter(r => r.agreementSigned).length;
-  return head('Agreements', 'Print an agreement for each reseller, get both sides to sign it, then mark it signed here.', btn('Edit wording', 'agreeTerms') + btn('Edit translations', 'agreeTr', {lang:'ny'}) + btn('Blank form', 'agreeView', {id:''}))
+  return head('Reseller agreements', 'Print an agreement for each reseller, get both sides to sign it, then mark it signed here.', btn('Edit wording', 'agreeTerms') + btn('Edit translations', 'agreeTr', {lang:'ny'}) + btn('Blank form', 'agreeView', {id:''}))
     + `<div class="tiles">${tile('Signed', `${signed} of ${rs.length}`)}${tile('Still to sign', int(rs.length - signed))}${tile('Payment due', `the ${ord(sDay())}`, `late after the ${ord(num(S.settings.graceDay) || 15)}`)}</div>`
     + (rs.length ? `<div class="card"><div class="tw"><table class="t"><thead><tr><th>Reseller</th><th>Town</th><th>Phone</th><th>Address</th><th>Commission</th><th>Language</th><th>Agreement</th><th></th></tr></thead><tbody>
       ${rs.map(r => `<tr><td><b>${esc(r.name)}</b></td><td>${esc(tName(r.townId))}</td><td>${r.phone ? esc(r.phone) : '<span class="pill warn">needed</span>'}</td><td class="small">${r.address ? esc(r.address) : '<span class="mut">not added</span>'}</td>
@@ -6926,6 +7093,11 @@ const ACT = {
   logShowHid: () => { UI.logHid = !UI.logHid; render(true); },
   logHideOld: () => confirmBox('Hide every activity entry before now? They stay saved and you can show them again at any time.', async () => { UI.logHid = false; await putSettings({logHideBefore:nowISO()}); toast('Older entries hidden'); }, 'Hide'),
   logUnhide: async () => { UI.logHid = false; await putSettings({logHideBefore:''}); toast('All entries shown again'); },
+  goPayroll: () => { location.hash = 'payroll'; }, goEmpAgree: () => { location.hash = 'empagree'; }, lgF: d => { UI.lgF = d.v; render(true); }, accEdit: d => accEdit(d.id), scF: d => { UI.scF = d.v; render(true); },
+  riderAdd: () => staffForm(null, null, 'Rider'),
+  tipsEdit: () => modal('Your own tips for shop staff', `<p class="hint">One tip per line. They show first, before the built-in tips.</p><label for="f-tips">Tips<textarea id="f-tips" name="tips" rows="10">${esc(S.settings.shopTips || '')}</textarea></label>`, async d => { await putSettings({shopTips:d.tips.trim()}); publishShops(); toast('Tips saved'); }, {label:'Save tips'}),
+  tipSend: () => modal('Send a tip to all shops', `<label for="f-tip">Message<textarea id="f-tip" name="t" rows="4" required placeholder="e.g. Saturday is busy: put Oud Royale at the front"></textarea></label>`, async d => { locs().filter(l => l.id !== 'main').forEach(l => shopNotify(l.id, '💡 ' + d.t.trim())); toast('Sent to every shop'); }, {label:'Send'}),
+  shopTips: () => { const t = SHOP.snap?.tips || []; modal('Business ideas', `${(SHOP.snap?.insights || []).length ? `<h3>Your shop</h3><ul class="list">${SHOP.snap.insights.map(x => `<li><span>📊 ${esc(x)}</span></li>`).join('')}</ul>` : ''}<h3>Tips</h3><ol class="tips-list">${t.map(x => `<li>${esc(x)}</li>`).join('')}</ol>`, null, {nofocus:true}); },
   staffLogin: d => staffLogin(d.id), staffLoginOff: d => staffLoginOff(d.id),
   apprOk: d => approvalDo(d.id, true), apprNo: d => approvalDo(d.id, false), apprAll: () => confirmBox(`Approve all ${(OWN.approvals || []).length} changes?`, async () => { for (const a of (OWN.approvals || []).slice()) await approvalDo(a.id, true); toast('All approved'); }, 'Approve all'),
   bellOpen: () => bellOpen(), bellGo: d => bellGo(d.id), bellAll: () => bellAll(), bellClear: () => bellClear(),
@@ -6960,7 +7132,7 @@ const ACT = {
   empSigned: async d => { const x = S.staff[d.id]; await put('staff', {...x, agreementSigned:today()}, d.id); closeModal(); toast('Agreement marked as signed'); },
   empReset: d => { const el = $('#f-ett'); if (el) el.value = EMP_DEF[d.k === 'empTextPT' ? 'pt' : 'ft']; },
   ideaKind: d => { UI.ideaKind = d.k; document.querySelectorAll('[data-act=ideaKind]').forEach(b => b.classList.toggle('on', b.dataset.k === d.k)); },
-  ideaSend: () => ideaSend(), fbGo: () => { UI.fbTab = 'rates'; location.hash = 'feedback'; },
+  ideaSend: () => ideaSend(), fbGo: () => { location.hash = 'ratings'; },
   fbTab: d => { UI.fbTab = d.v; render(true); }, fbShowHid: () => { UI.fbHid = !UI.fbHid; render(true); },
   ideaSet: async d => { try { await FB.update('suggestions/' + d.id, {status:d.v}); } catch(e) { toast(fbMsg(e), true); } },
   ideaReply: d => { const x = (OWN.ideas || []).find(i => i.id === d.id); if (!x) return; modal(`Reply to ${esc(x.byName || '')}`, `<p class="small mut">${esc(x.text)}</p><label for="f-irp">Your reply (they see it in their app)<textarea id="f-irp" name="reply" rows="4" maxlength="600" required>${esc(x.reply || '')}</textarea></label>`, async f => { await FB.update('suggestions/' + x.id, {reply:f.reply.trim(), status:x.status === 'new' ? 'seen' : x.status, repliedAt:nowISO()}); logNote('edit', 'suggestions', `Replied to ${x.byName || 'a'} suggestion`); toast('Reply sent'); }); },
@@ -7176,6 +7348,9 @@ document.addEventListener('change', async e => {
   if (t0.id === 'rq-all') { document.querySelectorAll('.rq-sel').forEach(c => c.checked = t0.checked); return; }
   if (t0.id === 'f-locks') { await setCfg({lockSecs:num(t0.value)}); toast('Saved'); return; }
   if (t0.id === 'f-bio') { if (t0.checked) { const ok = await DESK.bioAuth('Confirm your fingerprint'); if (!ok) { t0.checked = false; return toast('Fingerprint not confirmed', true); } } await setCfg({bio:t0.checked}); toast(t0.checked ? 'Fingerprint unlock is on' : 'Fingerprint unlock is off'); return; }
+  if (t0.id === 'f-ssshop') { UI.ssShop = t0.value; render(true); return; }
+  if (t0.id === 'f-scshop') { UI.scShop = t0.value; render(true); return; }
+  if (t0.id === 'sk-q' || t0.id === 'sc-q') { UI[t0.id === 'sk-q' ? 'skQ' : 'scQ'] = t0.value; clearTimeout(UI.fqT); const id = t0.id; UI.fqT = setTimeout(() => { render(true); const e = $('#' + id); if (e) { e.focus(); e.setSelectionRange(e.value.length, e.value.length); } }, 350); return; }
   if (t0.id === 'f-hres') { putSettings({hireResellers:t0.checked}).then(() => publishJobs()); toast(t0.checked ? 'Reseller applications shown on the page' : 'Reseller applications hidden'); return; }
   if (t0.id === 'f-live') { DESK.liveAlerts && DESK.liveAlerts(t0.checked); toast(t0.checked ? 'Instant alerts on' : 'Instant alerts off'); return; }
   if (t0.id === 'f-alerts') { await setCfg({alerts:t0.checked}); if (t0.checked) alertsSetupFor(ADM() ? 'owner' : 'reseller'); else DESK.alertsStop && DESK.alertsStop(); toast('Saved'); return; }

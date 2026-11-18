@@ -186,7 +186,7 @@ input,select,textarea{font:inherit;font-size:16px;padding:11px 12px;border:1px s
       var d = {orderId: String(o.id || ''), no: String(o.no || ''), name: String(o.name || 'Customer').slice(0, 79), stars: RATE.s, comment: RATE.t.trim().slice(0, 500), at: new Date().toISOString()};
       db.collection('ratings').add(d).then(function () {
         try { var m = JSON.parse(localStorage.getItem('if-rated') || '{}'); m[o.id] = RATE.s; localStorage.setItem('if-rated', JSON.stringify(m)); } catch (e) {}
-        db.doc('notify/owner').set({at: d.at, msg: d.name + ' rated their order ' + d.stars + ' stars' + (d.comment ? ': ' + d.comment.slice(0, 100) : '')}).catch(function () {}); db.collection('inbox/admin/items').add({title: 'Customer rating', body: d.name + ': ' + d.stars + ' stars' + (d.comment ? ' · ' + d.comment.slice(0, 200) : ''), link: '#feedback', at: d.at, read: false, by: ''}).catch(function () {});
+        db.doc('notify/owner').set({at: d.at, msg: d.name + ' rated their order ' + d.stars + ' stars' + (d.comment ? ': ' + d.comment.slice(0, 100) : '')}).catch(function () {}); db.collection('inbox/admin/items').add({title: 'Customer rating', body: d.name + ': ' + d.stars + ' stars' + (d.comment ? ' · ' + d.comment.slice(0, 200) : ''), link: '#ratings', at: d.at, read: false, by: ''}).catch(function () {});
         box.outerHTML = rateBox(o); RATE = {s: 0, t: ''};
       }, function () { btn.disabled = false; btn.textContent = 'Send rating'; $('#rate-e').textContent = 'Could not send. Check your internet and try again.'; });
     };
