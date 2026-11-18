@@ -98,7 +98,7 @@ h3{margin:0 0 10px}
   function li(arr) { return (arr || []).map(function (l) { return '<li>' + esc(l) + '</li>'; }).join(''); }
   function home() {
     var L = openList(), h = head();
-    h += '<div class="card hero"><h2 style="margin:0 0 6px">Work with us</h2><p style="margin:0" class="mut">Choose a position below and apply in a few minutes. You will need your NRC and a passport photo (a clear phone photo is fine).</p></div>';
+    h += '<div class="card hero"><h2 style="margin:0 0 6px">Work with us</h2><p style="margin:0" class="mut">' + (J && J.intro ? esc(J.intro) + ' ' : '') + 'Choose a position below and apply in a few minutes. You will need your NRC and a passport photo (a clear phone photo is fine).</p></div>';
     if (!L.length) h += '<div class="card"><p style="margin:0"><b>No job openings right now.</b> Please check again soon' + (J && J.resellers ? ', or apply as a reseller below.' : '.') + '</p></div>';
     h += L.map(function (p) {
       return '<div class="card job"><div class="jh"><div><h3>' + esc(p.title) + '</h3><div class="small mut">' + esc(p.place || '') + (p.closes ? ' · apply by ' + fmtDate(p.closes) : '') + (p.openings > 1 ? ' · ' + p.openings + ' people needed' : '') + '</div></div><div>' + (p.ft ? '<span class="pill">Full time</span> ' : '') + (p.pt ? '<span class="pill">Part time</span>' : '') + '</div></div>' +
@@ -171,6 +171,7 @@ h3{margin:0 0 10px}
       return fl.reduce(function (pr, k) { return pr.then(function () { var f = files[k]; return db.collection('appfiles').add({appId: ref.id, kind: k, name: String(f.name).slice(0, 80), type: f.type, data: f.data, at: now}); }); }, Promise.resolve());
     }).then(function () {
       db.doc('notify/owner').set({at: now, msg: 'New ' + (job ? 'job application: ' + d.name + ' for ' + pick.title + ' (' + (type === 'pt' ? 'part time' : 'full time') + ')' : 'reseller application: ' + d.name + ' (' + d.town + ')')}).catch(function () {});
+      db.collection('inbox/admin/items').add({title: job ? 'New job application' : 'New reseller application', body: d.name + (job ? ' · ' + pick.title + ' (' + (type === 'pt' ? 'part time' : 'full time') + ')' : ' · ' + d.town), link: job ? '#hiring' : '#portal', at: now, read: false, by: ''}).catch(function () {});
       try { localStorage.removeItem('if-apply'); } catch (e) {}
       $('#app').innerHTML = head('Application sent') + '<div class="card center"><p style="font-size:44px;margin:4px 0">✅</p><h2>Thank you, ' + esc(d.name.split(' ')[0]) + '!</h2><p>Your application for <b>' + esc(pick.title) + '</b>' + (job ? ' (' + (type === 'pt' ? 'part time' : 'full time') + ')' : '') + ' has been received.</p><p class="mut">We will contact you on ' + esc(d.whatsapp || d.phone) + ' if you are shortlisted.</p><a class="btn" href="./">Back to positions</a></div>';
       F = {}; files = {}; sending = false;

@@ -1,19 +1,19 @@
 {
- "version": "2.16.0",
+ "version": "2.17.0",
  "date": "2026-11-18",
  "notes": [
-  "Hiring and job applications, staff payslips, employment agreements, job flyers, reseller Home shortcuts"
+  "Staff logins and access rights, approvals, notifications bell, rider links, shop Home and POS, hide and edit, contacts, section settings; fixes POS tapping"
  ],
  "android": {
-  "file": "android-2.16.0.html",
-  "sig": "nq3q5TYhYYIUQfaiiSAT2UxlebihAvhctQxvuexAj3aHDRhYYASDhA0g4Yrz59bQpMqn/36hzJoFpC8ieJGmyQ==",
-  "size": 2354825,
+  "file": "android-2.17.0.html",
+  "sig": "PmbE+CW5QdOqjgT4+xscUeB1bsBkT91ootBOmyffkOJm/Z5PT1McEE4vPEWL018UdeJE2Y9IQcoes+98ihuMfw==",
+  "size": 2410115,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.16.0.html",
-  "sig": "e/Ipefl+dI2/DS7Y5otO9FO0wuKGCzpXT3tbNEaC5C6kcoyjT8sk2aL8CHYKHTTQ1UMneCpCasckLQn06CWiEA==",
-  "size": 2350537,
+  "file": "desktop-2.17.0.html",
+  "sig": "/ahm1m2Pi91Hwkb4PU2bbm0adDyD8zmUWFFBOmyNSbT1d2ghan63HEoqZzIGIKmmPK1OiJrdgsRCC3gnKY2Abg==",
+  "size": 2405827,
   "minShell": "2.5.0"
  },
  "apk": {

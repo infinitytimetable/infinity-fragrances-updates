@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Deliveries · Infinity Fragrances</title>
+<meta name="description" content="Rider deliveries">
+<meta name="theme-color" content="#3b0d1f">
+<link rel="icon" href="../app/icon-192.png">
+<link rel="apple-touch-icon" href="../app/icon-180.png">
+<style>
+:root{--bg:#fbeef0;--card:#fffafb;--ink:#2b1520;--muted:#8a6575;--line:#f1d6de;--acc:#d0507e;--deep:#9b3060;--grad:linear-gradient(135deg,#f08aac 0%,#d0507e 50%,#9b3060 100%);--good:#1b7f4c;--radius:16px;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);background:radial-gradient(900px 600px at 0% 0%,#ffe1ea 0%,transparent 60%),radial-gradient(800px 600px at 100% 30%,#ffd9c7 0%,transparent 55%),linear-gradient(160deg,#fff2f4 0%,#f6d3dd 100%) fixed;min-height:100vh}
+.wrap{max-width:980px;margin:0 auto;padding:16px 14px 120px}
+header{display:flex;align-items:center;gap:12px;margin:4px 0 14px}
+header img{width:58px;height:58px;border-radius:50%;box-shadow:0 6px 16px rgba(155,48,96,.25)}
+h1{font-family:Georgia,"Times New Roman",serif;font-weight:700;font-size:26px;margin:0;line-height:1.1}
+.sub{color:var(--muted);font-size:13.5px}
+.card{background:rgba(255,250,251,.9);border:1px solid rgba(208,80,126,.18);border-radius:var(--radius);padding:16px;box-shadow:inset 0 1px 0 #fff,0 12px 30px -16px rgba(170,60,100,.45);margin-bottom:14px}
+.search{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;font-size:16px;background:#fff;color:var(--ink)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 2px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 13px;font-weight:600;font-size:14px;cursor:pointer;color:var(--ink)}
+.chip.on{background:var(--grad);color:#fff;border-color:transparent}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.p{background:#fff;border:1px solid var(--line);border-radius:14px;padding:8px;display:flex;flex-direction:column;gap:5px;box-shadow:0 8px 20px -14px rgba(170,60,100,.5)}
+.p[hidden]{display:none}
+.img{aspect-ratio:1;border-radius:10px;background:#fff7f9;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.img img{width:100%;height:100%;object-fit:contain}
+.badge{position:absolute;top:6px;left:6px;background:var(--grad);color:#fff;font-size:11px;font-weight:800;padding:3px 8px;border-radius:999px}
+.nm{font-weight:700;font-size:14.5px;line-height:1.25}.sz{color:var(--muted);font-weight:500;font-size:12.5px}
+.pr{font-weight:800;font-size:16px}.pr s{color:var(--muted);font-weight:500;font-size:13px;margin-right:4px}
+.step{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:auto}
+.step button{border:0;background:#fbe4ea;width:44px;height:40px;font-size:21px;font-weight:800;cursor:pointer;color:var(--ink)}
+.step span{font-weight:800}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:12px;padding:12px 18px;font-weight:800;font-size:15px;cursor:pointer;text-decoration:none;color:var(--ink);background:#fff;border:1px solid var(--line)}
+.btn.pri{background:var(--grad);color:#fff;border-color:transparent;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 3px 0 #8e2a52,0 10px 20px -8px rgba(170,60,100,.6)}
+.btn.pri:active{transform:translateY(2px);box-shadow:inset 0 2px 6px rgba(0,0,0,.25)}
+.btn.wa{background:#25d366;color:#fff;border-color:transparent}
+.btn[disabled]{opacity:.55}
+.bar{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));max-width:956px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(43,21,32,.94);color:#fff;border-radius:16px;padding:10px 10px 10px 16px;box-shadow:0 16px 40px -10px rgba(0,0,0,.45);z-index:10}
+.bar[hidden]{display:none}
+label{display:flex;flex-direction:column;gap:5px;font-weight:600;font-size:14px;margin-bottom:10px}
+input,select,textarea{font:inherit;font-size:16px;padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink);width:100%}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.row2{grid-template-columns:1fr}}
+.seg{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.seg button{flex:1;min-width:130px;border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px;font-weight:700;cursor:pointer;color:var(--ink);text-align:left}
+.seg button.on{border-color:var(--acc);box-shadow:0 0 0 3px rgba(208,80,126,.2)}
+.seg small{display:block;font-weight:500;color:var(--muted);margin-top:2px}
+.list{list-style:none;margin:0;padding:0}.list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}.list li:last-child{border:0}
+.tot{display:flex;justify-content:space-between;font-size:19px;font-weight:800;margin-top:8px}
+.err{color:#b3261e;font-weight:600;min-height:1em}
+.mut{color:var(--muted)}.small{font-size:13px}
+.center{text-align:center}
+.rc{max-width:420px;margin:0 auto;background:#fff;border-radius:14px;padding:22px;box-shadow:0 18px 40px -18px rgba(0,0,0,.35);font-size:14.5px}
+.rc .dash{border-top:1px dashed #c9b8bf;margin:12px 0}
+.rc .ln{display:flex;justify-content:space-between}
+.pill{display:inline-block;padding:4px 10px;border-radius:999px;font-weight:700;font-size:13px;background:#fbe4ea}
+.pill.good{background:#dcf3e6;color:var(--good)}
+@media print{body{background:#fff}.no-print{display:none!important}.rc{box-shadow:none}}
+.badge.pre{left:auto;right:8px;background:#2a2621;color:#f3e7c6}
+.ws{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 6px;font-size:11.5px;color:var(--muted)}.ws span{background:var(--bg);border-radius:6px;padding:2px 6px}.ws b{color:var(--ink)}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}.tiers div{border:1px solid var(--line);border-radius:10px;padding:8px 4px}.tiers b{display:block;font-size:14px}.tiers span{font-size:11.5px;color:var(--muted)}.tiers p{grid-column:1/-1;margin:2px 0 0}
+.tierline{display:block;font-size:11.5px;color:var(--acc);font-weight:700}
+.paybox{border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:12px;margin:10px 0}
+.paynum{display:flex;flex-direction:column;gap:2px;background:#fff;border:1px dashed var(--acc);border-radius:10px;padding:10px 12px}.paynum span{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}.paynum b{font-size:22px;letter-spacing:.04em}.paynum small{color:var(--muted)}
+.proof{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0}.proof img{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.seg.pays{flex-wrap:wrap}.seg.pays button{flex:1 1 30%}
+.rate{text-align:center}.rate .st{display:flex;justify-content:center;gap:6px;margin:8px 0}.rate .st button{background:none;border:0;font-size:38px;line-height:1;color:var(--line);cursor:pointer;padding:2px;transition:transform .12s}.rate .st button.on{color:#d8a635}.rate .st button:active{transform:scale(1.25)}.rate textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit;margin:6px 0}.rate .lbl{min-height:20px;font-weight:600;color:var(--acc)}
+.jh{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.dl h3{margin:0;font-size:19px}.dl.done{opacity:.7}
+.row3{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.row3 .btn{flex:1 1 30%;padding:12px 10px}.btn.ghost{background:transparent}
+.collect{background:var(--bg);border-radius:10px;padding:10px 12px;margin:8px 0;font-size:15px}
+h3{margin:0 0 10px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><div class="card center"><p class="mut">Loading your deliveries…</p></div></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+(function () {
+  var CFG = {"apiKey": "AIzaSyDWFimYe-ttYeVnyjySJF9G3WS2sXnJxuA", "authDomain": "infinity-fragrances.firebaseapp.com", "projectId": "infinity-fragrances", "storageBucket": "infinity-fragrances.firebasestorage.app", "messagingSenderId": "702795967020", "appId": "1:702795967020:web:8b9798de1561a5059e3f89"};
+  var LOGO = '../app/icon-192.png';
+  var $ = function (s) { return document.querySelector(s); };
+  var esc = function (v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
+  var money = function (n) { return 'K ' + (Math.round(Number(n || 0) * 100) / 100).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); };
+  var tel = function (p) { var x = String(p || '').replace(/\D/g, ''); if (x.charAt(0) === '0') x = '260' + x.slice(1); return x; };
+  var k = (location.hash.match(/k=([a-z0-9]+)/i) || [])[1] || '', db = null, D = null, local = {}, sending = {};
+  try { local = JSON.parse(localStorage.getItem('if-rider-' + k) || '{}'); } catch (e) {}
+  var keep = function () { try { localStorage.setItem('if-rider-' + k, JSON.stringify(local)); } catch (e) {} };
+  if (!k) { $('#app').innerHTML = '<div class="card"><p>This link is not complete. Ask the office to send it again.</p></div>'; return; }
+  try { firebase.initializeApp(CFG); db = firebase.firestore(); } catch (e) { $('#app').innerHTML = '<div class="card"><p>Could not connect. Check your internet and refresh.</p></div>'; return; }
+  function st(o) { var l = local[o.id] || {}; return {picked: o.picked || l.picked, delivered: o.delivered || l.delivered, cash: o.cash || l.cash || 0}; }
+  function draw() {
+    if (!D || D.on === false) { $('#app').innerHTML = '<header><img src="' + LOGO + '" alt=""><div><h1>Deliveries</h1></div></header><div class="card"><p><b>This link is turned off.</b> Ask the office for a new one.</p></div>'; return; }
+    var L = D.orders || [], todo = L.filter(function (o) { return !st(o).delivered; }), done = L.filter(function (o) { return st(o).delivered; });
+    var h = '<header><img src="' + LOGO + '" alt=""><div><h1>' + esc(D.biz || 'Deliveries') + '</h1><div class="sub">' + esc(D.name) + ' · ' + todo.length + ' to deliver' + (done.length ? ' · ' + done.length + ' done' : '') + '</div></div></header>';
+    if (D.note) h += '<div class="card" style="border-left:5px solid var(--acc)">' + esc(D.note) + '</div>';
+    if (!L.length) h += '<div class="card center"><p style="font-size:40px;margin:0">🛵</p><p><b>No deliveries for you right now.</b></p><p class="mut small">Keep this page. New orders appear here when the office gives them to you.</p></div>';
+    h += todo.concat(done).map(function (o) {
+      var s = st(o), addr = [o.address, o.area, o.town].filter(Boolean).join(', '), map = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(addr + ', Zambia');
+      return '<div class="card dl' + (s.delivered ? ' done' : '') + '"><div class="jh"><div><h3>' + esc(o.name) + '</h3><div class="small mut">Order ' + esc(o.no) + (o.eta ? ' · ' + esc(o.eta) : '') + '</div></div><span class="pill' + (s.delivered ? ' good' : '') + '">' + (s.delivered ? 'Delivered' : s.picked ? 'On the way' : 'To pick up') + '</span></div>' +
+        '<p style="margin:8px 0 4px">📍 ' + esc(addr || 'Address not given') + '</p>' + (o.note ? '<p class="small mut" style="margin:0 0 6px">Note: ' + esc(o.note) + '</p>' : '') +
+        '<ul class="list small">' + (o.lines || []).map(function (l) { return '<li><span>' + esc(l) + '</span></li>'; }).join('') + '</ul>' +
+        '<div class="collect">' + (o.collect > 0 ? 'Collect: <b>' + money(o.collect) + '</b>' : '<b>Already paid</b>, nothing to collect') + (s.cash ? ' · <span style="color:var(--good)">collected ' + money(s.cash) + '</span>' : '') + '</div>' +
+        '<div class="row3"><a class="btn" href="tel:+' + tel(o.phone) + '">📞 Call</a><a class="btn wa" href="https://wa.me/' + tel(o.whatsapp || o.phone) + '?text=' + encodeURIComponent('Hello ' + String(o.name).split(' ')[0] + ', this is ' + D.name + ' from ' + D.biz + '. I am bringing your order ' + o.no + '.') + '">WhatsApp</a><a class="btn" href="' + map + '" target="_blank" rel="noopener">🗺 Map</a></div>' +
+        (s.delivered ? '' : '<div class="row3">' + (s.picked ? '' : '<button class="btn" data-a="picked" data-id="' + esc(o.id) + '">Picked up</button>') + '<button class="btn pri" data-a="delivered" data-id="' + esc(o.id) + '">Delivered</button>' + (o.collect > 0 && !s.cash ? '<button class="btn" data-a="cash" data-id="' + esc(o.id) + '">Cash collected</button>' : '') + '<button class="btn ghost" data-a="failed" data-id="' + esc(o.id) + '">Problem</button></div>') +
+        (s.delivered && o.collect > 0 && !s.cash ? '<div class="row3"><button class="btn" data-a="cash" data-id="' + esc(o.id) + '">Cash collected</button></div>' : '') + '</div>';
+    }).join('');
+    h += D.whatsapp ? '<p class="center small mut">Need help? <a href="https://wa.me/' + tel(D.whatsapp) + '">WhatsApp the office</a></p>' : '';
+    $('#app').innerHTML = h;
+    document.querySelectorAll('[data-a]').forEach(function (b) { b.onclick = function () { act(b.getAttribute('data-a'), b.getAttribute('data-id')); }; });
+  }
+  function act(a, id) {
+    var o = (D.orders || []).filter(function (x) { return x.id === id; })[0]; if (!o || sending[id + a]) return;
+    var amount = 0, note = '';
+    if (a === 'cash') { var v = prompt('How much cash did you collect from ' + o.name + '?', String(o.collect || '')); if (v === null) return; amount = Number(String(v).replace(/[^\d.]/g, '')); if (!(amount > 0)) { alert('Type the amount collected.'); return; } }
+    if (a === 'failed') { note = prompt('What is the problem? (e.g. customer not answering)', '') || ''; if (!note) return; }
+    if (a === 'delivered' && !confirm('Mark order ' + o.no + ' for ' + o.name + ' as delivered?')) return;
+    sending[id + a] = true;
+    db.collection('riders/' + k + '/acts').add({orderId: id, act: a, amount: amount, at: new Date().toISOString(), note: note}).then(function () {
+      local[id] = local[id] || {}; if (a === 'picked') local[id].picked = true; if (a === 'delivered') { local[id].delivered = true; local[id].picked = true; } if (a === 'cash') local[id].cash = amount; keep(); sending[id + a] = false; draw();
+    }, function () { sending[id + a] = false; alert('Could not send. Check your internet and try again.'); });
+  }
+  db.doc('riders/' + k).onSnapshot(function (s) { D = s.exists ? s.data() : {on: false}; draw(); }, function () { $('#app').innerHTML = '<div class="card"><p>Could not load your deliveries. Check your internet and refresh.</p></div>'; });
+})();
+</script>
+</body>
+</html>
