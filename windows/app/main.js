@@ -1,7 +1,15 @@
 /* Infinity Fragrances Hub - desktop shell */
 const { app, BrowserWindow, ipcMain, dialog, shell, Menu } = require('electron');
 const path = require('path'), fs = require('fs'), os = require('os'), { spawn } = require('child_process');
-const PKG = require('./package.json'), NAME = 'Infinity Fragrances Hub', http = require('http');
+const PKG = require('./package.json'), NAME = 'Infinity Fragrances Hub', http = require('http'), crypto = require('crypto');
+/* Hub updates must carry a signature made with keystore/update-signing.pem; this is its public half. */
+const UPD_URL = 'https://raw.githubusercontent.com/infinitytimetable/infinity-fragrances-updates/main/';
+const UPD_PUB = '-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEeYSbfdTjRzEzKBMT/bv2vSLiTKvt\nLfTL6LzBj4nAsR14ZeQFfnMB4axPHSUo3VXvVA4oFVnD8lUiF4TcE1cang==\n-----END PUBLIC KEY-----\n';
+function updSigOk(html, b64) {
+  try { const sig = Buffer.from(String(b64 || ''), 'base64'); if (sig.length !== 64) return false;
+    return crypto.verify('sha256', Buffer.from(String(html), 'utf8'), { key: UPD_PUB, dsaEncoding: 'ieee-p1363' }, sig); } catch (e) { return false; }
+}
+async function officialSig() { const r = await fetch(UPD_URL + 'version.json?t=' + Date.now(), { cache: 'no-store' }); const m = await r.json(); return (m && m.desktop && m.desktop.sig) || ''; }
 app.setName(NAME);
 if (process.platform === 'win32') app.setAppUserModelId('zm.infinityfragrances.hub');
 if (!app.requestSingleInstanceLock()) { app.quit(); }
@@ -159,12 +167,15 @@ ipcMain.handle('install-update', async () => {
   if (r.canceled || !r.filePaths[0]) return null;
   const html = fs.readFileSync(r.filePaths[0], 'utf8'), v = verOf(html);
   if (v === '0' || !html.includes('IFDesktop')) { dialog.showErrorBox(NAME, 'That is not an Infinity Fragrances Hub update file.'); return null; }
+  let sig = ''; try { sig = await officialSig(); } catch (e) { dialog.showErrorBox(NAME, 'Connect to the internet so the update file can be checked, then try again.'); return null; }
+  if (!updSigOk(html, sig)) { dialog.showErrorBox(NAME, 'This file did not pass its security check, so it was not installed. Use Check for updates instead.'); return null; }
   const cur = verOf(fs.readFileSync(uiFile(), 'utf8'));
   if (cmpVer(v, cur) <= 0) { dialog.showMessageBox(win, { message: `You already have version ${cur}.`, detail: `The file is version ${v}.` }); return null; }
   backupNow('before-update'); writeAtomic(path.join(app.getPath('userData'), 'ui', 'index.html'), html); return v;
 });
-ipcMain.handle('install-update-text', (e, html) => {
+ipcMain.handle('install-update-text', (e, html, sig) => {
   try { const v = verOf(html); if (v === '0' || !String(html).includes('IFDesktop')) return { error: 'That is not an Infinity Fragrances Hub update.' };
+    if (!updSigOk(html, sig)) return { error: 'The update did not pass its security check, so it was not installed.' };
     const cur = verOf(fs.readFileSync(uiFile(), 'utf8')); if (cmpVer(v, cur) <= 0) return { error: `You already have version ${cur}.` };
     backupNow('before-update'); writeAtomic(path.join(app.getPath('userData'), 'ui', 'index.html'), html); return { version: v }; } catch (x) { return { error: String(x.message || x) }; }
 });

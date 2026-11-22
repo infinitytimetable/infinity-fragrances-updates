@@ -17,7 +17,7 @@ contextBridge.exposeInMainWorld('IFDesktop', {
   setConfig: patch => call('set-config', patch),
   installUpdate: () => call('install-update'),
   relaunch: () => call('relaunch'),
-  installUpdateText: html => call('install-update-text', html),
+  installUpdateText: (html, sig) => call('install-update-text', html, sig),
   shellVersion: () => call('shell-version'),
   install: () => call('install'),
   uninstall: () => call('uninstall')
