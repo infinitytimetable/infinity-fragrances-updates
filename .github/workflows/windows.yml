@@ -1,0 +1,28 @@
+name: Build Windows PC app
+# Runs when windows/VERSION changes (or by hand from the Actions tab).
+# Builds the Windows zip from Electron + windows/app + the matching desktop-<version>.html
+# and attaches it to a public release, so it can be downloaded from a link.
+on:
+  push:
+    branches: [main]
+    paths: ['windows/VERSION']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the Windows zip
+        run: bash windows/build.sh
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VER=$(tr -d ' \r\n' < windows/VERSION)
+          TAG="pc-$VER"
+          gh release view "$TAG" >/dev/null 2>&1 && gh release delete "$TAG" --yes --cleanup-tag || true
+          gh release create "$TAG" "out/Infinity-Fragrances-Hub-$VER-Windows.zip" \
+            --title "Infinity Fragrances Hub $VER for Windows" \
+            --notes "Download the .zip, extract it, and open Infinity Fragrances Hub.exe. See READ ME FIRST.txt inside."

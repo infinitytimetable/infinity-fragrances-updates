@@ -1,0 +1,35 @@
+INFINITY FRAGRANCES HUB __VER__ - PC VERSION (Windows 10 / 11, 64-bit)
+=====================================================================
+
+NEW INSTALL
+1. Right-click the zip file and choose "Extract All...".
+2. Open the extracted folder "Infinity Fragrances Hub".
+3. Double-click "Infinity Fragrances Hub.exe".
+   If Windows shows "Windows protected your PC", click "More info" and then "Run anyway".
+   (This appears because the program is not signed with a paid certificate.)
+4. Click "Install". The hub copies itself to this computer and adds icons to the
+   desktop and Start menu. You can then delete the downloaded zip and folder.
+
+UPDATING FROM AN OLDER VERSION (your records are kept)
+1. Open your current hub and go to Settings & backup, then download a full backup
+   (or "Back up to flash drive"). This is only for safety.
+2. Close the hub completely.
+3. Extract this zip and double-click "Infinity Fragrances Hub.exe" as above.
+4. It says "Update Infinity Fragrances Hub from <old> to <new>?". Click "Update".
+   The new hub opens and the desktop and Start menu icons now open the new version.
+   If you still see an old icon next to the new one, delete the old one.
+5. After this, later updates arrive by themselves (Reports & settings, Updates)
+   and you will not need to download the zip again, unless a message tells you the app
+   itself has changed.
+
+WHERE YOUR RECORDS ARE
+- Documents\Infinity Fragrances Hub\data.json   (your records)
+- Documents\Infinity Fragrances Hub\backups\    (automatic backups, last 30 kept)
+- Settings & backup > "Back up to flash drive" copies your records anywhere you choose.
+
+SIGN-IN
+- Admin: sign in with your admin email and password. Managers use their own Team login.
+- Online records, orders, the shop, riders, staff and approvals all update by themselves
+  when the computer is online.
+
+Smell good. Live infinitely.
