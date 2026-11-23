@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My account · Infinity Fragrances</title>
+<meta name="description" content="Reseller account: report sales, pay, confirm stock">
+<meta name="theme-color" content="#3b0d1f">
+<link rel="icon" href="../app/icon-192.png">
+<link rel="apple-touch-icon" href="../app/icon-180.png">
+<style>
+:root{--bg:#fbeef0;--card:#fffafb;--ink:#2b1520;--muted:#8a6575;--line:#f1d6de;--acc:#d0507e;--deep:#9b3060;--grad:linear-gradient(135deg,#f08aac 0%,#d0507e 50%,#9b3060 100%);--good:#1b7f4c;--bad:#b3261e;--warn:#9a6700;--radius:16px;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);background:radial-gradient(900px 600px at 0% 0%,#ffe1ea 0%,transparent 60%),radial-gradient(800px 600px at 100% 30%,#ffd9c7 0%,transparent 55%),linear-gradient(160deg,#fff2f4 0%,#f6d3dd 100%) fixed;min-height:100vh;-webkit-text-size-adjust:100%}
+.wrap{max-width:720px;margin:0 auto;padding:16px 14px 130px}
+header{display:flex;align-items:center;gap:12px;margin:4px 0 14px}
+header img{width:56px;height:56px;border-radius:50%;box-shadow:0 6px 16px rgba(155,48,96,.25)}
+h1{font-family:Georgia,"Times New Roman",serif;font-weight:700;font-size:24px;margin:0;line-height:1.1}
+h2{font-size:18px;margin:0 0 8px}
+h3{font-size:15px;margin:0}
+.sub{color:var(--muted);font-size:13.5px}
+.card{background:rgba(255,250,251,.92);border:1px solid rgba(208,80,126,.18);border-radius:var(--radius);padding:16px;box-shadow:inset 0 1px 0 #fff,0 12px 30px -16px rgba(170,60,100,.45);margin-bottom:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);border-radius:12px;padding:13px 18px;font:inherit;font-weight:800;font-size:15.5px;cursor:pointer;text-decoration:none;color:var(--ink);background:#fff;min-height:48px}
+.btn.pri{background:var(--grad);color:#fff;border-color:transparent;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 3px 0 #8e2a52,0 10px 20px -8px rgba(170,60,100,.6)}
+.btn.pri:active{transform:translateY(2px);box-shadow:inset 0 2px 6px rgba(0,0,0,.25)}
+.btn.wa{background:#25d366;color:#fff;border-color:transparent}
+.btn.sm{padding:8px 12px;min-height:38px;font-size:14px}
+.btn.ghost{background:transparent}
+.btn[disabled]{opacity:.55}
+.btn.block{display:flex;width:100%}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>.btn{flex:1}
+label{display:flex;flex-direction:column;gap:5px;font-weight:700;font-size:14.5px;margin-bottom:12px}
+input,select,textarea{font:inherit;font-size:17px;padding:12px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink);width:100%}
+textarea{min-height:64px}
+.pin{font-size:34px;letter-spacing:.5em;text-align:center;padding:14px 0 14px .5em;font-weight:800}
+.err{color:var(--bad);font-weight:700;min-height:1.2em;margin:4px 0}
+.mut{color:var(--muted)}.small{font-size:13px}.center{text-align:center}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.tile{background:rgba(255,250,251,.92);border:1px solid rgba(208,80,126,.18);border-radius:14px;padding:12px}
+.tile .l{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.tile .v{font-size:20px;font-weight:800;margin-top:3px}
+.tile .s{font-size:12.5px;color:var(--muted);margin-top:2px}
+.big{display:flex;align-items:center;gap:14px;text-align:left;width:100%;border:1px solid rgba(208,80,126,.2);border-radius:16px;padding:16px;background:#fff;cursor:pointer;font:inherit;color:var(--ink);margin-bottom:10px;box-shadow:0 10px 24px -16px rgba(170,60,100,.5);position:relative}
+.big:active{transform:translateY(1px)}
+.big .ic{font-size:30px;line-height:1}
+.big b{display:block;font-size:17px}.big span{display:block;color:var(--muted);font-size:13.5px;margin-top:2px}
+.big .bdg{position:absolute;right:14px;top:14px;background:var(--acc);color:#fff;border-radius:999px;font-weight:800;font-size:13px;padding:2px 9px}
+.it{display:flex;gap:12px;align-items:flex-start;border:2px solid var(--line);border-radius:14px;padding:12px;background:#fff;margin-bottom:10px;cursor:pointer}
+.it.on{border-color:var(--acc);background:#fff4f8}
+.ck{width:30px;height:30px;border-radius:8px;border:2px solid #d9b6c3;background:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;flex:none;font-size:18px}
+.it.on .ck{background:var(--acc);border-color:var(--acc)}
+.it .nm{font-weight:800;font-size:15.5px;line-height:1.25}
+.it .meta{color:var(--muted);font-size:13px;margin-top:2px}
+.step{display:flex;align-items:center;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:8px;width:max-content;background:#fff}
+.step button{border:0;background:#fbe4ea;width:52px;height:46px;font-size:24px;font-weight:800;cursor:pointer;color:var(--ink)}
+.step span{min-width:56px;text-align:center;font-weight:800;font-size:19px}
+.it .amt{margin-left:auto;font-weight:800;text-align:right;white-space:nowrap}
+.sumrow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:15px}
+.sumrow:last-child{border:0}
+.sumrow.total{font-size:20px;font-weight:800;border-top:2px solid var(--acc);border-bottom:0;margin-top:4px;padding-top:11px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.seg button{border:2px solid var(--line);background:#fff;border-radius:12px;padding:13px 8px;font:inherit;font-weight:800;cursor:pointer;color:var(--ink)}
+.seg button.on{border-color:var(--acc);background:#fff4f8;box-shadow:0 0 0 3px rgba(208,80,126,.15)}
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;font-weight:700;font-size:12.5px;background:#fbe4ea}
+.pill.good{background:#dcf3e6;color:var(--good)}.pill.warn{background:#fff1cf;color:var(--warn)}.pill.bad{background:#fde1de;color:var(--bad)}
+.bar{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));max-width:696px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(43,21,32,.95);color:#fff;border-radius:16px;padding:10px 10px 10px 16px;box-shadow:0 16px 40px -10px rgba(0,0,0,.45);z-index:10}
+.bar b{font-size:17px}
+.back{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;font:inherit;font-weight:800;color:var(--deep);cursor:pointer;padding:6px 0;margin-bottom:6px;font-size:15.5px}
+.notice{border-left:5px solid var(--acc);background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:14.5px}
+.notice.warn{border-color:#d49a00;background:#fffaf0}.notice.good{border-color:var(--good);background:#f3fbf6}.notice.bad{border-color:var(--bad);background:#fff6f5}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:6px 4px;border-bottom:2px solid var(--line)}
+td{padding:9px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+.n{text-align:right;white-space:nowrap}
+.photo{max-width:100%;border-radius:10px;border:1px solid var(--line);margin-top:6px}
+.sheet{position:fixed;inset:0;background:rgba(43,21,32,.55);z-index:30;display:flex;align-items:flex-end;justify-content:center}
+.sheet>div{background:#fffafb;border-radius:20px 20px 0 0;width:100%;max-width:720px;max-height:92vh;overflow:auto;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+@media (min-width:760px){.sheet{align-items:center}.sheet>div{border-radius:20px}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><div class="card center"><p class="mut">Loading…</p></div></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+(function () {
+  'use strict';
+  var CFG = {"apiKey": "AIzaSyDWFimYe-ttYeVnyjySJF9G3WS2sXnJxuA", "authDomain": "infinity-fragrances.firebaseapp.com", "projectId": "infinity-fragrances", "storageBucket": "infinity-fragrances.firebasestorage.app", "messagingSenderId": "702795967020", "appId": "1:702795967020:web:8b9798de1561a5059e3f89"};
+  var LOGO = '../app/icon-192.png';
+  var $ = function (s) { return document.querySelector(s); };
+  var esc = function (v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
+  var num = function (v) { var n = Number(v); return isFinite(n) ? n : 0; };
+  var r2 = function (n) { return Math.round((num(n) + 1e-9) * 100) / 100; };
+  var money = function (n) { return 'K ' + r2(n).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}); };
+  var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var fmtDate = function (s) { var m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? Number(m[3]) + ' ' + MON[Number(m[2]) - 1] + ' ' + m[1] : String(s || ''); };
+  var fmtDT = function (s) { var d = new Date(s); if (isNaN(d)) return ''; return d.getDate() + ' ' + MON[d.getMonth()] + ' ' + d.getFullYear() + ', ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); };
+  var today = function () { var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); };
+  var tel = function (p) { var x = String(p || '').replace(/\D/g, ''); if (x.charAt(0) === '0') x = '260' + x.slice(1); return x; };
+  var first = function (n) { return String(n || '').split(' ')[0]; };
+  var MODES = {cash: 'Cash', mtn: 'MTN MoMo', airtel: 'Airtel Money', bank: 'Bank'};
+
+  var k = (location.hash.match(/k=([a-z0-9]+)/i) || [])[1] || '';
+  var app = $('#app'), db = null, doc = null, D = null, key = null, local = {}, V = {screen: 'lock', sold: {}, pay: {amount: '', mode: '', ref: '', proof: '', note: '', touched: false}, rq: {}, rn: {}}, busy = false, err = '';
+  try { local = JSON.parse(localStorage.getItem('if-rl-' + k) || '{}'); } catch (e) {}
+  local.sent = local.sent || {};
+  var keep = function () { try { localStorage.setItem('if-rl-' + k, JSON.stringify(local)); } catch (e) {} };
+  if (!k) { app.innerHTML = '<div class="card"><p>This link is not complete. Ask the office to send it again.</p></div>'; return; }
+
+  /* ---------- crypto: the figures are locked with the last 4 digits of the phone number ---------- */
+  var te = new TextEncoder();
+  function b64d(s) { var b = atob(s), a = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; }
+  function hex(buf) { return Array.prototype.map.call(new Uint8Array(buf), function (x) { return ('0' + x.toString(16)).slice(-2); }).join(''); }
+  function keyFor(pin) {
+    return crypto.subtle.importKey('raw', te.encode(pin), 'PBKDF2', false, ['deriveKey']).then(function (base) {
+      return crypto.subtle.deriveKey({name: 'PBKDF2', salt: te.encode('if-rl|' + k), iterations: 120000, hash: 'SHA-256'}, base, {name: 'AES-GCM', length: 256}, false, ['decrypt']);
+    });
+  }
+  function openDoc(kk) { return crypto.subtle.decrypt({name: 'AES-GCM', iv: b64d(doc.iv)}, kk, b64d(doc.ct)).then(function (pt) { return JSON.parse(new TextDecoder().decode(pt)); }); }
+  function chkOf(pin) { return crypto.subtle.digest('SHA-256', te.encode('chk|' + k + '|' + pin)).then(hex); }
+
+  /* ---------- load ---------- */
+  try { firebase.initializeApp(CFG); db = firebase.firestore(); } catch (e) { app.innerHTML = '<div class="card"><p>Could not connect. Check your internet and refresh.</p></div>'; return; }
+  db.doc('rlinks/' + k).onSnapshot(function (s) {
+    doc = s.exists ? s.data() : {on: false}; err = '';
+    if (key && doc.ct) { openDoc(key).then(function (d) { D = d; draw(); }, function () { key = null; D = null; V.screen = 'lock'; draw(); }); return; }
+    if (!key && doc.ct && local.pin && !V.triedSaved) { V.triedSaved = true; unlock(local.pin, true); return; }
+    draw();
+  }, function () { app.innerHTML = '<div class="card"><p>Could not load. Check your internet and refresh.</p></div>'; });
+
+  function unlock(pin, silent) {
+    if (!/^\d{4}$/.test(pin)) { err = 'Type the 4 digits.'; draw(); return; }
+    busy = true; if (!silent) draw();
+    keyFor(pin).then(function (kk) { return openDoc(kk).then(function (d) { key = kk; D = d; local.pin = pin; keep(); V.screen = 'home'; busy = false; err = ''; draw(); }); })
+      .catch(function () { busy = false; delete local.pin; keep(); err = silent ? '' : 'Those digits do not match. Use the last 4 digits of the phone number the office has for you.'; draw(); });
+  }
+
+  /* ---------- the numbers ---------- */
+  function statusOf(no) { var l = (D && D.reports || []).filter(function (x) { return x.no === no; })[0]; return l || null; }
+  function unresolved() { return Object.keys(local.sent).map(function (n) { return local.sent[n]; }).filter(function (x) { var st = statusOf(x.no); return st ? st.status === 'pending' : (Date.now() - new Date(x.at).getTime()) < 3 * 86400000; }); }
+  function pendingSettles() { return unresolved().filter(function (x) { return x.kind === 'settle'; }); }
+  function heldLeft() {
+    var used = {}; pendingSettles().forEach(function (x) { (x.lines || []).forEach(function (l) { used[l.p] = (used[l.p] || 0) + l.q; }); });
+    return (D.held || []).map(function (h) { var q = h.qty - (used[h.p] || 0); return {p: h.p, name: h.name, size: h.size, qty: Math.max(0, q), price: h.price, per: h.per}; }).filter(function (h) { return h.qty > 0; });
+  }
+  function pendEffect() { return pendingSettles().reduce(function (t, x) { return t + x.value - x.own - x.paid; }, 0); }
+  function lineComm(h, q) { return r2(h.per * q); }
+  function calc() {
+    var H = heldLeft(), lines = [], value = 0, own = 0, bottles = 0;
+    H.forEach(function (h) { var q = Math.min(h.qty, Math.max(0, Math.round(num(V.sold[h.p])))); if (q > 0) { var v = r2(q * h.price), c = lineComm(h, q); lines.push({p: h.p, name: h.name, size: h.size, q: q, price: h.price, value: v, comm: c}); value += v; own += c; bottles += q; } });
+    var before = r2(num(D.net) + pendEffect()), should = Math.max(0, r2(before + value - own));
+    return {H: H, lines: lines, value: r2(value), own: r2(own), bottles: bottles, before: before, should: should};
+  }
+  function parcelsToConfirm() {
+    var sentIds = {}; unresolved().forEach(function (x) { if (x.kind === 'received') sentIds[x.dispatchId] = 1; });
+    return (D.parcels || []).filter(function (p) { return p.status !== 'delivered' && !sentIds[p.id]; });
+  }
+
+  /* ---------- screens ---------- */
+  function head(title, sub) { return '<header><img src="' + LOGO + '" alt=""><div><h1>' + esc(title) + '</h1>' + (sub ? '<div class="sub">' + sub + '</div>' : '') + '</div></header>'; }
+  function backBtn() { return '<button class="back" data-a="go" data-s="home">‹ Back</button>'; }
+  function draw() {
+    var y = window.pageYOffset;
+    if (!doc) { app.innerHTML = '<div class="card center"><p class="mut">Loading…</p></div>'; return; }
+    if (doc.on === false) { app.innerHTML = head(doc.biz || 'My account', '') + '<div class="card"><p><b>This link is turned off.</b></p><p class="mut">Ask the office for a new link.</p></div>'; return; }
+    if (!doc.ct) { app.innerHTML = head(doc.biz || 'My account', '') + '<div class="card"><p><b>Your account is being set up.</b></p><p class="mut">Please try again in a few minutes.</p></div>'; return; }
+    if (!D) { app.innerHTML = lockHTML(); var i = $('#pin'); if (i && !busy) i.focus(); return; }
+    var s = V.screen;
+    app.innerHTML = s === 'settle' ? settleHTML() : s === 'parcels' ? parcelsHTML() : s === 'stock' ? stockHTML() : s === 'hist' ? histHTML() : s === 'done' ? doneHTML() : homeHTML();
+    window.scrollTo(0, y);
+  }
+  function lockHTML() {
+    return head(doc.biz || 'Infinity Fragrances', 'Your reseller account') + '<div class="card"><h2>Welcome</h2><p class="mut" style="margin-top:0">To keep your account private, type the <b>last 4 digits of your phone number</b>.</p>' +
+      '<input id="pin" class="pin" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="····" aria-label="Last 4 digits of your phone number"><div class="err" id="perr">' + esc(err) + '</div>' +
+      '<button class="btn pri block" data-a="unlock"' + (busy ? ' disabled' : '') + '>' + (busy ? 'Opening…' : 'Open my account') + '</button></div>';
+  }
+  function homeHTML() {
+    var H = heldLeft(), bottles = H.reduce(function (t, h) { return t + h.qty; }, 0), val = H.reduce(function (t, h) { return t + h.qty * h.price; }, 0), net = r2(num(D.net) + pendEffect()), pc = parcelsToConfirm().length, pend = unresolved();
+    var stale = D.at && (Date.now() - new Date(D.at).getTime()) > 3 * 86400000;
+    var h = head('Hello, ' + first(D.name), esc(D.biz) + ' · ' + esc(D.town || ''));
+    if (pend.length) h += '<div class="notice warn"><b>' + pend.length + ' of your report' + (pend.length === 1 ? ' is' : 's are') + ' waiting.</b> ' + esc(D.biz) + ' will check and confirm it.</div>';
+    (D.reports || []).filter(function (r) { return r.status === 'rejected' && !(local.seen || {})[r.no]; }).forEach(function (r) { h += '<div class="notice bad"><b>Not accepted:</b> your report ' + esc(r.no) + (r.reason ? '. ' + esc(r.reason) : '.') + ' <button class="btn sm" data-a="seen" data-no="' + esc(r.no) + '">OK</button></div>'; });
+    h += '<div class="tiles"><div class="tile"><div class="l">Perfume with you</div><div class="v">' + bottles + ' bottles</div><div class="s">worth ' + money(val) + '</div></div>' +
+      '<div class="tile"><div class="l">' + (net > 0.009 ? 'You owe' : net < -0.009 ? 'We owe you' : 'Balance') + '</div><div class="v">' + money(Math.abs(net)) + '</div><div class="s">' + (net > 0.009 ? 'for perfume already sold' : net < -0.009 ? 'your commission' : 'all clear') + '</div></div></div>';
+    h += '<button class="big" data-a="go" data-s="settle"><span class="ic">💰</span><div><b>Report sales and pay</b><span>Tick what you sold, then tell us how you paid</span></div></button>';
+    h += '<button class="big" data-a="go" data-s="parcels"><span class="ic">📦</span><div><b>Confirm stock received</b><span>When a parcel reaches you, tell us what you got</span></div>' + (pc ? '<i class="bdg">' + pc + '</i>' : '') + '</button>';
+    h += '<button class="big" data-a="go" data-s="stock"><span class="ic">🧴</span><div><b>My stock</b><span>What you hold now, with prices</span></div></button>';
+    h += '<button class="big" data-a="go" data-s="hist"><span class="ic">🧾</span><div><b>My history</b><span>Past months and reports you sent</span></div></button>';
+    var sent = Object.keys(local.sent).map(function (n) { return local.sent[n]; }).sort(function (a, b) { return (b.at || '').localeCompare(a.at || ''); }).slice(0, 5);
+    if (sent.length) h += '<div class="card"><h2>Reports I sent</h2>' + sent.map(function (x) { var st = statusOf(x.no), s = st ? st.status : 'pending'; return '<div class="sumrow"><span><b>' + (x.kind === 'received' ? 'Parcel ' + esc(x.parcelNo || '') : 'Sales ' + esc(x.no)) + '</b><br><span class="small mut">' + esc(fmtDT(x.at)) + '</span></span><span style="text-align:right"><span class="pill ' + (s === 'approved' ? 'good' : s === 'rejected' ? 'bad' : 'warn') + '">' + (s === 'approved' ? 'Confirmed' : s === 'rejected' ? 'Not accepted' : 'Waiting') + '</span><br><button class="btn sm ghost" data-a="pdfSent" data-no="' + esc(x.no) + '">PDF</button></span></div>'; }).join('') + '</div>';
+    h += '<p class="center small mut">Figures as at ' + esc(fmtDT(D.at)) + '.' + (stale ? ' <b>They may be out of date, so ask the office if something looks wrong.</b>' : '') + '</p>';
+    if (D.whatsapp) h += '<p class="center small">Need help? <a href="https://wa.me/' + tel(D.whatsapp) + '">WhatsApp ' + esc(D.biz) + '</a></p>';
+    return h;
+  }
+  function settleHTML() {
+    var C = calc(), p = V.pay;
+    var h = backBtn() + '<h2>Report sales and pay</h2><p class="mut small" style="margin-top:0">Tap each perfume you sold. Then use + and − for how many.</p>';
+    if (!C.H.length) h += '<div class="notice">You have no perfume to report right now. You can still tell us about a payment below.</div>';
+    h += '<div class="row" style="margin-bottom:10px"><button class="btn sm" data-a="allSold">All sold</button><button class="btn sm ghost" data-a="noneSold">Clear</button></div>';
+    C.H.forEach(function (x) {
+      var q = Math.min(x.qty, Math.max(0, Math.round(num(V.sold[x.p])))), on = q > 0;
+      h += '<div class="it' + (on ? ' on' : '') + '" data-a="tick" data-p="' + esc(x.p) + '"><div class="ck">' + (on ? '✓' : '') + '</div><div style="flex:1"><div class="nm">' + esc(x.name) + (x.size ? ' ' + esc(x.size) + 'ml' : '') + '</div><div class="meta">You hold ' + x.qty + ' · ' + money(x.price) + ' each</div>' +
+        (on ? '<div class="step" data-stop="1"><button data-a="minus" data-p="' + esc(x.p) + '" aria-label="Less">−</button><span>' + q + '</span><button data-a="plus" data-p="' + esc(x.p) + '" aria-label="More">+</button></div>' : '') + '</div>' + (on ? '<div class="amt">' + money(q * x.price) + '</div>' : '') + '</div>';
+    });
+    h += '<div class="card" id="sum"></div>';
+    h += '<div class="card"><h2>How are you paying?</h2><label>Amount you are paying now (K)<input id="amt" inputmode="decimal" value="' + esc(p.amount) + '" placeholder="0.00"></label>' +
+      '<div class="small mut" style="margin:-6px 0 8px">Put 0 if you are not paying yet.</div><div class="seg">' + Object.keys(MODES).map(function (m) { return '<button data-a="mode" data-m="' + m + '" class="' + (p.mode === m ? 'on' : '') + '">' + MODES[m] + '</button>'; }).join('') + '</div>' +
+      '<div id="refw">' + (p.mode && p.mode !== 'cash' ? '<label>Reference / transaction number<input id="ref" value="' + esc(p.ref) + '" placeholder="From your payment message" autocomplete="off"></label>' : '') + '</div>' +
+      '<label>Photo of your payment message (optional)<input type="file" id="photo" accept="image/*"></label>' + (p.proof ? '<img class="photo" src="' + p.proof + '" alt="Payment photo" style="max-height:200px"><div><button class="btn sm ghost" data-a="rmphoto" style="margin-top:6px">Remove photo</button></div>' : '') +
+      '<label style="margin-top:10px">Anything you want to tell us? (optional)<textarea id="note" placeholder="e.g. 2 bottles were returned by a customer">' + esc(p.note) + '</textarea></label></div>';
+    h += '<div class="err" id="serr">' + esc(err) + '</div><div class="bar"><span id="barTxt"></span><button class="btn pri" data-a="review">Check and send</button></div>';
+    setTimeout(drawSum, 0);
+    return h;
+  }
+  function drawSum() {
+    var box = $('#sum'); if (!box || V.screen !== 'settle') return; var C = calc(), p = V.pay;
+    box.innerHTML = '<div class="sumrow"><span>Bottles sold now</span><b>' + C.bottles + '</b></div><div class="sumrow"><span>Value sold</span><b>' + money(C.value) + '</b></div>' +
+      '<div class="sumrow"><span>Your commission (you keep it)</span><b>− ' + money(C.own) + '</b></div>' +
+      (C.before > 0.009 ? '<div class="sumrow"><span>Balance from before</span><b>' + money(C.before) + '</b></div>' : C.before < -0.009 ? '<div class="sumrow"><span>Commission we already owe you</span><b>− ' + money(-C.before) + '</b></div>' : '') +
+      '<div class="sumrow total"><span>You should pay</span><b>' + money(C.should) + '</b></div>';
+    if (!p.touched) { p.amount = C.should > 0 ? C.should.toFixed(2) : ''; var a = $('#amt'); if (a && document.activeElement !== a) a.value = p.amount; }
+    var t = $('#barTxt'); if (t) t.innerHTML = 'Paying <b>' + money(num(p.amount)) + '</b>';
+  }
+  function reviewHTML(C, pay) {
+    return '<div class="sheet" data-a="sheetBg"><div><h2>Check your report</h2><p class="mut small" style="margin-top:0">Make sure everything is right. You cannot change it after you send.</p>' +
+      (C.lines.length ? '<table><thead><tr><th>Perfume</th><th class="n">Qty</th><th class="n">Value</th></tr></thead><tbody>' + C.lines.map(function (l) { return '<tr><td>' + esc(l.name) + (l.size ? ' ' + esc(l.size) + 'ml' : '') + '</td><td class="n">' + l.q + '</td><td class="n">' + money(l.value) + '</td></tr>'; }).join('') + '</tbody></table>' : '<p><b>No perfume reported sold.</b></p>') +
+      '<div style="margin:10px 0"><div class="sumrow"><span>Value sold</span><b>' + money(C.value) + '</b></div><div class="sumrow"><span>Your commission</span><b>− ' + money(C.own) + '</b></div><div class="sumrow total"><span>You should pay</span><b>' + money(C.should) + '</b></div>' +
+      '<div class="sumrow"><span>You are paying now</span><b>' + money(pay.amount) + '</b></div><div class="sumrow"><span>Paid by</span><b>' + esc(MODES[pay.mode] || '') + (pay.ref ? ' · ' + esc(pay.ref) : '') + '</b></div></div>' +
+      '<div class="err" id="rerr"></div><div class="row"><button class="btn ghost" data-a="closeSheet">Go back</button><button class="btn pri" data-a="send" id="sendBtn">Yes, send it</button></div></div></div>';
+  }
+  function parcelsHTML() {
+    var P = parcelsToConfirm(), done = (D.parcels || []).filter(function (p) { return p.status === 'delivered'; }).slice(0, 6);
+    var h = backBtn() + '<h2>Confirm stock received</h2>';
+    if (!P.length) h += '<div class="notice good">Nothing is waiting for you to confirm.</div>';
+    P.forEach(function (p) {
+      var q = V.rq[p.id] || (V.rq[p.id] = {}); p.items.forEach(function (it) { if (q[it.p] == null) q[it.p] = it.qty; });
+      h += '<div class="card"><h3>Parcel ' + esc(p.no) + '</h3><div class="small mut">Sent ' + esc(fmtDate(p.date)) + (p.courier ? ' · ' + esc(p.courier) : '') + (p.waybill ? ' · waybill ' + esc(p.waybill) : '') + '</div>' +
+        '<p class="small" style="margin:10px 0 4px"><b>Tap + or − to match what you really received.</b></p>' +
+        p.items.map(function (it) { var got = q[it.p], short = got < it.qty; return '<div class="sumrow"><span><b>' + esc(it.name) + '</b>' + (it.gift ? ' <span class="pill good">gift</span>' : '') + '<br><span class="small mut">Sent: ' + it.qty + (short ? ' · <span style="color:var(--bad)">short by ' + (it.qty - got) + '</span>' : '') + '</span></span><span class="step" data-stop="1" style="margin:0"><button data-a="rminus" data-id="' + esc(p.id) + '" data-p="' + esc(it.p) + '">−</button><span>' + got + '</span><button data-a="rplus" data-id="' + esc(p.id) + '" data-p="' + esc(it.p) + '">+</button></span></div>'; }).join('') +
+        '<label style="margin-top:10px">Note (optional)<textarea data-i="rn" data-id="' + esc(p.id) + '" placeholder="e.g. one bottle was broken">' + esc(V.rn[p.id] || '') + '</textarea></label><div class="err" id="rerr-' + esc(p.id) + '"></div>' +
+        '<button class="btn pri block" data-a="recv" data-id="' + esc(p.id) + '">I received this parcel</button></div>';
+    });
+    if (done.length) h += '<div class="card"><h2>Parcels already confirmed</h2>' + done.map(function (p) { return '<div class="sumrow"><span><b>' + esc(p.no) + '</b><br><span class="small mut">' + esc(fmtDate(p.deliveredDate || p.date)) + '</span></span><button class="btn sm ghost" data-a="pdfRecv" data-id="' + esc(p.id) + '">Received note (PDF)</button></div>'; }).join('') + '</div>';
+    return h;
+  }
+  function stockHTML() {
+    var H = heldLeft(), tot = H.reduce(function (t, x) { return t + x.qty * x.price; }, 0), n = H.reduce(function (t, x) { return t + x.qty; }, 0);
+    return backBtn() + '<h2>My stock</h2>' + (H.length ? '<div class="card"><table><thead><tr><th>Perfume</th><th class="n">Qty</th><th class="n">Price</th><th class="n">Value</th></tr></thead><tbody>' +
+      H.map(function (x) { return '<tr><td>' + esc(x.name) + (x.size ? ' ' + esc(x.size) + 'ml' : '') + '</td><td class="n">' + x.qty + '</td><td class="n">' + money(x.price) + '</td><td class="n">' + money(x.qty * x.price) + '</td></tr>'; }).join('') +
+      '<tr><td><b>Total</b></td><td class="n"><b>' + n + '</b></td><td></td><td class="n"><b>' + money(tot) + '</b></td></tr></tbody></table></div><button class="btn pri block" data-a="pdfStock">Download stock list (PDF)</button>' : '<div class="notice">You are not holding any perfume right now.</div>') + '<p class="small mut center">As at ' + esc(fmtDT(D.at)) + '</p>';
+  }
+  function histHTML() {
+    var Hs = D.hist || [];
+    return backBtn() + '<h2>My history</h2>' + (Hs.length ? '<div class="card"><table><thead><tr><th>Month</th><th class="n">Bottles</th><th class="n">Value</th><th class="n">My commission</th><th class="n">Paid</th></tr></thead><tbody>' +
+      Hs.map(function (m) { return '<tr><td>' + esc(m.label) + '</td><td class="n">' + m.bottles + '</td><td class="n">' + money(m.value) + '</td><td class="n">' + money(m.comm) + '</td><td class="n">' + money(m.paid) + '</td></tr>'; }).join('') + '</tbody></table></div><button class="btn pri block" data-a="pdfHist">Download history (PDF)</button>' : '<div class="notice">No history yet.</div>');
+  }
+  function doneHTML() {
+    var x = V.last; if (!x) return homeHTML();
+    return '<div class="card center"><div style="font-size:54px">✅</div><h2>' + (V.pending ? 'Sending…' : 'Sent!') + '</h2>' + (V.slow ? '<p class="notice warn small">Your phone is slow to connect. <b>Keep this page open</b> and do not send again. It will go as soon as the internet works.</p>' : '') +
+      '<p>' + esc(D.biz) + ' will check ' + (x.kind === 'received' ? 'your parcel confirmation' : 'your report and payment') + ' and confirm it.</p><p class="small mut">Report number <b>' + esc(x.no) + '</b></p></div>' +
+      '<button class="btn pri block" data-a="pdfSent" data-no="' + esc(x.no) + '" style="margin-bottom:10px">Download my ' + (x.kind === 'received' ? 'received note' : 'report') + ' (PDF)</button>' + (canShare() ? '<button class="btn wa block" data-a="shareSent" data-no="' + esc(x.no) + '" style="margin-bottom:10px">Share the PDF on WhatsApp</button>' : '') + '<button class="btn block ghost" data-a="go" data-s="home">Back to my account</button>';
+  }
+
+  /* ---------- actions ---------- */
+  var A = {
+    unlock: function () { var i = $('#pin'); unlock(i ? i.value.trim() : ''); },
+    go: function (t) { V.screen = t.getAttribute('data-s'); err = ''; draw(); window.scrollTo(0, 0); },
+    seen: function (t) { local.seen = local.seen || {}; local.seen[t.getAttribute('data-no')] = 1; keep(); draw(); },
+    tick: function (t) { var p = t.getAttribute('data-p'); V.sold[p] = num(V.sold[p]) > 0 ? 0 : 1; draw(); },
+    plus: function (t) { var p = t.getAttribute('data-p'), h = heldLeft().filter(function (x) { return x.p === p; })[0]; V.sold[p] = Math.min(h ? h.qty : 0, num(V.sold[p]) + 1); draw(); },
+    minus: function (t) { var p = t.getAttribute('data-p'); V.sold[p] = Math.max(0, num(V.sold[p]) - 1); draw(); },
+    allSold: function () { heldLeft().forEach(function (h) { V.sold[h.p] = h.qty; }); draw(); },
+    noneSold: function () { V.sold = {}; draw(); },
+    mode: function (t) { V.pay.mode = t.getAttribute('data-m'); draw(); },
+    rmphoto: function () { V.pay.proof = ''; draw(); },
+    review: function () {
+      var C = calc(), p = V.pay, amt = r2(num(String(p.amount).replace(/,/g, '')));
+      if (!C.lines.length && !(amt > 0)) { err = 'Tick what you sold, or type the amount you are paying.'; $('#serr').textContent = err; return; }
+      if (!(amt >= 0)) { err = 'Check the amount.'; $('#serr').textContent = err; return; }
+      if (!p.mode && amt > 0) { err = 'Choose how you are paying: cash, MoMo or bank.'; $('#serr').textContent = err; return; }
+      err = ''; $('#serr').textContent = '';
+      var d = document.createElement('div'); d.id = 'sheetHost'; d.innerHTML = reviewHTML(C, {amount: amt, mode: p.mode || 'cash', ref: p.ref}); document.body.appendChild(d);
+    },
+    sheetBg: function (t, e) { if (e.target === t) A.closeSheet(); },
+    closeSheet: function () { var d = $('#sheetHost'); if (d) d.remove(); },
+    send: function () { sendSettle(); },
+    rplus: function (t) { var id = t.getAttribute('data-id'), p = t.getAttribute('data-p'), P = (D.parcels || []).filter(function (x) { return x.id === id; })[0], it = P && P.items.filter(function (x) { return x.p === p; })[0]; if (it) V.rq[id][p] = Math.min(it.qty, num(V.rq[id][p]) + 1); draw(); },
+    rminus: function (t) { var id = t.getAttribute('data-id'), p = t.getAttribute('data-p'); V.rq[id][p] = Math.max(0, num(V.rq[id][p]) - 1); draw(); },
+    recv: function (t) { sendRecv(t.getAttribute('data-id')); },
+    pdfStock: function () { makePdf('stock').then(function (r) { savePdf(r); }); },
+    pdfHist: function () { makePdf('hist').then(function (r) { savePdf(r); }); },
+    pdfRecv: function (t) { var P = (D.parcels || []).filter(function (x) { return x.id === t.getAttribute('data-id'); })[0]; if (P) makePdf('recvOld', P).then(function (r) { savePdf(r); }); },
+    pdfSent: function (t) { var x = local.sent[t.getAttribute('data-no')]; if (x) makePdf(x.kind === 'received' ? 'recv' : 'settle', x).then(function (r) { savePdf(r); }); },
+    shareSent: function (t) { var x = local.sent[t.getAttribute('data-no')]; if (x) makePdf(x.kind === 'received' ? 'recv' : 'settle', x).then(function (r) { savePdf(r, true); }); }
+  };
+  app.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-a]'); if (!t) return;
+    if (t.getAttribute('data-a') === 'tick' && e.target.closest('[data-stop]')) return;
+    var f = A[t.getAttribute('data-a')]; if (f) f(t, e);
+  });
+  document.body.addEventListener('click', function (e) { var t = e.target.closest('#sheetHost [data-a]'); if (t) { var f = A[t.getAttribute('data-a')]; if (f) f(t, e); } });
+  app.addEventListener('input', function (e) {
+    var t = e.target;
+    if (t.id === 'amt') { V.pay.amount = t.value; V.pay.touched = true; drawSum(); }
+    else if (t.id === 'ref') V.pay.ref = t.value;
+    else if (t.id === 'note') V.pay.note = t.value;
+    else if (t.getAttribute('data-i') === 'rn') V.rn[t.getAttribute('data-id')] = t.value;
+    else if (t.id === 'pin') { t.value = t.value.replace(/\D/g, '').slice(0, 4); if (t.value.length === 4) unlock(t.value); }
+  });
+  app.addEventListener('change', function (e) {
+    if (e.target.id === 'photo' && e.target.files && e.target.files[0]) { readPhoto(e.target.files[0]).then(function (d) { V.pay.proof = d; draw(); }, function () { err = 'Could not use that photo.'; draw(); }); }
+  });
+  app.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target.id === 'pin') A.unlock(); });
+
+  function readPhoto(file) {
+    return new Promise(function (res, rej) {
+      var r = new FileReader(); r.onerror = rej;
+      r.onload = function () { var im = new Image(); im.onerror = rej; im.onload = function () {
+        var s = Math.min(1, 1000 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.max(1, Math.round(im.width * s)); c.height = Math.max(1, Math.round(im.height * s));
+        c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); var q = 0.7, d = c.toDataURL('image/jpeg', q); while (d.length > 230000 && q > 0.25) { q -= 0.1; d = c.toDataURL('image/jpeg', q); } res(d); }; im.src = r.result; };
+      r.readAsDataURL(file);
+    });
+  }
+  function newNo() { return 'RL-' + Date.now().toString(36).toUpperCase().slice(-5) + Math.random().toString(36).slice(2, 4).toUpperCase(); }
+  function write(act, rec) {
+    return chkOf(local.pin).then(function (c) {
+      act.chk = c; act.at = new Date().toISOString(); act.done = false;
+      V.last = rec; rec.at = act.at; local.sent[rec.no] = rec; keep(); V.pending = true; V.slow = false; V.screen = 'done'; A.closeSheet(); draw();
+      var slow = setTimeout(function () { V.slow = true; if (V.screen === 'done') draw(); }, 15000);
+      return db.collection('rlinks/' + k + '/acts').add(act).then(function () { clearTimeout(slow); V.pending = false; V.slow = false; if (V.screen === 'done') draw(); }, function (e) {
+        clearTimeout(slow); V.pending = false; delete local.sent[rec.no]; keep(); V.screen = rec.kind === 'received' ? 'parcels' : 'settle';
+        err = 'Could not send. Check your internet and try again. (Nothing was sent.)'; draw();
+      });
+    });
+  }
+  function sendSettle() {
+    var b = $('#sendBtn'); if (b) { if (b.disabled) return; b.disabled = true; }
+    var C = calc(), p = V.pay, amt = r2(num(String(p.amount).replace(/,/g, ''))), no = newNo(), mode = p.mode || 'cash';
+    var rec = {no: no, kind: 'settle', date: today(), name: D.name, town: D.town, phone: D.phone, biz: D.biz, bizPhone: D.bizPhone, lines: C.lines, value: C.value, own: C.own, before: C.before, should: C.should, paid: amt, mode: mode, ref: p.ref || '', note: p.note || ''};
+    var act = {kind: 'settle', no: no, date: today(), lines: C.lines.map(function (l) { return {p: l.p, q: l.q}; }), amount: amt, mode: mode, due: C.should};
+    if (p.ref) act.ref = String(p.ref).slice(0, 80); if (p.note) act.note = String(p.note).slice(0, 400); if (p.proof) act.proof = p.proof;
+    V.sold = {}; V.pay = {amount: '', mode: '', ref: '', proof: '', note: '', touched: false};
+    write(act, rec);
+  }
+  function sendRecv(id) {
+    var P = (D.parcels || []).filter(function (x) { return x.id === id; })[0]; if (!P) return;
+    var q = V.rq[id] || {}, lines = P.items.map(function (it) { return {p: it.p, name: it.name, sent: it.qty, got: Math.max(0, Math.min(it.qty, num(q[it.p] == null ? it.qty : q[it.p]))), gift: !!it.gift}; });
+    var no = newNo(), note = V.rn[id] || '';
+    var rec = {no: no, kind: 'received', date: today(), dispatchId: id, parcelNo: P.no, sentDate: P.date, courier: P.courier, waybill: P.waybill, name: D.name, town: D.town, phone: D.phone, biz: D.biz, bizPhone: D.bizPhone, lines: lines, note: note};
+    var act = {kind: 'received', no: no, date: today(), dispatchId: id, lines: lines.map(function (l) { return {p: l.p, q: l.got}; })};
+    if (note) act.note = String(note).slice(0, 400);
+    delete V.rq[id]; delete V.rn[id];
+    write(act, rec);
+  }
+
+  /* ================= PDF reports (made on this phone, no internet needed) ================= */
+  var HW = [278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584];
+  var BW = [278,333,474,556,556,889,722,238,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,333,333,584,584,584,611,975,722,722,722,722,667,611,778,722,278,556,722,611,833,722,778,667,778,722,667,611,722,667,944,667,667,611,333,278,333,584,556,333,556,611,556,611,556,333,611,611,278,278,556,278,889,611,611,611,611,389,556,333,611,556,778,556,556,500,389,280,389,584];
+  function clean(s) { return String(s == null ? '' : s).replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/[–—−]/g, '-').replace(/…/g, '...').replace(/ /g, ' ').replace(/[^\x20-\x7e¡-ÿ]/g, '?'); }
+  function tw(s, size, bold) { var W = bold ? BW : HW, t = 0; s = clean(s); for (var i = 0; i < s.length; i++) { var c = s.charCodeAt(i); t += (c >= 32 && c <= 126) ? W[c - 32] : 556; } return t * size / 1000; }
+  function wrap(s, w, size, bold) {
+    var words = clean(s).split(/\s+/), lines = [], cur = '';
+    words.forEach(function (x) { var t = cur ? cur + ' ' + x : x; if (tw(t, size, bold) <= w || !cur) cur = t; else { lines.push(cur); cur = x; } });
+    if (cur) lines.push(cur); return lines.length ? lines : [''];
+  }
+  function Pdf() { this.pages = []; this.cur = null; this.img = null; }
+  Pdf.prototype.page = function () { this.cur = {ops: []}; this.pages.push(this.cur); return this.cur; };
+  Pdf.prototype.col = function (c) { return (c || [0, 0, 0]).map(function (x) { return (x / 255).toFixed(3); }).join(' '); };
+  Pdf.prototype.text = function (x, y, s, o) {
+    o = o || {}; var size = o.size || 10, str = clean(s), w = tw(str, size, o.bold); if (o.align === 'right') x -= w; else if (o.align === 'center') x -= w / 2;
+    var out = ''; for (var i = 0; i < str.length; i++) { var c = str.charCodeAt(i), ch = str.charAt(i); out += (c < 32 || c > 126) ? '\\' + ('00' + c.toString(8)).slice(-3) : (ch === '\\' || ch === '(' || ch === ')') ? '\\' + ch : ch; }
+    this.cur.ops.push('BT ' + this.col(o.color) + ' rg /' + (o.bold ? 'F2' : 'F1') + ' ' + size + ' Tf ' + x.toFixed(2) + ' ' + (842 - y).toFixed(2) + ' Td (' + out + ') Tj ET'); return w;
+  };
+  Pdf.prototype.rect = function (x, y, w, h, fill) { this.cur.ops.push(this.col(fill) + ' rg ' + x.toFixed(2) + ' ' + (842 - y - h).toFixed(2) + ' ' + w.toFixed(2) + ' ' + h.toFixed(2) + ' re f'); };
+  Pdf.prototype.box = function (x, y, w, h, stroke) { this.cur.ops.push(this.col(stroke) + ' RG 0.8 w ' + x.toFixed(2) + ' ' + (842 - y - h).toFixed(2) + ' ' + w.toFixed(2) + ' ' + h.toFixed(2) + ' re S'); };
+  Pdf.prototype.line = function (x1, y1, x2, y2, wd, c) { this.cur.ops.push(this.col(c) + ' RG ' + (wd || 0.7) + ' w ' + x1.toFixed(2) + ' ' + (842 - y1).toFixed(2) + ' m ' + x2.toFixed(2) + ' ' + (842 - y2).toFixed(2) + ' l S'); };
+  Pdf.prototype.image = function (x, y, w, h) { if (this.img) this.cur.ops.push('q ' + w + ' 0 0 ' + h + ' ' + x.toFixed(2) + ' ' + (842 - y - h).toFixed(2) + ' cm /Im1 Do Q'); };
+  function u8(s) { var a = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) a[i] = s.charCodeAt(i) & 255; return a; }
+  Pdf.prototype.output = function () {
+    var self = this, parts = [], offs = [], len = 0, n = 0;
+    function add(b) { parts.push(b); len += b.length; }
+    function obj(body, stream) { n++; offs[n] = len; add(u8(n + ' 0 obj\n' + body + (stream ? '\nstream\n' : '\nendobj\n'))); if (stream) { add(stream); add(u8('\nendstream\nendobj\n')); } return n; }
+    add(u8('%PDF-1.4\n%\xe2\xe3\xcf\xd3\n'));
+    var np = this.pages.length, first = 5 + (this.img ? 1 : 0), kids = [];
+    for (var i = 0; i < np; i++) kids.push((first + i * 2) + ' 0 R');
+    obj('<< /Type /Catalog /Pages 2 0 R >>'); obj('<< /Type /Pages /Kids [' + kids.join(' ') + '] /Count ' + np + ' >>');
+    obj('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>'); obj('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>');
+    if (this.img) obj('<< /Type /XObject /Subtype /Image /Width ' + this.img.w + ' /Height ' + this.img.h + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + this.img.bytes.length + ' >>', this.img.bytes);
+    this.pages.forEach(function (pg, i) {
+      var cid = first + i * 2 + 1;
+      obj('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >>' + (self.img ? ' /XObject << /Im1 5 0 R >>' : '') + ' >> /Contents ' + cid + ' 0 R >>');
+      var c = u8(pg.ops.join('\n')); obj('<< /Length ' + c.length + ' >>', c);
+    });
+    var xo = len; var x = 'xref\n0 ' + (n + 1) + '\n0000000000 65535 f \n'; for (var j = 1; j <= n; j++) x += ('0000000000' + offs[j]).slice(-10) + ' 00000 n \n';
+    add(u8(x + 'trailer\n<< /Size ' + (n + 1) + ' /Root 1 0 R >>\nstartxref\n' + xo + '\n%%EOF\n'));
+    var out = new Uint8Array(len), p = 0; parts.forEach(function (b) { out.set(b, p); p += b.length; }); return out;
+  };
+  var logoP = null;
+  function loadLogo() {
+    if (logoP) return logoP;
+    logoP = new Promise(function (res) {
+      var im = new Image(); im.onload = function () {
+        try { var c = document.createElement('canvas'); c.width = im.width; c.height = im.height; var g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(im, 0, 0);
+          var b = atob(c.toDataURL('image/jpeg', 0.92).split(',')[1]), a = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); res({bytes: a, w: c.width, h: c.height}); } catch (e) { res(null); } };
+      im.onerror = function () { res(null); }; im.src = LOGO;
+    });
+    return logoP;
+  }
+  var INK = [43, 21, 32], MUT = [120, 92, 104], LINE = [226, 200, 210], SOFT = [251, 238, 240], ACC = [155, 48, 96];
+  function beginDoc(pdf, title) {
+    pdf.page(); pdf.rect(0, 0, 595, 6, ACC);
+    pdf.image(40, 30, 48, 48);
+    pdf.text(98, 52, D.biz || 'Infinity Fragrances', {size: 19, bold: true, color: INK}); pdf.text(98, 69, title, {size: 11.5, color: MUT});
+    if (D.bizPhone) pdf.text(555, 52, D.bizPhone, {size: 10, align: 'right', color: MUT}); pdf.text(555, 66, 'Zambia', {size: 10, align: 'right', color: MUT});
+    pdf.line(40, 92, 555, 92, 1.2, ACC); return 110;
+  }
+  function footerAll(pdf, line) {
+    var n = pdf.pages.length; pdf.pages.forEach(function (pg, i) { pdf.cur = pg; pdf.line(40, 800, 555, 800, 0.6, LINE); pdf.text(40, 814, line, {size: 8.5, color: MUT}); pdf.text(555, 814, 'Page ' + (i + 1) + ' of ' + n, {size: 8.5, color: MUT, align: 'right'}); });
+  }
+  function person(pdf, y, who) {
+    pdf.rect(40, y, 515, 50, SOFT); pdf.text(54, y + 17, 'RESELLER', {size: 8, bold: true, color: MUT}); pdf.text(54, y + 36, who.name, {size: 14, bold: true, color: INK});
+    pdf.text(555 - 14, y + 17, 'TOWN / PHONE', {size: 8, bold: true, color: MUT, align: 'right'}); pdf.text(555 - 14, y + 36, [who.town, who.phone].filter(Boolean).join('  ·  '), {size: 10.5, color: INK, align: 'right'}); return y + 68;
+  }
+  /* cols: [{w, label, align}] rows: arrays of strings; bold rows flagged by row.bold */
+  function table(pdf, y, cols, rows, o) {
+    o = o || {}; var size = o.size || 10, x0 = 40;
+    function headRow(yy) { pdf.rect(x0, yy, 515, 22, INK); var x = x0; cols.forEach(function (c, i) { var pad = 6; if (c.align === 'right') pdf.text(x + c.w - pad, yy + 14.5, c.label, {size: 8.5, bold: true, color: [255, 255, 255], align: 'right'}); else pdf.text(x + pad, yy + 14.5, c.label, {size: 8.5, bold: true, color: [255, 255, 255]}); x += c.w; }); return yy + 22; }
+    y = headRow(y);
+    rows.forEach(function (r, ri) {
+      var cells = r.cells || r, lines0 = wrap(cells[0], cols[0].w - 12, size, r.bold), h = Math.max(22, lines0.length * (size + 3) + 10);
+      if (y + h > 780) { footerPending(pdf); pdf.page(); pdf.rect(0, 0, 595, 6, ACC); y = headRow(50); }
+      if (r.bold) pdf.rect(x0, y, 515, h, SOFT); else if (ri % 2) pdf.rect(x0, y, 515, h, [253, 247, 249]);
+      var x = x0; cells.forEach(function (cv, ci) { var c = cols[ci], pad = 6;
+        if (ci === 0) lines0.forEach(function (ln, li) { pdf.text(x + pad, y + 15 + li * (size + 3), ln, {size: size, bold: r.bold, color: INK}); });
+        else if (c.align === 'right') pdf.text(x + c.w - pad, y + 15, cv, {size: size, bold: r.bold, color: r.color || INK, align: 'right'});
+        else pdf.text(x + pad, y + 15, cv, {size: size, bold: r.bold, color: INK}); x += c.w; });
+      pdf.line(x0, y + h, x0 + 515, y + h, 0.4, LINE); y += h;
+    });
+    return y + 14;
+  }
+  function footerPending() {}
+  function kv(pdf, y, rows) {
+    rows.forEach(function (r) { var big = r.big; if (big) { pdf.rect(300, y - 4, 255, 26, SOFT); }
+      pdf.text(312, y + 13, r[0], {size: big ? 11.5 : 10.5, bold: big, color: big ? INK : MUT}); pdf.text(545, y + 13, r[1], {size: big ? 12.5 : 10.5, bold: true, color: INK, align: 'right'}); y += big ? 30 : 21; });
+    return y + 6;
+  }
+  function sign(pdf, y, name, label) {
+    if (y > 700) { pdf.page(); pdf.rect(0, 0, 595, 6, ACC); y = 60; }
+    pdf.line(40, y + 38, 250, y + 38, 0.8, INK); pdf.text(40, y + 52, label + ': ' + name, {size: 10, bold: true, color: INK}); pdf.text(40, y + 65, 'Signature', {size: 8.5, color: MUT});
+    pdf.line(330, y + 38, 555, y + 38, 0.8, INK); pdf.text(330, y + 52, 'Date', {size: 10, bold: true, color: INK}); return y + 80;
+  }
+  function statusLine(x) { var st = statusOf(x.no); if (st && st.status === 'approved') return 'Confirmed by ' + (D.biz || 'the office') + (st.decided ? ' on ' + fmtDate(st.decided) : ''); if (st && st.status === 'rejected') return 'Not accepted by ' + (D.biz || 'the office') + (st.reason ? ': ' + st.reason : ''); return 'Sent to ' + (D.biz || 'the office') + ' - waiting for confirmation'; }
+  function build(kind, x) {
+    return loadLogo().then(function (logo) {
+      var pdf = new Pdf(); pdf.img = logo; var y, name;
+      if (kind === 'settle') {
+        y = beginDoc(pdf, 'Settlement report'); pdf.text(40, y + 8, 'SETTLEMENT REPORT', {size: 17, bold: true, color: INK}); pdf.text(555, y + 2, 'Report no: ' + x.no, {size: 10.5, bold: true, align: 'right', color: INK}); pdf.text(555, y + 17, 'Date: ' + fmtDate(x.date) + '   Sent: ' + fmtDT(x.at), {size: 9.5, align: 'right', color: MUT});
+        pdf.text(40, y + 26, statusLine(x), {size: 10, color: ACC, bold: true}); y = person(pdf, y + 40, x);
+        var rows = x.lines.map(function (l) { return [l.name + (l.size ? ' ' + l.size + 'ml' : ''), String(l.q), money(l.price), money(l.value), money(l.comm)]; });
+        if (!rows.length) rows = [['No perfume reported sold in this report', '', '', '', '']];
+        else rows.push({cells: ['Total', String(x.lines.reduce(function (t, l) { return t + l.q; }, 0)), '', money(x.value), money(x.own)], bold: true});
+        y = table(pdf, y, [{w: 195, label: 'PERFUME'}, {w: 45, label: 'QTY', align: 'right'}, {w: 85, label: 'PRICE', align: 'right'}, {w: 90, label: 'VALUE', align: 'right'}, {w: 100, label: 'MY COMMISSION', align: 'right'}], rows);
+        var after = r2(x.should - x.paid), krows = [['Value of perfume sold', money(x.value)], ['My commission (I keep it)', '- ' + money(x.own)]];
+        if (x.before > 0.009) krows.push(['Balance from before', money(x.before)]); else if (x.before < -0.009) krows.push(['Commission owed to me from before', '- ' + money(-x.before)]);
+        krows.push(['Amount expected from me', money(x.should)]); krows[krows.length - 1].big = true;
+        krows.push(['Amount I paid now', money(x.paid)]); krows.push(['Paid by', (MODES[x.mode] || x.mode) + (x.ref ? ' - ' + x.ref : '')]);
+        krows.push([after > 0.009 ? 'Still to pay' : after < -0.009 ? 'Paid extra' : 'Balance after this payment', after > 0.009 ? money(after) : after < -0.009 ? money(-after) : 'Nil']); krows[krows.length - 1].big = true;
+        if (y + krows.length * 24 + 60 > 790) { pdf.page(); pdf.rect(0, 0, 595, 6, ACC); y = 60; } y = kv(pdf, y, krows);
+        if (x.note) { var nl = wrap('Note: ' + x.note, 500, 10, false); nl.forEach(function (ln, i) { pdf.text(40, y + i * 13, ln, {size: 10, color: INK}); }); y += nl.length * 13 + 10; }
+        y = sign(pdf, y + 10, x.name, 'Reported by'); footerAll(pdf, 'This report is final only after ' + (D.biz || 'the office') + ' confirms it. Keep a copy.'); name = 'Settlement-report-' + x.no;
+      } else if (kind === 'recv' || kind === 'recvOld') {
+        var P = x, rec = kind === 'recvOld';
+        var who = {name: D.name, town: D.town, phone: D.phone}, lines = rec ? P.items.map(function (it) { var got = (P.recvLines && P.recvLines[it.p] != null) ? P.recvLines[it.p] : it.qty; return {name: it.name, sent: it.qty, got: got}; }) : P.lines;
+        y = beginDoc(pdf, 'Stock received note'); pdf.text(40, y + 8, 'STOCK RECEIVED NOTE', {size: 17, bold: true, color: INK});
+        pdf.text(555, y + 2, 'Parcel: ' + (rec ? P.no : P.parcelNo), {size: 10.5, bold: true, align: 'right', color: INK}); pdf.text(555, y + 17, 'Received: ' + fmtDate(rec ? (P.deliveredDate || P.date) : P.date), {size: 9.5, align: 'right', color: MUT});
+        pdf.text(40, y + 26, rec ? 'Confirmed received' : statusLine(P), {size: 10, color: ACC, bold: true}); y = person(pdf, y + 40, who);
+        pdf.text(40, y - 6, 'Sent on ' + fmtDate(rec ? P.date : P.sentDate) + ((rec ? P.courier : P.courier) ? '  ·  ' + (rec ? P.courier : P.courier) : '') + ((rec ? P.waybill : P.waybill) ? '  ·  Waybill ' + (rec ? P.waybill : P.waybill) : ''), {size: 10, color: MUT}); y += 10;
+        var rr = lines.map(function (l) { var d = l.got - l.sent; return {cells: [l.name, String(l.sent), String(l.got), d === 0 ? 'OK' : String(d)], color: d < 0 ? [179, 38, 30] : null}; });
+        var ts = lines.reduce(function (t, l) { return t + l.sent; }, 0), tg = lines.reduce(function (t, l) { return t + l.got; }, 0);
+        rr.forEach(function (r) { r.cells = r.cells; }); rr.push({cells: ['Total bottles', String(ts), String(tg), tg - ts === 0 ? 'OK' : String(tg - ts)], bold: true});
+        y = table(pdf, y, [{w: 255, label: 'PERFUME'}, {w: 80, label: 'SENT', align: 'right'}, {w: 90, label: 'RECEIVED', align: 'right'}, {w: 90, label: 'DIFFERENCE', align: 'right'}], rr);
+        var nt = rec ? (P.recvNote || '') : (P.note || ''); if (nt) { wrap('Note: ' + nt, 500, 10, false).forEach(function (ln, i) { pdf.text(40, y + i * 13, ln, {size: 10, color: INK}); }); y += 26; }
+        y = sign(pdf, y + 10, D.name, 'Received by'); footerAll(pdf, 'Stock received note. Keep a copy.'); name = 'Stock-received-' + (rec ? P.no : P.parcelNo);
+      } else if (kind === 'stock') {
+        var H = heldLeft(); y = beginDoc(pdf, 'Stock I hold'); pdf.text(40, y + 8, 'STOCK I HOLD', {size: 17, bold: true, color: INK}); pdf.text(555, y + 2, 'As at ' + fmtDT(D.at), {size: 9.5, align: 'right', color: MUT}); y = person(pdf, y + 22, {name: D.name, town: D.town, phone: D.phone});
+        var sr = H.map(function (h) { return [h.name + (h.size ? ' ' + h.size + 'ml' : ''), String(h.qty), money(h.price), money(h.qty * h.price)]; });
+        sr.push({cells: ['Total', String(H.reduce(function (t, h) { return t + h.qty; }, 0)), '', money(H.reduce(function (t, h) { return t + h.qty * h.price; }, 0))], bold: true});
+        if (!H.length) sr = [['No perfume held', '', '', '']];
+        y = table(pdf, y, [{w: 265, label: 'PERFUME'}, {w: 60, label: 'QTY', align: 'right'}, {w: 95, label: 'PRICE', align: 'right'}, {w: 95, label: 'VALUE', align: 'right'}], sr); footerAll(pdf, 'Prices are the selling prices for you. Figures as at ' + fmtDT(D.at) + '.'); name = 'My-stock-' + today();
+      } else {
+        var Hs = D.hist || []; y = beginDoc(pdf, 'My history'); pdf.text(40, y + 8, 'MY HISTORY', {size: 17, bold: true, color: INK}); pdf.text(555, y + 2, 'As at ' + fmtDT(D.at), {size: 9.5, align: 'right', color: MUT}); y = person(pdf, y + 22, {name: D.name, town: D.town, phone: D.phone});
+        var hr = Hs.map(function (m) { return [m.label, String(m.bottles), money(m.value), money(m.comm), money(m.paid)]; });
+        hr.push({cells: ['Total', String(Hs.reduce(function (t, m) { return t + m.bottles; }, 0)), money(Hs.reduce(function (t, m) { return t + m.value; }, 0)), money(Hs.reduce(function (t, m) { return t + m.comm; }, 0)), money(Hs.reduce(function (t, m) { return t + m.paid; }, 0))], bold: true});
+        if (!Hs.length) hr = [['No history yet', '', '', '', '']];
+        y = table(pdf, y, [{w: 155, label: 'MONTH'}, {w: 70, label: 'BOTTLES', align: 'right'}, {w: 95, label: 'VALUE', align: 'right'}, {w: 100, label: 'MY COMMISSION', align: 'right'}, {w: 95, label: 'PAID', align: 'right'}], hr); footerAll(pdf, 'Settlements and payments by month.'); name = 'My-history-' + today();
+      }
+      return {bytes: pdf.output(), name: (name + '-' + String(D.name).replace(/[^A-Za-z0-9]+/g, '-')).replace(/-+$/, '') + '.pdf'};
+    });
+  }
+  function makePdf(kind, x) { return build(kind, x); }
+  function canShare() { try { return !!(navigator.canShare && navigator.canShare({files: [new File([new Uint8Array(1)], 'a.pdf', {type: 'application/pdf'})]})); } catch (e) { return false; } }
+  function savePdf(r, share) {
+    var blob = new Blob([r.bytes], {type: 'application/pdf'});
+    if (share && canShare()) { navigator.share({files: [new File([blob], r.name, {type: 'application/pdf'})], title: r.name}).catch(function () {}); return; }
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = r.name; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
+  }
+  window.__rl = {build: build, state: function () { return {D: D, V: V, local: local}; }};
+})();
+</script>
+</body>
+</html>

@@ -1,20 +1,20 @@
 {
- "version": "2.19.0",
+ "version": "2.20.0",
  "date": "2026-11-23",
  "notes": [
-  "Expected money and profit: tap the dashboard tiles to open the table, group it by town or recruiter, and download it as Excel or PDF",
-  "New tile: Profit after expenses, shown next to Expected profit"
+  "Reseller link: send each reseller a personal link to report sales, pay and confirm stock received",
+  "Link reports wait for your approval in Resellers, then fill the settlement form for you; PDF reports carry the reseller's name"
  ],
  "android": {
-  "file": "android-2.19.0.html",
-  "sig": "sPlLcLNg+MsIZQPXu+789pVji+C/oCA1456Gt85IKQscvlxCazrB0nlbKTZ2OAKtdRIyY3Uk27u3OKeOFBL5dg==",
-  "size": 2461702,
+  "file": "android-2.20.0.html",
+  "sig": "vw+180RgwMtFbodv/4wHP0uLDRuBjWCPBf7ysIsraqTf9r24TxCUXKhQBXAgKKAK8OxU9EaWZzcNuKpJxqVPWQ==",
+  "size": 2482971,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.19.0.html",
-  "sig": "VRZr3tpZwQfKkbDPljDmKT7342l00PFDbAiUloqJrv2SOtk9rPPMJdh2cLmlPH4/PGU6k2B3iYlHttHRHqTCpA==",
-  "size": 2456690,
+  "file": "desktop-2.20.0.html",
+  "sig": "3jNeyttKatp2e7yBpmKs9aB/1cRJ8QT2KZPn61Qa9bqi/kCy888J1Yj9m4Veufvt1HIuYdt3+mih1lCQJRuMkg==",
+  "size": 2477959,
   "minShell": "2.5.0"
  },
  "apk": {

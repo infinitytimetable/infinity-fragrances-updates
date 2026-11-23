@@ -1033,7 +1033,7 @@ function schedule(){ if (pending) return; pending = true; requestAnimationFrame(
 const clean = o => JSON.parse(JSON.stringify(o));
 async function put(col, obj){
   obj = {...obj}; if (!obj.id) obj.id = uid(); if (!obj.createdAt) obj.createdAt = nowISO(); obj.updatedAt = nowISO();
-  const before = S[col][obj.id]; S[col][obj.id] = obj; schedule(); logWrite(before ? 'edit' : 'add', col, before, obj); syncPush(col, obj);
+  const before = S[col][obj.id]; S[col][obj.id] = obj; schedule(); if (rlCol(col)) rlSched(); logWrite(before ? 'edit' : 'add', col, before, obj); syncPush(col, obj);
   if (DB) {
     const {id, ...body} = obj;
     try { await DB.collection(col).doc(id).set(clean(body)); }
@@ -1042,7 +1042,7 @@ async function put(col, obj){
   return obj;
 }
 async function del(col, id){
-  logWrite('delete', col, S[col][id], null); delete S[col][id]; schedule(); syncPush(col, {id}, true);
+  logWrite('delete', col, S[col][id], null); delete S[col][id]; schedule(); if (rlCol(col)) rlSched(); syncPush(col, {id}, true);
   if (DB) { try { await DB.collection(col).doc(id).delete(); } catch(e) { toast('Not deleted: ' + (e.message || e.code), true); } }
   else saveLocal();
 }
@@ -1906,7 +1906,7 @@ function resView(rid){
     <dl class="kv"><dt>Town</dt><dd>${esc(tName(r.townId))}</dd><dt>Phone</dt><dd>${esc(r.phone || '—')}</dd><dt>Commission</dt><dd>${commLabel(r)}</dd><dt>Recruited by</dt><dd>${r.recruiterId ? `<button type="button" class="link" data-act="resView" data-id="${r.recruiterId}">${esc(rName(r.recruiterId))}</button>` : 'You'}</dd><dt>Joined</dt><dd>${fmtDate(r.joinDate) || '—'}</dd>${r.notes ? `<dt>Notes</dt><dd>${esc(r.notes)}</dd>` : ''}</dl>
     ${(() => { const e = expectedFor(rid, C); return `<div class="tiles" style="margin-top:14px">${tile('Value of stock held', money(e.value), int(e.bottles) + ' bottles at selling price')}${tile('Expected to receive', money(e.totalCash), 'after their commission of ' + money(e.own), true)}${tile('Expected profit', signed(e.profit), 'after cost and all commission')}</div>`; })()}
     <div class="tiles">${tile('Holding', int(h.reduce((t, [, v]) => t + v, 0)) + ' bottles')}${tile('Owes you', signed(a.owed))}${tile('Commission due', money(a.due))}${tile('Net', signed(a.net), a.net >= 0 ? 'they owe you' : 'you owe them', true)}</div>
-    <div class="actions" style="margin-bottom:16px">${btn('Settle', 'settleDay', {id:rid}, 'pri sm')}${btn('Price list', 'priceList', {id:rid}, 'sm')}${btn('Reseller page', 'resPage', {id:rid}, 'sm')}${btn('Record sales', 'saleRes', {id:rid}, 'sm')}${btn('Dispatch stock', 'issue', {id:rid}, 'sm')}${btn('Monthly settlement', 'settle', {id:rid}, 'sm')}${btn('Pay commission', 'payComm', {id:rid}, 'sm')}${btn('Return stock', 'returnStock', {id:rid}, 'sm')}${btn('Summary report', 'resReport', {id:rid}, 'sm')}${btn('Edit', 'resEdit', {id:rid}, 'sm ghost')}</div>
+    <div class="actions" style="margin-bottom:16px">${btn('Settle', 'settleDay', {id:rid}, 'pri sm')}${btn('Price list', 'priceList', {id:rid}, 'sm')}${btn('Reseller link', 'rlLink', {id:rid}, 'sm')}${btn('Reseller page', 'resPage', {id:rid}, 'sm')}${btn('Record sales', 'saleRes', {id:rid}, 'sm')}${btn('Dispatch stock', 'issue', {id:rid}, 'sm')}${btn('Monthly settlement', 'settle', {id:rid}, 'sm')}${btn('Pay commission', 'payComm', {id:rid}, 'sm')}${btn('Return stock', 'returnStock', {id:rid}, 'sm')}${btn('Summary report', 'resReport', {id:rid}, 'sm')}${btn('Edit', 'resEdit', {id:rid}, 'sm ghost')}</div>
     <div class="cols"><div><h3 style="font-size:15px;margin-bottom:6px">Stock held</h3>${h.length ? `<ul class="list">${h.map(([p, v]) => `<li><span>${esc(pName(p))}</span><b>${v}</b></li>`).join('')}</ul>` : '<p class="mut small">None</p>'}</div>
     <div><h3 style="font-size:15px;margin-bottom:6px">Their team</h3>${tree(rid, 1) || '<p class="mut small">Has not recruited anyone yet.</p>'}</div></div>
     <h3 style="font-size:15px;margin:16px 0 6px">Statement</h3>
@@ -2318,8 +2318,9 @@ function fixNumbers(o){
 }
 
 /* ======================= Version 2.0 ======================= */
-const APP_VERSION = '2.19.0';
+const APP_VERSION = '2.20.0';
 const CHANGELOG = [
+  ['2.20.0', '23 Nov 2026', ['Reseller links for resellers who do not use the app: one personal link each, opened with the last 4 digits of their phone number', 'They tick what they sold, see what they should pay after their commission, say how they are paying (cash, MTN MoMo, Airtel Money or bank, with an optional photo), and send it for your approval', 'The same link confirms parcels received (with shortages), and makes PDF reports with their name: settlement report, stock received note, stock held and history', 'Send links from Resellers, Settlement day and Dispatch. One-time Firebase rules update needed (Requests & logins page → Copy rules)']],
   ['2.19.0', '23 Nov 2026', ['Expected money and profit from each reseller: tap the dashboard tiles to open the table, group it by town or recruiter, view it as cards on your phone, and download it as Excel or PDF or print it', 'New tile: Profit after expenses, next to Expected profit (after cost and all commission)']],
   ['2.18.1', '22 Nov 2026', ['Fixes: expected money from resellers shows the right amounts again, resellers see what is owed to them, adding the first staff member or job works on a new install', 'Safer updates: the phone and PC apps now check every update file themselves and only install app updates signed by Infinity Fragrances']],
   ['2.18.0', '18 Nov 2026', ['New menus: Dashboard, Sales, Online Business, Shops, Stock, Operations, Resellers, Human Resources, Finance (Money, Pay, Reports & tax), Marketing, Users & Access, Settings', 'New pages: Online pages & links, Deliveries & riders, Shop sales & cash-ups, Stock in shops, Shop staff, Shop customers, Business ideas, All logins, Access by position, Reseller applications, App updates, Help', 'Payroll now in Finance; Staff and Employee agreements in Human Resources', 'Shop app Home shows business ideas and insights']],
@@ -2811,7 +2812,7 @@ const GOOGLE_CLIENT_ID = ''; /*GOOGLE_CLIENT_ID*/
 const canGoogle = () => !!(GOOGLE_CLIENT_ID && DESK && DESK.googleSignIn);
 const fbCfg = () => FB_BAKED || S.settings.firebase || null;
 let FB = null, FB_USER = null, FB_ROLE = null, FB_ME = null, FB_ERR = '';
-const REQ_TYPES = {sale:'Sale', payment:'Payment', order:'Stock order', return:'Return', customer:'New customer', received:'Parcel received'};
+const REQ_TYPES = {sale:'Sale', payment:'Payment', order:'Stock order', return:'Return', customer:'New customer', received:'Parcel received', linkpay:'Sales report (link)', linkrecv:'Parcel confirmed (link)'};
 
 /* thin wrapper so the rest of the code does not depend on Firebase details (and can be tested) */
 async function fbLoad(){
@@ -2898,6 +2899,7 @@ function ownerListen(){
     if (apprPrimed) list.filter(x => !old.has(x.id)).forEach(x => { if (S.settings.apprNotify !== false) appNotify('Approval needed', `${x.byName}: ${x.label}`); toast(`${x.byName} sent a change for approval`); });
     apprPrimed = true; if (route() === 'approvals') render(true); else updatePortalBadge(); }));
   OWN.riderTok = new Set(); setTimeout(riderListen, 1500);
+  OWN.rlTok = new Set(); OWN.lacts = {}; OWN.lreqs = {}; OWN.rlSig = {}; OWN.rlPrimed = {}; setTimeout(rlListen, 1800);
   let jobsPrimed = false;
   OWN.unsubs.push(FB.listen('applications', 'kind', 'job', list => { const old = new Set((OWN.jobApps || []).map(x => x.id)); OWN.jobApps = list.sort((a, b) => (b.at || '').localeCompare(a.at || ''));
     if (jobsPrimed) list.filter(x => !old.has(x.id)).forEach(x => { appNotify('New job application', `${x.name}: ${x.positionTitle || ''} (${x.type === 'pt' ? 'part time' : 'full time'})`); toast(`New job application from ${x.name}`); });
@@ -2934,7 +2936,7 @@ async function autoSale(rid, q){
     catch(e) { await FB.update(path, {status:'pending', auto:false, autoNote:String(e.message || e).slice(0, 200)}).catch(() => {}); toast(`${rName(rid)}'s sale needs your check: ${e.message || e}`, true); } }
   finally { setTimeout(() => OWN.auto.delete(q.id), 120000); }
 }
-const pendingAll = () => Object.entries(OWN.reqs).flatMap(([rid, l]) => l.map(q => ({...q, rid}))).sort((a, b) => (a.at || '').localeCompare(b.at || ''));
+const pendingAll = () => [...Object.entries(OWN.reqs).flatMap(([rid, l]) => l.map(q => ({...q, rid}))), ...Object.values(OWN.lreqs || {}).flat()].sort((a, b) => (a.at || '').localeCompare(b.at || ''));
 function updatePortalBadge(){ const fb = (OWN.ideas || []).filter(x => x.status === 'new').length, fr = (OWN.rates || []).filter(x => !x.seen).length; document.querySelectorAll('a[href="#feedback"]').forEach(a => a.dataset.badge = fb || ''); document.querySelectorAll('a[href="#ratings"]').forEach(a => a.dataset.badge = fr || ''); document.querySelectorAll('a[href="#resapps"]').forEach(a => a.dataset.badge = (OWN.apps || []).length || ''); const hj = (OWN.jobApps || []).filter(x => x.status === 'new').length; document.querySelectorAll('a[href="#hiring"]').forEach(a => a.dataset.badge = hj || ''); const ap = (OWN.approvals || []).length; document.querySelectorAll('a[href="#approvals"]').forEach(a => a.dataset.badge = ap || ''); const n = pendingAll().length + (OWN.apps || []).length + (OWN.orders || []).filter(o => o.status === 'new').length + Object.values(OWN.shopReqs || {}).flat().length; document.querySelectorAll('a[href="#portal"]').forEach(a => a.dataset.badge = n || ''); }
 function snapshotFor(rid){
   const r = S.resellers[rid], C = compute(), a = C.acc[rid] || {sales:0, remit:0, earned:0, paid:0, net:0}, st = statement(rid);
@@ -2984,11 +2986,12 @@ PAGES.portal = () => {
   const rs = sortedRes(true), pend = pendingAll(), last = OWN.published || (() => { try { return localStorage.getItem('if-published') || ''; } catch(e) { return ''; } })();
   return head('Online reseller accounts', `Signed in as ${esc(FB_USER.email)}. Resellers see only their own stock and statement. Their sales, payments, orders and returns wait here for your approval.`, btn('Update resellers now', 'fbPublish', {}, 'pri') + (canGoogle() && !(FB.providers?.() || []).includes('google.com') ? btn('Link Google account', 'fbLinkGoogle', {}, 'ghost') : '') + btn('Sign out', 'fbOut', {}, 'ghost'))
     + `<div class="tiles">${tile('Waiting for approval', int(pend.length), '', pend.length > 0)}${tile('Resellers with a login', `${rs.filter(r => r.portalUid).length} of ${rs.length}`)}${tile('Last update sent', last ? fmtDateTime(last) : 'Never')}</div>`
-    + `<div class="card"><h2>Waiting for your approval</h2>${pend.length ? `<div class="tw"><table class="t"><thead><tr><th style="width:34px"><input type="checkbox" id="rq-all" aria-label="Select all"></th><th>When</th><th>Reseller</th><th>Type</th><th>Details</th><th></th></tr></thead><tbody>${pend.map(q => `<tr><td><input type="checkbox" class="rq-sel" data-rid="${q.rid}" data-id="${q.id}" aria-label="Select"></td><td class="small">${esc(fmtDateTime(q.at))}</td><td><b>${esc(rName(q.rid))}</b></td><td><span class="pill acc">${REQ_TYPES[q.type] || esc(q.type)}</span></td><td class="small">${reqText(q)}</td><td><div class="actions">${(q.type === 'order' ? btn('Review', 'reqReview', {rid:q.rid, id:q.id}, 'sm pri') : btn('Approve', 'reqOk', {rid:q.rid, id:q.id}, 'sm pri'))}${btn('Reject', 'reqNo', {rid:q.rid, id:q.id}, 'sm ghost danger')}</div></td></tr>`).join('')}</tbody></table></div><div class="actions" style="margin-top:10px">${btn('Approve selected', 'reqOkSel', {}, 'sm pri')}${btn('Reject selected', 'reqNoSel', {}, 'sm ghost danger')}</div>` : '<p class="mut">Nothing waiting.</p>'}</div>` + appsCard()
+    + `<div class="card"><h2>Waiting for your approval</h2>${pend.length ? `<div class="tw"><table class="t"><thead><tr><th style="width:34px"><input type="checkbox" id="rq-all" aria-label="Select all"></th><th>When</th><th>Reseller</th><th>Type</th><th>Details</th><th></th></tr></thead><tbody>${pend.map(q => `<tr><td>${q.link ? '' : `<input type="checkbox" class="rq-sel" data-rid="${q.rid}" data-id="${q.id}" aria-label="Select">`}</td><td class="small">${esc(fmtDateTime(q.at))}</td><td><b>${esc(rName(q.rid))}</b></td><td><span class="pill acc">${REQ_TYPES[q.type] || esc(q.type)}</span></td><td class="small">${reqText(q)}</td><td><div class="actions">${(q.type === 'order' ? btn('Review', 'reqReview', {rid:q.rid, id:q.id}, 'sm pri') : btn(q.type === 'linkpay' ? 'Review and approve' : 'Approve', 'reqOk', {rid:q.rid, id:q.id}, 'sm pri'))}${btn('Reject', 'reqNo', {rid:q.rid, id:q.id}, 'sm ghost danger')}</div></td></tr>`).join('')}</tbody></table></div><div class="actions" style="margin-top:10px">${btn('Approve selected', 'reqOkSel', {}, 'sm pri')}${btn('Reject selected', 'reqNoSel', {}, 'sm ghost danger')}</div>` : '<p class="mut">Nothing waiting.</p>'}</div>` + appsCard()
     + `<div class="card"><h2>Reseller logins</h2><div class="tw"><table class="t"><thead><tr><th>Reseller</th><th>Login ID</th><th></th></tr></thead><tbody>${rs.map(r => `<tr><td><b>${esc(r.name)}</b><div class="small mut">${esc(tName(r.townId))}</div></td><td>${r.portalLogin ? `<code>${esc(r.portalLogin)}</code>` : '<span class="mut">No login yet</span>'}</td><td><div class="actions">${r.portalUid ? btn('New PIN / login', 'accReset', {id:r.id}, 'sm ghost') + btn('Remove access', 'accRemove', {id:r.id}, 'sm ghost danger') : btn('Create login', 'accNew', {id:r.id}, 'sm pri')}</div></td></tr>`).join('')}</tbody></table></div>
       <p class="hint">Resellers install the Infinity Fragrances app on Android, choose "I'm a reseller", and sign in with their login ID and PIN.</p></div>` + rulesCard();
 };
 function reqText(q){
+  if (q.link) return rlReqText(q);
   const L = (q.lines || []).map(l => `${esc(l.name || pName(l.productId))} × ${num(l.qty)}${l.price ? ' @ ' + money(l.price) : ''}`).join(', ');
   if (q.type === 'order' && q.rid && !q.approvedLines) { const cr = creditOf(q.rid), v = (q.lines || []).reduce((t, l) => t + num(l.qty) * num(l.price || S.products[l.productId]?.sellPrice), 0); if (cr.limit && v > cr.available + 0.009) return `${L} <span class="pill bad">over credit limit by ${money(v - cr.available)}</span>`; }
   if (q.type === 'order' && q.approvedLines) return `Asked: ${L}<br><b>Approved:</b> ${q.approvedLines.map(l => `${esc(l.name)} × ${l.qty}`).join(', ')}${(q.unavailable || []).length ? `<br><span class="neg">Not available: ${q.unavailable.map(esc).join(', ')}</span>` : ''}`;
@@ -2999,7 +3002,7 @@ function reqText(q){
   return `${L}${q.note ? ` · “${esc(q.note)}”` : ''}`;
 }
 async function reqApprove(rid, id, bulk, qObj){
-  const q = qObj || (OWN.reqs[rid] || []).find(x => x.id === id); if (!q) return; const r = S.resellers[rid];
+  const q = qObj || findReq(rid, id); if (!q) return; if (q.link) return rlApprove(q); const r = S.resellers[rid];
   try {
     const C = compute(), h = C.held[rid] || {};
     if (q.type === 'sale') {
@@ -3026,6 +3029,7 @@ async function reqApprove(rid, id, bulk, qObj){
   } catch(e) { if (bulk) throw e; toast(fbMsg(e), true); }
 }
 function reqReject(rid, id){
+  const lq = (OWN.lreqs?.[rid] || []).find(x => x.id === id); if (lq) return rlReject(lq);
   modal('Reject request', `<label for="f-rr">Reason (the reseller will see this)<input id="f-rr" name="why" required placeholder="e.g. Payment not received on MoMo"></label>`, async d => { await FB.update(`portal/${rid}/requests/${id}`, {status:'rejected', reason:d.why.trim(), decidedAt:FB.now()}); logNote('decline', 'requests', `${rName(rid)}: request declined (${d.why.trim()})`); fbNotify(S.resellers[rid]?.portalUid, `A request was not approved: ${d.why.trim()}`); toast('Rejected'); }, {label:'Reject'});
 }
 async function accCreate(rid, reset){
@@ -3584,6 +3588,21 @@ service cloud.firestore {
         allow read, update, delete: if isAdmin();
       }
     }
+    match /rlinks/{t} {
+      allow get: if true;
+      allow list, write: if isAdmin();
+      match /acts/{id} {
+        allow create: if get(/databases/$(database)/documents/rlinks/$(t)).data.on == true
+          && request.resource.data.keys().hasOnly(['kind', 'no', 'chk', 'at', 'date', 'lines', 'amount', 'mode', 'ref', 'proof', 'note', 'dispatchId', 'due', 'done'])
+          && request.resource.data.kind in ['settle', 'received', 'ping'] && request.resource.data.done == false
+          && request.resource.data.chk is string && request.resource.data.chk.size() < 80
+          && (!('lines' in request.resource.data) || (request.resource.data.lines is list && request.resource.data.lines.size() < 80))
+          && (!('proof' in request.resource.data) || (request.resource.data.proof is string && request.resource.data.proof.size() < 300000))
+          && (!('note' in request.resource.data) || (request.resource.data.note is string && request.resource.data.note.size() < 500))
+          && (!('ref' in request.resource.data) || (request.resource.data.ref is string && request.resource.data.ref.size() < 100));
+        allow read, update, delete: if isAdmin();
+      }
+    }
     match /store/{doc} {
       allow read: if true;
       allow write: if isAdmin();
@@ -3612,6 +3631,146 @@ service cloud.firestore {
 }`;
 const rulesCard = () => `<details class="card"><summary><b>Firebase security rules</b> <span class="small mut">(paste these in Firebase → Firestore Database → Rules → Publish)</span></summary><pre class="small" style="white-space:pre-wrap;max-height:300px;overflow:auto;background:var(--soft);padding:10px;border-radius:8px">${esc(FS_RULES)}</pre><div class="actions">${btn('Copy rules', 'copyRules', {}, 'sm pri')}</div></details>`;
 
+
+/* ======================= 2.20: reseller links (for resellers who do not use the app) ======================= */
+const RL_URL = 'https://infinitytimetable.github.io/infinity-fragrances-updates/reseller/';
+const RL_MODES = {cash:'Cash', mtn:'MTN MoMo', airtel:'Airtel Money', bank:'Bank'};
+const RL_CH = {cash:'cash', mtn:'momo', airtel:'momo', bank:'bank'};
+const rlPin = r => String(r?.phone || '').replace(/\D/g, '').slice(-4);
+const rlLinked = () => sortedRes(true).filter(r => r.linkToken && r.linkOn !== false);
+const rlB64 = u8 => { let s = ''; u8.forEach(b => { s += String.fromCharCode(b); }); return btoa(s); };
+const RLK = {};
+async function rlKey(token, pin){
+  const id = token + '|' + pin; if (RLK[id]) return RLK[id];
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveKey']);
+  return RLK[id] = await crypto.subtle.deriveKey({name:'PBKDF2', salt:new TextEncoder().encode('if-rl|' + token), iterations:120000, hash:'SHA-256'}, base, {name:'AES-GCM', length:256}, false, ['encrypt']);
+}
+const rlChk = (token, pin) => sha('chk|' + token + '|' + pin);
+function rlCol(c){ return c === 'moves' || c === 'cash' || c === 'dispatches' || c === 'resellers' || c === 'products'; }
+function rlSched(){ try { if (!ADM() || !FB || FB_ME?.limited || !rlLinked().length) return; clearTimeout(OWN.rlT); OWN.rlT = setTimeout(() => rlPublishAll(), 4000); } catch(e) {} }
+async function rlPublishAll(force){ for (const r of rlLinked()) { try { await rlPublish(r.id, force); } catch(e) {} } }
+function rlHist(rid){
+  const by = {}, A = m => by[m] || (by[m] = {month:m, bottles:0, value:0, comm:0, paid:0});
+  for (const m of Object.values(S.moves)) if (m.kind === 'sale' && m.resellerId === rid && m.date) { const o = A(m.date.slice(0, 7)); o.bottles += num(m.qty); o.value += num(m.qty) * num(m.unitPrice); (m.comm || []).forEach(c => { if (c.rid === rid && c.level === 0) o.comm += num(c.amount); }); }
+  for (const c of Object.values(S.cash)) if (c.resellerId === rid && c.kind === 'in' && c.date) A(c.date.slice(0, 7)).paid += num(c.amount);
+  return Object.values(by).sort((a, b) => b.month.localeCompare(a.month)).slice(0, 12).map(o => ({month:o.month, label:monthLabel(o.month), bottles:o.bottles, value:r2(o.value), comm:r2(o.comm), paid:r2(o.paid)}));
+}
+function rlPayload(rid){
+  const r = S.resellers[rid], C = compute(), a = C.acc[rid] || {net:0};
+  const held = heldOf(rid, C).map(([p, q]) => { const pr = S.products[p] || {}, price = resPrice(rid, p, C); return {p, name:pr.name || pName(p), size:pr.size || '', qty:q, price, per:Math.round(ownComm(r, 1, price, C.hr?.[rid]?.[p]) * 10000) / 10000}; }).sort((x, y) => x.name.localeCompare(y.name));
+  const parcels = Object.values(S.dispatches).filter(d => d.resellerId === rid).sort((x, y) => (y.date || '').localeCompare(x.date || '') || (y.no || '').localeCompare(x.no || '')).slice(0, 10).map(d => ({id:d.id, no:d.no || '', date:d.date || '', courier:d.method === 'hand' ? 'Delivered by hand' : (d.courier || ''), waybill:d.waybill || '', status:d.status === 'delivered' ? 'delivered' : 'dispatched', deliveredDate:d.deliveredDate || '', recvNote:d.recvNote || '', recvLines:Object.fromEntries((d.recvLines || []).map(l => [l.productId, num(l.qty)])), items:(d.lines || []).map(l => ({p:l.productId, name:pName(l.productId), qty:num(l.qty), gift:!!l.gift}))}));
+  const pend = (OWN.lreqs?.[rid] || []).map(x => ({no:x.no || x.id, kind:x.kind, at:x.at || '', status:'pending', reason:'', decided:''}));
+  const reports = [...pend, ...(r.linkLog || [])].sort((x, y) => (y.at || '').localeCompare(x.at || '')).slice(0, 14);
+  return {name:r.name, town:tName(r.townId), phone:r.phone || '', biz:bizName(), bizPhone:S.settings.phone || '', whatsapp:S.settings.storeWhatsapp || S.settings.phone || '', held, net:r2(a.net), parcels, hist:rlHist(rid), reports};
+}
+async function rlPublish(rid, force){
+  const r = S.resellers[rid]; if (!r?.linkToken || !FB || !ADM() || FB_ME?.limited) return {err:'not ready'};
+  const pin = rlPin(r), on = r.linkOn !== false, doc = {on, biz:bizName(), v:1};
+  if (on && pin.length === 4) {
+    const pl = rlPayload(rid), sig = r.linkToken + '|' + pin + '|' + JSON.stringify(pl); OWN.rlSig = OWN.rlSig || {};
+    if (!force && OWN.rlSig[rid] === sig) return {ok:true, skipped:true};
+    try { const key = await rlKey(r.linkToken, pin), iv = crypto.getRandomValues(new Uint8Array(12)); pl.at = nowISO(); const ct = await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, new TextEncoder().encode(JSON.stringify(pl))); doc.iv = rlB64(iv); doc.ct = rlB64(new Uint8Array(ct)); doc.at = pl.at; OWN.rlSig[rid] = sig; } catch(e) { return {err:'Could not lock the figures: ' + (e.message || e)}; }
+  }
+  try { await FB.set('rlinks/' + r.linkToken, doc); return {ok:true}; } catch(e) { return {err:fbMsg(e)}; }
+}
+function rlRulesHelp(err){
+  return `<div class="hint" style="border-left:4px solid var(--bad);padding-left:10px"><b>One quick step in Firebase is needed.</b> (${esc(String(err).slice(0, 120))})<ol class="small" style="padding-left:18px;margin:6px 0">
+    <li>Tap <b>Copy rules</b> below.</li><li>Open <b>console.firebase.google.com</b> → your project → <b>Firestore Database</b> → <b>Rules</b>.</li><li>Select everything there, paste, then tap <b>Publish</b>.</li><li>Come back and tap <b>Test the link</b>.</li></ol>${btn('Copy rules', 'copyRules', {}, 'sm pri')}</div>`;
+}
+const rlNewToken = () => (uid() + uid()).replace(/[^a-z0-9]/g, '').slice(0, 24);
+const rlUrl = r => RL_URL + '#k=' + r.linkToken;
+const rlFirst = r => String(r.name || '').split(' ')[0];
+const rlMsg = r => `Hello ${rlFirst(r)}, this is your personal ${bizName()} link. Open it to report what you sold, pay, and confirm stock you receive. When it asks, type the last 4 digits of your phone number. Keep it private.\n${rlUrl(r)}`;
+async function rlLink(rid){
+  let r = S.resellers[rid]; if (!r) return;
+  if (!FB || !ADM()) return toast('Sign in to your admin account first (Resellers → Requests & logins).', true);
+  if (!r.linkToken) { r = await put('resellers', {...r, linkToken:rlNewToken(), linkOn:true}); }
+  const res = await rlPublish(rid, true); rlListen(); rlLinkModal(rid, res);
+}
+function rlLinkModal(rid, res){
+  const r = S.resellers[rid], url = rlUrl(r), pin = rlPin(r), waiting = (OWN.lreqs?.[rid] || []).length;
+  modal(`${esc(r.name)}: reseller link`, `<p class="small" style="word-break:break-all"><a href="${url}" target="_blank" rel="noopener">${url}</a></p>
+    ${pin.length === 4 ? `<p class="hint">When they open it, they type the last 4 digits of their phone number: <b>${pin}</b>. They tick what they sold, say how they are paying, and confirm parcels. Nothing changes in your books until you approve it.${waiting ? ` <b>${waiting} report${waiting === 1 ? '' : 's'} waiting in Requests.</b>` : ''}</p>` : `<p class="neg"><b>Add their phone number first.</b> The link is locked with the last 4 digits of it. ${btn('Edit reseller', 'resEdit', {id:rid}, 'sm')}</p>`}
+    ${res?.err ? rlRulesHelp(res.err) : ''}
+    <div class="actions">${r.phone && pin.length === 4 ? `<a class="btn pri" target="_blank" rel="noopener" href="${waLink(r.phone, rlMsg(r))}">Send on WhatsApp</a>` : ''}${btn('Copy link', 'copyTxt', {t:url})}${btn('Test the link', 'rlTest', {id:rid}, 'ghost')}${r.linkOn === false ? btn('Turn link back on', 'rlOn', {id:rid, v:'1'}) : btn('Turn link off', 'rlOn', {id:rid, v:''}, 'ghost')}${btn('Make a new link', 'rlNew', {id:rid}, 'ghost')}</div><div id="rl-test" class="small" style="margin-top:8px"></div>`, null, {nofocus:true});
+}
+async function rlTest(rid){
+  const r = S.resellers[rid], box = $('#rl-test'); if (!r?.linkToken) return; if (box) box.textContent = 'Testing…';
+  const res = await rlPublish(rid, true); if (res.err) { if (box) box.innerHTML = rlRulesHelp(res.err); return; }
+  try { const id = await FB.add(`rlinks/${r.linkToken}/acts`, {kind:'ping', chk:'ping', at:nowISO(), done:false}); try { await FB.del(`rlinks/${r.linkToken}/acts/${id}`); } catch(e) {} if (box) box.innerHTML = '<b style="color:var(--good)">✓ The link is ready. Your resellers can send reports.</b>'; }
+  catch(e) { if (box) box.innerHTML = rlRulesHelp(fbMsg(e)); }
+}
+async function rlOn(rid, on){ const r = S.resellers[rid]; if (!r) return; await put('resellers', {...r, linkOn:on}); const res = await rlPublish(rid, true); rlLinkModal(rid, res); toast(on ? 'Link is on' : 'Link is off'); }
+function rlNew(rid){ const r = S.resellers[rid]; confirmBox(`Make a new link for ${esc(r.name)}? The old link stops working, so send them the new one.`, async () => { const old = r.linkToken; await put('resellers', {...S.resellers[rid], linkToken:rlNewToken(), linkOn:true}); try { if (old) await FB.del('rlinks/' + old); } catch(e) {} const res = await rlPublish(rid, true); rlListen(); rlLinkModal(rid, res); }, 'Make new link'); }
+async function rlMake(rid){ const r = S.resellers[rid]; if (!r) return; if (!FB || !ADM()) return toast('Sign in to your admin account first (Resellers → Requests & logins).', true); if (!r.linkToken) await put('resellers', {...r, linkToken:rlNewToken(), linkOn:true}); await rlPublish(rid, true); rlListen(); rlSendAll(); }
+function rlSendAll(){
+  const C = compute(), rs = sortedRes().filter(r => heldOf(r.id, C).length || (C.acc[r.id]?.net || 0) > 0.009 || r.linkToken);
+  const msg = r => `Hello ${rlFirst(r)}, it is settlement time (the ${ord(sDay())}). Open your personal ${bizName()} link, tick what you sold and tell us how you are paying: ${rlUrl(r)}\nWhen it asks, type the last 4 digits of your phone number.`;
+  const row = r => { const pin = rlPin(r), ok = r.linkToken && r.linkOn !== false && pin.length === 4 && r.phone, held = heldOf(r.id, C).reduce((t, [, v]) => t + v, 0);
+    return `<li><span><b>${esc(r.name)}</b> <span class="small mut">${esc(tName(r.townId))} · ${held} bottles</span></span><span class="actions">${ok ? `<a class="btn sm pri" target="_blank" rel="noopener" href="${waLink(r.phone, msg(r))}">WhatsApp</a>` : (!r.phone || pin.length < 4) ? '<span class="small neg">Add phone number</span>' : btn('Make link', 'rlMake', {id:r.id}, 'sm')}${btn('Link', 'rlLink', {id:r.id}, 'sm ghost')}</span></li>`; };
+  modal('Send reseller links', `<p class="hint">Each reseller gets one personal link. They open it, type the last 4 digits of their phone number, tick what they sold and say how they are paying. You approve it in Requests.</p><ul class="list">${rs.map(row).join('') || '<li class="mut">No resellers hold stock yet.</li>'}</ul>`, null, {nofocus:true, wide:true});
+}
+function rlDispBtn(d){
+  const r = S.resellers[d.resellerId]; if (!r || d.toLoc) return '';
+  if (r.linkToken && r.linkOn !== false && rlPin(r).length === 4 && r.phone) return `<a class="btn sm" target="_blank" rel="noopener" href="${waLink(r.phone, `Hello ${rlFirst(r)}, your parcel ${d.no} is on the way. When it reaches you, open your personal link and confirm what you received: ${rlUrl(r)}\nType the last 4 digits of your phone number when it asks.`)}">Ask them to confirm</a>`;
+  return btn('Reseller link', 'rlLink', {id:r.id}, 'sm ghost');
+}
+/* ---- listening for what resellers send ---- */
+const findReq = (rid, id) => (OWN.reqs[rid] || []).find(x => x.id === id) || (OWN.lreqs?.[rid] || []).find(x => x.id === id);
+function rlListen(){
+  if (!FB || FB_ME?.limited || !ADM()) return; OWN.rlTok = OWN.rlTok || new Set(); OWN.lreqs = OWN.lreqs || {};
+  rlLinked().filter(r => !OWN.rlTok.has(r.linkToken)).forEach(r => { const token = r.linkToken; OWN.rlTok.add(token); OWN.unsubs.push(FB.listen(`rlinks/${token}/acts`, 'done', false, list => rlActs(r.id, token, list))); });
+  if (!OWN.rlBoot) { OWN.rlBoot = 1; setTimeout(() => rlPublishAll(true), 3500); }
+}
+function rlValid(rid, a){
+  const r = S.resellers[rid], okLine = l => l && S.products[l.p] && Number.isInteger(l.q) && l.q >= 0 && l.q <= 5000;
+  if (a.kind === 'settle') return Array.isArray(a.lines) && a.lines.every(l => okLine(l) && l.q > 0) && num(a.amount) >= 0 && num(a.amount) < 1e8 && !!RL_MODES[a.mode];
+  if (a.kind === 'received') { const dn = S.dispatches[a.dispatchId]; return !!dn && dn.resellerId === rid && Array.isArray(a.lines) && a.lines.every(okLine); }
+  return false;
+}
+async function rlActs(rid, token, list){
+  const r = S.resellers[rid]; if (!r || r.linkToken !== token) return;
+  const pin = rlPin(r), good = pin.length === 4 ? await rlChk(token, pin) : null;
+  const real = list.filter(a => a.kind !== 'ping');
+  real.filter(a => a.chk !== good && Date.now() - Date.parse(a.at || 0) > 2 * 86400000).forEach(a => { try { FB.del(`rlinks/${token}/acts/${a.id}`); } catch(e) {} });
+  const pend = real.filter(a => good && a.chk === good && rlValid(rid, a)).sort((x, y) => (x.at || '').localeCompare(y.at || ''));
+  OWN.lreqs = OWN.lreqs || {}; OWN.rlPrimed = OWN.rlPrimed || {}; OWN.rlSeen = OWN.rlSeen || new Set();
+  OWN.lreqs[rid] = pend.map(a => ({...a, date:/^\d{4}-\d{2}-\d{2}$/.test(a.date || '') ? a.date : today(), proof:/^data:image\/(jpeg|png);base64,[A-Za-z0-9+\/=]+$/.test(a.proof || '') ? a.proof : '', ref:String(a.ref || '').slice(0, 80), note:String(a.note || '').slice(0, 400), rid, token, link:true, type:a.kind === 'received' ? 'linkrecv' : 'linkpay'}));
+  pend.forEach(a => { if (OWN.rlSeen.has(a.id)) return; OWN.rlSeen.add(a.id); if (OWN.rlPrimed[rid]) { const t = a.kind === 'received' ? `${r.name} confirmed a parcel` : `${r.name} sent a sales report`; appNotify('New request', t); toast(t + ': it is waiting for your approval'); } });
+  OWN.rlPrimed[rid] = true; rlSched();
+  if (route() === 'portal') render(true); else updatePortalBadge();
+}
+function rlReqText(q){
+  if (q.type === 'linkrecv') {
+    const dn = S.dispatches[q.dispatchId], short = (q.lines || []).map(l => { const it = (dn?.lines || []).find(x => x.productId === l.p); return it && num(l.q) < num(it.qty) ? `${num(it.qty) - num(l.q)} × ${esc(pName(l.p))}` : ''; }).filter(Boolean);
+    return `Parcel <b>${esc(dn?.no || '?')}</b> received${q.date ? ' on ' + fmtDate(q.date) : ''} ${short.length ? `<span class="pill bad">short: ${short.join(', ')}</span>` : '<span class="pill good">all items</span>'}${q.note ? `<br>“${esc(q.note)}”` : ''}`;
+  }
+  const C = compute(); let val = 0, own = 0;
+  (q.lines || []).forEach(l => { const price = resPrice(q.rid, l.p, C); val += num(l.q) * price; own += commFor(q.rid, num(l.q), price, C.hr?.[q.rid]?.[l.p]).find(c => c.level === 0)?.amount || 0; });
+  const a = C.acc[q.rid] || {net:0}, should = Math.max(0, r2(a.net + val - own)), paid = num(q.amount), diff = r2(should - paid);
+  return `${(q.lines || []).map(l => `${esc(pName(l.p))} × ${num(l.q)}`).join(', ') || 'No bottles reported'}<br>Value ${money(val)} − their commission ${money(own)} → they should pay <b>${money(should)}</b><br>Paid <b>${money(paid)}</b> by ${esc(RL_MODES[q.mode] || q.mode || '')}${q.ref ? ' · ref ' + esc(q.ref) : ''} ${Math.abs(diff) > 0.009 ? `<span class="pill warn">${diff > 0 ? 'short by ' + money(diff) : 'extra ' + money(-diff)}</span>` : '<span class="pill good">matches</span>'}${q.proof ? ' ' + btn('📎 View photo', 'reqProof', {rid:q.rid, id:q.id}, 'sm ghost') : ''}${q.note ? `<br>“${esc(q.note)}”` : ''}`;
+}
+async function rlDecide(a, status, reason){
+  try { await FB.update(`rlinks/${a.token}/acts/${a.id}`, {done:true, status, reason:reason || '', proof:'', decided:today()}); } catch(e) { toast(fbMsg(e), true); throw e; }
+  const r = S.resellers[a.rid]; if (!r) return; const e = {no:a.no || a.id, kind:a.kind, at:a.at || '', status, reason:reason || '', decided:today()};
+  await put('resellers', {...r, linkLog:[e, ...(r.linkLog || []).filter(x => x.no !== e.no)].slice(0, 30)});
+  OWN.lreqs[a.rid] = (OWN.lreqs[a.rid] || []).filter(x => x.id !== a.id); updatePortalBadge();
+}
+async function rlApprove(q){
+  const r = S.resellers[q.rid]; if (!r) return;
+  if (q.type === 'linkpay') {
+    const sold = {}; (q.lines || []).forEach(l => { sold[l.p] = (sold[l.p] || 0) + num(l.q); });
+    const ref = ((q.mode === 'mtn' || q.mode === 'airtel' ? RL_MODES[q.mode] + ' ' : '') + (q.ref || '')).trim();
+    settleDayForm(q.rid, {sold, amount:num(q.amount) || '', channel:RL_CH[q.mode] || 'cash', ref, date:q.date || today(), at:q.at, proof:q.proof || '', note:q.note || '', act:q}); return;
+  }
+  const dn = S.dispatches[q.dispatchId]; if (!dn) { toast('That parcel was not found.', true); return; }
+  const short = (q.lines || []).map(l => { const it = (dn.lines || []).find(x => x.productId === l.p); return it && num(l.q) < num(it.qty) ? `${num(it.qty) - num(l.q)} × ${esc(pName(l.p))}` : ''; }).filter(Boolean);
+  const go = async () => { if (dn.status !== 'delivered') await put('dispatches', {...dn, status:'delivered', deliveredDate:q.date || today(), receivedBy:r.name, recvNote:q.note || '', recvLines:(q.lines || []).map(l => ({productId:l.p, qty:num(l.q)}))}); await rlDecide(q, 'approved'); toast('Parcel confirmed'); };
+  if (short.length) confirmBox(`${esc(r.name)} says these were short: ${short.join(', ')}. Mark the parcel as delivered anyway? You will need to sort out the missing bottles with them.`, go, 'Mark delivered'); else await go();
+}
+function rlReject(q){
+  modal('Reject this report', `<label for="f-rr">Reason (the reseller will see this)<input id="f-rr" name="why" required placeholder="e.g. Payment not received on MoMo"></label>`, async d => { await rlDecide(q, 'rejected', d.why.trim()); logNote('decline', 'requests', `${rName(q.rid)}: link report declined (${d.why.trim()})`); toast('Rejected'); }, {label:'Reject'});
+}
 
 /* ======================= reseller adverts (posters & flyers) ======================= */
 const AD_FMT = {status:['WhatsApp status', 1080, 1920], square:['Square post', 1080, 1080], flyer:['Flyer (A5, print)', 1240, 1754]};
@@ -5290,7 +5449,7 @@ PAGES.dispatch = C => {
       ${list.map(d => `<tr><td style="white-space:nowrap"><b>${esc(d.no)}</b></td><td>${fmtDate(d.date)}</td><td>${d.toLoc ? `<b>${esc(dnTo(d))}</b><div class="small mut">Shop${shopOf(d.toLoc)?.town ? ' · ' + esc(shopOf(d.toLoc).town) : ''}</div>` : `<button class="link" data-act="resView" data-id="${d.resellerId}">${esc(rName(d.resellerId))}</button><div class="small mut">${esc(rTown(d.resellerId))}</div>`}</td>
         <td>${esc(d.courier)}${d.waybill ? `<div class="small mut">${esc(d.waybill)}</div>` : ''}</td><td class="n">${int(bottles(d))}</td><td class="n">${d.charge ? money(d.charge) : '—'}</td>
         <td>${d.status === 'delivered' ? `<span class="pill good">Delivered ${fmtDate(d.deliveredDate)}</span>${d.receivedBy ? `<div class="small mut">by ${esc(d.receivedBy)}</div>` : ''}` : '<span class="pill warn">On the way</span>'}</td>
-        <td><div class="actions">${btn('Dispatch note', 'docDN', {id:d.id}, 'sm')}${btn('Delivery note', 'docDel', {id:d.id}, 'sm')}${d.status !== 'delivered' ? btn('Mark delivered', 'delivered', {id:d.id}, 'sm ghost') : ''}${btn('Edit', 'editDispatch', {id:d.id}, 'sm ghost')}${btn('Delete', 'delDispatch', {id:d.id}, 'sm ghost danger')}</div></td></tr>`).join('')}
+        <td><div class="actions">${btn('Dispatch note', 'docDN', {id:d.id}, 'sm')}${btn('Delivery note', 'docDel', {id:d.id}, 'sm')}${d.status !== 'delivered' && d.resellerId ? rlDispBtn(d) : ''}${d.status !== 'delivered' ? btn('Mark delivered', 'delivered', {id:d.id}, 'sm ghost') : ''}${btn('Edit', 'editDispatch', {id:d.id}, 'sm ghost')}${btn('Delete', 'delDispatch', {id:d.id}, 'sm ghost danger')}</div></td></tr>`).join('')}
     </tbody></table></div>` : empty('No parcels sent in ' + monthLabel(m) + '. Use Dispatch stock to send perfume to a reseller.')}</div>`;
 };
 const bizEmail = () => S.settings.email || '';
@@ -5802,25 +5961,26 @@ PAGES.settlement = C => {
   const rows = rs.map(r => { const a = C.acc[r.id] || {owed:0, due:0, net:0, lastRemit:''}, h = heldOf(r.id, C), e = expectedFor(r.id, C);
     const paidThis = a.lastRemit && a.lastRemit > iso(addDays(new Date(last + 'T00:00'), -12)); return {r, a, bottles:h.reduce((t, [, v]) => t + v, 0), e, paidThis}; });
   const toSettle = rows.filter(x => x.bottles > 0 || x.a.net > 0.009);
-  return head('Settlement day', `On the ${ord(sDay())} each reseller tells you what they sold. Tap <b>Settle</b>, enter the bottles sold, and the hub records the sales, works out their commission and records the money they pay.`, btn('Send reminders', 'remind', {}, 'pri'))
+  return head('Settlement day', `On the ${ord(sDay())} each reseller tells you what they sold. Tap <b>Settle</b>, enter the bottles sold, and the hub records the sales, works out their commission and records the money they pay.`, btn('Send reminders', 'remind', {}, 'pri') + btn('Send reseller links', 'rlSendAll', {}, 'pri'))
+    + (() => { const n = Object.values(OWN.lreqs || {}).flat().length; return n ? `<div class="card" style="border-left:5px solid var(--acc)"><b>${n} report${n === 1 ? '' : 's'} sent through reseller links ${n === 1 ? 'is' : 'are'} waiting.</b> <a class="btn sm pri" href="#portal">Review</a></div>` : ''; })()
     + `<div class="tiles">${tile('Next settlement', fmtDate(due), `${Math.max(0, daysBetween(today(), due))} days away`)}${tile('Resellers to settle', int(toSettle.length))}
       ${tile('Owed to you now', money(rows.reduce((t, x) => t + Math.max(0, x.a.net), 0)), 'for bottles already reported sold')}${tile('If everything sells', money(rows.reduce((t, x) => t + x.e.totalCash, 0)), 'stock held, after commission', true)}</div>`
     + (rows.length ? `<div class="card"><div class="tw"><table class="t"><thead><tr><th>Reseller</th><th class="n">Bottles held</th><th class="n">Owes now</th><th class="n">Could pay if all sold</th><th>Last payment</th><th></th></tr></thead><tbody>
       ${rows.map(({r, a, bottles, e, paidThis}) => `<tr><td><b>${esc(r.name)}</b><div class="small mut">${esc(tName(r.townId))}</div></td><td class="n">${int(bottles)}</td><td class="n">${signed(Math.max(0, a.net))}</td><td class="n">${money(e.totalCash + Math.max(0, a.net))}</td>
         <td>${a.lastRemit ? fmtDate(a.lastRemit) : '<span class="mut">Never</span>'}${paidThis ? ' <span class="pill good">This month</span>' : ''}</td>
-        <td><div class="actions">${btn('Settle', 'settleDay', {id:r.id}, 'sm pri')}${btn('Price list', 'priceList', {id:r.id}, 'sm ghost')}</div></td></tr>`).join('')}</tbody></table></div></div>` : empty('Add resellers first.'))
+        <td><div class="actions">${btn('Settle', 'settleDay', {id:r.id}, 'sm pri')}${btn('Link', 'rlLink', {id:r.id}, 'sm')}${btn('Price list', 'priceList', {id:r.id}, 'sm ghost')}</div></td></tr>`).join('')}</tbody></table></div></div>` : empty('Add resellers first.'))
     + `<div class="card"><h2>How settlement works</h2><ol class="small" style="padding-left:18px;margin:0">
         <li>Ask the reseller how many of each perfume they sold (or count what is left).</li><li>Tap <b>Settle</b> and enter the bottles sold. The hub shows their commission and what they must pay.</li>
         <li>Enter the money they paid and how (cash, mobile money or bank). Their commission is kept automatically.</li><li>Send them the summary on WhatsApp.</li></ol></div>`;
 };
-function settleDayForm(rid){
+function settleDayForm(rid, pre){
   const r = S.resellers[rid]; if (!r) return; const C = compute(), h = heldOf(rid, C), a = C.acc[rid] || {net:0, owed:0, due:0};
-  modal(`Settle: ${r.name}`, `<div class="grid2">${fDate()}<label for="f-sch">Paid into<select id="f-sch" name="channel">${chOptions('momo')}</select></label></div>
+  modal(`Settle: ${r.name}`, `${pre ? `<div class="hint" style="border-left:4px solid var(--acc);padding-left:10px"><b>Sent by ${esc(r.name)} through their link</b> on ${esc(fmtDateTime(pre.at))}. Check the figures, change anything that is wrong, then save.${pre.note ? `<br>Their note: “${esc(pre.note)}”` : ''}${pre.proof ? `<br><img src="${pre.proof}" alt="Payment photo" style="max-width:100%;max-height:170px;border-radius:8px;margin-top:6px">` : ''}</div>` : ''}<div class="grid2">${fDate(pre?.date)}<label for="f-sch">Paid into<select id="f-sch" name="channel">${chOptions(pre?.channel || 'momo')}</select></label></div>
     ${h.length ? `<div class="tw"><table class="t" id="sd-tab"><thead><tr><th>Perfume</th><th class="n">With them</th><th class="n">Price</th><th class="n">Sold</th><th class="n">Amount</th></tr></thead><tbody>
-      ${h.map(([p, v]) => `<tr><td>${esc(pName(p))}</td><td class="n">${v}</td><td class="n">${money(resPrice(rid, p, C))}</td><td class="n"><input type="number" class="sd-q" name="sold_${p}" data-pid="${p}" min="0" max="${v}" step="1" value="" placeholder="0" style="width:70px;text-align:right"></td><td class="n" id="sd-l-${p}">—</td></tr>`).join('')}
+      ${h.map(([p, v]) => `<tr><td>${esc(pName(p))}</td><td class="n">${v}</td><td class="n">${money(resPrice(rid, p, C))}</td><td class="n"><input type="number" class="sd-q" name="sold_${p}" data-pid="${p}" min="0" max="${v}" step="1" value="${pre?.sold?.[p] ? Math.min(pre.sold[p], v) : ''}" placeholder="0" style="width:70px;text-align:right"></td><td class="n" id="sd-l-${p}">—</td></tr>`).join('')}
       </tbody></table></div><div class="actions" style="margin:6px 0 10px">${btn('All sold', 'sdAll', {}, 'sm ghost')}${btn('None sold', 'sdNone', {}, 'sm ghost')}</div>` : '<p class="hint">They are not holding any bottles.</p>'}
     <div class="card" style="margin:0 0 10px;padding:12px 14px" id="sd-sum"></div>
-    <div class="grid2"><label for="f-samt">Money they paid now<input id="f-samt" name="amount" type="number" min="0" step="0.01"></label><label for="f-sref">Reference<input id="f-sref" name="ref" placeholder="e.g. MoMo ref"></label></div>`,
+    <div class="grid2"><label for="f-samt">Money they paid now<input id="f-samt" name="amount" type="number" min="0" step="0.01" ${pre ? `data-touched="1" value="${esc(pre.amount)}"` : ''}></label><label for="f-sref">Reference<input id="f-sref" name="ref" placeholder="e.g. MoMo ref" value="${esc(pre?.ref || '')}"></label></div>`,
   async d => {
     const C2 = compute(), h2 = C2.held[rid] || {}, lines = [];
     for (const [k, v] of Object.entries(d)) if (k.startsWith('sold_') && num(v) > 0) { const p = k.slice(5), q = Math.round(num(v)); if (q > (h2[p] || 0)) throw Error(`${r.name} holds only ${h2[p] || 0} × ${pName(p)}.`); lines.push({p, q}); }
@@ -5828,7 +5988,8 @@ function settleDayForm(rid){
     for (const l of lines) { const price = resPrice(rid, l.p, C2); await put('moves', {kind:'sale', date:d.date, resellerId:rid, productId:l.p, qty:l.q, unitPrice:price, unitCost:num(S.products[l.p]?.costPrice), customer:'', note:'Settlement', comm:commFor(rid, l.q, price, C2.hr?.[rid]?.[l.p])}); }
     const A = compute().acc[rid] || {owed:0, due:0}, kept = r2(Math.max(0, Math.min(A.due, A.owed)));
     if (kept > 0) await put('cash', {kind:'offset', date:d.date, amount:kept, category:'Commission kept', resellerId:rid, description:'Kept at settlement'});
-    if (amt > 0) await put('cash', {kind:'in', date:d.date, channel:d.channel, amount:amt, category:'Reseller remittance', resellerId:rid, description:('Settlement ' + (d.ref || '')).trim()});
+    if (amt > 0) await put('cash', {kind:'in', date:d.date, channel:d.channel, amount:amt, category:'Reseller remittance', resellerId:rid, description:('Settlement ' + (d.ref || '')).trim(), proof:pre?.proof || ''});
+    if (pre?.act) await rlDecide(pre.act, 'approved');
     toast(`Settlement saved for ${r.name}`); setTimeout(() => settleDone(rid, lines, amt, kept, d.date), 60);
   }, {label:'Save settlement', wide:true});
   SETTLE_RID = rid; const f = $('#m-form'); f.addEventListener('input', e => { if (e.target.name === 'amount') e.target.dataset.touched = 1; settleCalc(); }); settleCalc();
@@ -7126,7 +7287,7 @@ const ACT = {
   catCat: (d, el) => { document.querySelectorAll('[data-act=catCat]').forEach(b => b.classList.toggle('on', b.dataset.k === d.k)); document.querySelectorAll('.cat-card').forEach(c => c.hidden = !!d.k && c.dataset.cat !== d.k); },
   catSend: () => { try { const cr = (RES.snap?.creditLimit || (RES.snap?.credit && typeof RES.snap.credit === 'object' ? RES.snap.credit : null)), t = cartTotals().t; if (cr && cr.limit && t > cr.available + 0.009) return toast(`This order (${money(t)}) is more than your available credit (${money(cr.available)}). Pay what you owe first, or order less.`, true); resSubmit('order', resCollect({dataset:{type:'order'}})); } catch(e) { toast(e.message, true); } },
   resProofDel: () => { RES.proof = ''; const pv = $('#rp-prev'); if (pv) pv.innerHTML = ''; const f = $('#rp-img'); if (f) f.value = ''; },
-  reqProof: d => { const q = (OWN.reqs[d.rid] || []).find(x => x.id === d.id); if (q?.proof) proofModal(q.proof, `${rName(d.rid)}: payment slip`); },
+  reqProof: d => { const q = findReq(d.rid, d.id); if (q?.proof) proofModal(q.proof, `${rName(d.rid)}: payment slip`); },
   reqOkSel: async () => { const sel = [...document.querySelectorAll('.rq-sel:checked')].map(c => ({rid:c.dataset.rid, id:c.dataset.id})); if (!sel.length) return toast('Tick the requests first.', true);
     let ok = 0, orders = 0; const bad = []; for (const x of sel) { const q = (OWN.reqs[x.rid] || []).find(y => y.id === x.id); try { await reqApprove(x.rid, x.id, true); ok++; if (q?.type === 'order') orders++; } catch(e) { bad.push(`${rName(x.rid)}: ${fbMsg(e)}`); } }
     if (bad.length) modal('Some requests were not approved', `<p>${ok} approved.</p><ul class="small">${bad.map(b => `<li>${esc(b)}</li>`).join('')}</ul>`, null, {nofocus:true}); else toast(`${ok} approved${orders ? `. ${orders} order${orders === 1 ? '' : 's'}: send the parcels from Dispatch.` : ''}`); },
@@ -7265,6 +7426,7 @@ const ACT = {
   fbClaim: async () => { try { await FB.batch([['set', 'meta/owner', {uid:FB_USER.uid, email:FB_USER.email, at:FB.now()}], ['set', `users/${FB_USER.uid}`, {role:'owner', email:FB_USER.email, at:FB.now()}]]); FB_ROLE = 'owner'; ownerListen(); render(true); } catch(x) { toast(fbMsg(x), true); } },
   fbOut: async () => { if (DESK && MODE === 'desktop') return ACT.appOut(); try { await FB.signOut(); } catch(e) {} },
   fbPublish: () => publishAll(false),
+  rlLink: d => rlLink(d.id), rlTest: d => rlTest(d.id), rlOn: d => rlOn(d.id, !!d.v), rlNew: d => rlNew(d.id), rlMake: d => rlMake(d.id), rlSendAll: () => rlSendAll(),
   reqOk: d => reqApprove(d.rid, d.id), reqNo: d => reqReject(d.rid, d.id),
   accNew: d => accCreate(d.id, false), accReset: d => confirmBox('Make a new login ID and PIN? The old ones stop working.', () => accCreate(d.id, true), 'Make new login'),
   accRemove: d => { const r = S.resellers[d.id]; confirmBox(`Remove ${esc(r.name)}'s online access? They will no longer be able to sign in.`, async () => { try { await FB.del(`users/${r.portalUid}`); await FB.del(`portal/${r.id}`); } catch(e) {} logNote('login', 'logins', `App access removed for reseller ${r.name}`); await put('resellers', {...r, portalUid:'', portalLogin:''}); ownerListen(); toast('Access removed'); }, 'Remove access'); },

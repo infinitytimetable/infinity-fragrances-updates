@@ -83,6 +83,17 @@ main{padding:26px clamp(16px,3vw,40px) 90px;min-width:0;max-width:1240px}
 .tile .v{font-size:24px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums;line-height:1.2}
 .tile .s{font-size:12.5px;color:var(--muted);margin-top:4px}
 .tile.hl{border-color:var(--accent);box-shadow:inset 0 3px 0 var(--accent)}
+.tile.go{cursor:pointer}.tile.go:hover{border-color:var(--accent)}.tile.go:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.exp-ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:4px 0 12px}.exp-ctl .lab{font-size:13px;color:var(--muted);font-weight:600}.exp-ctl .actions{margin-left:auto}
+.exp-tbl table.t th{white-space:normal;line-height:1.25;vertical-align:bottom;padding:9px 7px;letter-spacing:.03em}.exp-tbl table.t td{padding:9px 7px;font-size:13.5px}.exp-tbl table.t td:first-child{min-width:104px}
+.exp-tbl tr.grp td{background:var(--soft);font-weight:700;border-top:2px solid var(--line)}.exp-tbl tr.sub td{font-weight:700;background:var(--soft)}
+.exp-cards{display:none}.exp-grp{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap;margin:14px 2px 6px}.exp-grp b{font-size:15px}
+.exp-card{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;background:var(--surface)}.exp-card.tot{border-color:var(--accent)}
+.exp-card .h{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.exp-card .big{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.exp-card .big div{background:var(--soft);border-radius:10px;padding:8px 10px}.exp-card .big .lb{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600}.exp-card .big b{font-size:18px;font-variant-numeric:tabular-nums}
+.exp-card dl{display:grid;grid-template-columns:1fr auto;gap:4px 12px;margin:0;font-size:13.5px}.exp-card dt{color:var(--muted)}.exp-card dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:700px){.exp-tbl{display:none}.exp-cards{display:block}.exp-ctl .actions{margin-left:0;width:100%}}
+.doc table.xr td,.doc table.xr th{font-size:10.5px;padding:4px 5px}.doc table.xr th{font-size:8.5px;letter-spacing:.05em}.doc table.xr tr.g td{background:#f6f3ec;font-weight:700}.doc table.xr tr.s td{font-weight:700;border-top:1px solid #16130f}.doc table.xr tfoot td{font-weight:800;border-top:2px solid #16130f;border-bottom:0}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:18px}
 .card h2{font-size:17px;font-weight:700;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}
@@ -878,7 +889,7 @@ const DEFAULT_SETTINGS = {
   opening:{cash:0, momo:0, bank:0}, openingDate:''
 };
 const COLS = ['towns','resellers','products','moves','cash','dispatches','images','receipts','promos','customers','invoices','suppliers','payslips','cashups','logs','positions','staff','spay'];
-const S = {towns:{}, resellers:{}, products:{}, moves:{}, cash:{}, dispatches:{}, images:{}, receipts:{}, promos:{}, customers:{}, invoices:{}, suppliers:{}, payslips:{}, cashups:{}, logs:{}, settings:{...DEFAULT_SETTINGS}};
+const S = {towns:{}, resellers:{}, products:{}, moves:{}, cash:{}, dispatches:{}, images:{}, receipts:{}, promos:{}, customers:{}, invoices:{}, suppliers:{}, payslips:{}, cashups:{}, logs:{}, positions:{}, staff:{}, spay:{}, settings:{...DEFAULT_SETTINGS}};
 let DB = null, MODE = 'connecting', DL = null;
 const loaded = {};
 const UI = {month: thisMonth(), town:'', status:'active', q:'', year: String(new Date().getFullYear())};
@@ -979,7 +990,7 @@ function schedule(){ if (pending) return; pending = true; requestAnimationFrame(
 const clean = o => JSON.parse(JSON.stringify(o));
 async function put(col, obj){
   obj = {...obj}; if (!obj.id) obj.id = uid(); if (!obj.createdAt) obj.createdAt = nowISO(); obj.updatedAt = nowISO();
-  const before = S[col][obj.id]; S[col][obj.id] = obj; schedule(); logWrite(before ? 'edit' : 'add', col, before, obj); syncPush(col, obj);
+  const before = S[col][obj.id]; S[col][obj.id] = obj; schedule(); if (rlCol(col)) rlSched(); logWrite(before ? 'edit' : 'add', col, before, obj); syncPush(col, obj);
   if (DB) {
     const {id, ...body} = obj;
     try { await DB.collection(col).doc(id).set(clean(body)); }
@@ -988,7 +999,7 @@ async function put(col, obj){
   return obj;
 }
 async function del(col, id){
-  logWrite('delete', col, S[col][id], null); delete S[col][id]; schedule(); syncPush(col, {id}, true);
+  logWrite('delete', col, S[col][id], null); delete S[col][id]; schedule(); if (rlCol(col)) rlSched(); syncPush(col, {id}, true);
   if (DB) { try { await DB.collection(col).doc(id).delete(); } catch(e) { toast('Not deleted: ' + (e.message || e.code), true); } }
   else saveLocal();
 }
@@ -1300,7 +1311,7 @@ function render(force){
   if (fid) { const el = document.getElementById(fid); if (el) { el.focus(); if (sel) try { el.setSelectionRange(sel[0], sel[1]); } catch(e) {} } }
 }
 const head = (title, sub, actions = '') => `<div class="head"><div><h1>${title}</h1>${sub ? `<p>${sub}</p>` : ''}</div><div class="actions">${actions}</div></div>`;
-const tile = (k, v, s = '', hl = false) => `<div class="tile${hl ? ' hl' : ''}"><div class="k">${k}</div><div class="v">${v}</div>${s ? `<div class="s">${s}</div>` : ''}</div>`;
+const tile = (k, v, s = '', hl = false, go = '') => `<div class="tile${hl ? ' hl' : ''}${go ? ' go' : ''}"${go ? ` role="link" tabindex="0" data-act="expGo" data-r="${go}"` : ''}><div class="k">${k}</div><div class="v">${v}</div>${s ? `<div class="s">${s}</div>` : ''}</div>`;
 const btn = (label, act, data = {}, cls = '') => `<button type="button" class="btn ${cls}" data-act="${act}" ${Object.entries(data).map(([k, v]) => `data-${k}="${esc(v)}"`).join(' ')}>${label}</button>`;
 const monthFilter = () => `<label for="f-month">Month <input type="month" id="f-month" value="${UI.month}"></label>`;
 const empty = t => `<div class="empty">${t}</div>`;
@@ -1338,11 +1349,11 @@ const dashboardV1 = C => {
       ${tile('Net profit this month', signed(s.net), `after cost, commission and expenses`)}
       ${tile('Money on hand', signed(totalMoney), `Cash ${money(C.bal.cash)} · MoMo ${money(C.bal.momo)} · Bank ${money(C.bal.bank)}`)}
       ${tile('Owed by resellers', money(owed), `for bottles already sold · next settlement ${fmtDate(nextDueDate())}`)}
-      ${(() => { const E = expectedAll(C).t; return tile('Expected from resellers', money(E.totalCash), `when all ${int(E.bottles)} bottles they hold are sold, after their commission`, true) + tile('Expected profit on stock out', signed(E.profit), `after cost and all commission`); })()}
+      ${(() => { const E = expectedAll(C).t; return tile('Expected from resellers', money(E.totalCash), `when all ${int(E.bottles)} bottles they hold are sold, after their commission`, true, 'debtors') + tile('Expected profit on stock out', signed(E.profit), `after cost and all commission`, false, 'debtors') + tile('Profit after expenses', signed(E.profit - s.expenses), `also after ${money(s.expenses)} expenses this month`, false, 'debtors'); })()}
       ${tile('Commission due', money(due), `earned by resellers, not yet paid`)}
       ${tile('Stock value at cost', money(C.storeValue + C.heldValue), `${int(C.heldBottles)} bottles with resellers`)}
       ${tile('Active resellers', int(active), `in ${townCounts.length} town${townCounts.length === 1 ? '' : 's'}`)}
-    </div><button type="button" class="btn sm home-more" data-act="homeMore">${UI.homeMore ? 'Fewer figures' : 'More figures (4)'}</button>
+    </div><button type="button" class="btn sm home-more" data-act="homeMore">${UI.homeMore ? 'Fewer figures' : 'More figures (5)'}</button>
     <!--GOALS-->
     ${trendsCard(C)}
     ${insightsCard()}
@@ -1478,6 +1489,63 @@ PAGES.commissions = C => {
 };
 
 /* Debtors & creditors */
+
+/* ---------- Expected money and profit from each reseller: table, phone cards, Excel, PDF ---------- */
+const EXP_KEYS = ['bottles', 'value', 'own', 'team', 'owedNow', 'totalCash', 'cost', 'profit'];
+function expGroups(C, mode){
+  const {rows, t} = expectedAll(C), by = new Map();
+  const keyOf = id => { const r = S.resellers[id] || {}; return mode === 'town' ? (rTown(id) || 'No town') : mode === 'team' ? (r.recruiterId && S.resellers[r.recruiterId] ? 'Recruited by ' + rName(r.recruiterId) : 'Recruited by you') : ''; };
+  for (const row of rows) { const k = keyOf(row[0]); if (!by.has(k)) by.set(k, {label:k, rows:[], sub:Object.fromEntries(EXP_KEYS.map(x => [x, 0]))}); const g = by.get(k); g.rows.push(row); EXP_KEYS.forEach(x => g.sub[x] += row[1][x] || 0); }
+  const groups = [...by.values()]; if (mode !== 'none') groups.sort((a, b) => b.sub.totalCash - a.sub.totalCash || a.label.localeCompare(b.label));
+  return {groups, t};
+}
+const expMode = () => ['town', 'team'].includes(UI.expGroup) ? UI.expGroup : 'none';
+function expCard(C){
+  const mode = expMode(), {groups, t} = expGroups(C, mode), ex = monthStats(thisMonth()).expenses, grouped = mode !== 'none';
+  const seg = [['none', 'No grouping'], ['town', 'By town'], ['team', 'By recruiter']].map(([k, l]) => `<button type="button" class="${mode === k ? 'on' : ''}" data-act="expGroup" data-k="${k}">${l}</button>`).join('');
+  const cells = e => `<td class="n">${int(e.bottles)}</td><td class="n">${money(e.value)}</td><td class="n">${money(e.own)}</td><td class="n">${money(e.team)}</td><td class="n">${signed(e.owedNow)}</td><td class="n"><b>${money(e.totalCash)}</b></td><td class="n">${money(e.cost)}</td><td class="n"><b>${signed(e.profit)}</b></td>`;
+  const body = groups.map(g => (grouped ? `<tr class="grp"><td colspan="10">${esc(g.label)} <span class="small mut">· ${g.rows.length} reseller${g.rows.length === 1 ? '' : 's'}</span></td></tr>` : '')
+    + g.rows.map(([id, e]) => `<tr><td><button class="link" data-act="resView" data-id="${id}">${esc(rName(id))}</button></td><td>${esc(rTown(id))}</td>${cells(e)}</tr>`).join('')
+    + (grouped ? `<tr class="sub"><td colspan="2">Subtotal</td>${cells(g.sub)}</tr>` : '')).join('');
+  const kv = e => `<dl><dt>Bottles held</dt><dd>${int(e.bottles)}</dd><dt>Value at selling price</dt><dd>${money(e.value)}</dd><dt>Their commission</dt><dd>${money(e.own)}</dd><dt>Team commission</dt><dd>${money(e.team)}</dd><dt>Already owed</dt><dd>${signed(e.owedNow)}</dd><dt>Cost of stock</dt><dd>${money(e.cost)}</dd></dl>`;
+  const big = e => `<div class="big"><div><span class="lb">Expected to receive</span><b>${money(e.totalCash)}</b></div><div><span class="lb">Expected profit</span><b>${signed(e.profit)}</b></div></div>`;
+  const cards = groups.map(g => (grouped ? `<div class="exp-grp"><b>${esc(g.label)}</b><span class="small mut">${g.rows.length} reseller${g.rows.length === 1 ? '' : 's'} · receive ${money(g.sub.totalCash)} · profit ${signed(g.sub.profit)}</span></div>` : '')
+    + g.rows.map(([id, e]) => `<div class="exp-card"><div class="h"><button class="link" data-act="resView" data-id="${id}"><b>${esc(rName(id))}</b></button><span class="small mut">${esc(rTown(id))}</span></div>${big(e)}${kv(e)}</div>`).join('')).join('')
+    + `<div class="exp-card tot"><div class="h"><b>Total</b><span class="small mut">${groups.reduce((n, g) => n + g.rows.length, 0)} resellers</span></div>${big(t)}${kv(t)}</div>`;
+  return `<div class="card" id="exp-card"><h2>Expected money and profit from each reseller</h2>
+    <p class="hint">Based on the bottles each reseller holds now, at your selling prices. <b>Expected to receive</b> = value at selling price, minus their commission, plus anything already owed for bottles sold. <b>Expected profit</b> = value at selling price, minus their commission, minus team commission, minus the cost of the stock. It does not include your expenses.</p>
+    <div class="exp-ctl"><span class="lab">Group</span><span class="seg" data-seg="expgroup" style="margin:0">${seg}</span><span class="actions">${btn('PDF / print', 'expReport', {}, 'sm')}${btn('Excel', 'expXlsx', {}, 'sm ghost')}</span></div>
+    ${groups.length ? `<div class="tw exp-tbl"><table class="t"><thead><tr><th>Reseller</th><th>Town</th><th class="n">Bottles held</th><th class="n">Value at selling price</th><th class="n">Their commission</th><th class="n">Team commission</th><th class="n">Already owed</th><th class="n">Expected to receive</th><th class="n">Cost of stock</th><th class="n">Expected profit</th></tr></thead><tbody>${body}</tbody><tfoot><tr><td colspan="2">Total</td>${cells(t)}</tr></tfoot></table></div><div class="exp-cards">${cards}</div>
+    <p class="small" style="margin:10px 0 0">Expected profit <b>${signed(t.profit)}</b> · after this month's expenses (${money(ex)}): <b>${signed(t.profit - ex)}</b></p>` : empty('No stock is out with resellers.')}</div>`;
+}
+function expSheets(C, mode){
+  const {groups, t} = expGroups(C, mode), grouped = mode !== 'none', rows = [], f = e => [num(e.bottles), r2(e.value), r2(e.own), r2(e.team), r2(e.owedNow), r2(e.totalCash), r2(e.cost), r2(e.profit)], ex = monthStats(thisMonth()).expenses;
+  for (const g of groups) { for (const [id, e] of g.rows) { const r = S.resellers[id] || {}; rows.push([rName(id), rTown(id), r.recruiterId && S.resellers[r.recruiterId] ? rName(r.recruiterId) : 'You', g.label].concat(f(e))); } if (grouped) rows.push(['Subtotal: ' + g.label, '', '', g.label].concat(f(g.sub))); }
+  rows.push(['TOTAL', '', '', ''].concat(f(t)));
+  return [{name:'Expected by reseller', head:['Reseller', 'Town', 'Recruited by', 'Group', 'Bottles held', 'Value at selling price', 'Their commission', 'Team commission', 'Already owed', 'Expected to receive', 'Cost of stock', 'Expected profit'], rows},
+    {name:'Summary', head:['Item', 'Amount'], rows:[['Expected from resellers', r2(t.totalCash)], ['Expected profit (after cost and all commission)', r2(t.profit)], [`Expenses in ${monthLabel(thisMonth())}`, r2(ex)], ['Profit after expenses', r2(t.profit - ex)], ['Bottles held by resellers', num(t.bottles)], [`As at`, today()]]}];
+}
+function expReportPages(){
+  const C = compute(), mode = expMode(), {groups, t} = expGroups(C, mode), grouped = mode !== 'none', ex = monthStats(thisMonth()).expenses;
+  const P = 'width:794px;height:1123px;display:flex;flex-direction:column;position:relative';
+  const kpi = (k, v, sub) => `<div style="border:1px solid #e6e1d6;border-radius:10px;padding:10px 12px"><div style="font-size:10px;letter-spacing:.08em;color:#6e675c;font-weight:700;text-transform:uppercase">${k}</div><div style="font-size:18px;font-weight:800;margin-top:3px">${v}</div><div style="font-size:10.5px;color:#6e675c;margin-top:2px">${sub}</div></div>`;
+  const foot = (pg, n) => `<div style="position:absolute;left:44px;right:44px;bottom:26px;display:flex;justify-content:space-between;font-size:11px;color:#8a8170"><span>${[S.settings.businessName, bizPhone(), bizEmail(), bizAddress()].filter(Boolean).map(esc).join(' · ')}</span><span>Page ${pg} of ${n}</span></div>`;
+  const cells = e => `<td class="n">${int(e.bottles)}</td><td class="n">${money(e.value)}</td><td class="n">${money(e.own)}</td><td class="n">${money(e.team)}</td><td class="n">${money(e.owedNow)}</td><td class="n"><b>${money(e.totalCash)}</b></td><td class="n">${money(e.cost)}</td><td class="n"><b>${money(e.profit)}</b></td>`;
+  const items = []; for (const g of groups) { if (grouped) items.push(`<tr class="g"><td colspan="10">${esc(g.label)} · ${g.rows.length} reseller${g.rows.length === 1 ? '' : 's'}</td></tr>`); g.rows.forEach(([id, e]) => items.push(`<tr><td>${esc(rName(id))}</td><td>${esc(rTown(id))}</td>${cells(e)}</tr>`)); if (grouped) items.push(`<tr class="s"><td colspan="2">Subtotal</td>${cells(g.sub)}</tr>`); }
+  const chunks = [], FIRST = 28, NEXT = 40; let i = 0; while (i < items.length || !chunks.length) { const n = chunks.length ? NEXT : FIRST; chunks.push(items.slice(i, i + n)); i += n; }
+  const thead = `<thead><tr><th>Reseller</th><th>Town</th><th class="n">Held</th><th class="n">Value at selling price</th><th class="n">Their comm.</th><th class="n">Team comm.</th><th class="n">Already owed</th><th class="n">Expected to receive</th><th class="n">Cost of stock</th><th class="n">Expected profit</th></tr></thead>`;
+  const note = `<div style="margin:14px 44px 0;padding:10px 14px;border:1px solid #e6e1d6;border-radius:10px;font-size:10.5px;color:#4a4439;line-height:1.5"><b>How this is worked out.</b> Value = bottles held × your selling price. <b>Expected to receive</b> = value − their commission + money already owed for bottles sold. <b>Expected profit</b> = value − their commission − team commission − cost of the stock. Your running expenses are not included: after this month's expenses (${money(ex)}) the profit is <b>${money(t.profit - ex)}</b>.</div>`;
+  return chunks.map((rows, k) => `<div class="doc" data-w="794" data-h="1123" style="${P}">${k === 0 ? docHeader('Expected money and profit', contactBlock()) : `<div style="padding:30px 44px 10px;font-size:13px;color:#6e675c">Expected money and profit from resellers · continued</div>`}
+    ${k === 0 ? `<div style="padding:4px 44px 0;font-size:12px;color:#6e675c">As at ${fmtDate(today())}${grouped ? ' · grouped ' + (mode === 'town' ? 'by town' : 'by recruiter') : ''}</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:12px 44px 0">${kpi('Expected from resellers', money(t.totalCash), int(t.bottles) + ' bottles held')}${kpi('Expected profit', money(t.profit), 'after cost and all commission')}${kpi('Expenses this month', money(ex), monthLabel(thisMonth()))}${kpi('Profit after expenses', money(t.profit - ex), 'expected profit − expenses')}</div>` : ''}
+    <div style="padding:${k === 0 ? 14 : 4}px 44px 0"><table class="xr">${thead}<tbody>${rows.join('')}</tbody>${k === chunks.length - 1 ? `<tfoot><tr><td colspan="2">Total</td>${cells(t)}</tr></tfoot>` : ''}</table></div>
+    ${k === chunks.length - 1 ? note : ''}${foot(k + 1, chunks.length)}</div>`);
+}
+function showExpReport(){
+  const nm = 'Infinity-Fragrances-expected-from-resellers-' + today();
+  modal('Expected money and profit', `<div class="actions" style="margin-bottom:12px">${btn('Download PDF', 'expDoc', {fmt:'pdf', name:nm}, 'pri sm')}${btn('Print', 'printDoc', {}, 'sm')}${btn('Download images', 'expDoc', {fmt:'png', name:nm}, 'sm ghost')}${btn('Excel', 'expXlsx', {}, 'sm ghost')}</div>
+    <div class="preview" id="doc-prev">${expReportPages().map(pg => `<div class="docwrap">${pg}</div>`).join('')}</div>`, null, {wide:true, nofocus:true});
+  requestAnimationFrame(() => fitDocs($('#doc-prev')));
+}
 PAGES.debtors = C => {
   const t = today(), cut = lastDueDate(), nxt = nextDueDate();
   const ids = Object.keys(C.acc).filter(id => S.resellers[id] && (Math.abs(C.acc[id].owed) > 0.009 || Math.abs(C.acc[id].due) > 0.009)).sort((a, b) => C.acc[b].net - C.acc[a].net);
@@ -1487,17 +1555,13 @@ PAGES.debtors = C => {
   return head('Debtors &amp; creditors', `Resellers pay on the ${sDay()}th of each month for what they sold, keeping their commission. Next settlement day: <b>${fmtDate(nxt)}</b>.`,
       btn('Monthly settlement', 'settle', {}, 'pri') + btn('Customer paid', 'moneyIn', {cat:'Customer payment'}) + btn('Pay supplier', 'moneyOut', {cat:'Supplier payment'}))
     + `<div class="tiles">
-      ${(() => { const E = expectedAll(C).t; return tile('Expected from resellers', money(E.totalCash), `${int(E.bottles)} bottles held, after their commission`, true) + tile('Expected profit', signed(E.profit), 'on stock out with resellers'); })()}
+      ${(() => { const E = expectedAll(C).t, ex = monthStats(thisMonth()).expenses; return tile('Expected from resellers', money(E.totalCash), `${int(E.bottles)} bottles held, after their commission`, true, 'debtors') + tile('Expected profit', signed(E.profit), 'after cost and all commission', false, 'debtors') + tile('Profit after expenses', signed(E.profit - ex), `also after ${money(ex)} expenses this month`, false, 'debtors'); })()}
       ${tile('Resellers owe you now', money(totOwed), 'for bottles already sold')}
       ${tile('You owe resellers', money(totDue), 'commission due')}
       ${tile('Customers on credit', money(cust.reduce((x, [, v]) => x + v, 0)), 'direct sales not yet paid')}
       ${tile('You owe suppliers', money(sup.reduce((x, [, v]) => x + v, 0)), 'stock bought on credit')}
     </div>
-    ${(() => { const {rows, t} = expectedAll(C); return `<div class="card"><h2>Expected money and profit from each reseller</h2>
-      <p class="hint">Based on the bottles each reseller holds now, at your selling prices. Expected to receive = what they will pay you after keeping their commission, plus anything already owed for bottles sold.</p>
-      ${rows.length ? `<div class="tw"><table class="t"><thead><tr><th>Reseller</th><th>Town</th><th class="n">Bottles held</th><th class="n">Value at selling price</th><th class="n">Their commission</th><th class="n">Team commission</th><th class="n">Already owed</th><th class="n">Expected to receive</th><th class="n">Cost of stock</th><th class="n">Expected profit</th></tr></thead><tbody>
-        ${rows.map(([id, e]) => `<tr><td><button class="link" data-act="resView" data-id="${id}">${esc(rName(id))}</button></td><td>${esc(rTown(id))}</td><td class="n">${int(e.bottles)}</td><td class="n">${money(e.value)}</td><td class="n">${money(e.own)}</td><td class="n">${money(e.team)}</td><td class="n">${signed(e.owedNow)}</td><td class="n"><b>${money(e.totalCash)}</b></td><td class="n">${money(e.cost)}</td><td class="n"><b>${signed(e.profit)}</b></td></tr>`).join('')}
-      </tbody><tfoot><tr><td colspan="2">Total</td><td class="n">${int(t.bottles)}</td><td class="n">${money(t.value)}</td><td class="n">${money(t.own)}</td><td class="n">${money(t.team)}</td><td class="n">${signed(t.owedNow)}</td><td class="n">${money(t.totalCash)}</td><td class="n">${money(t.cost)}</td><td class="n">${signed(t.profit)}</td></tr></tfoot></table></div>` : empty('No stock is out with resellers.')}</div>`; })()}
+    ${expCard(C)}
     <div class="card"><h2>Reseller accounts</h2>${ids.length ? `<div class="tw"><table class="t"><thead><tr><th>Reseller</th><th>Town</th><th class="n">Sold</th><th class="n">Paid to you</th><th class="n">Owes you</th><th class="n">Comm. due</th><th class="n">Net</th><th>Last payment</th><th></th></tr></thead><tbody>
       ${ids.map(id => { const a = C.acc[id], arr = arrears(id), days = daysBetween(cut, t), od = arr > 0.009;
         return `<tr><td><button class="link" data-act="resView" data-id="${id}">${esc(rName(id))}</button></td><td>${esc(rTown(id))}</td><td class="n">${money(a.sales)}</td><td class="n">${money(a.remit)}</td><td class="n">${signed(a.owed)}</td><td class="n">${money(a.due)}</td><td class="n"><b>${signed(a.net)}</b></td>
@@ -1799,7 +1863,7 @@ function resView(rid){
     <dl class="kv"><dt>Town</dt><dd>${esc(tName(r.townId))}</dd><dt>Phone</dt><dd>${esc(r.phone || '—')}</dd><dt>Commission</dt><dd>${commLabel(r)}</dd><dt>Recruited by</dt><dd>${r.recruiterId ? `<button type="button" class="link" data-act="resView" data-id="${r.recruiterId}">${esc(rName(r.recruiterId))}</button>` : 'You'}</dd><dt>Joined</dt><dd>${fmtDate(r.joinDate) || '—'}</dd>${r.notes ? `<dt>Notes</dt><dd>${esc(r.notes)}</dd>` : ''}</dl>
     ${(() => { const e = expectedFor(rid, C); return `<div class="tiles" style="margin-top:14px">${tile('Value of stock held', money(e.value), int(e.bottles) + ' bottles at selling price')}${tile('Expected to receive', money(e.totalCash), 'after their commission of ' + money(e.own), true)}${tile('Expected profit', signed(e.profit), 'after cost and all commission')}</div>`; })()}
     <div class="tiles">${tile('Holding', int(h.reduce((t, [, v]) => t + v, 0)) + ' bottles')}${tile('Owes you', signed(a.owed))}${tile('Commission due', money(a.due))}${tile('Net', signed(a.net), a.net >= 0 ? 'they owe you' : 'you owe them', true)}</div>
-    <div class="actions" style="margin-bottom:16px">${btn('Settle', 'settleDay', {id:rid}, 'pri sm')}${btn('Price list', 'priceList', {id:rid}, 'sm')}${btn('Reseller page', 'resPage', {id:rid}, 'sm')}${btn('Record sales', 'saleRes', {id:rid}, 'sm')}${btn('Dispatch stock', 'issue', {id:rid}, 'sm')}${btn('Monthly settlement', 'settle', {id:rid}, 'sm')}${btn('Pay commission', 'payComm', {id:rid}, 'sm')}${btn('Return stock', 'returnStock', {id:rid}, 'sm')}${btn('Summary report', 'resReport', {id:rid}, 'sm')}${btn('Edit', 'resEdit', {id:rid}, 'sm ghost')}</div>
+    <div class="actions" style="margin-bottom:16px">${btn('Settle', 'settleDay', {id:rid}, 'pri sm')}${btn('Price list', 'priceList', {id:rid}, 'sm')}${btn('Reseller link', 'rlLink', {id:rid}, 'sm')}${btn('Reseller page', 'resPage', {id:rid}, 'sm')}${btn('Record sales', 'saleRes', {id:rid}, 'sm')}${btn('Dispatch stock', 'issue', {id:rid}, 'sm')}${btn('Monthly settlement', 'settle', {id:rid}, 'sm')}${btn('Pay commission', 'payComm', {id:rid}, 'sm')}${btn('Return stock', 'returnStock', {id:rid}, 'sm')}${btn('Summary report', 'resReport', {id:rid}, 'sm')}${btn('Edit', 'resEdit', {id:rid}, 'sm ghost')}</div>
     <div class="cols"><div><h3 style="font-size:15px;margin-bottom:6px">Stock held</h3>${h.length ? `<ul class="list">${h.map(([p, v]) => `<li><span>${esc(pName(p))}</span><b>${v}</b></li>`).join('')}</ul>` : '<p class="mut small">None</p>'}</div>
     <div><h3 style="font-size:15px;margin-bottom:6px">Their team</h3>${tree(rid, 1) || '<p class="mut small">Has not recruited anyone yet.</p>'}</div></div>
     <h3 style="font-size:15px;margin:16px 0 6px">Statement</h3>
@@ -2211,8 +2275,11 @@ function fixNumbers(o){
 }
 
 /* ======================= Version 2.0 ======================= */
-const APP_VERSION = '2.18.0';
+const APP_VERSION = '2.20.0';
 const CHANGELOG = [
+  ['2.20.0', '23 Nov 2026', ['Reseller links for resellers who do not use the app: one personal link each, opened with the last 4 digits of their phone number', 'They tick what they sold, see what they should pay after their commission, say how they are paying (cash, MTN MoMo, Airtel Money or bank, with an optional photo), and send it for your approval', 'The same link confirms parcels received (with shortages), and makes PDF reports with their name: settlement report, stock received note, stock held and history', 'Send links from Resellers, Settlement day and Dispatch. One-time Firebase rules update needed (Requests & logins page → Copy rules)']],
+  ['2.19.0', '23 Nov 2026', ['Expected money and profit from each reseller: tap the dashboard tiles to open the table, group it by town or recruiter, view it as cards on your phone, and download it as Excel or PDF or print it', 'New tile: Profit after expenses, next to Expected profit (after cost and all commission)']],
+  ['2.18.1', '22 Nov 2026', ['Fixes: expected money from resellers shows the right amounts again, resellers see what is owed to them, adding the first staff member or job works on a new install', 'Safer updates: the phone and PC apps now check every update file themselves and only install app updates signed by Infinity Fragrances']],
   ['2.18.0', '18 Nov 2026', ['New menus: Dashboard, Sales, Online Business, Shops, Stock, Operations, Resellers, Human Resources, Finance (Money, Pay, Reports & tax), Marketing, Users & Access, Settings', 'New pages: Online pages & links, Deliveries & riders, Shop sales & cash-ups, Stock in shops, Shop staff, Shop customers, Business ideas, All logins, Access by position, Reseller applications, App updates, Help', 'Payroll now in Finance; Staff and Employee agreements in Human Resources', 'Shop app Home shows business ideas and insights']],
   ['2.17.0', '18 Nov 2026', ['Staff logins with access rights per position: limited admin app for office staff, shopkeeper app for shop staff and cashiers, manager logins for senior staff', 'Approvals: stock and money changes by limited staff wait for the admin', 'Notifications bell with unread count in every app', 'Rider links: each rider gets one personal delivery link', 'Shopkeeper app Home and a new POS with photos, discounts, scanner and calculator', 'Hide finished items, show older, edit or cancel pending requests in the reseller and shop apps', 'Contacts directory', 'Settings for each section (gear button) and Marketing Assistant position']],
   ['2.16.0', '18 Nov 2026', ['Hiring: post positions, open or close applications, and an online application page for jobs (full or part time) and resellers', 'Applications go New → Shortlisted → Interview → Hired, with WhatsApp messages and uploaded NRC, photo, CV and certificates', 'Staff & payslips: staff list with basic pay, commission and NAPSA payslips', 'Full time and part time employment agreements', "Job flyers: We're hiring and single job adverts with a QR code", 'Reseller app: shortcuts at the bottom of Home']],
@@ -2702,7 +2769,7 @@ const GOOGLE_CLIENT_ID = ''; /*GOOGLE_CLIENT_ID*/
 const canGoogle = () => !!(GOOGLE_CLIENT_ID && DESK && DESK.googleSignIn);
 const fbCfg = () => FB_BAKED || S.settings.firebase || null;
 let FB = null, FB_USER = null, FB_ROLE = null, FB_ME = null, FB_ERR = '';
-const REQ_TYPES = {sale:'Sale', payment:'Payment', order:'Stock order', return:'Return', customer:'New customer', received:'Parcel received'};
+const REQ_TYPES = {sale:'Sale', payment:'Payment', order:'Stock order', return:'Return', customer:'New customer', received:'Parcel received', linkpay:'Sales report (link)', linkrecv:'Parcel confirmed (link)'};
 
 /* thin wrapper so the rest of the code does not depend on Firebase details (and can be tested) */
 async function fbLoad(){
@@ -2789,6 +2856,7 @@ function ownerListen(){
     if (apprPrimed) list.filter(x => !old.has(x.id)).forEach(x => { if (S.settings.apprNotify !== false) appNotify('Approval needed', `${x.byName}: ${x.label}`); toast(`${x.byName} sent a change for approval`); });
     apprPrimed = true; if (route() === 'approvals') render(true); else updatePortalBadge(); }));
   OWN.riderTok = new Set(); setTimeout(riderListen, 1500);
+  OWN.rlTok = new Set(); OWN.lacts = {}; OWN.lreqs = {}; OWN.rlSig = {}; OWN.rlPrimed = {}; setTimeout(rlListen, 1800);
   let jobsPrimed = false;
   OWN.unsubs.push(FB.listen('applications', 'kind', 'job', list => { const old = new Set((OWN.jobApps || []).map(x => x.id)); OWN.jobApps = list.sort((a, b) => (b.at || '').localeCompare(a.at || ''));
     if (jobsPrimed) list.filter(x => !old.has(x.id)).forEach(x => { appNotify('New job application', `${x.name}: ${x.positionTitle || ''} (${x.type === 'pt' ? 'part time' : 'full time'})`); toast(`New job application from ${x.name}`); });
@@ -2825,7 +2893,7 @@ async function autoSale(rid, q){
     catch(e) { await FB.update(path, {status:'pending', auto:false, autoNote:String(e.message || e).slice(0, 200)}).catch(() => {}); toast(`${rName(rid)}'s sale needs your check: ${e.message || e}`, true); } }
   finally { setTimeout(() => OWN.auto.delete(q.id), 120000); }
 }
-const pendingAll = () => Object.entries(OWN.reqs).flatMap(([rid, l]) => l.map(q => ({...q, rid}))).sort((a, b) => (a.at || '').localeCompare(b.at || ''));
+const pendingAll = () => [...Object.entries(OWN.reqs).flatMap(([rid, l]) => l.map(q => ({...q, rid}))), ...Object.values(OWN.lreqs || {}).flat()].sort((a, b) => (a.at || '').localeCompare(b.at || ''));
 function updatePortalBadge(){ const fb = (OWN.ideas || []).filter(x => x.status === 'new').length, fr = (OWN.rates || []).filter(x => !x.seen).length; document.querySelectorAll('a[href="#feedback"]').forEach(a => a.dataset.badge = fb || ''); document.querySelectorAll('a[href="#ratings"]').forEach(a => a.dataset.badge = fr || ''); document.querySelectorAll('a[href="#resapps"]').forEach(a => a.dataset.badge = (OWN.apps || []).length || ''); const hj = (OWN.jobApps || []).filter(x => x.status === 'new').length; document.querySelectorAll('a[href="#hiring"]').forEach(a => a.dataset.badge = hj || ''); const ap = (OWN.approvals || []).length; document.querySelectorAll('a[href="#approvals"]').forEach(a => a.dataset.badge = ap || ''); const n = pendingAll().length + (OWN.apps || []).length + (OWN.orders || []).filter(o => o.status === 'new').length + Object.values(OWN.shopReqs || {}).flat().length; document.querySelectorAll('a[href="#portal"]').forEach(a => a.dataset.badge = n || ''); }
 function snapshotFor(rid){
   const r = S.resellers[rid], C = compute(), a = C.acc[rid] || {sales:0, remit:0, earned:0, paid:0, net:0}, st = statement(rid);
@@ -2836,7 +2904,7 @@ function snapshotFor(rid){
     statement:st.rows.slice(-40).map(e => ({date:e.date, text:e.text, dr:r2(e.dr), cr:r2(e.cr), bal:r2(e.bal)})), recruits:kids, nextDue:nextDueDate(), settleDay:sDay(), graceDay:num(S.settings.graceDay) || 15,
     parcels:Object.values(S.dispatches).filter(d => d.resellerId === rid).sort((x, y) => (y.date || '').localeCompare(x.date || '') || (y.no || '').localeCompare(x.no || '')).slice(0, 15).map(d => ({id:d.id, no:d.no || '', date:d.date || '', courier:d.method === 'hand' ? 'Delivered by hand' : (d.courier || ''), waybill:d.waybill || '', status:d.status || 'dispatched', deliveredDate:d.deliveredDate || '', items:(d.lines || []).map(l => ({name:pName(l.productId), qty:num(l.qty), price:num(l.unitPrice), gift:!!l.gift}))})),
     month:(() => { const rows = boardRows(today().slice(0, 7)), i = rows.findIndex(x => x.r.id === rid), me = rows[i] || {b:0, t:targetOf(r)}; return {label:monthLabel(today().slice(0, 7)), bottles:me.b, target:me.t, rank:me.b ? i + 1 : 0, sellers:rows.filter(x => x.b > 0).length}; })(),
-    badges:badgesFor(rid, C).map(([icon, text]) => ({icon, text})), lowHeld:num(S.settings.lowHeld ?? 2), payslips:resSlips(rid), maxMarkup:num(S.settings.adMarkup ?? 15), festive:S.settings.festive || 'auto', festOff:S.settings.festOff || [], festIcon:S.settings.festIcon !== false, credit:(c => ({limit:c.limit, used:c.used, available:c.limit ? c.available : 0}))(creditOf(rid, C)),
+    badges:badgesFor(rid, C).map(([icon, text]) => ({icon, text})), lowHeld:num(S.settings.lowHeld ?? 2), payslips:resSlips(rid), maxMarkup:num(S.settings.adMarkup ?? 15), festive:S.settings.festive || 'auto', festOff:S.settings.festOff || [], festIcon:S.settings.festIcon !== false, creditLimit:(c => ({limit:c.limit, used:c.used, available:c.limit ? c.available : 0}))(creditOf(rid, C)),
     business:S.settings.businessName || 'Infinity Fragrances', businessPhone:S.settings.phone || '', tagline:S.settings.tagline || '', updatedAt:nowISO()};
 }
 function publicDocs(){
@@ -2875,11 +2943,12 @@ PAGES.portal = () => {
   const rs = sortedRes(true), pend = pendingAll(), last = OWN.published || (() => { try { return localStorage.getItem('if-published') || ''; } catch(e) { return ''; } })();
   return head('Online reseller accounts', `Signed in as ${esc(FB_USER.email)}. Resellers see only their own stock and statement. Their sales, payments, orders and returns wait here for your approval.`, btn('Update resellers now', 'fbPublish', {}, 'pri') + (canGoogle() && !(FB.providers?.() || []).includes('google.com') ? btn('Link Google account', 'fbLinkGoogle', {}, 'ghost') : '') + btn('Sign out', 'fbOut', {}, 'ghost'))
     + `<div class="tiles">${tile('Waiting for approval', int(pend.length), '', pend.length > 0)}${tile('Resellers with a login', `${rs.filter(r => r.portalUid).length} of ${rs.length}`)}${tile('Last update sent', last ? fmtDateTime(last) : 'Never')}</div>`
-    + `<div class="card"><h2>Waiting for your approval</h2>${pend.length ? `<div class="tw"><table class="t"><thead><tr><th style="width:34px"><input type="checkbox" id="rq-all" aria-label="Select all"></th><th>When</th><th>Reseller</th><th>Type</th><th>Details</th><th></th></tr></thead><tbody>${pend.map(q => `<tr><td><input type="checkbox" class="rq-sel" data-rid="${q.rid}" data-id="${q.id}" aria-label="Select"></td><td class="small">${esc(fmtDateTime(q.at))}</td><td><b>${esc(rName(q.rid))}</b></td><td><span class="pill acc">${REQ_TYPES[q.type] || esc(q.type)}</span></td><td class="small">${reqText(q)}</td><td><div class="actions">${(q.type === 'order' ? btn('Review', 'reqReview', {rid:q.rid, id:q.id}, 'sm pri') : btn('Approve', 'reqOk', {rid:q.rid, id:q.id}, 'sm pri'))}${btn('Reject', 'reqNo', {rid:q.rid, id:q.id}, 'sm ghost danger')}</div></td></tr>`).join('')}</tbody></table></div><div class="actions" style="margin-top:10px">${btn('Approve selected', 'reqOkSel', {}, 'sm pri')}${btn('Reject selected', 'reqNoSel', {}, 'sm ghost danger')}</div>` : '<p class="mut">Nothing waiting.</p>'}</div>` + appsCard()
+    + `<div class="card"><h2>Waiting for your approval</h2>${pend.length ? `<div class="tw"><table class="t"><thead><tr><th style="width:34px"><input type="checkbox" id="rq-all" aria-label="Select all"></th><th>When</th><th>Reseller</th><th>Type</th><th>Details</th><th></th></tr></thead><tbody>${pend.map(q => `<tr><td>${q.link ? '' : `<input type="checkbox" class="rq-sel" data-rid="${q.rid}" data-id="${q.id}" aria-label="Select">`}</td><td class="small">${esc(fmtDateTime(q.at))}</td><td><b>${esc(rName(q.rid))}</b></td><td><span class="pill acc">${REQ_TYPES[q.type] || esc(q.type)}</span></td><td class="small">${reqText(q)}</td><td><div class="actions">${(q.type === 'order' ? btn('Review', 'reqReview', {rid:q.rid, id:q.id}, 'sm pri') : btn(q.type === 'linkpay' ? 'Review and approve' : 'Approve', 'reqOk', {rid:q.rid, id:q.id}, 'sm pri'))}${btn('Reject', 'reqNo', {rid:q.rid, id:q.id}, 'sm ghost danger')}</div></td></tr>`).join('')}</tbody></table></div><div class="actions" style="margin-top:10px">${btn('Approve selected', 'reqOkSel', {}, 'sm pri')}${btn('Reject selected', 'reqNoSel', {}, 'sm ghost danger')}</div>` : '<p class="mut">Nothing waiting.</p>'}</div>` + appsCard()
     + `<div class="card"><h2>Reseller logins</h2><div class="tw"><table class="t"><thead><tr><th>Reseller</th><th>Login ID</th><th></th></tr></thead><tbody>${rs.map(r => `<tr><td><b>${esc(r.name)}</b><div class="small mut">${esc(tName(r.townId))}</div></td><td>${r.portalLogin ? `<code>${esc(r.portalLogin)}</code>` : '<span class="mut">No login yet</span>'}</td><td><div class="actions">${r.portalUid ? btn('New PIN / login', 'accReset', {id:r.id}, 'sm ghost') + btn('Remove access', 'accRemove', {id:r.id}, 'sm ghost danger') : btn('Create login', 'accNew', {id:r.id}, 'sm pri')}</div></td></tr>`).join('')}</tbody></table></div>
       <p class="hint">Resellers install the Infinity Fragrances app on Android, choose "I'm a reseller", and sign in with their login ID and PIN.</p></div>` + rulesCard();
 };
 function reqText(q){
+  if (q.link) return rlReqText(q);
   const L = (q.lines || []).map(l => `${esc(l.name || pName(l.productId))} × ${num(l.qty)}${l.price ? ' @ ' + money(l.price) : ''}`).join(', ');
   if (q.type === 'order' && q.rid && !q.approvedLines) { const cr = creditOf(q.rid), v = (q.lines || []).reduce((t, l) => t + num(l.qty) * num(l.price || S.products[l.productId]?.sellPrice), 0); if (cr.limit && v > cr.available + 0.009) return `${L} <span class="pill bad">over credit limit by ${money(v - cr.available)}</span>`; }
   if (q.type === 'order' && q.approvedLines) return `Asked: ${L}<br><b>Approved:</b> ${q.approvedLines.map(l => `${esc(l.name)} × ${l.qty}`).join(', ')}${(q.unavailable || []).length ? `<br><span class="neg">Not available: ${q.unavailable.map(esc).join(', ')}</span>` : ''}`;
@@ -2890,7 +2959,7 @@ function reqText(q){
   return `${L}${q.note ? ` · “${esc(q.note)}”` : ''}`;
 }
 async function reqApprove(rid, id, bulk, qObj){
-  const q = qObj || (OWN.reqs[rid] || []).find(x => x.id === id); if (!q) return; const r = S.resellers[rid];
+  const q = qObj || findReq(rid, id); if (!q) return; if (q.link) return rlApprove(q); const r = S.resellers[rid];
   try {
     const C = compute(), h = C.held[rid] || {};
     if (q.type === 'sale') {
@@ -2917,6 +2986,7 @@ async function reqApprove(rid, id, bulk, qObj){
   } catch(e) { if (bulk) throw e; toast(fbMsg(e), true); }
 }
 function reqReject(rid, id){
+  const lq = (OWN.lreqs?.[rid] || []).find(x => x.id === id); if (lq) return rlReject(lq);
   modal('Reject request', `<label for="f-rr">Reason (the reseller will see this)<input id="f-rr" name="why" required placeholder="e.g. Payment not received on MoMo"></label>`, async d => { await FB.update(`portal/${rid}/requests/${id}`, {status:'rejected', reason:d.why.trim(), decidedAt:FB.now()}); logNote('decline', 'requests', `${rName(rid)}: request declined (${d.why.trim()})`); fbNotify(S.resellers[rid]?.portalUid, `A request was not approved: ${d.why.trim()}`); toast('Rejected'); }, {label:'Reject'});
 }
 async function accCreate(rid, reset){
@@ -2979,7 +3049,7 @@ function resUI(){
     const banner = dd <= 3 && (s.owes > 0 || s.heldBottles > 0) ? `<div class="card" style="border-left:5px solid var(--gold)"><b>Settlement ${dd === 0 ? 'is today' : `in ${dd} day${dd === 1 ? '' : 's'}`} (${fmtDate(s.nextDue)}).</b> Report what you sold and pay${s.owes ? ` <b>${money(s.owes)}</b>` : ' what you owe'} (keep your commission). ${btn('Report payment', 'resTab', {k:'pay'}, 'sm pri')}</div>` : '';
     const low = s.heldBottles <= num(s.lowHeld ?? 2) ? `<div class="card" style="border-left:5px solid var(--s1)"><b>You are running low${s.heldBottles ? ` (${s.heldBottles} left)` : ''}.</b> Order more before your customers go elsewhere. ${btn('Order stock', 'resTab', {k:'order'}, 'sm pri')}</div>` : '';
     const prog = `<div class="card"><h2>${esc(mo.label || 'This month')}</h2><div style="background:var(--line);border-radius:8px;height:14px;overflow:hidden"><div style="width:${pc}%;height:100%;background:${pc >= 100 ? 'var(--s3)' : 'var(--gold)'}"></div></div><p style="margin:6px 0 10px"><b>${int(mo.bottles)}</b> of ${int(mo.target)} bottles${pc >= 100 ? ' · <b>Target hit! 🎯</b>' : mo.target ? ` · ${int(Math.max(0, mo.target - mo.bottles))} to go` : ''}${mo.rank ? ` · #${mo.rank} of ${mo.sellers} sellers` : ''}</p>${(s.badges || []).length ? `<div style="display:flex;gap:6px;flex-wrap:wrap">${s.badges.map(b => `<span class="pill">${b.icon} ${esc(b.text)}</span>`).join('')}</div>` : '<p class="small mut">Sell bottles to earn badges.</p>'}</div>`;
-    body = banner + low + prog + `<div class="tiles">${tile('Perfume with you', int(s.heldBottles) + ' bottles')}${tile('Worth at selling price', money(s.heldValue))}${tile('You owe now', money(s.owes), s.credit ? `we owe you ${money(s.credit)}` : '', s.owes > 0)}${tile('Next settlement', fmtDate(s.nextDue), `late after the ${ord(s.graceDay)}`)}</div>
+    body = banner + low + prog + `<div class="tiles">${tile('Perfume with you', int(s.heldBottles) + ' bottles')}${tile('Worth at selling price', money(s.heldValue))}${tile('You owe now', money(s.owes), typeof s.credit === 'number' && s.credit > 0 ? `we owe you ${money(s.credit)}` : '', s.owes > 0)}${tile('Next settlement', fmtDate(s.nextDue), `late after the ${ord(s.graceDay)}`)}</div>
       <div class="card"><h2>Your perfumes</h2>${s.held.length ? `<div class="tw"><table class="t"><thead><tr><th>Perfume</th><th class="n">With you</th><th class="n">Price</th></tr></thead><tbody>${resAvail().map(x => `<tr><td>${esc(x.name)}${x.size ? ' ' + esc(x.size) + 'ml' : ''}</td><td class="n">${x.qty}${x.avail !== x.qty ? `<div class="small mut">${x.qty - x.avail} waiting</div>` : ''}</td><td class="n"><b>${money(x.price)}</b></td></tr>`).join('')}</tbody></table></div>` : '<p class="mut">No perfume with you right now. Use “Order / return” to ask for stock.</p>'}</div>
       ${reqListCard('res', RES.reqs, ST)}
       <p class="hint">Updated by ${esc(s.business)} on ${esc(fmtDateTime(s.updatedAt))}.</p>` + resShortcuts();
@@ -3249,7 +3319,7 @@ function catalogHTML(){
       <div class="cat-name">${esc(p.name)}${p.size ? ` <span class="small mut">${esc(p.size)}ml</span>` : ''}</div>
       <div class="cat-price">${p.promo ? `<s class="small mut">${money(p.price)}</s> <b>${money(p.promo.price)}</b>` : `<b>${money(p.price)}</b>`}</div>
       <div class="stepper"><button type="button" data-act="catMinus" data-id="${p.id}" aria-label="One less">−</button><span id="cq-${p.id}">${q}</span><button type="button" data-act="catPlus" data-id="${p.id}" aria-label="One more">+</button></div></div>`; };
-  const cr = RES.snap?.credit;
+  const cr = (RES.snap?.creditLimit || (RES.snap?.credit && typeof RES.snap.credit === 'object' ? RES.snap.credit : null));
   return `<div class="card"><h2>Order stock</h2><p class="hint">Tap + to add bottles. ${esc(bizName())} approves your order and sends the parcel.</p>${cr && cr.limit ? `<p class="small"><b>Your credit:</b> limit ${money(cr.limit)} · using ${money(cr.used)} · <b>available ${money(cr.available)}</b></p>` : ''}
     <input id="cat-q" type="search" placeholder="Search perfumes…" style="width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:10px;font-size:16px;margin-bottom:8px;background:var(--surface);color:var(--ink)">
     ${cats.length > 1 ? `<div class="seg" style="flex-wrap:wrap;margin-bottom:10px"><button type="button" data-act="catCat" data-k="" class="on">All</button>${cats.map(c => `<button type="button" data-act="catCat" data-k="${esc(c)}">${esc(c)}</button>`).join('')}</div>` : ''}
@@ -3475,6 +3545,21 @@ service cloud.firestore {
         allow read, update, delete: if isAdmin();
       }
     }
+    match /rlinks/{t} {
+      allow get: if true;
+      allow list, write: if isAdmin();
+      match /acts/{id} {
+        allow create: if get(/databases/$(database)/documents/rlinks/$(t)).data.on == true
+          && request.resource.data.keys().hasOnly(['kind', 'no', 'chk', 'at', 'date', 'lines', 'amount', 'mode', 'ref', 'proof', 'note', 'dispatchId', 'due', 'done'])
+          && request.resource.data.kind in ['settle', 'received', 'ping'] && request.resource.data.done == false
+          && request.resource.data.chk is string && request.resource.data.chk.size() < 80
+          && (!('lines' in request.resource.data) || (request.resource.data.lines is list && request.resource.data.lines.size() < 80))
+          && (!('proof' in request.resource.data) || (request.resource.data.proof is string && request.resource.data.proof.size() < 300000))
+          && (!('note' in request.resource.data) || (request.resource.data.note is string && request.resource.data.note.size() < 500))
+          && (!('ref' in request.resource.data) || (request.resource.data.ref is string && request.resource.data.ref.size() < 100));
+        allow read, update, delete: if isAdmin();
+      }
+    }
     match /store/{doc} {
       allow read: if true;
       allow write: if isAdmin();
@@ -3503,6 +3588,146 @@ service cloud.firestore {
 }`;
 const rulesCard = () => `<details class="card"><summary><b>Firebase security rules</b> <span class="small mut">(paste these in Firebase → Firestore Database → Rules → Publish)</span></summary><pre class="small" style="white-space:pre-wrap;max-height:300px;overflow:auto;background:var(--soft);padding:10px;border-radius:8px">${esc(FS_RULES)}</pre><div class="actions">${btn('Copy rules', 'copyRules', {}, 'sm pri')}</div></details>`;
 
+
+/* ======================= 2.20: reseller links (for resellers who do not use the app) ======================= */
+const RL_URL = 'https://infinitytimetable.github.io/infinity-fragrances-updates/reseller/';
+const RL_MODES = {cash:'Cash', mtn:'MTN MoMo', airtel:'Airtel Money', bank:'Bank'};
+const RL_CH = {cash:'cash', mtn:'momo', airtel:'momo', bank:'bank'};
+const rlPin = r => String(r?.phone || '').replace(/\D/g, '').slice(-4);
+const rlLinked = () => sortedRes(true).filter(r => r.linkToken && r.linkOn !== false);
+const rlB64 = u8 => { let s = ''; u8.forEach(b => { s += String.fromCharCode(b); }); return btoa(s); };
+const RLK = {};
+async function rlKey(token, pin){
+  const id = token + '|' + pin; if (RLK[id]) return RLK[id];
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveKey']);
+  return RLK[id] = await crypto.subtle.deriveKey({name:'PBKDF2', salt:new TextEncoder().encode('if-rl|' + token), iterations:120000, hash:'SHA-256'}, base, {name:'AES-GCM', length:256}, false, ['encrypt']);
+}
+const rlChk = (token, pin) => sha('chk|' + token + '|' + pin);
+function rlCol(c){ return c === 'moves' || c === 'cash' || c === 'dispatches' || c === 'resellers' || c === 'products'; }
+function rlSched(){ try { if (!ADM() || !FB || FB_ME?.limited || !rlLinked().length) return; clearTimeout(OWN.rlT); OWN.rlT = setTimeout(() => rlPublishAll(), 4000); } catch(e) {} }
+async function rlPublishAll(force){ for (const r of rlLinked()) { try { await rlPublish(r.id, force); } catch(e) {} } }
+function rlHist(rid){
+  const by = {}, A = m => by[m] || (by[m] = {month:m, bottles:0, value:0, comm:0, paid:0});
+  for (const m of Object.values(S.moves)) if (m.kind === 'sale' && m.resellerId === rid && m.date) { const o = A(m.date.slice(0, 7)); o.bottles += num(m.qty); o.value += num(m.qty) * num(m.unitPrice); (m.comm || []).forEach(c => { if (c.rid === rid && c.level === 0) o.comm += num(c.amount); }); }
+  for (const c of Object.values(S.cash)) if (c.resellerId === rid && c.kind === 'in' && c.date) A(c.date.slice(0, 7)).paid += num(c.amount);
+  return Object.values(by).sort((a, b) => b.month.localeCompare(a.month)).slice(0, 12).map(o => ({month:o.month, label:monthLabel(o.month), bottles:o.bottles, value:r2(o.value), comm:r2(o.comm), paid:r2(o.paid)}));
+}
+function rlPayload(rid){
+  const r = S.resellers[rid], C = compute(), a = C.acc[rid] || {net:0};
+  const held = heldOf(rid, C).map(([p, q]) => { const pr = S.products[p] || {}, price = resPrice(rid, p, C); return {p, name:pr.name || pName(p), size:pr.size || '', qty:q, price, per:Math.round(ownComm(r, 1, price, C.hr?.[rid]?.[p]) * 10000) / 10000}; }).sort((x, y) => x.name.localeCompare(y.name));
+  const parcels = Object.values(S.dispatches).filter(d => d.resellerId === rid).sort((x, y) => (y.date || '').localeCompare(x.date || '') || (y.no || '').localeCompare(x.no || '')).slice(0, 10).map(d => ({id:d.id, no:d.no || '', date:d.date || '', courier:d.method === 'hand' ? 'Delivered by hand' : (d.courier || ''), waybill:d.waybill || '', status:d.status === 'delivered' ? 'delivered' : 'dispatched', deliveredDate:d.deliveredDate || '', recvNote:d.recvNote || '', recvLines:Object.fromEntries((d.recvLines || []).map(l => [l.productId, num(l.qty)])), items:(d.lines || []).map(l => ({p:l.productId, name:pName(l.productId), qty:num(l.qty), gift:!!l.gift}))}));
+  const pend = (OWN.lreqs?.[rid] || []).map(x => ({no:x.no || x.id, kind:x.kind, at:x.at || '', status:'pending', reason:'', decided:''}));
+  const reports = [...pend, ...(r.linkLog || [])].sort((x, y) => (y.at || '').localeCompare(x.at || '')).slice(0, 14);
+  return {name:r.name, town:tName(r.townId), phone:r.phone || '', biz:bizName(), bizPhone:S.settings.phone || '', whatsapp:S.settings.storeWhatsapp || S.settings.phone || '', held, net:r2(a.net), parcels, hist:rlHist(rid), reports};
+}
+async function rlPublish(rid, force){
+  const r = S.resellers[rid]; if (!r?.linkToken || !FB || !ADM() || FB_ME?.limited) return {err:'not ready'};
+  const pin = rlPin(r), on = r.linkOn !== false, doc = {on, biz:bizName(), v:1};
+  if (on && pin.length === 4) {
+    const pl = rlPayload(rid), sig = r.linkToken + '|' + pin + '|' + JSON.stringify(pl); OWN.rlSig = OWN.rlSig || {};
+    if (!force && OWN.rlSig[rid] === sig) return {ok:true, skipped:true};
+    try { const key = await rlKey(r.linkToken, pin), iv = crypto.getRandomValues(new Uint8Array(12)); pl.at = nowISO(); const ct = await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, new TextEncoder().encode(JSON.stringify(pl))); doc.iv = rlB64(iv); doc.ct = rlB64(new Uint8Array(ct)); doc.at = pl.at; OWN.rlSig[rid] = sig; } catch(e) { return {err:'Could not lock the figures: ' + (e.message || e)}; }
+  }
+  try { await FB.set('rlinks/' + r.linkToken, doc); return {ok:true}; } catch(e) { return {err:fbMsg(e)}; }
+}
+function rlRulesHelp(err){
+  return `<div class="hint" style="border-left:4px solid var(--bad);padding-left:10px"><b>One quick step in Firebase is needed.</b> (${esc(String(err).slice(0, 120))})<ol class="small" style="padding-left:18px;margin:6px 0">
+    <li>Tap <b>Copy rules</b> below.</li><li>Open <b>console.firebase.google.com</b> → your project → <b>Firestore Database</b> → <b>Rules</b>.</li><li>Select everything there, paste, then tap <b>Publish</b>.</li><li>Come back and tap <b>Test the link</b>.</li></ol>${btn('Copy rules', 'copyRules', {}, 'sm pri')}</div>`;
+}
+const rlNewToken = () => (uid() + uid()).replace(/[^a-z0-9]/g, '').slice(0, 24);
+const rlUrl = r => RL_URL + '#k=' + r.linkToken;
+const rlFirst = r => String(r.name || '').split(' ')[0];
+const rlMsg = r => `Hello ${rlFirst(r)}, this is your personal ${bizName()} link. Open it to report what you sold, pay, and confirm stock you receive. When it asks, type the last 4 digits of your phone number. Keep it private.\n${rlUrl(r)}`;
+async function rlLink(rid){
+  let r = S.resellers[rid]; if (!r) return;
+  if (!FB || !ADM()) return toast('Sign in to your admin account first (Resellers → Requests & logins).', true);
+  if (!r.linkToken) { r = await put('resellers', {...r, linkToken:rlNewToken(), linkOn:true}); }
+  const res = await rlPublish(rid, true); rlListen(); rlLinkModal(rid, res);
+}
+function rlLinkModal(rid, res){
+  const r = S.resellers[rid], url = rlUrl(r), pin = rlPin(r), waiting = (OWN.lreqs?.[rid] || []).length;
+  modal(`${esc(r.name)}: reseller link`, `<p class="small" style="word-break:break-all"><a href="${url}" target="_blank" rel="noopener">${url}</a></p>
+    ${pin.length === 4 ? `<p class="hint">When they open it, they type the last 4 digits of their phone number: <b>${pin}</b>. They tick what they sold, say how they are paying, and confirm parcels. Nothing changes in your books until you approve it.${waiting ? ` <b>${waiting} report${waiting === 1 ? '' : 's'} waiting in Requests.</b>` : ''}</p>` : `<p class="neg"><b>Add their phone number first.</b> The link is locked with the last 4 digits of it. ${btn('Edit reseller', 'resEdit', {id:rid}, 'sm')}</p>`}
+    ${res?.err ? rlRulesHelp(res.err) : ''}
+    <div class="actions">${r.phone && pin.length === 4 ? `<a class="btn pri" target="_blank" rel="noopener" href="${waLink(r.phone, rlMsg(r))}">Send on WhatsApp</a>` : ''}${btn('Copy link', 'copyTxt', {t:url})}${btn('Test the link', 'rlTest', {id:rid}, 'ghost')}${r.linkOn === false ? btn('Turn link back on', 'rlOn', {id:rid, v:'1'}) : btn('Turn link off', 'rlOn', {id:rid, v:''}, 'ghost')}${btn('Make a new link', 'rlNew', {id:rid}, 'ghost')}</div><div id="rl-test" class="small" style="margin-top:8px"></div>`, null, {nofocus:true});
+}
+async function rlTest(rid){
+  const r = S.resellers[rid], box = $('#rl-test'); if (!r?.linkToken) return; if (box) box.textContent = 'Testing…';
+  const res = await rlPublish(rid, true); if (res.err) { if (box) box.innerHTML = rlRulesHelp(res.err); return; }
+  try { const id = await FB.add(`rlinks/${r.linkToken}/acts`, {kind:'ping', chk:'ping', at:nowISO(), done:false}); try { await FB.del(`rlinks/${r.linkToken}/acts/${id}`); } catch(e) {} if (box) box.innerHTML = '<b style="color:var(--good)">✓ The link is ready. Your resellers can send reports.</b>'; }
+  catch(e) { if (box) box.innerHTML = rlRulesHelp(fbMsg(e)); }
+}
+async function rlOn(rid, on){ const r = S.resellers[rid]; if (!r) return; await put('resellers', {...r, linkOn:on}); const res = await rlPublish(rid, true); rlLinkModal(rid, res); toast(on ? 'Link is on' : 'Link is off'); }
+function rlNew(rid){ const r = S.resellers[rid]; confirmBox(`Make a new link for ${esc(r.name)}? The old link stops working, so send them the new one.`, async () => { const old = r.linkToken; await put('resellers', {...S.resellers[rid], linkToken:rlNewToken(), linkOn:true}); try { if (old) await FB.del('rlinks/' + old); } catch(e) {} const res = await rlPublish(rid, true); rlListen(); rlLinkModal(rid, res); }, 'Make new link'); }
+async function rlMake(rid){ const r = S.resellers[rid]; if (!r) return; if (!FB || !ADM()) return toast('Sign in to your admin account first (Resellers → Requests & logins).', true); if (!r.linkToken) await put('resellers', {...r, linkToken:rlNewToken(), linkOn:true}); await rlPublish(rid, true); rlListen(); rlSendAll(); }
+function rlSendAll(){
+  const C = compute(), rs = sortedRes().filter(r => heldOf(r.id, C).length || (C.acc[r.id]?.net || 0) > 0.009 || r.linkToken);
+  const msg = r => `Hello ${rlFirst(r)}, it is settlement time (the ${ord(sDay())}). Open your personal ${bizName()} link, tick what you sold and tell us how you are paying: ${rlUrl(r)}\nWhen it asks, type the last 4 digits of your phone number.`;
+  const row = r => { const pin = rlPin(r), ok = r.linkToken && r.linkOn !== false && pin.length === 4 && r.phone, held = heldOf(r.id, C).reduce((t, [, v]) => t + v, 0);
+    return `<li><span><b>${esc(r.name)}</b> <span class="small mut">${esc(tName(r.townId))} · ${held} bottles</span></span><span class="actions">${ok ? `<a class="btn sm pri" target="_blank" rel="noopener" href="${waLink(r.phone, msg(r))}">WhatsApp</a>` : (!r.phone || pin.length < 4) ? '<span class="small neg">Add phone number</span>' : btn('Make link', 'rlMake', {id:r.id}, 'sm')}${btn('Link', 'rlLink', {id:r.id}, 'sm ghost')}</span></li>`; };
+  modal('Send reseller links', `<p class="hint">Each reseller gets one personal link. They open it, type the last 4 digits of their phone number, tick what they sold and say how they are paying. You approve it in Requests.</p><ul class="list">${rs.map(row).join('') || '<li class="mut">No resellers hold stock yet.</li>'}</ul>`, null, {nofocus:true, wide:true});
+}
+function rlDispBtn(d){
+  const r = S.resellers[d.resellerId]; if (!r || d.toLoc) return '';
+  if (r.linkToken && r.linkOn !== false && rlPin(r).length === 4 && r.phone) return `<a class="btn sm" target="_blank" rel="noopener" href="${waLink(r.phone, `Hello ${rlFirst(r)}, your parcel ${d.no} is on the way. When it reaches you, open your personal link and confirm what you received: ${rlUrl(r)}\nType the last 4 digits of your phone number when it asks.`)}">Ask them to confirm</a>`;
+  return btn('Reseller link', 'rlLink', {id:r.id}, 'sm ghost');
+}
+/* ---- listening for what resellers send ---- */
+const findReq = (rid, id) => (OWN.reqs[rid] || []).find(x => x.id === id) || (OWN.lreqs?.[rid] || []).find(x => x.id === id);
+function rlListen(){
+  if (!FB || FB_ME?.limited || !ADM()) return; OWN.rlTok = OWN.rlTok || new Set(); OWN.lreqs = OWN.lreqs || {};
+  rlLinked().filter(r => !OWN.rlTok.has(r.linkToken)).forEach(r => { const token = r.linkToken; OWN.rlTok.add(token); OWN.unsubs.push(FB.listen(`rlinks/${token}/acts`, 'done', false, list => rlActs(r.id, token, list))); });
+  if (!OWN.rlBoot) { OWN.rlBoot = 1; setTimeout(() => rlPublishAll(true), 3500); }
+}
+function rlValid(rid, a){
+  const r = S.resellers[rid], okLine = l => l && S.products[l.p] && Number.isInteger(l.q) && l.q >= 0 && l.q <= 5000;
+  if (a.kind === 'settle') return Array.isArray(a.lines) && a.lines.every(l => okLine(l) && l.q > 0) && num(a.amount) >= 0 && num(a.amount) < 1e8 && !!RL_MODES[a.mode];
+  if (a.kind === 'received') { const dn = S.dispatches[a.dispatchId]; return !!dn && dn.resellerId === rid && Array.isArray(a.lines) && a.lines.every(okLine); }
+  return false;
+}
+async function rlActs(rid, token, list){
+  const r = S.resellers[rid]; if (!r || r.linkToken !== token) return;
+  const pin = rlPin(r), good = pin.length === 4 ? await rlChk(token, pin) : null;
+  const real = list.filter(a => a.kind !== 'ping');
+  real.filter(a => a.chk !== good && Date.now() - Date.parse(a.at || 0) > 2 * 86400000).forEach(a => { try { FB.del(`rlinks/${token}/acts/${a.id}`); } catch(e) {} });
+  const pend = real.filter(a => good && a.chk === good && rlValid(rid, a)).sort((x, y) => (x.at || '').localeCompare(y.at || ''));
+  OWN.lreqs = OWN.lreqs || {}; OWN.rlPrimed = OWN.rlPrimed || {}; OWN.rlSeen = OWN.rlSeen || new Set();
+  OWN.lreqs[rid] = pend.map(a => ({...a, date:/^\d{4}-\d{2}-\d{2}$/.test(a.date || '') ? a.date : today(), proof:/^data:image\/(jpeg|png);base64,[A-Za-z0-9+\/=]+$/.test(a.proof || '') ? a.proof : '', ref:String(a.ref || '').slice(0, 80), note:String(a.note || '').slice(0, 400), rid, token, link:true, type:a.kind === 'received' ? 'linkrecv' : 'linkpay'}));
+  pend.forEach(a => { if (OWN.rlSeen.has(a.id)) return; OWN.rlSeen.add(a.id); if (OWN.rlPrimed[rid]) { const t = a.kind === 'received' ? `${r.name} confirmed a parcel` : `${r.name} sent a sales report`; appNotify('New request', t); toast(t + ': it is waiting for your approval'); } });
+  OWN.rlPrimed[rid] = true; rlSched();
+  if (route() === 'portal') render(true); else updatePortalBadge();
+}
+function rlReqText(q){
+  if (q.type === 'linkrecv') {
+    const dn = S.dispatches[q.dispatchId], short = (q.lines || []).map(l => { const it = (dn?.lines || []).find(x => x.productId === l.p); return it && num(l.q) < num(it.qty) ? `${num(it.qty) - num(l.q)} × ${esc(pName(l.p))}` : ''; }).filter(Boolean);
+    return `Parcel <b>${esc(dn?.no || '?')}</b> received${q.date ? ' on ' + fmtDate(q.date) : ''} ${short.length ? `<span class="pill bad">short: ${short.join(', ')}</span>` : '<span class="pill good">all items</span>'}${q.note ? `<br>“${esc(q.note)}”` : ''}`;
+  }
+  const C = compute(); let val = 0, own = 0;
+  (q.lines || []).forEach(l => { const price = resPrice(q.rid, l.p, C); val += num(l.q) * price; own += commFor(q.rid, num(l.q), price, C.hr?.[q.rid]?.[l.p]).find(c => c.level === 0)?.amount || 0; });
+  const a = C.acc[q.rid] || {net:0}, should = Math.max(0, r2(a.net + val - own)), paid = num(q.amount), diff = r2(should - paid);
+  return `${(q.lines || []).map(l => `${esc(pName(l.p))} × ${num(l.q)}`).join(', ') || 'No bottles reported'}<br>Value ${money(val)} − their commission ${money(own)} → they should pay <b>${money(should)}</b><br>Paid <b>${money(paid)}</b> by ${esc(RL_MODES[q.mode] || q.mode || '')}${q.ref ? ' · ref ' + esc(q.ref) : ''} ${Math.abs(diff) > 0.009 ? `<span class="pill warn">${diff > 0 ? 'short by ' + money(diff) : 'extra ' + money(-diff)}</span>` : '<span class="pill good">matches</span>'}${q.proof ? ' ' + btn('📎 View photo', 'reqProof', {rid:q.rid, id:q.id}, 'sm ghost') : ''}${q.note ? `<br>“${esc(q.note)}”` : ''}`;
+}
+async function rlDecide(a, status, reason){
+  try { await FB.update(`rlinks/${a.token}/acts/${a.id}`, {done:true, status, reason:reason || '', proof:'', decided:today()}); } catch(e) { toast(fbMsg(e), true); throw e; }
+  const r = S.resellers[a.rid]; if (!r) return; const e = {no:a.no || a.id, kind:a.kind, at:a.at || '', status, reason:reason || '', decided:today()};
+  await put('resellers', {...r, linkLog:[e, ...(r.linkLog || []).filter(x => x.no !== e.no)].slice(0, 30)});
+  OWN.lreqs[a.rid] = (OWN.lreqs[a.rid] || []).filter(x => x.id !== a.id); updatePortalBadge();
+}
+async function rlApprove(q){
+  const r = S.resellers[q.rid]; if (!r) return;
+  if (q.type === 'linkpay') {
+    const sold = {}; (q.lines || []).forEach(l => { sold[l.p] = (sold[l.p] || 0) + num(l.q); });
+    const ref = ((q.mode === 'mtn' || q.mode === 'airtel' ? RL_MODES[q.mode] + ' ' : '') + (q.ref || '')).trim();
+    settleDayForm(q.rid, {sold, amount:num(q.amount) || '', channel:RL_CH[q.mode] || 'cash', ref, date:q.date || today(), at:q.at, proof:q.proof || '', note:q.note || '', act:q}); return;
+  }
+  const dn = S.dispatches[q.dispatchId]; if (!dn) { toast('That parcel was not found.', true); return; }
+  const short = (q.lines || []).map(l => { const it = (dn.lines || []).find(x => x.productId === l.p); return it && num(l.q) < num(it.qty) ? `${num(it.qty) - num(l.q)} × ${esc(pName(l.p))}` : ''; }).filter(Boolean);
+  const go = async () => { if (dn.status !== 'delivered') await put('dispatches', {...dn, status:'delivered', deliveredDate:q.date || today(), receivedBy:r.name, recvNote:q.note || '', recvLines:(q.lines || []).map(l => ({productId:l.p, qty:num(l.q)}))}); await rlDecide(q, 'approved'); toast('Parcel confirmed'); };
+  if (short.length) confirmBox(`${esc(r.name)} says these were short: ${short.join(', ')}. Mark the parcel as delivered anyway? You will need to sort out the missing bottles with them.`, go, 'Mark delivered'); else await go();
+}
+function rlReject(q){
+  modal('Reject this report', `<label for="f-rr">Reason (the reseller will see this)<input id="f-rr" name="why" required placeholder="e.g. Payment not received on MoMo"></label>`, async d => { await rlDecide(q, 'rejected', d.why.trim()); logNote('decline', 'requests', `${rName(q.rid)}: link report declined (${d.why.trim()})`); toast('Rejected'); }, {label:'Reject'});
+}
 
 /* ======================= reseller adverts (posters & flyers) ======================= */
 const AD_FMT = {status:['WhatsApp status', 1080, 1920], square:['Square post', 1080, 1080], flyer:['Flyer (A5, print)', 1240, 1754]};
@@ -3703,7 +3928,7 @@ async function checkUpdate(manual){
     if (UPD.state === 'ready' && UPD.ver === m.version) { updBar(); return; }
     const txt = await (await fetch(UPD_URL + p.file, {cache:'no-store'})).text();
     if (!(await updVerify(txt, p.sig))) throw Error('The update did not pass its security check, so it was not installed. It will try again later.');
-    const r = await DESK.installUpdateText(txt); if (!r || r.error) { if (r && /already have/.test(r.error)) { UPD.state = 'latest'; if (manual) toast(r.error); return; } throw Error((r && r.error) || 'Could not install the update.'); }
+    const r = await DESK.installUpdateText(txt, p.sig); if (!r || r.error) { if (r && /already have/.test(r.error)) { UPD.state = 'latest'; if (manual) toast(r.error); return; } throw Error((r && r.error) || 'Could not install the update.'); }
     UPD = {...UPD, state:'ready', ver:m.version, notes:m.notes || []}; logWrite && logWrite('update', `Downloaded version ${m.version}`); updBar();
   } catch(e) { if (manual) toast(/fetch|network|Failed/i.test(e.message) ? 'Could not reach the update server. Check your internet.' : e.message, true); }
   finally { UPD.busy = false; try { localStorage.setItem('if-updchk', nowISO()); } catch(e) {} if (route() === 'setup' || RES.tab === 'account') { const c = $('#upd-card'); if (c) c.outerHTML = updCard(); } }
@@ -5016,14 +5241,14 @@ function fillLines(f, lines){
 }
 
 /* ---------- daily cash-up ---------- */
-function expectedFor(loc, date){
+function cashupExpected(loc, date){
   const by = {cash:0, momo:0, bank:0}; let sales = 0, n = 0;
   Object.values(S.receipts).forEach(r => { if (r.date !== date) return; const l = r.shop || (r.seller ? null : (r.loc || 'main')); if (l !== loc) return; n++; sales += num(r.total); if (by[r.pay] != null) by[r.pay] += num(r.total); });
   Object.values(S.cash).forEach(c => { if (c.date === date && c.kind === 'out' && (c.shop || 'main') === loc && c.category === 'Shop expense' && by[c.channel] != null) by[c.channel] -= num(c.amount); });
   return {by, sales:r2(sales), n};
 }
 function cashupForm(loc){
-  const e = expectedFor(loc, today()), l = shopOf(loc) || {name:'Main till'};
+  const e = cashupExpected(loc, today()), l = shopOf(loc) || {name:'Main till'};
   modal(`Close the day · ${l.name}`, `<p class="hint">Count the money now. The app compares it with today's ${e.n} sale${e.n === 1 ? '' : 's'} (${money(e.sales)}).</p>
     <div class="grid2">${fDate()}<span></span><label for="f-cu1">Cash counted<input id="f-cu1" name="cash" type="number" step="0.01" placeholder="${e.by.cash}"></label><label for="f-cu2">Mobile money received<input id="f-cu2" name="momo" type="number" step="0.01" placeholder="${e.by.momo}"></label><label for="f-cu3">Bank / card received<input id="f-cu3" name="bank" type="number" step="0.01" placeholder="${e.by.bank}"></label>
     <label for="f-cu4">Paid out from the till today<input id="f-cu4" name="exp" type="number" step="0.01" placeholder="0"></label><label for="f-cu5">What for<input id="f-cu5" name="expNote" placeholder="e.g. transport, airtime"></label><label for="f-cu6">Note<input id="f-cu6" name="note"></label></div>`,
@@ -5031,7 +5256,7 @@ function cashupForm(loc){
 }
 async function saveCashup(x){
   if (x.expense > 0) await put('cash', {kind:'out', date:x.date, channel:'cash', amount:x.expense, category:'Shop expense', expType:'Shop expense', shop:x.loc === 'main' ? '' : x.loc, description:`${(shopOf(x.loc) || {name:'Main till'}).name}: ${x.expNote || 'paid from the till'}`});
-  const e = expectedFor(x.loc, x.date), counted = r2(x.counted.cash + x.counted.momo + x.counted.bank), expected = r2(e.by.cash + e.by.momo + e.by.bank);
+  const e = cashupExpected(x.loc, x.date), counted = r2(x.counted.cash + x.counted.momo + x.counted.bank), expected = r2(e.by.cash + e.by.momo + e.by.bank);
   const rec = await put('cashups', {...x, expected:e.by, sales:e.sales, countedTotal:counted, expectedTotal:expected, diff:r2(counted - expected)});
   toast(rec.diff < -0.009 ? `Day closed: ${money(-rec.diff)} short` : rec.diff > 0.009 ? `Day closed: ${money(rec.diff)} over` : 'Day closed: everything matches');
   if (x.loc !== 'main') publishShop(x.loc); return rec;
@@ -5181,7 +5406,7 @@ PAGES.dispatch = C => {
       ${list.map(d => `<tr><td style="white-space:nowrap"><b>${esc(d.no)}</b></td><td>${fmtDate(d.date)}</td><td>${d.toLoc ? `<b>${esc(dnTo(d))}</b><div class="small mut">Shop${shopOf(d.toLoc)?.town ? ' · ' + esc(shopOf(d.toLoc).town) : ''}</div>` : `<button class="link" data-act="resView" data-id="${d.resellerId}">${esc(rName(d.resellerId))}</button><div class="small mut">${esc(rTown(d.resellerId))}</div>`}</td>
         <td>${esc(d.courier)}${d.waybill ? `<div class="small mut">${esc(d.waybill)}</div>` : ''}</td><td class="n">${int(bottles(d))}</td><td class="n">${d.charge ? money(d.charge) : '—'}</td>
         <td>${d.status === 'delivered' ? `<span class="pill good">Delivered ${fmtDate(d.deliveredDate)}</span>${d.receivedBy ? `<div class="small mut">by ${esc(d.receivedBy)}</div>` : ''}` : '<span class="pill warn">On the way</span>'}</td>
-        <td><div class="actions">${btn('Dispatch note', 'docDN', {id:d.id}, 'sm')}${btn('Delivery note', 'docDel', {id:d.id}, 'sm')}${d.status !== 'delivered' ? btn('Mark delivered', 'delivered', {id:d.id}, 'sm ghost') : ''}${btn('Edit', 'editDispatch', {id:d.id}, 'sm ghost')}${btn('Delete', 'delDispatch', {id:d.id}, 'sm ghost danger')}</div></td></tr>`).join('')}
+        <td><div class="actions">${btn('Dispatch note', 'docDN', {id:d.id}, 'sm')}${btn('Delivery note', 'docDel', {id:d.id}, 'sm')}${d.status !== 'delivered' && d.resellerId ? rlDispBtn(d) : ''}${d.status !== 'delivered' ? btn('Mark delivered', 'delivered', {id:d.id}, 'sm ghost') : ''}${btn('Edit', 'editDispatch', {id:d.id}, 'sm ghost')}${btn('Delete', 'delDispatch', {id:d.id}, 'sm ghost danger')}</div></td></tr>`).join('')}
     </tbody></table></div>` : empty('No parcels sent in ' + monthLabel(m) + '. Use Dispatch stock to send perfume to a reseller.')}</div>`;
 };
 const bizEmail = () => S.settings.email || '';
@@ -5693,25 +5918,26 @@ PAGES.settlement = C => {
   const rows = rs.map(r => { const a = C.acc[r.id] || {owed:0, due:0, net:0, lastRemit:''}, h = heldOf(r.id, C), e = expectedFor(r.id, C);
     const paidThis = a.lastRemit && a.lastRemit > iso(addDays(new Date(last + 'T00:00'), -12)); return {r, a, bottles:h.reduce((t, [, v]) => t + v, 0), e, paidThis}; });
   const toSettle = rows.filter(x => x.bottles > 0 || x.a.net > 0.009);
-  return head('Settlement day', `On the ${ord(sDay())} each reseller tells you what they sold. Tap <b>Settle</b>, enter the bottles sold, and the hub records the sales, works out their commission and records the money they pay.`, btn('Send reminders', 'remind', {}, 'pri'))
+  return head('Settlement day', `On the ${ord(sDay())} each reseller tells you what they sold. Tap <b>Settle</b>, enter the bottles sold, and the hub records the sales, works out their commission and records the money they pay.`, btn('Send reminders', 'remind', {}, 'pri') + btn('Send reseller links', 'rlSendAll', {}, 'pri'))
+    + (() => { const n = Object.values(OWN.lreqs || {}).flat().length; return n ? `<div class="card" style="border-left:5px solid var(--acc)"><b>${n} report${n === 1 ? '' : 's'} sent through reseller links ${n === 1 ? 'is' : 'are'} waiting.</b> <a class="btn sm pri" href="#portal">Review</a></div>` : ''; })()
     + `<div class="tiles">${tile('Next settlement', fmtDate(due), `${Math.max(0, daysBetween(today(), due))} days away`)}${tile('Resellers to settle', int(toSettle.length))}
       ${tile('Owed to you now', money(rows.reduce((t, x) => t + Math.max(0, x.a.net), 0)), 'for bottles already reported sold')}${tile('If everything sells', money(rows.reduce((t, x) => t + x.e.totalCash, 0)), 'stock held, after commission', true)}</div>`
     + (rows.length ? `<div class="card"><div class="tw"><table class="t"><thead><tr><th>Reseller</th><th class="n">Bottles held</th><th class="n">Owes now</th><th class="n">Could pay if all sold</th><th>Last payment</th><th></th></tr></thead><tbody>
       ${rows.map(({r, a, bottles, e, paidThis}) => `<tr><td><b>${esc(r.name)}</b><div class="small mut">${esc(tName(r.townId))}</div></td><td class="n">${int(bottles)}</td><td class="n">${signed(Math.max(0, a.net))}</td><td class="n">${money(e.totalCash + Math.max(0, a.net))}</td>
         <td>${a.lastRemit ? fmtDate(a.lastRemit) : '<span class="mut">Never</span>'}${paidThis ? ' <span class="pill good">This month</span>' : ''}</td>
-        <td><div class="actions">${btn('Settle', 'settleDay', {id:r.id}, 'sm pri')}${btn('Price list', 'priceList', {id:r.id}, 'sm ghost')}</div></td></tr>`).join('')}</tbody></table></div></div>` : empty('Add resellers first.'))
+        <td><div class="actions">${btn('Settle', 'settleDay', {id:r.id}, 'sm pri')}${btn('Link', 'rlLink', {id:r.id}, 'sm')}${btn('Price list', 'priceList', {id:r.id}, 'sm ghost')}</div></td></tr>`).join('')}</tbody></table></div></div>` : empty('Add resellers first.'))
     + `<div class="card"><h2>How settlement works</h2><ol class="small" style="padding-left:18px;margin:0">
         <li>Ask the reseller how many of each perfume they sold (or count what is left).</li><li>Tap <b>Settle</b> and enter the bottles sold. The hub shows their commission and what they must pay.</li>
         <li>Enter the money they paid and how (cash, mobile money or bank). Their commission is kept automatically.</li><li>Send them the summary on WhatsApp.</li></ol></div>`;
 };
-function settleDayForm(rid){
+function settleDayForm(rid, pre){
   const r = S.resellers[rid]; if (!r) return; const C = compute(), h = heldOf(rid, C), a = C.acc[rid] || {net:0, owed:0, due:0};
-  modal(`Settle: ${r.name}`, `<div class="grid2">${fDate()}<label for="f-sch">Paid into<select id="f-sch" name="channel">${chOptions('momo')}</select></label></div>
+  modal(`Settle: ${r.name}`, `${pre ? `<div class="hint" style="border-left:4px solid var(--acc);padding-left:10px"><b>Sent by ${esc(r.name)} through their link</b> on ${esc(fmtDateTime(pre.at))}. Check the figures, change anything that is wrong, then save.${pre.note ? `<br>Their note: “${esc(pre.note)}”` : ''}${pre.proof ? `<br><img src="${pre.proof}" alt="Payment photo" style="max-width:100%;max-height:170px;border-radius:8px;margin-top:6px">` : ''}</div>` : ''}<div class="grid2">${fDate(pre?.date)}<label for="f-sch">Paid into<select id="f-sch" name="channel">${chOptions(pre?.channel || 'momo')}</select></label></div>
     ${h.length ? `<div class="tw"><table class="t" id="sd-tab"><thead><tr><th>Perfume</th><th class="n">With them</th><th class="n">Price</th><th class="n">Sold</th><th class="n">Amount</th></tr></thead><tbody>
-      ${h.map(([p, v]) => `<tr><td>${esc(pName(p))}</td><td class="n">${v}</td><td class="n">${money(resPrice(rid, p, C))}</td><td class="n"><input type="number" class="sd-q" name="sold_${p}" data-pid="${p}" min="0" max="${v}" step="1" value="" placeholder="0" style="width:70px;text-align:right"></td><td class="n" id="sd-l-${p}">—</td></tr>`).join('')}
+      ${h.map(([p, v]) => `<tr><td>${esc(pName(p))}</td><td class="n">${v}</td><td class="n">${money(resPrice(rid, p, C))}</td><td class="n"><input type="number" class="sd-q" name="sold_${p}" data-pid="${p}" min="0" max="${v}" step="1" value="${pre?.sold?.[p] ? Math.min(pre.sold[p], v) : ''}" placeholder="0" style="width:70px;text-align:right"></td><td class="n" id="sd-l-${p}">—</td></tr>`).join('')}
       </tbody></table></div><div class="actions" style="margin:6px 0 10px">${btn('All sold', 'sdAll', {}, 'sm ghost')}${btn('None sold', 'sdNone', {}, 'sm ghost')}</div>` : '<p class="hint">They are not holding any bottles.</p>'}
     <div class="card" style="margin:0 0 10px;padding:12px 14px" id="sd-sum"></div>
-    <div class="grid2"><label for="f-samt">Money they paid now<input id="f-samt" name="amount" type="number" min="0" step="0.01"></label><label for="f-sref">Reference<input id="f-sref" name="ref" placeholder="e.g. MoMo ref"></label></div>`,
+    <div class="grid2"><label for="f-samt">Money they paid now<input id="f-samt" name="amount" type="number" min="0" step="0.01" ${pre ? `data-touched="1" value="${esc(pre.amount)}"` : ''}></label><label for="f-sref">Reference<input id="f-sref" name="ref" placeholder="e.g. MoMo ref" value="${esc(pre?.ref || '')}"></label></div>`,
   async d => {
     const C2 = compute(), h2 = C2.held[rid] || {}, lines = [];
     for (const [k, v] of Object.entries(d)) if (k.startsWith('sold_') && num(v) > 0) { const p = k.slice(5), q = Math.round(num(v)); if (q > (h2[p] || 0)) throw Error(`${r.name} holds only ${h2[p] || 0} × ${pName(p)}.`); lines.push({p, q}); }
@@ -5719,7 +5945,8 @@ function settleDayForm(rid){
     for (const l of lines) { const price = resPrice(rid, l.p, C2); await put('moves', {kind:'sale', date:d.date, resellerId:rid, productId:l.p, qty:l.q, unitPrice:price, unitCost:num(S.products[l.p]?.costPrice), customer:'', note:'Settlement', comm:commFor(rid, l.q, price, C2.hr?.[rid]?.[l.p])}); }
     const A = compute().acc[rid] || {owed:0, due:0}, kept = r2(Math.max(0, Math.min(A.due, A.owed)));
     if (kept > 0) await put('cash', {kind:'offset', date:d.date, amount:kept, category:'Commission kept', resellerId:rid, description:'Kept at settlement'});
-    if (amt > 0) await put('cash', {kind:'in', date:d.date, channel:d.channel, amount:amt, category:'Reseller remittance', resellerId:rid, description:('Settlement ' + (d.ref || '')).trim()});
+    if (amt > 0) await put('cash', {kind:'in', date:d.date, channel:d.channel, amount:amt, category:'Reseller remittance', resellerId:rid, description:('Settlement ' + (d.ref || '')).trim(), proof:pre?.proof || ''});
+    if (pre?.act) await rlDecide(pre.act, 'approved');
     toast(`Settlement saved for ${r.name}`); setTimeout(() => settleDone(rid, lines, amt, kept, d.date), 60);
   }, {label:'Save settlement', wide:true});
   SETTLE_RID = rid; const f = $('#m-form'); f.addEventListener('input', e => { if (e.target.name === 'amount') e.target.dataset.touched = 1; settleCalc(); }); settleCalc();
@@ -5762,7 +5989,7 @@ PAGES.customers = () => {
   const rows = list.map(row), dueN = rows.filter(x => x.dueRep).length;
   return head('Customers', `Keep your buyers' numbers, see what they like, and remind them to buy again about ${repeatDays()} days after their last perfume.`, btn('+ Add customer', 'custNew', {}, 'pri') + btn('Reminder timing', 'custTiming'))
     + `<div class="tiles">${tile('Customers', int(list.length))}${tile('Due to buy again', int(dueN), `last bought ${repeatDays()}+ days ago`, dueN > 0)}${tile('Owing you', money(rows.reduce((t, x) => t + Math.max(0, x.s.owes || 0), 0)), 'credit sales')}</div>`
-    + celebrateCard() + (extra.length ? `<div class="card"><h2>Buyers found in your sales</h2><p class="hint">These names appear on sales but are not on your customer list yet.</p><div class="actions">${extra.slice(0, 30).map(x => btn('+ ' + x.name, 'custNew', {name:x.name}, 'sm')).join('')}</div></div>` : '')
+    + celebrateCard() + (extra.length ? `<div class="card"><h2>Buyers found in your sales</h2><p class="hint">These names appear on sales but are not on your customer list yet.</p><div class="actions">${extra.slice(0, 30).map(x => btn('+ ' + esc(x.name), 'custNew', {name:x.name}, 'sm')).join('')}</div></div>` : '')
     + (rows.length ? `<div class="card"><div class="tw"><table class="t"><thead><tr><th>Customer</th><th>Phone</th><th class="n">Bottles</th><th class="n">Spent</th><th>Favourite</th><th>Last bought</th><th></th></tr></thead><tbody>
       ${rows.sort((a, b) => (b.dueRep - a.dueRep) || a.c.name.localeCompare(b.c.name)).map(({c, s, ago, dueRep}) => { const fav = Object.entries(s.fav || {}).sort((a, b) => b[1] - a[1])[0];
         return `<tr><td><b>${esc(c.name)}</b><div class="small mut">${esc([c.town, c.notes].filter(Boolean).join(' · '))}</div></td><td>${c.phone ? esc(c.phone) : '<span class="mut">—</span>'}</td><td class="n">${int(s.bottles)}</td><td class="n">${money(s.spent)}${s.owes > 0.009 ? `<div class="small neg">owes ${money(s.owes)}</div>` : ''}${LOY().on ? `<div class="small">⭐ ${num(c.points)} pts</div>` : ''}</td>
@@ -6987,6 +7214,10 @@ const ACT = {
   remReset: async () => { $('#rem-tpl').value = DEFAULT_REMINDER; await putSettings({reminderTemplate:''}); toast('Standard message restored'); TOOLS.reminders.refresh(); },
   remCopy: async d => { try { await navigator.clipboard.writeText(reminderText(d.id)); await markReminded(d.id); TOOLS.reminders.refresh(); toast('Reminder copied'); } catch(e) { toast('Copy did not work here. Use the WhatsApp button instead.', true); } },
   festPrev: d => { UI.festPreview = d.k; render(true); }, festEnd: () => { UI.festPreview = ''; render(true); },
+  expGo: d => { if (route() !== d.r) location.hash = d.r; let n = 0; const iv = setInterval(() => { const el = $('#exp-card'); if (el) { clearInterval(iv); el.scrollIntoView({behavior:'smooth', block:'start'}); } else if (++n > 25) clearInterval(iv); }, 120); },
+  expGroup: d => { UI.expGroup = d.k; const y = scrollY; render(true); scrollTo(0, y); },
+  expXlsx: () => { toast('Preparing Excel…'); saveFile(`Infinity-Fragrances-expected-from-resellers-${today()}.xlsx`, xlsxBlob(expSheets(compute(), expMode()))); },
+  expReport: () => showExpReport(),
   report: () => showReport(), reportCSV: () => reportCSV(), trendN: d => { UI.trend = +d.n; render(); }, insTab: d => { UI.ins = d.k; render(true); }, homeMore: () => { UI.homeMore = !UI.homeMore; render(true); }, lowAll: () => { UI.lowAll = !UI.lowAll; render(true); },
   camScan: () => camScan(), scanClose: () => scanStop(), scanPhoto: () => { scanStop(); camPhoto(); },
   scanTorch: async () => { try { const t = LSCAN.stream.getVideoTracks()[0]; LSCAN.torch = !LSCAN.torch; await t.applyConstraints({advanced:[{torch:LSCAN.torch}]}); } catch(e) { toast('This phone does not allow the light here.', true); } },
@@ -7011,9 +7242,9 @@ const ACT = {
   catPlus: d => { RES.cart = RES.cart || {}; RES.cart[d.id] = (RES.cart[d.id] || 0) + 1; $('#cq-' + d.id).textContent = RES.cart[d.id]; $('#cart-bar').innerHTML = cartBarHTML(); },
   catMinus: d => { RES.cart = RES.cart || {}; RES.cart[d.id] = Math.max(0, (RES.cart[d.id] || 0) - 1); $('#cq-' + d.id).textContent = RES.cart[d.id]; $('#cart-bar').innerHTML = cartBarHTML(); },
   catCat: (d, el) => { document.querySelectorAll('[data-act=catCat]').forEach(b => b.classList.toggle('on', b.dataset.k === d.k)); document.querySelectorAll('.cat-card').forEach(c => c.hidden = !!d.k && c.dataset.cat !== d.k); },
-  catSend: () => { try { const cr = RES.snap?.credit, t = cartTotals().t; if (cr && cr.limit && t > cr.available + 0.009) return toast(`This order (${money(t)}) is more than your available credit (${money(cr.available)}). Pay what you owe first, or order less.`, true); resSubmit('order', resCollect({dataset:{type:'order'}})); } catch(e) { toast(e.message, true); } },
+  catSend: () => { try { const cr = (RES.snap?.creditLimit || (RES.snap?.credit && typeof RES.snap.credit === 'object' ? RES.snap.credit : null)), t = cartTotals().t; if (cr && cr.limit && t > cr.available + 0.009) return toast(`This order (${money(t)}) is more than your available credit (${money(cr.available)}). Pay what you owe first, or order less.`, true); resSubmit('order', resCollect({dataset:{type:'order'}})); } catch(e) { toast(e.message, true); } },
   resProofDel: () => { RES.proof = ''; const pv = $('#rp-prev'); if (pv) pv.innerHTML = ''; const f = $('#rp-img'); if (f) f.value = ''; },
-  reqProof: d => { const q = (OWN.reqs[d.rid] || []).find(x => x.id === d.id); if (q?.proof) proofModal(q.proof, `${rName(d.rid)}: payment slip`); },
+  reqProof: d => { const q = findReq(d.rid, d.id); if (q?.proof) proofModal(q.proof, `${rName(d.rid)}: payment slip`); },
   reqOkSel: async () => { const sel = [...document.querySelectorAll('.rq-sel:checked')].map(c => ({rid:c.dataset.rid, id:c.dataset.id})); if (!sel.length) return toast('Tick the requests first.', true);
     let ok = 0, orders = 0; const bad = []; for (const x of sel) { const q = (OWN.reqs[x.rid] || []).find(y => y.id === x.id); try { await reqApprove(x.rid, x.id, true); ok++; if (q?.type === 'order') orders++; } catch(e) { bad.push(`${rName(x.rid)}: ${fbMsg(e)}`); } }
     if (bad.length) modal('Some requests were not approved', `<p>${ok} approved.</p><ul class="small">${bad.map(b => `<li>${esc(b)}</li>`).join('')}</ul>`, null, {nofocus:true}); else toast(`${ok} approved${orders ? `. ${orders} order${orders === 1 ? '' : 's'}: send the parcels from Dispatch.` : ''}`); },
@@ -7152,6 +7383,7 @@ const ACT = {
   fbClaim: async () => { try { await FB.batch([['set', 'meta/owner', {uid:FB_USER.uid, email:FB_USER.email, at:FB.now()}], ['set', `users/${FB_USER.uid}`, {role:'owner', email:FB_USER.email, at:FB.now()}]]); FB_ROLE = 'owner'; ownerListen(); render(true); } catch(x) { toast(fbMsg(x), true); } },
   fbOut: async () => { if (DESK && MODE === 'desktop') return ACT.appOut(); try { await FB.signOut(); } catch(e) {} },
   fbPublish: () => publishAll(false),
+  rlLink: d => rlLink(d.id), rlTest: d => rlTest(d.id), rlOn: d => rlOn(d.id, !!d.v), rlNew: d => rlNew(d.id), rlMake: d => rlMake(d.id), rlSendAll: () => rlSendAll(),
   reqOk: d => reqApprove(d.rid, d.id), reqNo: d => reqReject(d.rid, d.id),
   accNew: d => accCreate(d.id, false), accReset: d => confirmBox('Make a new login ID and PIN? The old ones stop working.', () => accCreate(d.id, true), 'Make new login'),
   accRemove: d => { const r = S.resellers[d.id]; confirmBox(`Remove ${esc(r.name)}'s online access? They will no longer be able to sign in.`, async () => { try { await FB.del(`users/${r.portalUid}`); await FB.del(`portal/${r.id}`); } catch(e) {} logNote('login', 'logins', `App access removed for reseller ${r.name}`); await put('resellers', {...r, portalUid:'', portalLogin:''}); ownerListen(); toast('Access removed'); }, 'Remove access'); },
