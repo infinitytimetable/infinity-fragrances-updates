@@ -1,20 +1,20 @@
 {
- "version": "2.22.0",
+ "version": "2.22.1",
  "date": "2026-11-23",
  "notes": [
-  "New: Shop screen (Marketing menu). Show perfumes, prices and offers on the TV in your shop, with seven designs, seasonal looks, a projector mode for HDMI and a video you can put on a flash drive",
-  "HD photos for sharper pictures on big screens"
+  "Shop screen: perfumes you pick by hand now show even when out of stock",
+  "New list: always show these perfumes, even when out of stock"
  ],
  "android": {
-  "file": "android-2.22.0.html",
-  "sig": "+UNOYs8P6WZQ5oz5IxmLWNTi6tJq8+QG9oRy+1zmMmX4DCttQzTaZ8V4SQVNkdctqNsUoldneUX1rA6aozRz8w==",
-  "size": 2604690,
+  "file": "android-2.22.1.html",
+  "sig": "NXchmSZsZbJzLCNyQzcDwz4TW8/jzMbGB/9bs0MIvw0VsF/0lo7ZEWHI7IbYdZK0eiI4x2qrsaE5HtE0fTQetA==",
+  "size": 2605912,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.22.0.html",
-  "sig": "J0BaLeU42SQS4sz2mZpVRClYFaqIRbwE/p6iQzGK7vizWV/WuJpCa3UGLZnELoK8EBYD+lwnc95JO9IpswDAXQ==",
-  "size": 2599678,
+  "file": "desktop-2.22.1.html",
+  "sig": "cKlmpskzsFo0acJBN+CdsOkoYe7+F9XaDEMoQY+WsyNjNVmxcTyfMAxpG0+GPb5Mu4xMbv1+UQKcmAoJGUuRzQ==",
+  "size": 2600900,
   "minShell": "2.5.0"
  },
  "apk": {

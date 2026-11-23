@@ -2507,8 +2507,9 @@ function fixNumbers(o){
 }
 
 /* ======================= Version 2.0 ======================= */
-const APP_VERSION = '2.22.0';
+const APP_VERSION = '2.22.1';
 const CHANGELOG = [
+  ['2.22.1', '23 Nov 2026', ['Shop screen: perfumes you pick by hand on a slide now show even when they are out of stock', 'New list on each screen: always show these perfumes, even when out of stock (they also appear on the price list)']],
   ['2.22.0', '23 Nov 2026', ['New: Shop screen (Marketing menu). Show your perfumes, prices and offers on the TV or monitor in your shop, like the screens in restaurants', 'Seven designs and fonts: Noir Gold, Ivory Editorial, Emerald Christmas, Midnight Silver, Rose Blush, Black Friday Bold and Royal Oud. Mix them, or let the season pick (Christmas, New Year, Valentine’s, Black Friday and more)', 'Slides: featured perfume, bestsellers (picked from your sales), promotions, seasonal gifts, price lists by category, a QR code to your online shop, your own pictures and messages', 'Hide out-of-stock perfumes, set dates, times and days for each slide, and keep a different screen for each shop', 'Start projector: plug the TV into the computer with HDMI (or cast the window wirelessly) and it plays full screen', 'Video for USB: save the slideshow as a video file to copy onto a flash drive and play on any TV', 'HD photos: add a sharper photo for any perfume so it looks good on a 4K screen']],
   ['2.21.1', '23 Nov 2026', ['Messages fixes: deleting a conversation now finishes cleanly, and chats between two other people no longer add to the Admin unread count', 'A message you are reading clears its bell dot straight away, and the Seen-by list now follows follow-up posts', 'Safer: only Admin and managers can send messages as the office (paste the updated Firebase rules once)']],
   ['2.21.0', '23 Nov 2026', ['Messages: a new inbox in the Admin hub, the reseller app and the shop and staff app, like Messenger and email together', 'Write to people with To and CC, start group chats, and send announcements to all resellers, a town, shops and staff or hand-picked people, with a Seen-by list', 'Send photos, use one-tap quick replies, and see new messages in the bell and as phone alerts', 'Resellers who use a personal link can read announcements and write to the office from it', 'Admin can read every conversation (people are told), and can nudge anyone who has not read a message on WhatsApp']],
@@ -7820,7 +7821,7 @@ const ssOk = p => p && (p.status || 'active') !== 'inactive' && num(p.sellPrice)
 const ssImg = pid => S.images['hd_' + pid]?.data || imgOf(pid) || '';
 function ssPrice(pid){ const base = num(S.products[pid]?.sellPrice), b = bestPromo(pid, base, 'pos'); return b && b.price < base ? {now:b.price, was:base} : {now:base, was:0}; }
 function ssItem(p){ const pr = ssPrice(p.id); return {id:p.id, name:p.name, size:p.size ? p.size + ' ml' : '', cat:p.category || '', img:ssImg(p.id), now:pr.now, was:pr.was}; }
-function ssPool(sc, stock){ const st = stock || compute().storeLoc[sc.loc || 'main'] || {}; return sortedProds().filter(p => ssOk(p) && (sc.hideOut === false || num(st[p.id]) > 0)); }
+function ssPool(sc, stock){ const st = stock || compute().storeLoc[sc.loc || 'main'] || {}, keep = sc.keep || []; return sortedProds().filter(p => ssOk(p) && (sc.hideOut === false || num(st[p.id]) > 0 || keep.includes(p.id))); }
 function ssBest(sc, pool, n, needImg){
   const since = iso(addDays(new Date(), -30)), here = {}, all = {};
   for (const m of Object.values(S.moves)) { if (m.kind !== 'sale' || (m.date || '') < since) continue; const q = num(m.qty); all[m.productId] = (all[m.productId] || 0) + q; if (!m.resellerId && (m.loc || 'main') === (sc.loc || 'main')) here[m.productId] = (here[m.productId] || 0) + q; }
@@ -7865,15 +7866,15 @@ function ssListPages(sc, sl, pool){
   const np = Math.ceil(cols.length / 3), pages = []; let at = 0; for (let k = 0; k < np; k++) { const take = Math.ceil((cols.length - at) / (np - k)); pages.push(cols.slice(at, at + take)); at += take; }
   return pages;
 }
-function ssOne(sc, sl, pool, fest, d, ci){
+function ssOne(sc, sl, pool, fest, d, ci, all){
   const base = k => ({k, id:sl.id, sec:num(sl.sec) || num(sc.sec) || 8}), th = pref => ssTheme(sc, sl, ci, fest, pref);
   switch (sl.type) {
-    case 'hero': { const p = pool.find(x => x.id === sl.pid); if (!p) return null; const it = ssItem(p); return {...base('hero'), theme:th(), eyebrow:sl.eyebrow == null ? 'New arrival' : sl.eyebrow, sub:sl.sub || '', meta:[it.size, it.cat].filter(Boolean).join('  ·  '), item:it}; }
+    case 'hero': { const p = all.find(x => x.id === sl.pid); if (!p) return null; const it = ssItem(p); return {...base('hero'), theme:th(), eyebrow:sl.eyebrow == null ? 'New arrival' : sl.eyebrow, sub:sl.sub || '', meta:[it.size, it.cat].filter(Boolean).join('  ·  '), item:it}; }
     case 'best': { const ps = ssBest(sc, pool, num(sl.n) || 4, sl.needImg !== false); if (ps.length < 2) return null; return {...base('best'), theme:th(), eyebrow:sl.eyebrow == null ? 'Customer favourites' : sl.eyebrow, title:sl.title || 'Bestsellers', items:ps.map(ssItem)}; }
     case 'promo': {
       const live = Object.values(S.promos).filter(pr => promoLive(pr, iso(d)) && (pr.channels || {}).pos).sort((a, b) => String(b.start).localeCompare(String(a.start)));
       const pr = sl.promoId ? live.find(x => x.id === sl.promoId) : live[0]; if (!pr) return null;
-      let ps = (sl.pids && sl.pids.length) ? sl.pids.map(id => pool.find(x => x.id === id)).filter(Boolean) : ssBest(sc, pool.filter(p => promoApplies(pr, p.id)), 3, true);
+      let ps = (sl.pids && sl.pids.length) ? sl.pids.map(id => all.find(x => x.id === id)).filter(Boolean) : ssBest(sc, pool.filter(p => promoApplies(pr, p.id)), 3, true);
       if (!ps.length && !(sl.pids && sl.pids.length)) ps = ssBest(sc, pool.filter(p => promoApplies(pr, p.id)), 3, false);
       if (!ps.length) return null;
       const items = ps.slice(0, 3).map(p => { const it = ssItem(p); if (pr.kind !== 'bxgy') { const np = promoUnit(pr, num(p.sellPrice)); it.now = np; it.was = np < num(p.sellPrice) ? num(p.sellPrice) : 0; } else { it.now = num(p.sellPrice); it.was = 0; } return it; });
@@ -7881,7 +7882,7 @@ function ssOne(sc, sl, pool, fest, d, ci){
     }
     case 'season': {
       const f = (sl.fest && sl.fest !== 'any') ? sl.fest : fest; if (!f || (sl.fest && sl.fest !== 'any' && fest !== sl.fest)) return null;
-      const cp = SS_FEST_COPY[f]; let ps = (sl.pids && sl.pids.length) ? sl.pids.map(id => pool.find(x => x.id === id)).filter(Boolean) : ssBest(sc, pool, 3, true); if (!ps.length) return null;
+      const cp = SS_FEST_COPY[f]; let ps = (sl.pids && sl.pids.length) ? sl.pids.map(id => all.find(x => x.id === id)).filter(Boolean) : ssBest(sc, pool, 3, true); if (!ps.length) return null;
       return {...base('promo'), theme:th(SS_FEST_THEME[f]), eyebrow:sl.eyebrow == null ? cp[0] : sl.eyebrow, titleHTML:ssRich(sl.title || cp[1]), text:sl.text || cp[2], badge:'', items:ps.slice(0, 3).map(ssItem)};
     }
     case 'list': { const pages = ssListPages(sc, sl, pool); if (!pages.length) return null; const t = th(); return pages.map((cols, k) => ({...base('list'), id:sl.id + (pages.length > 1 ? '#' + (k + 1) : ''), sec:num(sl.sec) || (num(sc.sec) || 8) + 4, theme:t, page:k + 1, pages:pages.length, cols})); }
@@ -7893,8 +7894,8 @@ function ssOne(sc, sl, pool, fest, d, ci){
 }
 function ssBuild(sc, d, opt){
   d = d || new Date(); opt = opt || {};
-  const pool = ssPool(sc), fest = opt.fest !== undefined && opt.fest !== '' ? opt.fest : festivalFor(iso(d)), out = [];
-  (sc.slides || []).forEach((sl, ci) => { if (!opt.all && !ssWhen(sl, d)) return; const r = ssOne(sc, sl, pool, fest, d, ci); if (r) (Array.isArray(r) ? r : [r]).forEach(x => out.push(x)); });
+  const pool = ssPool(sc), all = sortedProds().filter(ssOk), fest = opt.fest !== undefined && opt.fest !== '' ? opt.fest : festivalFor(iso(d)), out = [];
+  (sc.slides || []).forEach((sl, ci) => { if (!opt.all && !ssWhen(sl, d)) return; const r = ssOne(sc, sl, pool, fest, d, ci, all); if (r) (Array.isArray(r) ? r : [r]).forEach(x => out.push(x)); });
   out.forEach((s, i) => { s.i = i; s.n = out.length; });
   return {slides:out, tr:sc.tr || 'fade', sig:ssSig({o:out, t:sc.tr, g:ssTag(), b:bizName()})};
 }
@@ -8047,7 +8048,7 @@ PAGES.shopscreen = () => {
     <label>Time on each slide${sel('sec', [[5, '5 seconds'], [8, '8 seconds'], [10, '10 seconds'], [15, '15 seconds'], [20, '20 seconds'], [30, '30 seconds']], num(sc.sec) || 8)}</label>
     <label>How slides change${sel('tr', [['fade', 'Fade'], ['slide', 'Slide'], ['zoom', 'Zoom']], sc.tr || 'fade')}</label>
     <div><div><label class="check"><input type="checkbox" data-ssf="seasons" ${sc.seasons !== false ? 'checked' : ''}> Change to the season’s design by date (Christmas, Black Friday…)</label></div><div><label class="check"><input type="checkbox" data-ssf="hideOut" ${sc.hideOut !== false ? 'checked' : ''}> Hide perfumes that are out of stock here</label></div></div>
-  </div><div class="actions" style="margin-top:8px">${scs.length > 1 ? btn('Delete this screen', 'ssDelScreen', {id:sc.id}, 'sm ghost') : ''}</div></div>
+  </div><fieldset style="margin-top:10px"><legend>Always show these perfumes, even when out of stock</legend><div class="picks" id="ss-keep">${sortedProds().filter(p => (p.status || 'active') !== 'inactive').map(p => `<label><input type="checkbox" data-ssf="keep" value="${p.id}" ${(sc.keep || []).includes(p.id) ? 'checked' : ''}> ${esc(pName(p.id))}</label>`).join('')}</div><p class="small mut" style="margin:0">Other out-of-stock perfumes stay hidden. These also appear on the price list.</p></fieldset><div class="actions" style="margin-top:8px">${scs.length > 1 ? btn('Delete this screen', 'ssDelScreen', {id:sc.id}, 'sm ghost') : ''}</div></div>
   <div class="ssed-grid">
     <div class="card"><h2 style="margin-top:0">Preview</h2><div class="ssed-prev" id="ss-prev"></div>
       <div class="actions" style="margin-top:10px;align-items:center">${btn('Previous', 'ssPv', {c:'prev'}, 'sm')}${btn('Pause', 'ssPv', {c:'play'}, 'sm')}${btn('Next', 'ssPv', {c:'next'}, 'sm')}<label class="small mut" style="margin-left:auto;display:flex;gap:6px;align-items:center">Preview a season<select data-ssf="prevFest" style="width:auto"><option value="">Today (automatic)</option>${Object.entries(SS_FEST_COPY).map(([k, v]) => `<option value="${k}" ${UI.ssFest === k ? 'selected' : ''}>${v[0]}</option>`).join('')}</select></label></div>
@@ -8062,7 +8063,7 @@ PAGES.shopscreen = () => {
     <div class="tw"><table class="t"><thead><tr><th></th><th>Perfume</th><th>Photo</th><th></th></tr></thead><tbody>${ssPhotoRows()}</tbody></table></div></div>`;
 };
 TOOLS.shopscreen = {
-  mount(){ ssPrep().then(() => { const host = $('#ss-prev'); if (!host) return; if (SS.pv) SS.pv.destroy(); SS.pv = new SSPlayer(host, {}); TOOLS.shopscreen.refresh(); }); if (!SS.tick) SS.tick = setInterval(() => TOOLS.shopscreen.refresh(), 30000); },
+  mount(){ const kp = $('#ss-keep'); if (kp && UI.ssKeepTop) { kp.scrollTop = UI.ssKeepTop; UI.ssKeepTop = 0; } ssPrep().then(() => { const host = $('#ss-prev'); if (!host) return; if (SS.pv) SS.pv.destroy(); SS.pv = new SSPlayer(host, {}); TOOLS.shopscreen.refresh(); }); if (!SS.tick) SS.tick = setInterval(() => TOOLS.shopscreen.refresh(), 30000); },
   refresh(){ if (SS.pv && !document.body.contains(SS.pv.host)) { SS.pv.destroy(); SS.pv = null; return; } const sc = ssScr(UI.ssSel); if (!SS.pv || !sc) return; SS.pv.set(ssBuild(sc, new Date(), {fest:UI.ssFest || ''})); }
 };
 
@@ -8072,10 +8073,10 @@ function ssSlideForm(sid, type){
   const sc = ssScr(UI.ssSel), old = sid ? (sc.slides || []).find(x => x.id === sid) : null, t = old ? old.type : type, sl = old || {id:uid(), type:t};
   const prodOpts = sortedProds().filter(p => (p.status || 'active') !== 'inactive').map(p => [p.id, pName(p.id) + (ssImg(p.id) ? '' : ' (no photo)')]);
   let body = '';
-  if (t === 'hero') body = `<label>Perfume<select name="pid" required><option value="">Choose…</option>${prodOpts.map(([v, l]) => `<option value="${v}" ${sl.pid === v ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></label><label>Small heading<input name="eyebrow" value="${esc(sl.eyebrow == null ? 'New arrival' : sl.eyebrow)}" placeholder="New arrival"></label><label>Line under the name (optional)<input name="sub" value="${esc(sl.sub || '')}"></label>`;
+  if (t === 'hero') body = `<label>Perfume (shows even when out of stock)<select name="pid" required><option value="">Choose…</option>${prodOpts.map(([v, l]) => `<option value="${v}" ${sl.pid === v ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></label><label>Small heading<input name="eyebrow" value="${esc(sl.eyebrow == null ? 'New arrival' : sl.eyebrow)}" placeholder="New arrival"></label><label>Line under the name (optional)<input name="sub" value="${esc(sl.sub || '')}"></label>`;
   else if (t === 'best') body = `<label>Title<input name="title" value="${esc(sl.title || 'Bestsellers')}"></label><label>Small heading<input name="eyebrow" value="${esc(sl.eyebrow == null ? 'Customer favourites' : sl.eyebrow)}"></label><div class="grid2"><label>How many perfumes<select name="n"><option value="3" ${num(sl.n) === 3 ? 'selected' : ''}>3</option><option value="4" ${num(sl.n) !== 3 ? 'selected' : ''}>4</option></select></label><label class="check" style="align-self:end"><input type="checkbox" name="needImg" ${sl.needImg !== false ? 'checked' : ''}> Only perfumes that have a photo</label></div><p class="small mut">The best sellers of the last 30 days, worked out from your sales.</p>`;
-  else if (t === 'promo') body = `<label>Which promotion<select name="promoId"><option value="">Any live promotion at the Point of sale</option>${Object.values(S.promos).sort((a, b) => String(b.start).localeCompare(String(a.start))).map(p => `<option value="${p.id}" ${sl.promoId === p.id ? 'selected' : ''}>${esc(p.name)} (${esc(promoBadge(p))}, ${fmtDate(p.start)} to ${fmtDate(p.end)})</option>`).join('')}</select></label><p class="small mut">Promotions come from <b>Marketing › Promotions</b>. A promotion shows only on the dates and for the perfumes you set there, and only if it applies at the Point of sale.</p><label>Title (leave empty to use the promotion name)<input name="title" value="${esc(sl.title || '')}"></label><label>Line under the title (optional)<input name="text" value="${esc(sl.text || '')}"></label><label>Small heading<input name="eyebrow" value="${esc(sl.eyebrow == null ? 'Special offer' : sl.eyebrow)}"></label><fieldset><legend>Pick the perfumes yourself (up to 3; leave empty to pick automatically)</legend>${ssChecks('pids', prodOpts, sl.pids)}</fieldset>`;
-  else if (t === 'season') body = `<label>Season<select name="fest"><option value="any" ${!sl.fest || sl.fest === 'any' ? 'selected' : ''}>Whichever season is on</option>${Object.entries(SS_FEST_COPY).map(([k, v]) => `<option value="${k}" ${sl.fest === k ? 'selected' : ''}>${v[0]} only</option>`).join('')}</select></label><p class="small mut">This slide appears only during the season (Christmas 1 to 30 Dec, Black Friday weekend, and so on) and uses that season’s design.</p><label>Title (leave empty for the usual words; put *stars* around a word to highlight it)<input name="title" value="${esc(sl.title || '')}"></label><label>Line under the title (optional)<input name="text" value="${esc(sl.text || '')}"></label><fieldset><legend>Pick the perfumes yourself (up to 3; leave empty to show your best sellers)</legend>${ssChecks('pids', prodOpts, sl.pids)}</fieldset>`;
+  else if (t === 'promo') body = `<label>Which promotion<select name="promoId"><option value="">Any live promotion at the Point of sale</option>${Object.values(S.promos).sort((a, b) => String(b.start).localeCompare(String(a.start))).map(p => `<option value="${p.id}" ${sl.promoId === p.id ? 'selected' : ''}>${esc(p.name)} (${esc(promoBadge(p))}, ${fmtDate(p.start)} to ${fmtDate(p.end)})</option>`).join('')}</select></label><p class="small mut">Promotions come from <b>Marketing › Promotions</b>. A promotion shows only on the dates and for the perfumes you set there, and only if it applies at the Point of sale.</p><label>Title (leave empty to use the promotion name)<input name="title" value="${esc(sl.title || '')}"></label><label>Line under the title (optional)<input name="text" value="${esc(sl.text || '')}"></label><label>Small heading<input name="eyebrow" value="${esc(sl.eyebrow == null ? 'Special offer' : sl.eyebrow)}"></label><fieldset><legend>Pick the perfumes yourself (up to 3; they show even when out of stock. Leave empty to pick automatically)</legend>${ssChecks('pids', prodOpts, sl.pids)}</fieldset>`;
+  else if (t === 'season') body = `<label>Season<select name="fest"><option value="any" ${!sl.fest || sl.fest === 'any' ? 'selected' : ''}>Whichever season is on</option>${Object.entries(SS_FEST_COPY).map(([k, v]) => `<option value="${k}" ${sl.fest === k ? 'selected' : ''}>${v[0]} only</option>`).join('')}</select></label><p class="small mut">This slide appears only during the season (Christmas 1 to 30 Dec, Black Friday weekend, and so on) and uses that season’s design.</p><label>Title (leave empty for the usual words; put *stars* around a word to highlight it)<input name="title" value="${esc(sl.title || '')}"></label><label>Line under the title (optional)<input name="text" value="${esc(sl.text || '')}"></label><fieldset><legend>Pick the perfumes yourself (up to 3; they show even when out of stock. Leave empty to show your best sellers)</legend>${ssChecks('pids', prodOpts, sl.pids)}</fieldset>`;
   else if (t === 'list') body = `<fieldset><legend>Categories to show (leave all empty for everything)</legend>${ssChecks('cats', CATS().map(c => [c, c]), sl.cats)}</fieldset><p class="small mut">If the list is long it is split across several slides by itself. Prices follow your live promotions.</p>`;
   else if (t === 'qr') body = `<label>Web address the code opens<input name="url" value="${esc(sl.url || STORE_URL)}"></label><label>Title<input name="title" value="${esc(sl.title || 'Scan to *shop*')}"></label><label>Line under the title<input name="text" value="${esc(sl.text || 'Browse every fragrance and order from your phone')}"></label><label class="check"><input type="checkbox" name="phone" ${sl.phone !== false ? 'checked' : ''}> Show my WhatsApp number (${esc(ssPhone() || 'add it in Settings')})</label>`;
   else if (t === 'pic') body = `<label>Picture (a flyer or photo, the wider the better; 1920 × 1080 fits the screen exactly)<input type="file" name="pic" accept="image/*" ${S.images['ss_' + sl.id] ? '' : 'required'}></label>${S.images['ss_' + sl.id] ? `<img src="${S.images['ss_' + sl.id].data}" alt="" style="max-width:260px;border-radius:8px;border:1px solid var(--line)"><p class="small mut">Leave the file empty to keep this picture.</p>` : ''}<p class="small mut">Tip: in <b>Marketing › Flyers &amp; adverts</b> you can design a flyer and download it as a picture to use here.</p>`;
@@ -8118,9 +8119,10 @@ document.addEventListener('change', async e => {
   if (t.dataset.ssHd) { const f = t.files && t.files[0]; if (!f) return; try { const data = await shrinkImage(f, 1800, 450000); await put('images', {id:'hd_' + t.dataset.ssHd, data}); toast('HD photo saved'); render(true); } catch(x) { toast(x.message || 'Could not save the photo', true); } t.value = ''; return; }
   if (!t.dataset.ssf) return; const k = t.dataset.ssf, sc = ssScr(UI.ssSel); if (!sc) return;
   if (k === 'prevFest') { UI.ssFest = t.value; TOOLS.shopscreen.refresh(); return; }
+  if (k === 'keep') UI.ssKeepTop = document.querySelector('#ss-keep')?.scrollTop || 0;
   await ssSave(c => { const s = c.screens.find(x => x.id === sc.id); if (!s) return;
     if (k === 'name') s.name = t.value.trim() || s.name; else if (k === 'loc') s.loc = t.value; else if (k === 'theme') s.theme = t.value; else if (k === 'sec') s.sec = num(t.value) || 8; else if (k === 'tr') s.tr = t.value;
-    else if (k === 'seasons') s.seasons = t.checked; else if (k === 'hideOut') s.hideOut = t.checked;
+    else if (k === 'keep') s.keep = [...document.querySelectorAll('[data-ssf=keep]:checked')].map(x => x.value); else if (k === 'seasons') s.seasons = t.checked; else if (k === 'hideOut') s.hideOut = t.checked;
     else if (k === 'slideOn') { const sl = s.slides.find(x => x.id === t.dataset.id); if (sl) sl.on = t.checked; } });
   render(true);
 });
