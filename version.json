@@ -1,19 +1,20 @@
 {
- "version": "2.18.0",
- "date": "2026-11-18",
+ "version": "2.18.1",
+ "date": "2026-11-23",
  "notes": [
-  "New menus: Sales, Online Business, Shops, Operations, Human Resources, Finance, Users & Access and more, plus new shop, rider, login and help pages"
+  "Fixes: the money expected from resellers shows the right amounts again, resellers see what is owed to them, and adding the first staff member or job works on a new install",
+  "Safer: customer names can no longer run code, and the phone and PC apps check every update file themselves before installing it"
  ],
  "android": {
-  "file": "android-2.18.0.html",
-  "sig": "XOIax3DfkJ/gYOo1LzQrqZZeYzggZeMPkcx5YoMlAY67i5bCauhyL8a/fp4ayrYfD9LO5Q61Ixl7jlDLoDbawg==",
-  "size": 2447837,
+  "file": "android-2.18.1.html",
+  "sig": "xIjeVcTeNpbnZrvM5o973snByax0MWBmmdvUYRWa4SA9HPeuRckjyWbNPJsXzddDpaId7zOWcurQxWxToM4EAg==",
+  "size": 2449178,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.18.0.html",
-  "sig": "jjKofPTFxX3yZxwmvXJX3+GR0AvzyPk3CYvWjn6+39ougMpKnYCOyhAqJMmEWu0kt27SiYO+AVBeaYPkcwQi3A==",
-  "size": 2443549,
+  "file": "desktop-2.18.1.html",
+  "sig": "2USw76yYy025yP6d4jsqTKtd9g2cf7AQWPmlPmxCmOxJqGVu+iAU/dZLc23QXL46kqDCyEBoXh5AgU11JiSFVw==",
+  "size": 2444166,
   "minShell": "2.5.0"
  },
  "apk": {

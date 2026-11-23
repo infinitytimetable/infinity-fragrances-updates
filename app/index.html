@@ -921,7 +921,7 @@ const DEFAULT_SETTINGS = {
   opening:{cash:0, momo:0, bank:0}, openingDate:''
 };
 const COLS = ['towns','resellers','products','moves','cash','dispatches','images','receipts','promos','customers','invoices','suppliers','payslips','cashups','logs','positions','staff','spay'];
-const S = {towns:{}, resellers:{}, products:{}, moves:{}, cash:{}, dispatches:{}, images:{}, receipts:{}, promos:{}, customers:{}, invoices:{}, suppliers:{}, payslips:{}, cashups:{}, logs:{}, settings:{...DEFAULT_SETTINGS}};
+const S = {towns:{}, resellers:{}, products:{}, moves:{}, cash:{}, dispatches:{}, images:{}, receipts:{}, promos:{}, customers:{}, invoices:{}, suppliers:{}, payslips:{}, cashups:{}, logs:{}, positions:{}, staff:{}, spay:{}, settings:{...DEFAULT_SETTINGS}};
 let DB = null, MODE = 'connecting', DL = null;
 const loaded = {};
 const UI = {month: thisMonth(), town:'', status:'active', q:'', year: String(new Date().getFullYear())};
@@ -2254,8 +2254,9 @@ function fixNumbers(o){
 }
 
 /* ======================= Version 2.0 ======================= */
-const APP_VERSION = '2.18.0';
+const APP_VERSION = '2.18.1';
 const CHANGELOG = [
+  ['2.18.1', '22 Nov 2026', ['Fixes: expected money from resellers shows the right amounts again, resellers see what is owed to them, adding the first staff member or job works on a new install', 'Safer updates: the phone and PC apps now check every update file themselves and only install app updates signed by Infinity Fragrances']],
   ['2.18.0', '18 Nov 2026', ['New menus: Dashboard, Sales, Online Business, Shops, Stock, Operations, Resellers, Human Resources, Finance (Money, Pay, Reports & tax), Marketing, Users & Access, Settings', 'New pages: Online pages & links, Deliveries & riders, Shop sales & cash-ups, Stock in shops, Shop staff, Shop customers, Business ideas, All logins, Access by position, Reseller applications, App updates, Help', 'Payroll now in Finance; Staff and Employee agreements in Human Resources', 'Shop app Home shows business ideas and insights']],
   ['2.17.0', '18 Nov 2026', ['Staff logins with access rights per position: limited admin app for office staff, shopkeeper app for shop staff and cashiers, manager logins for senior staff', 'Approvals: stock and money changes by limited staff wait for the admin', 'Notifications bell with unread count in every app', 'Rider links: each rider gets one personal delivery link', 'Shopkeeper app Home and a new POS with photos, discounts, scanner and calculator', 'Hide finished items, show older, edit or cancel pending requests in the reseller and shop apps', 'Contacts directory', 'Settings for each section (gear button) and Marketing Assistant position']],
   ['2.16.0', '18 Nov 2026', ['Hiring: post positions, open or close applications, and an online application page for jobs (full or part time) and resellers', 'Applications go New → Shortlisted → Interview → Hired, with WhatsApp messages and uploaded NRC, photo, CV and certificates', 'Staff & payslips: staff list with basic pay, commission and NAPSA payslips', 'Full time and part time employment agreements', "Job flyers: We're hiring and single job adverts with a QR code", 'Reseller app: shortcuts at the bottom of Home']],
@@ -2879,7 +2880,7 @@ function snapshotFor(rid){
     statement:st.rows.slice(-40).map(e => ({date:e.date, text:e.text, dr:r2(e.dr), cr:r2(e.cr), bal:r2(e.bal)})), recruits:kids, nextDue:nextDueDate(), settleDay:sDay(), graceDay:num(S.settings.graceDay) || 15,
     parcels:Object.values(S.dispatches).filter(d => d.resellerId === rid).sort((x, y) => (y.date || '').localeCompare(x.date || '') || (y.no || '').localeCompare(x.no || '')).slice(0, 15).map(d => ({id:d.id, no:d.no || '', date:d.date || '', courier:d.method === 'hand' ? 'Delivered by hand' : (d.courier || ''), waybill:d.waybill || '', status:d.status || 'dispatched', deliveredDate:d.deliveredDate || '', items:(d.lines || []).map(l => ({name:pName(l.productId), qty:num(l.qty), price:num(l.unitPrice), gift:!!l.gift}))})),
     month:(() => { const rows = boardRows(today().slice(0, 7)), i = rows.findIndex(x => x.r.id === rid), me = rows[i] || {b:0, t:targetOf(r)}; return {label:monthLabel(today().slice(0, 7)), bottles:me.b, target:me.t, rank:me.b ? i + 1 : 0, sellers:rows.filter(x => x.b > 0).length}; })(),
-    badges:badgesFor(rid, C).map(([icon, text]) => ({icon, text})), lowHeld:num(S.settings.lowHeld ?? 2), payslips:resSlips(rid), maxMarkup:num(S.settings.adMarkup ?? 15), festive:S.settings.festive || 'auto', festOff:S.settings.festOff || [], festIcon:S.settings.festIcon !== false, credit:(c => ({limit:c.limit, used:c.used, available:c.limit ? c.available : 0}))(creditOf(rid, C)),
+    badges:badgesFor(rid, C).map(([icon, text]) => ({icon, text})), lowHeld:num(S.settings.lowHeld ?? 2), payslips:resSlips(rid), maxMarkup:num(S.settings.adMarkup ?? 15), festive:S.settings.festive || 'auto', festOff:S.settings.festOff || [], festIcon:S.settings.festIcon !== false, creditLimit:(c => ({limit:c.limit, used:c.used, available:c.limit ? c.available : 0}))(creditOf(rid, C)),
     business:S.settings.businessName || 'Infinity Fragrances', businessPhone:S.settings.phone || '', tagline:S.settings.tagline || '', updatedAt:nowISO()};
 }
 function publicDocs(){
@@ -3022,7 +3023,7 @@ function resUI(){
     const banner = dd <= 3 && (s.owes > 0 || s.heldBottles > 0) ? `<div class="card" style="border-left:5px solid var(--gold)"><b>Settlement ${dd === 0 ? 'is today' : `in ${dd} day${dd === 1 ? '' : 's'}`} (${fmtDate(s.nextDue)}).</b> Report what you sold and pay${s.owes ? ` <b>${money(s.owes)}</b>` : ' what you owe'} (keep your commission). ${btn('Report payment', 'resTab', {k:'pay'}, 'sm pri')}</div>` : '';
     const low = s.heldBottles <= num(s.lowHeld ?? 2) ? `<div class="card" style="border-left:5px solid var(--s1)"><b>You are running low${s.heldBottles ? ` (${s.heldBottles} left)` : ''}.</b> Order more before your customers go elsewhere. ${btn('Order stock', 'resTab', {k:'order'}, 'sm pri')}</div>` : '';
     const prog = `<div class="card"><h2>${esc(mo.label || 'This month')}</h2><div style="background:var(--line);border-radius:8px;height:14px;overflow:hidden"><div style="width:${pc}%;height:100%;background:${pc >= 100 ? 'var(--s3)' : 'var(--gold)'}"></div></div><p style="margin:6px 0 10px"><b>${int(mo.bottles)}</b> of ${int(mo.target)} bottles${pc >= 100 ? ' · <b>Target hit! 🎯</b>' : mo.target ? ` · ${int(Math.max(0, mo.target - mo.bottles))} to go` : ''}${mo.rank ? ` · #${mo.rank} of ${mo.sellers} sellers` : ''}</p>${(s.badges || []).length ? `<div style="display:flex;gap:6px;flex-wrap:wrap">${s.badges.map(b => `<span class="pill">${b.icon} ${esc(b.text)}</span>`).join('')}</div>` : '<p class="small mut">Sell bottles to earn badges.</p>'}</div>`;
-    body = banner + low + prog + `<div class="tiles">${tile('Perfume with you', int(s.heldBottles) + ' bottles')}${tile('Worth at selling price', money(s.heldValue))}${tile('You owe now', money(s.owes), s.credit ? `we owe you ${money(s.credit)}` : '', s.owes > 0)}${tile('Next settlement', fmtDate(s.nextDue), `late after the ${ord(s.graceDay)}`)}</div>
+    body = banner + low + prog + `<div class="tiles">${tile('Perfume with you', int(s.heldBottles) + ' bottles')}${tile('Worth at selling price', money(s.heldValue))}${tile('You owe now', money(s.owes), typeof s.credit === 'number' && s.credit > 0 ? `we owe you ${money(s.credit)}` : '', s.owes > 0)}${tile('Next settlement', fmtDate(s.nextDue), `late after the ${ord(s.graceDay)}`)}</div>
       <div class="card"><h2>Your perfumes</h2>${s.held.length ? `<div class="tw"><table class="t"><thead><tr><th>Perfume</th><th class="n">With you</th><th class="n">Price</th></tr></thead><tbody>${resAvail().map(x => `<tr><td>${esc(x.name)}${x.size ? ' ' + esc(x.size) + 'ml' : ''}</td><td class="n">${x.qty}${x.avail !== x.qty ? `<div class="small mut">${x.qty - x.avail} waiting</div>` : ''}</td><td class="n"><b>${money(x.price)}</b></td></tr>`).join('')}</tbody></table></div>` : '<p class="mut">No perfume with you right now. Use “Order / return” to ask for stock.</p>'}</div>
       ${reqListCard('res', RES.reqs, ST)}
       <p class="hint">Updated by ${esc(s.business)} on ${esc(fmtDateTime(s.updatedAt))}.</p>` + resShortcuts();
@@ -3292,7 +3293,7 @@ function catalogHTML(){
       <div class="cat-name">${esc(p.name)}${p.size ? ` <span class="small mut">${esc(p.size)}ml</span>` : ''}</div>
       <div class="cat-price">${p.promo ? `<s class="small mut">${money(p.price)}</s> <b>${money(p.promo.price)}</b>` : `<b>${money(p.price)}</b>`}</div>
       <div class="stepper"><button type="button" data-act="catMinus" data-id="${p.id}" aria-label="One less">−</button><span id="cq-${p.id}">${q}</span><button type="button" data-act="catPlus" data-id="${p.id}" aria-label="One more">+</button></div></div>`; };
-  const cr = RES.snap?.credit;
+  const cr = (RES.snap?.creditLimit || (RES.snap?.credit && typeof RES.snap.credit === 'object' ? RES.snap.credit : null));
   return `<div class="card"><h2>Order stock</h2><p class="hint">Tap + to add bottles. ${esc(bizName())} approves your order and sends the parcel.</p>${cr && cr.limit ? `<p class="small"><b>Your credit:</b> limit ${money(cr.limit)} · using ${money(cr.used)} · <b>available ${money(cr.available)}</b></p>` : ''}
     <input id="cat-q" type="search" placeholder="Search perfumes…" style="width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:10px;font-size:16px;margin-bottom:8px;background:var(--surface);color:var(--ink)">
     ${cats.length > 1 ? `<div class="seg" style="flex-wrap:wrap;margin-bottom:10px"><button type="button" data-act="catCat" data-k="" class="on">All</button>${cats.map(c => `<button type="button" data-act="catCat" data-k="${esc(c)}">${esc(c)}</button>`).join('')}</div>` : ''}
@@ -3746,7 +3747,7 @@ async function checkUpdate(manual){
     if (UPD.state === 'ready' && UPD.ver === m.version) { updBar(); return; }
     const txt = await (await fetch(UPD_URL + p.file, {cache:'no-store'})).text();
     if (!(await updVerify(txt, p.sig))) throw Error('The update did not pass its security check, so it was not installed. It will try again later.');
-    const r = await DESK.installUpdateText(txt); if (!r || r.error) { if (r && /already have/.test(r.error)) { UPD.state = 'latest'; if (manual) toast(r.error); return; } throw Error((r && r.error) || 'Could not install the update.'); }
+    const r = await DESK.installUpdateText(txt, p.sig); if (!r || r.error) { if (r && /already have/.test(r.error)) { UPD.state = 'latest'; if (manual) toast(r.error); return; } throw Error((r && r.error) || 'Could not install the update.'); }
     UPD = {...UPD, state:'ready', ver:m.version, notes:m.notes || []}; logWrite && logWrite('update', `Downloaded version ${m.version}`); updBar();
   } catch(e) { if (manual) toast(/fetch|network|Failed/i.test(e.message) ? 'Could not reach the update server. Check your internet.' : e.message, true); }
   finally { UPD.busy = false; try { localStorage.setItem('if-updchk', nowISO()); } catch(e) {} if (route() === 'setup' || RES.tab === 'account') { const c = $('#upd-card'); if (c) c.outerHTML = updCard(); } }
@@ -5059,14 +5060,14 @@ function fillLines(f, lines){
 }
 
 /* ---------- daily cash-up ---------- */
-function expectedFor(loc, date){
+function cashupExpected(loc, date){
   const by = {cash:0, momo:0, bank:0}; let sales = 0, n = 0;
   Object.values(S.receipts).forEach(r => { if (r.date !== date) return; const l = r.shop || (r.seller ? null : (r.loc || 'main')); if (l !== loc) return; n++; sales += num(r.total); if (by[r.pay] != null) by[r.pay] += num(r.total); });
   Object.values(S.cash).forEach(c => { if (c.date === date && c.kind === 'out' && (c.shop || 'main') === loc && c.category === 'Shop expense' && by[c.channel] != null) by[c.channel] -= num(c.amount); });
   return {by, sales:r2(sales), n};
 }
 function cashupForm(loc){
-  const e = expectedFor(loc, today()), l = shopOf(loc) || {name:'Main till'};
+  const e = cashupExpected(loc, today()), l = shopOf(loc) || {name:'Main till'};
   modal(`Close the day · ${l.name}`, `<p class="hint">Count the money now. The app compares it with today's ${e.n} sale${e.n === 1 ? '' : 's'} (${money(e.sales)}).</p>
     <div class="grid2">${fDate()}<span></span><label for="f-cu1">Cash counted<input id="f-cu1" name="cash" type="number" step="0.01" placeholder="${e.by.cash}"></label><label for="f-cu2">Mobile money received<input id="f-cu2" name="momo" type="number" step="0.01" placeholder="${e.by.momo}"></label><label for="f-cu3">Bank / card received<input id="f-cu3" name="bank" type="number" step="0.01" placeholder="${e.by.bank}"></label>
     <label for="f-cu4">Paid out from the till today<input id="f-cu4" name="exp" type="number" step="0.01" placeholder="0"></label><label for="f-cu5">What for<input id="f-cu5" name="expNote" placeholder="e.g. transport, airtime"></label><label for="f-cu6">Note<input id="f-cu6" name="note"></label></div>`,
@@ -5074,7 +5075,7 @@ function cashupForm(loc){
 }
 async function saveCashup(x){
   if (x.expense > 0) await put('cash', {kind:'out', date:x.date, channel:'cash', amount:x.expense, category:'Shop expense', expType:'Shop expense', shop:x.loc === 'main' ? '' : x.loc, description:`${(shopOf(x.loc) || {name:'Main till'}).name}: ${x.expNote || 'paid from the till'}`});
-  const e = expectedFor(x.loc, x.date), counted = r2(x.counted.cash + x.counted.momo + x.counted.bank), expected = r2(e.by.cash + e.by.momo + e.by.bank);
+  const e = cashupExpected(x.loc, x.date), counted = r2(x.counted.cash + x.counted.momo + x.counted.bank), expected = r2(e.by.cash + e.by.momo + e.by.bank);
   const rec = await put('cashups', {...x, expected:e.by, sales:e.sales, countedTotal:counted, expectedTotal:expected, diff:r2(counted - expected)});
   toast(rec.diff < -0.009 ? `Day closed: ${money(-rec.diff)} short` : rec.diff > 0.009 ? `Day closed: ${money(rec.diff)} over` : 'Day closed: everything matches');
   if (x.loc !== 'main') publishShop(x.loc); return rec;
@@ -5805,7 +5806,7 @@ PAGES.customers = () => {
   const rows = list.map(row), dueN = rows.filter(x => x.dueRep).length;
   return head('Customers', `Keep your buyers' numbers, see what they like, and remind them to buy again about ${repeatDays()} days after their last perfume.`, btn('+ Add customer', 'custNew', {}, 'pri') + btn('Reminder timing', 'custTiming'))
     + `<div class="tiles">${tile('Customers', int(list.length))}${tile('Due to buy again', int(dueN), `last bought ${repeatDays()}+ days ago`, dueN > 0)}${tile('Owing you', money(rows.reduce((t, x) => t + Math.max(0, x.s.owes || 0), 0)), 'credit sales')}</div>`
-    + celebrateCard() + (extra.length ? `<div class="card"><h2>Buyers found in your sales</h2><p class="hint">These names appear on sales but are not on your customer list yet.</p><div class="actions">${extra.slice(0, 30).map(x => btn('+ ' + x.name, 'custNew', {name:x.name}, 'sm')).join('')}</div></div>` : '')
+    + celebrateCard() + (extra.length ? `<div class="card"><h2>Buyers found in your sales</h2><p class="hint">These names appear on sales but are not on your customer list yet.</p><div class="actions">${extra.slice(0, 30).map(x => btn('+ ' + esc(x.name), 'custNew', {name:x.name}, 'sm')).join('')}</div></div>` : '')
     + (rows.length ? `<div class="card"><div class="tw"><table class="t"><thead><tr><th>Customer</th><th>Phone</th><th class="n">Bottles</th><th class="n">Spent</th><th>Favourite</th><th>Last bought</th><th></th></tr></thead><tbody>
       ${rows.sort((a, b) => (b.dueRep - a.dueRep) || a.c.name.localeCompare(b.c.name)).map(({c, s, ago, dueRep}) => { const fav = Object.entries(s.fav || {}).sort((a, b) => b[1] - a[1])[0];
         return `<tr><td><b>${esc(c.name)}</b><div class="small mut">${esc([c.town, c.notes].filter(Boolean).join(' · '))}</div></td><td>${c.phone ? esc(c.phone) : '<span class="mut">—</span>'}</td><td class="n">${int(s.bottles)}</td><td class="n">${money(s.spent)}${s.owes > 0.009 ? `<div class="small neg">owes ${money(s.owes)}</div>` : ''}${LOY().on ? `<div class="small">⭐ ${num(c.points)} pts</div>` : ''}</td>
@@ -7054,7 +7055,7 @@ const ACT = {
   catPlus: d => { RES.cart = RES.cart || {}; RES.cart[d.id] = (RES.cart[d.id] || 0) + 1; $('#cq-' + d.id).textContent = RES.cart[d.id]; $('#cart-bar').innerHTML = cartBarHTML(); },
   catMinus: d => { RES.cart = RES.cart || {}; RES.cart[d.id] = Math.max(0, (RES.cart[d.id] || 0) - 1); $('#cq-' + d.id).textContent = RES.cart[d.id]; $('#cart-bar').innerHTML = cartBarHTML(); },
   catCat: (d, el) => { document.querySelectorAll('[data-act=catCat]').forEach(b => b.classList.toggle('on', b.dataset.k === d.k)); document.querySelectorAll('.cat-card').forEach(c => c.hidden = !!d.k && c.dataset.cat !== d.k); },
-  catSend: () => { try { const cr = RES.snap?.credit, t = cartTotals().t; if (cr && cr.limit && t > cr.available + 0.009) return toast(`This order (${money(t)}) is more than your available credit (${money(cr.available)}). Pay what you owe first, or order less.`, true); resSubmit('order', resCollect({dataset:{type:'order'}})); } catch(e) { toast(e.message, true); } },
+  catSend: () => { try { const cr = (RES.snap?.creditLimit || (RES.snap?.credit && typeof RES.snap.credit === 'object' ? RES.snap.credit : null)), t = cartTotals().t; if (cr && cr.limit && t > cr.available + 0.009) return toast(`This order (${money(t)}) is more than your available credit (${money(cr.available)}). Pay what you owe first, or order less.`, true); resSubmit('order', resCollect({dataset:{type:'order'}})); } catch(e) { toast(e.message, true); } },
   resProofDel: () => { RES.proof = ''; const pv = $('#rp-prev'); if (pv) pv.innerHTML = ''; const f = $('#rp-img'); if (f) f.value = ''; },
   reqProof: d => { const q = (OWN.reqs[d.rid] || []).find(x => x.id === d.id); if (q?.proof) proofModal(q.proof, `${rName(d.rid)}: payment slip`); },
   reqOkSel: async () => { const sel = [...document.querySelectorAll('.rq-sel:checked')].map(c => ({rid:c.dataset.rid, id:c.dataset.id})); if (!sel.length) return toast('Tick the requests first.', true);
