@@ -18,7 +18,7 @@ mv "$D/electron.exe" "$D/Infinity Fragrances Hub.exe"
 rm -f "$D/resources/default_app.asar"
 find "$D/locales" -type f ! -name 'en-US.pak' ! -name 'en-GB.pak' -delete
 mkdir -p "$D/resources/app"
-cp windows/app/main.js windows/app/preload.js windows/app/icon.png windows/app/icon.ico "$D/resources/app/"
+cp windows/app/main.js windows/app/preload.js windows/app/projector.js windows/app/icon.png windows/app/icon.ico "$D/resources/app/"
 cp "desktop-$VER.html" "$D/resources/app/index.html"
 printf '{\n "name": "infinity-fragrances-hub",\n "productName": "Infinity Fragrances Hub",\n "version": "%s",\n "description": "Business hub for Infinity Fragrances",\n "author": "Infinity Fragrances",\n "main": "main.js"\n}\n' "$VER" > "$D/resources/app/package.json"
 sed "s/__VER__/$VER/g; s/\$/\r/" windows/READ-ME-FIRST.txt > "$D/READ ME FIRST.txt"

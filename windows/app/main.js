@@ -80,6 +80,7 @@ function startServer() {
   return new Promise(resolve => {
     const srv = http.createServer((req, res) => {
       let u = decodeURIComponent((req.url || '/').split('?')[0]);
+      if (u === '/projector.html') { const d = PROJ ? PROJ.page() : ''; if (!d) { res.writeHead(404); return res.end(); } res.writeHead(200, { 'Content-Type': MIME['.html'], 'Cache-Control': 'no-store' }); return res.end(d); }
       if (u === '/' || u === '/index.html') { res.writeHead(200, { 'Content-Type': MIME['.html'], 'Cache-Control': 'no-store' }); return fs.createReadStream(uiFile()).pipe(res); }
       const f = path.join(__dirname, path.normalize(u).replace(/^([\\/])+/, ''));
       if (!f.startsWith(__dirname) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { res.writeHead(404); return res.end(); }
@@ -93,6 +94,7 @@ function startServer() {
 
 /* ---------- window ---------- */
 let win;
+const PROJ = require('./projector')({ getMain: () => win, getBase: () => BASE_URL });
 function createWindow() {
   const wsFile = path.join(app.getPath('userData'), 'window.json'); let ws = {}; try { ws = JSON.parse(fs.readFileSync(wsFile, 'utf8')); } catch (e) {}
   const { screen } = require('electron'); const wa = screen.getPrimaryDisplay().workAreaSize;
@@ -102,6 +104,8 @@ function createWindow() {
   win.once('ready-to-show', () => { if (!okBounds || ws.maximized !== false) win.maximize(); win.show(); });
   const saveWs = () => { try { const b = win.isMaximized() ? win.getNormalBounds() : win.getBounds(); fs.writeFileSync(wsFile, JSON.stringify({ ...b, maximized: win.isMaximized() })); } catch (e) {} };
   win.on('close', saveWs);
+  win.on('closed', () => { try { PROJ.close(); } catch (e) {} });
+  win.webContents.on('did-start-loading', () => { try { PROJ.close(); } catch (e) {} });
   win.webContents.setWindowOpenHandler(({ url }) => { if (/^(https?|mailto|tel|whatsapp):/i.test(url)) shell.openExternal(url); return { action: 'deny' }; });
   win.webContents.on('will-navigate', (e, url) => { if (!url.startsWith(BASE_URL)) { e.preventDefault(); shell.openExternal(url); } });
   win.on('page-title-updated', e => e.preventDefault());

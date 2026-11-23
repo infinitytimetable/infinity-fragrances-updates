@@ -806,7 +806,7 @@ body.bell-on .head,body.bell-on .res-head,body.bell-on .sec-row{padding-right:52
 .part-chips{display:flex;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:8px}.part-chips a{flex:1;text-align:center;padding:9px 6px;font-weight:700;font-size:13px;color:var(--ink);text-decoration:none;background:var(--surface)}.part-chips a+a{border-left:1px solid var(--line)}.part-chips a.on{background:var(--accent);color:var(--accent-ink)}
 /*SS-CSS:BEGIN*/
 /* ===== Shop screen: player styles (all classes start with ss-) ===== */
-.ss-host{position:relative;overflow:hidden;background:#000}
+.ss-host{position:relative;overflow:hidden;background:#000;transition:background .8s ease}
 .ss-stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;margin:-540px 0 0 -960px;transform:scale(var(--s,1));transform-origin:50% 50%;overflow:hidden;background:#000;--spark:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0C12 7 17 12 24 12 17 12 12 17 12 24 12 17 7 12 0 12 7 12 12 7 12 0Z' fill='%23e8c15a'/%3E%3C/svg%3E")}
 .ss-stage *{box-sizing:border-box;margin:0;padding:0}
 .ss-stage img{max-width:none;display:block}
@@ -817,7 +817,7 @@ body.bell-on .head,body.bell-on .res-head,body.bell-on .sec-row{padding-right:52
 .ss-stage[data-tr=zoom] .ss-slide{transform:scale(1.07)}
 .ss-stage[data-tr=zoom] .ss-slide.ss-out{transform:scale(.95)}
 .ss-stage .ss-slide.ss-active{transform:none}
-.ss-bar{position:absolute;left:0;bottom:0;height:8px;width:0;z-index:10}
+.ss-bar{position:absolute;left:0;bottom:0;height:8px;width:100%;transform:scaleX(0);transform-origin:0 50%;z-index:10}
 .ss-stage.ss-x .ss-slide,.ss-stage.ss-x .ss-in{transition:none!important}
 .ss-stage.ss-x .ss-in{opacity:1!important;transform:none!important}
 .ss-pic{position:absolute;inset:0;width:100%;height:100%}
@@ -953,7 +953,7 @@ body.bell-on .head,body.bell-on .res-head,body.bell-on .sec-row{padding-right:52
 .ss-proj{position:fixed;inset:0;z-index:9999;background:#000;cursor:default}
 .ss-proj.ss-idle{cursor:none}
 .ss-pv{position:absolute;inset:0}
-.ss-host{position:relative;overflow:hidden;background:#000}
+.ss-host{position:relative;overflow:hidden;background:#000;transition:background .8s ease}
 .ss-ctl{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);display:flex;gap:8px;padding:8px;border-radius:14px;background:rgba(20,18,15,.88);box-shadow:0 8px 30px rgba(0,0,0,.5);transition:opacity .4s;z-index:3}
 .ss-ctl.ss-hide{opacity:0;pointer-events:none}
 .ss-ctl button{font:600 15px/1 system-ui,sans-serif;color:#f4ecd8;background:#2c2820;border:1px solid #4a4336;border-radius:10px;padding:12px 16px;cursor:pointer;min-height:44px}
@@ -974,6 +974,10 @@ body.bell-on .head,body.bell-on .res-head,body.bell-on .sec-row{padding-right:52
 .ss-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;background:#14110c;color:#e9cf8f;font:600 64px/1.2 system-ui,sans-serif;text-align:center;padding:0 160px}
 .ss-empty[hidden]{display:none}
 .ss-empty small{font:400 38px/1.4 system-ui,sans-serif;color:#a69d8e}
+body.ss-projecting > *:not(.ss-proj){display:none!important}
+.ss-hint{position:absolute;top:22px;left:50%;transform:translateX(-50%);max-width:92%;padding:10px 16px;border-radius:10px;background:rgba(20,18,15,.88);color:#f4ecd8;font:600 16px/1.3 system-ui,sans-serif;text-align:center;z-index:3}
+.ss-hint[hidden]{display:none}
+.ss-proj .ss-pv{position:absolute;inset:0;width:100%;height:100%}
 /*SS-CSS:END*/
 </style>
 <script>try{var L=JSON.parse(localStorage.getItem('if-look')||'{}'),R=document.documentElement;var F=localStorage.getItem('if-forceskin');R.dataset.skin=F||L.skin||'classic';if(L.mode&&L.mode!=='auto')R.dataset.theme=L.mode;R.dataset.text=L.text||'normal';if(L.motion===false)R.dataset.motion='off';}catch(e){}</script>
@@ -2464,8 +2468,11 @@ function fixNumbers(o){
 }
 
 /* ======================= Version 2.0 ======================= */
-const APP_VERSION = '2.22.0';
+const APP_VERSION = '2.23.0';
 const CHANGELOG = [
+  ['2.23.0', '23 Nov 2026', ['Shop screen projector in its own window (Windows app 2.23 and newer): it opens on your TV screen while the hub stays free on your PC monitor for the Point of sale and everything else', 'Choose which screen to use, or a window you place yourself; control it from the hub (previous, pause, next, stop). Changes to your slides, prices and stock reach the TV by themselves', 'Needs the new PC app once (download page). Older apps keep using the projector inside the hub window']],
+  ['2.22.2', '23 Nov 2026', ['Shop screen projector fixed: it now fills the whole screen with the slideshow (it showed a black screen before), asks for real full screen, and also works with F11 or a double-click', 'Lighter and quicker: the hub is hidden while the projector plays, it starts at once without waiting for downloads, and it keeps only the slides it needs in memory', 'If your screen is not widescreen, the empty bars take the slide colour instead of black']],
+  ['2.22.1', '23 Nov 2026', ['Shop screen: perfumes you pick by hand on a slide now show even when they are out of stock', 'New list on each screen: always show these perfumes, even when out of stock (they also appear on the price list)']],
   ['2.22.0', '23 Nov 2026', ['New: Shop screen (Marketing menu). Show your perfumes, prices and offers on the TV or monitor in your shop, like the screens in restaurants', 'Seven designs and fonts: Noir Gold, Ivory Editorial, Emerald Christmas, Midnight Silver, Rose Blush, Black Friday Bold and Royal Oud. Mix them, or let the season pick (Christmas, New Year, Valentine’s, Black Friday and more)', 'Slides: featured perfume, bestsellers (picked from your sales), promotions, seasonal gifts, price lists by category, a QR code to your online shop, your own pictures and messages', 'Hide out-of-stock perfumes, set dates, times and days for each slide, and keep a different screen for each shop', 'Start projector: plug the TV into the computer with HDMI (or cast the window wirelessly) and it plays full screen', 'Video for USB: save the slideshow as a video file to copy onto a flash drive and play on any TV', 'HD photos: add a sharper photo for any perfume so it looks good on a 4K screen']],
   ['2.21.1', '23 Nov 2026', ['Messages fixes: deleting a conversation now finishes cleanly, and chats between two other people no longer add to the Admin unread count', 'A message you are reading clears its bell dot straight away, and the Seen-by list now follows follow-up posts', 'Safer: only Admin and managers can send messages as the office (paste the updated Firebase rules once)']],
   ['2.21.0', '23 Nov 2026', ['Messages: a new inbox in the Admin hub, the reseller app and the shop and staff app, like Messenger and email together', 'Write to people with To and CC, start group chats, and send announcements to all resellers, a town, shops and staff or hand-picked people, with a Seen-by list', 'Send photos, use one-tap quick replies, and see new messages in the bell and as phone alerts', 'Resellers who use a personal link can read announcements and write to the office from it', 'Admin can read every conversation (people are told), and can nudge anyone who has not read a message on WhatsApp']],
@@ -7759,11 +7766,11 @@ const SS_DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const SS = {pv:null, proj:null, tick:0};
 const ssTag = () => S.settings.tagline || 'Smell good. Live infinitely.';
 const ssRich = s => esc(s).replace(/\*([^*\n]+)\*/g, '<em>$1</em>').replace(/\n/g, '<br>');
-const ssMoney = n => { n = r2(num(n)); return (S.settings.currency || 'K') + (Number.isInteger(n) ? n.toLocaleString('en-US') : n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})); };
 const ssSig = o => JSON.stringify(o, (k, v) => typeof v === 'string' && v.length > 3000 ? 'L' + v.length + v.slice(-24) : v);
 function ssPhone(){ const p = String(bizPhone() || '').replace(/[^\d+]/g, ''); return /^\+260\d{9}$/.test(p) ? p.replace(/^(\+260)(\d{3})(\d{3})(\d{3})$/, '$1 $2 $3 $4') : bizPhone(); }
-function ssFonts(){ if (document.getElementById('ss-fonts')) return; const l = document.createElement('link'); l.id = 'ss-fonts'; l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,500;0,600;1,500&family=Cinzel:wght@500;600&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&family=Jost:wght@400;500;600&family=Lato:wght@400;700&family=Montserrat:wght@500;600;800&family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Poppins:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap'; document.head.appendChild(l); }
-async function ssPrep(){ ssFonts(); if (!window.ZXing) { try { await loadAny(ZX_SRCS); } catch(e) {} } }
+const SS_FONT_HREF = 'https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,500;0,600;1,500&family=Cinzel:wght@500;600&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&family=Jost:wght@400;500;600&family=Lato:wght@400;700&family=Montserrat:wght@500;600;800&family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Poppins:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap';
+function ssFonts(){ if (document.getElementById('ss-fonts')) return; const l = document.createElement('link'); l.id = 'ss-fonts'; l.rel = 'stylesheet'; l.href = SS_FONT_HREF; document.head.appendChild(l); }
+async function ssPrep(){ ssFonts(); }
 
 /* ---------- saved settings ---------- */
 const ssCfg = () => (S.settings.ss && Array.isArray(S.settings.ss.screens)) ? S.settings.ss : {screens:[]};
@@ -7777,7 +7784,7 @@ const ssOk = p => p && (p.status || 'active') !== 'inactive' && num(p.sellPrice)
 const ssImg = pid => S.images['hd_' + pid]?.data || imgOf(pid) || '';
 function ssPrice(pid){ const base = num(S.products[pid]?.sellPrice), b = bestPromo(pid, base, 'pos'); return b && b.price < base ? {now:b.price, was:base} : {now:base, was:0}; }
 function ssItem(p){ const pr = ssPrice(p.id); return {id:p.id, name:p.name, size:p.size ? p.size + ' ml' : '', cat:p.category || '', img:ssImg(p.id), now:pr.now, was:pr.was}; }
-function ssPool(sc, stock){ const st = stock || compute().storeLoc[sc.loc || 'main'] || {}; return sortedProds().filter(p => ssOk(p) && (sc.hideOut === false || num(st[p.id]) > 0)); }
+function ssPool(sc, stock){ const st = stock || compute().storeLoc[sc.loc || 'main'] || {}, keep = sc.keep || []; return sortedProds().filter(p => ssOk(p) && (sc.hideOut === false || num(st[p.id]) > 0 || keep.includes(p.id))); }
 function ssBest(sc, pool, n, needImg){
   const since = iso(addDays(new Date(), -30)), here = {}, all = {};
   for (const m of Object.values(S.moves)) { if (m.kind !== 'sale' || (m.date || '') < since) continue; const q = num(m.qty); all[m.productId] = (all[m.productId] || 0) + q; if (!m.resellerId && (m.loc || 'main') === (sc.loc || 'main')) here[m.productId] = (here[m.productId] || 0) + q; }
@@ -7822,15 +7829,15 @@ function ssListPages(sc, sl, pool){
   const np = Math.ceil(cols.length / 3), pages = []; let at = 0; for (let k = 0; k < np; k++) { const take = Math.ceil((cols.length - at) / (np - k)); pages.push(cols.slice(at, at + take)); at += take; }
   return pages;
 }
-function ssOne(sc, sl, pool, fest, d, ci){
+function ssOne(sc, sl, pool, fest, d, ci, all){
   const base = k => ({k, id:sl.id, sec:num(sl.sec) || num(sc.sec) || 8}), th = pref => ssTheme(sc, sl, ci, fest, pref);
   switch (sl.type) {
-    case 'hero': { const p = pool.find(x => x.id === sl.pid); if (!p) return null; const it = ssItem(p); return {...base('hero'), theme:th(), eyebrow:sl.eyebrow == null ? 'New arrival' : sl.eyebrow, sub:sl.sub || '', meta:[it.size, it.cat].filter(Boolean).join('  ·  '), item:it}; }
+    case 'hero': { const p = all.find(x => x.id === sl.pid); if (!p) return null; const it = ssItem(p); return {...base('hero'), theme:th(), eyebrow:sl.eyebrow == null ? 'New arrival' : sl.eyebrow, sub:sl.sub || '', meta:[it.size, it.cat].filter(Boolean).join('  ·  '), item:it}; }
     case 'best': { const ps = ssBest(sc, pool, num(sl.n) || 4, sl.needImg !== false); if (ps.length < 2) return null; return {...base('best'), theme:th(), eyebrow:sl.eyebrow == null ? 'Customer favourites' : sl.eyebrow, title:sl.title || 'Bestsellers', items:ps.map(ssItem)}; }
     case 'promo': {
       const live = Object.values(S.promos).filter(pr => promoLive(pr, iso(d)) && (pr.channels || {}).pos).sort((a, b) => String(b.start).localeCompare(String(a.start)));
       const pr = sl.promoId ? live.find(x => x.id === sl.promoId) : live[0]; if (!pr) return null;
-      let ps = (sl.pids && sl.pids.length) ? sl.pids.map(id => pool.find(x => x.id === id)).filter(Boolean) : ssBest(sc, pool.filter(p => promoApplies(pr, p.id)), 3, true);
+      let ps = (sl.pids && sl.pids.length) ? sl.pids.map(id => all.find(x => x.id === id)).filter(Boolean) : ssBest(sc, pool.filter(p => promoApplies(pr, p.id)), 3, true);
       if (!ps.length && !(sl.pids && sl.pids.length)) ps = ssBest(sc, pool.filter(p => promoApplies(pr, p.id)), 3, false);
       if (!ps.length) return null;
       const items = ps.slice(0, 3).map(p => { const it = ssItem(p); if (pr.kind !== 'bxgy') { const np = promoUnit(pr, num(p.sellPrice)); it.now = np; it.was = np < num(p.sellPrice) ? num(p.sellPrice) : 0; } else { it.now = num(p.sellPrice); it.was = 0; } return it; });
@@ -7838,7 +7845,7 @@ function ssOne(sc, sl, pool, fest, d, ci){
     }
     case 'season': {
       const f = (sl.fest && sl.fest !== 'any') ? sl.fest : fest; if (!f || (sl.fest && sl.fest !== 'any' && fest !== sl.fest)) return null;
-      const cp = SS_FEST_COPY[f]; let ps = (sl.pids && sl.pids.length) ? sl.pids.map(id => pool.find(x => x.id === id)).filter(Boolean) : ssBest(sc, pool, 3, true); if (!ps.length) return null;
+      const cp = SS_FEST_COPY[f]; let ps = (sl.pids && sl.pids.length) ? sl.pids.map(id => all.find(x => x.id === id)).filter(Boolean) : ssBest(sc, pool, 3, true); if (!ps.length) return null;
       return {...base('promo'), theme:th(SS_FEST_THEME[f]), eyebrow:sl.eyebrow == null ? cp[0] : sl.eyebrow, titleHTML:ssRich(sl.title || cp[1]), text:sl.text || cp[2], badge:'', items:ps.slice(0, 3).map(ssItem)};
     }
     case 'list': { const pages = ssListPages(sc, sl, pool); if (!pages.length) return null; const t = th(); return pages.map((cols, k) => ({...base('list'), id:sl.id + (pages.length > 1 ? '#' + (k + 1) : ''), sec:num(sl.sec) || (num(sc.sec) || 8) + 4, theme:t, page:k + 1, pages:pages.length, cols})); }
@@ -7850,13 +7857,15 @@ function ssOne(sc, sl, pool, fest, d, ci){
 }
 function ssBuild(sc, d, opt){
   d = d || new Date(); opt = opt || {};
-  const pool = ssPool(sc), fest = opt.fest !== undefined && opt.fest !== '' ? opt.fest : festivalFor(iso(d)), out = [];
-  (sc.slides || []).forEach((sl, ci) => { if (!opt.all && !ssWhen(sl, d)) return; const r = ssOne(sc, sl, pool, fest, d, ci); if (r) (Array.isArray(r) ? r : [r]).forEach(x => out.push(x)); });
+  const pool = ssPool(sc), all = sortedProds().filter(ssOk), fest = opt.fest !== undefined && opt.fest !== '' ? opt.fest : festivalFor(iso(d)), out = [];
+  (sc.slides || []).forEach((sl, ci) => { if (!opt.all && !ssWhen(sl, d)) return; const r = ssOne(sc, sl, pool, fest, d, ci, all); if (r) (Array.isArray(r) ? r : [r]).forEach(x => out.push(x)); });
   out.forEach((s, i) => { s.i = i; s.n = out.length; });
   return {slides:out, tr:sc.tr || 'fade', sig:ssSig({o:out, t:sc.tr, g:ssTag(), b:bizName()})};
 }
 
 /* ---------- slide pictures ---------- */
+/*SS-VIEW:BEGIN*/
+const ssMoney = n => { n = r2(num(n)); return (S.settings.currency || 'K') + (Number.isInteger(n) ? n.toLocaleString('en-US') : n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})); };
 const ssDots = (i, n) => '<div class="ss-dots">' + Array.from({length:n}, (_, k) => `<span class="${k === i ? 'ss-on' : ''}"></span>`).join('') + '</div>';
 const ssFoot = (s, abs) => `<div class="ss-foot${abs ? ' ss-abs' : ''} ss-in" style="--d:7">${ssDots(s.i, s.n)}<div class="ss-tag">${esc(ssTag())}</div></div>`;
 const ssBrand = d => `<div class="ss-brand ss-in" style="--d:${d || 0}"><img src="${LOGO}" alt=""><span>${esc(bizName())}</span></div>`;
@@ -7878,32 +7887,41 @@ const SS_HTML = {
 /* ---------- the player (preview, projector and video all use this) ---------- */
 class SSPlayer {
   constructor(host, o){
-    this.host = host; this.o = o || {}; this.idx = -1; this.playing = true; this.tm = 0; this.els = []; this.sig = ''; this.data = null;
+    this.host = host; this.o = o || {}; this.idx = -1; this.playing = true; this.tm = 0; this.els = []; this.sig = ''; this.data = null; this.lazy = !this.o.exportMode;
     host.classList.add('ss-host'); host.innerHTML = '<div class="ss-stage" data-tr="fade"><div class="ss-bar"></div><div class="ss-empty" hidden><div>Nothing to show right now</div><small>Check that your perfumes are in stock, your slides are switched on and their dates have started.</small></div></div>';
     this.stage = host.firstChild; this.bar = this.stage.firstChild; this.empty = this.bar.nextSibling; if (this.o.exportMode) this.stage.classList.add('ss-x');
     if (typeof ResizeObserver !== 'undefined') { this.ro = new ResizeObserver(() => this.fit()); this.ro.observe(host); } this.fit();
   }
   fit(){ const w = this.host.clientWidth, h = this.host.clientHeight; if (w && h) this.stage.style.setProperty('--s', Math.min(w / 1920, h / 1080)); }
+  mk(i){
+    const N = this.els.length; i = ((i % N) + N) % N; if (this.els[i]) return this.els[i];
+    const s = this.data.slides[i], e = document.createElement('section'); e.className = 'ss-slide'; e.dataset.ssth = s.theme; e.dataset.sid = s.id; e.innerHTML = SS_HTML[s.k](s);
+    this.stage.insertBefore(e, this.bar); void e.offsetWidth; this.els[i] = e; return e;
+  }
   set(data){
-    if (data.sig === this.sig) return; this.sig = data.sig; this.data = data;
-    const cur = this.els[this.idx] ? this.els[this.idx].dataset.sid : '';
-    this.stage.dataset.tr = data.tr || 'fade';
-    this.els.forEach(e => e.remove());
-    this.els = data.slides.map(s => { const e = document.createElement('section'); e.className = 'ss-slide'; e.dataset.ssth = s.theme; e.dataset.sid = s.id; e.innerHTML = SS_HTML[s.k](s); this.stage.insertBefore(e, this.bar); return e; });
-    clearTimeout(this.tm); this.idx = -1; this.empty.hidden = this.els.length > 0; if (!this.els.length) return;
-    const k = cur ? this.els.findIndex(e => e.dataset.sid === cur) : -1; this.go(k >= 0 ? k : 0);
+    if (data.sig === this.sig) return; this.sig = data.sig;
+    const cur = this.data && this.idx >= 0 && this.data.slides[this.idx] ? this.data.slides[this.idx].id : '';
+    this.data = data; this.stage.dataset.tr = data.tr || 'fade';
+    this.els.forEach(e => e && e.remove()); this.els = new Array(data.slides.length).fill(null);
+    clearTimeout(this.tm); this.idx = -1; this.empty.hidden = data.slides.length > 0; if (!data.slides.length) return;
+    if (!this.lazy) data.slides.forEach((s, i) => this.mk(i));
+    const k = cur ? data.slides.findIndex(s => s.id === cur) : -1; this.go(k >= 0 ? k : 0);
   }
   go(i){
     const N = this.els.length; if (!N) return; const prev = this.idx; this.idx = ((i % N) + N) % N;
-    this.els.forEach((e, k) => { e.classList.toggle('ss-active', k === this.idx); e.classList.toggle('ss-out', k === prev && k !== this.idx); e.setAttribute('aria-hidden', k === this.idx ? 'false' : 'true'); });
-    const sec = this.data.slides[this.idx].sec; clearTimeout(this.tm);
-    if (this.o.bar) { const b = this.bar; b.style.transition = 'none'; b.style.width = '0'; b.style.opacity = this.playing && N > 1 ? '1' : '0'; void b.offsetWidth; if (this.playing && N > 1) { b.style.background = getComputedStyle(this.els[this.idx]).getPropertyValue('--acc'); b.style.transition = 'width ' + sec + 's linear'; b.style.width = '100%'; } }
+    this.mk(this.idx);
+    if (this.lazy) { this.mk(this.idx + 1); const keep = new Set([this.idx, prev, (this.idx + 1) % N]); this.els.forEach((e, k) => { if (e && !keep.has(k)) { e.remove(); this.els[k] = null; } }); }
+    this.els.forEach((e, k) => { if (!e) return; e.classList.toggle('ss-active', k === this.idx); e.classList.toggle('ss-out', k === prev && k !== this.idx); e.setAttribute('aria-hidden', k === this.idx ? 'false' : 'true'); });
+    const cur = this.els[this.idx], sec = this.data.slides[this.idx].sec; clearTimeout(this.tm);
+    if (!this.o.exportMode) { const bg = getComputedStyle(cur).getPropertyValue('--bg').trim(); if (bg) this.host.style.background = bg; }
+    if (this.o.bar) { const b = this.bar; b.style.transition = 'none'; b.style.transform = 'scaleX(0)'; b.style.opacity = this.playing && N > 1 ? '1' : '0'; void b.offsetWidth; if (this.playing && N > 1) { b.style.background = getComputedStyle(cur).getPropertyValue('--acc'); b.style.transition = 'transform ' + sec + 's linear'; b.style.transform = 'scaleX(1)'; } }
     if (this.playing && N > 1 && !this.o.exportMode) this.tm = setTimeout(() => this.go(this.idx + 1), sec * 1000);
   }
   next(){ this.go(this.idx + 1); } prev(){ this.go(this.idx - 1); }
-  pause(on){ this.playing = !on; this.go(this.idx < 0 ? 0 : this.idx); }
+  pause(on){ this.playing = !on; clearTimeout(this.tm); if (this.idx >= 0) this.go(this.idx); }
   destroy(){ clearTimeout(this.tm); if (this.ro) this.ro.disconnect(); this.host.innerHTML = ''; this.els = []; }
 }
+/*SS-VIEW:END*/
 function ssFlatten(root){
   root.querySelectorAll('.ss-plate img, .ss-cphoto img').forEach(im => {
     try { const box = im.parentElement, W = box.offsetWidth, H = box.offsetHeight; if (!W || !H || !im.naturalWidth) return;
@@ -7913,23 +7931,70 @@ function ssFlatten(root){
   });
 }
 
-/* ---------- projector: full window, for the HDMI screen or a cast ---------- */
+/* ---------- projector: full screen for the HDMI TV or a cast. Light on purpose: the hub is hidden while it plays ---------- */
+const ssFsEl = () => document.fullscreenElement || document.webkitFullscreenElement || null;
 function ssProject(id){
   const sc = ssScr(id); if (!sc) return; ssCloseProj();
-  const ov = document.createElement('div'); ov.className = 'ss-proj'; ov.innerHTML = '<div class="ss-pv"></div><div class="ss-ctl" role="toolbar" aria-label="Projector controls"><button type="button" data-p="prev">Previous</button><button type="button" data-p="play">Pause</button><button type="button" data-p="next">Next</button><button type="button" data-p="fs">Full screen</button><button type="button" data-p="x">Exit</button></div>';
-  document.body.appendChild(ov); const pl = new SSPlayer(ov.querySelector('.ss-pv'), {bar:true}), ctl = ov.querySelector('.ss-ctl'); let hideT = 0, wl = null;
-  const load = () => { const cur = ssScr(id); if (cur) pl.set(ssBuild(cur)); };
+  const ov = document.createElement('div'); ov.className = 'ss-proj'; ov.innerHTML = '<div class="ss-pv"></div><div class="ss-hint" hidden>Press F11 to fill the whole screen. Press Esc to close.</div><div class="ss-ctl" role="toolbar" aria-label="Projector controls"><button type="button" data-p="prev">Previous</button><button type="button" data-p="play">Pause</button><button type="button" data-p="next">Next</button><button type="button" data-p="fs">Full screen</button><button type="button" data-p="x">Exit</button></div>';
+  const sy = window.scrollY; document.body.classList.add('ss-projecting'); document.body.appendChild(ov);
+  if (SS.pv) SS.pv.pause(true);
+  const pl = new SSPlayer(ov.querySelector('.ss-pv'), {bar:true}), ctl = ov.querySelector('.ss-ctl'), hint = ov.querySelector('.ss-hint'), fsb = ov.querySelector('[data-p=fs]'); let hideT = 0, hintT = 0, wl = null;
+  const load = () => { if (document.hidden && pl.data) return; const cur = ssScr(id); if (cur) pl.set(ssBuild(cur)); };
   const show = () => { ctl.classList.remove('ss-hide'); ov.classList.remove('ss-idle'); clearTimeout(hideT); hideT = setTimeout(() => { ctl.classList.add('ss-hide'); ov.classList.add('ss-idle'); }, 3500); };
-  const act = k => { if (k === 'prev') pl.prev(); else if (k === 'next') pl.next(); else if (k === 'play') { pl.pause(pl.playing); ov.querySelector('[data-p=play]').textContent = pl.playing ? 'Pause' : 'Play'; } else if (k === 'fs') { try { if (document.fullscreenElement) document.exitFullscreen(); else ov.requestFullscreen && ov.requestFullscreen().catch(() => {}); } catch(e) {} } else if (k === 'x') ssCloseProj(); };
-  const key = e => { const k = e.key; if (!['Escape', 'ArrowLeft', 'ArrowRight', ' ', 'f', 'F'].includes(k)) return; e.preventDefault(); e.stopPropagation(); show(); if (k === 'Escape') act('x'); else if (k === 'ArrowLeft') act('prev'); else if (k === 'ArrowRight') act('next'); else if (k === ' ') act('play'); else act('fs'); };
-  ov.addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (b) act(b.dataset.p); show(); }); ov.addEventListener('mousemove', show); ov.addEventListener('touchstart', show, {passive:true}); document.addEventListener('keydown', key, true);
+  const fsToggle = () => { const inFs = !!ssFsEl(); try { const f = inFs ? (document.exitFullscreen || document.webkitExitFullscreen) : (ov.requestFullscreen || ov.webkitRequestFullscreen), r = f && f.call(inFs ? document : ov); if (r && r.catch) r.catch(() => {}); } catch(e) {} };
+  const syncFs = () => { const on = !!ssFsEl(); fsb.textContent = on ? 'Exit full screen' : 'Full screen'; clearTimeout(hintT); hint.hidden = true; if (!on) hintT = setTimeout(() => { hint.hidden = false; setTimeout(() => { hint.hidden = true; }, 7000); }, 900); };
+  const act = k => { if (k === 'prev') pl.prev(); else if (k === 'next') pl.next(); else if (k === 'play') { pl.pause(pl.playing); ov.querySelector('[data-p=play]').textContent = pl.playing ? 'Pause' : 'Play'; } else if (k === 'fs') fsToggle(); else if (k === 'x') ssCloseProj(); };
+  const key = e => { const k = e.key; if (!['Escape', 'ArrowLeft', 'ArrowRight', ' ', 'f', 'F'].includes(k)) return; e.preventDefault(); e.stopPropagation(); show(); if (k === 'Escape') act('x'); else if (k === 'ArrowLeft') act('prev'); else if (k === 'ArrowRight') act('next'); else if (k === ' ') act('play'); else fsToggle(); };
+  ov.addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (b) act(b.dataset.p); show(); }); ov.addEventListener('dblclick', e => { if (!e.target.closest('.ss-ctl')) fsToggle(); });
+  ov.addEventListener('mousemove', show); ov.addEventListener('touchstart', show, {passive:true}); document.addEventListener('keydown', key, true);
+  document.addEventListener('fullscreenchange', syncFs); document.addEventListener('webkitfullscreenchange', syncFs);
   try { if (navigator.wakeLock) navigator.wakeLock.request('screen').then(l => { wl = l; }).catch(() => {}); } catch(e) {}
-  try { ov.requestFullscreen && ov.requestFullscreen().catch(() => {}); } catch(e) {}
-  SS.proj = {ov, pl, id, load, close(){ clearTimeout(hideT); clearInterval(t); document.removeEventListener('keydown', key, true); try { wl && wl.release(); } catch(e) {} try { if (document.fullscreenElement) document.exitFullscreen(); } catch(e) {} pl.destroy(); ov.remove(); SS.proj = null; }};
   const t = setInterval(load, 30000);
-  ssPrep().then(() => { load(); show(); });
+  SS.proj = {ov, pl, id, load, close(){ clearTimeout(hideT); clearTimeout(hintT); clearInterval(t); document.removeEventListener('keydown', key, true); document.removeEventListener('fullscreenchange', syncFs); document.removeEventListener('webkitfullscreenchange', syncFs); try { wl && wl.release(); } catch(e) {}
+    try { if (ssFsEl()) { const r = (document.exitFullscreen || document.webkitExitFullscreen).call(document); if (r && r.catch) r.catch(() => {}); } } catch(e) {}
+    pl.destroy(); ov.remove(); document.body.classList.remove('ss-projecting'); SS.proj = null; window.scrollTo(0, sy); if (SS.pv && document.body.contains(SS.pv.host)) SS.pv.pause(false); }};
+  fsToggle(); ssFonts(); load(); show(); syncFs();
 }
 function ssCloseProj(){ if (SS.proj) SS.proj.close(); }
+
+/* ---------- projector in its own window on the TV screen (Windows app 2.23 and newer) ---------- */
+const SSX = {on:null};
+const ssExtOk = () => typeof DESK !== 'undefined' && !!DESK && typeof DESK.projOpen === 'function';
+const ssWhere = () => { try { return localStorage.getItem('if-ss-where') || 'auto'; } catch(e) { return 'auto'; } };
+function ssBetween(texts, a, b){ for (const t of texts) { const i = t.indexOf(a); if (i >= 0) { const j = t.indexOf(b, i); if (j > i) return t.slice(i + a.length, j); } } return ''; }
+function ssProjBoot(){
+  const pl = new SSPlayer(document.getElementById('pv'), {}), ctl = c => { try { window.IFProj && window.IFProj.ctl(c); } catch(e) {} }; let idle = 0;
+  document.addEventListener('keydown', e => { const k = e.key; if (k === 'Escape') { e.preventDefault(); ctl('close'); } else if (k === 'f' || k === 'F' || k === 'F11') { e.preventDefault(); ctl('fs'); } else if (k === 'ArrowRight') pl.next(); else if (k === 'ArrowLeft') pl.prev(); else if (k === ' ') { e.preventDefault(); pl.pause(pl.playing); } });
+  document.addEventListener('dblclick', () => ctl('fs'));
+  document.addEventListener('mousemove', () => { document.body.style.cursor = 'default'; clearTimeout(idle); idle = setTimeout(() => { document.body.style.cursor = 'none'; }, 2500); });
+  const on = m => { if (!m) return; if (m.type === 'data') { const g = m.meta || {}; S.settings = {currency:g.cur, tagline:g.tag, businessName:g.biz}; pl.set(m.build); } else if (m.type === 'cmd') { if (m.cmd === 'next') pl.next(); else if (m.cmd === 'prev') pl.prev(); else if (m.cmd === 'pause') pl.pause(true); else if (m.cmd === 'play') pl.pause(false); } };
+  if (window.IFProj) window.IFProj.on(on); window.__projOn = on; window.__pl = pl;
+}
+function ssProjDoc(){
+  const css = ssBetween([...document.querySelectorAll('style')].map(x => x.textContent), '/*SS-CSS:' + 'BEGIN*/', '/*SS-CSS:' + 'END*/'), view = ssBetween([...document.scripts].map(x => x.textContent), '/*SS-VIEW:' + 'BEGIN*/', '/*SS-VIEW:' + 'END*/');
+  if (!css || !view) throw Error('The projector page could not be put together. Update the app and try again.');
+  return '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Shop screen</title><link rel="stylesheet" href="' + SS_FONT_HREF + '"><style>html,body{margin:0;height:100%;background:#000;overflow:hidden;cursor:none}' + css + '</style></head><body><div class="ss-proj" style="z-index:1"><div class="ss-pv" id="pv"></div></div><' + 'script>'
+    + 'const esc = ' + esc + ', num = ' + num + ', r2 = ' + r2 + ', LOGO = ' + JSON.stringify(LOGO) + ', PLACEHOLDER = ' + JSON.stringify(PLACEHOLDER) + ', S = {settings:{}}, ssTag = () => S.settings.tagline || "", bizName = () => S.settings.businessName || "";\n'
+    + view + '\n(' + ssProjBoot + ')();<' + '/script></body></html>';
+}
+function ssExtPush(force){
+  const e = SSX.on; if (!e) return; const sc = ssScr(e.id); if (!sc) return ssExtStop({shell:true}); const b = ssBuild(sc); if (!force && b.sig === e.sig) return; e.sig = b.sig;
+  try { DESK.projSend({type:'data', build:b, meta:{cur:S.settings.currency || 'K', tag:ssTag(), biz:bizName()}}); } catch(x) {}
+}
+function ssExtStop(o){
+  o = o || {}; const e = SSX.on; if (!e) return; clearInterval(e.tm); SSX.on = null;
+  if (o.shell) { try { DESK.projClose(); } catch(x) {} }
+  if (!o.quiet && route() === 'shopscreen') render(true);
+}
+async function ssProjectExt(id, where){
+  let r; try { r = await DESK.projOpen({html:ssProjDoc(), displayId:where}); } catch(e) { r = {ok:false, error:e.message}; }
+  if (!r || !r.ok) { toast((r && r.error) || 'Could not open the projector window, so it plays inside this window instead.', true); return ssProject(id); }
+  ssExtStop({quiet:true}); SSX.on = {id, sig:'', label:r.label, mode:r.mode, tm:setInterval(() => ssExtPush(), 30000)};
+  try { DESK.onProj(m => { if (m && m.type === 'closed') ssExtStop({}); }); } catch(e) {}
+  ssExtPush(true); render(true);
+  if (r.mode === 'window') toast('The projector opened in its own window. Drag it onto your TV, then press F for full screen.');
+}
+function ssStart(id){ const w = ssWhere(); if (ssExtOk() && w !== 'here') return ssProjectExt(id, w); return ssProject(id); }
 
 /* ---------- video file for a USB flash drive ---------- */
 async function ssRecord(sc, opt, prog, abort){
@@ -7992,19 +8057,21 @@ PAGES.shopscreen = () => {
   const scs = ssCfg().screens;
   const intro = 'Show your perfumes, prices and offers on the TV in your shop, like the screens in restaurants. Plug the TV into this computer with an HDMI cable (or cast the screen wirelessly) and press <b>Start projector</b>.';
   if (!scs.length) return head('Shop screen', intro) + `<div class="card" style="text-align:center;padding:32px 20px"><h2 style="margin-top:0">Make your first shop screen</h2><p class="mut" style="max-width:560px;margin:0 auto 16px">We start you with five slides: bestsellers, a promotion, a seasonal gift slide, a price list and a QR code to your online shop. You can change, add, remove and re-time every slide.</p>${btn('Create my shop screen', 'ssNew', {}, 'pri')}</div>`;
-  const sc = ssScr(UI.ssSel); UI.ssSel = sc.id;
+  const sc = ssScr(UI.ssSel); UI.ssSel = sc.id; const xon = SSX.on && SSX.on.id === sc.id ? SSX.on : null;
   const built = ssBuild(sc), live = new Set(built.slides.map(s => String(s.id).split('#')[0])), nonSeason = (sc.slides || []).length;
   const sel = (name, opts, cur) => `<select data-ssf="${name}">${opts.map(([v, l]) => `<option value="${esc(v)}" ${String(cur) === String(v) ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
   return head('Shop screen', intro, btn('Start projector', 'ssProject', {id:sc.id}, 'pri') + btn('Video for USB', 'ssVideo', {id:sc.id}))
+  + (xon ? `<div class="card" style="border-color:var(--gold)"><h2 style="margin-top:0">The projector is playing on ${esc(xon.label)}</h2><div class="actions">${btn('Previous', 'ssExtCmd', {c:'prev'}, 'sm')}${btn('Pause', 'ssExtCmd', {c:'pause'}, 'sm')}${btn('Play', 'ssExtCmd', {c:'play'}, 'sm')}${btn('Next', 'ssExtCmd', {c:'next'}, 'sm')}${btn('Stop projector', 'ssExtStop', {}, 'sm pri')}</div><p class="small mut" style="margin-bottom:0">Your hub stays free for the Point of sale. On the TV window: Esc closes it, F goes full screen, arrow keys change slides.</p></div>` : '')
   + `<div class="seg" style="margin-bottom:12px;flex-wrap:wrap">${scs.map(x => `<button type="button" data-act="ssPick" data-id="${x.id}" class="${x.id === sc.id ? 'on' : ''}">${esc(x.name)}</button>`).join('')}<button type="button" data-act="ssNew">+ New screen</button></div>
   <div class="card"><h2 style="margin-top:0">This screen</h2><div class="grid2">
     <label>Name<input data-ssf="name" value="${esc(sc.name)}"></label>
+    ${ssExtOk() ? `<label>Show the projector on<select data-ssf="where" id="ss-where"><option value="auto">Second screen (automatic)</option><option value="window">A window I place myself</option><option value="here">Inside this window (hides the hub)</option></select></label>` : typeof DESK !== 'undefined' && DESK && MODE === 'desktop' ? `<p class="small mut" style="grid-column:1/-1">Want the projector on its own window so the hub stays free for the Point of sale? Install the newest PC app from the download page: infinitytimetable.github.io/infinity-fragrances-updates/get/</p>` : ''}
     ${multiLoc() ? `<label>Shows stock of<select data-ssf="loc">${locs().map(l => `<option value="${l.id}" ${(sc.loc || 'main') === l.id ? 'selected' : ''}>${esc(l.name)}</option>`).join('')}</select></label>` : ''}
     <label>Design<select data-ssf="theme"><option value="mix" ${sc.theme === 'mix' || !sc.theme ? 'selected' : ''}>Mix: a different design on each slide</option>${SS_THEMES.map(([k, v]) => `<option value="${k}" ${sc.theme === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
     <label>Time on each slide${sel('sec', [[5, '5 seconds'], [8, '8 seconds'], [10, '10 seconds'], [15, '15 seconds'], [20, '20 seconds'], [30, '30 seconds']], num(sc.sec) || 8)}</label>
     <label>How slides change${sel('tr', [['fade', 'Fade'], ['slide', 'Slide'], ['zoom', 'Zoom']], sc.tr || 'fade')}</label>
     <div><div><label class="check"><input type="checkbox" data-ssf="seasons" ${sc.seasons !== false ? 'checked' : ''}> Change to the season’s design by date (Christmas, Black Friday…)</label></div><div><label class="check"><input type="checkbox" data-ssf="hideOut" ${sc.hideOut !== false ? 'checked' : ''}> Hide perfumes that are out of stock here</label></div></div>
-  </div><div class="actions" style="margin-top:8px">${scs.length > 1 ? btn('Delete this screen', 'ssDelScreen', {id:sc.id}, 'sm ghost') : ''}</div></div>
+  </div><fieldset style="margin-top:10px"><legend>Always show these perfumes, even when out of stock</legend><div class="picks" id="ss-keep">${sortedProds().filter(p => (p.status || 'active') !== 'inactive').map(p => `<label><input type="checkbox" data-ssf="keep" value="${p.id}" ${(sc.keep || []).includes(p.id) ? 'checked' : ''}> ${esc(pName(p.id))}</label>`).join('')}</div><p class="small mut" style="margin:0">Other out-of-stock perfumes stay hidden. These also appear on the price list.</p></fieldset><div class="actions" style="margin-top:8px">${scs.length > 1 ? btn('Delete this screen', 'ssDelScreen', {id:sc.id}, 'sm ghost') : ''}</div></div>
   <div class="ssed-grid">
     <div class="card"><h2 style="margin-top:0">Preview</h2><div class="ssed-prev" id="ss-prev"></div>
       <div class="actions" style="margin-top:10px;align-items:center">${btn('Previous', 'ssPv', {c:'prev'}, 'sm')}${btn('Pause', 'ssPv', {c:'play'}, 'sm')}${btn('Next', 'ssPv', {c:'next'}, 'sm')}<label class="small mut" style="margin-left:auto;display:flex;gap:6px;align-items:center">Preview a season<select data-ssf="prevFest" style="width:auto"><option value="">Today (automatic)</option>${Object.entries(SS_FEST_COPY).map(([k, v]) => `<option value="${k}" ${UI.ssFest === k ? 'selected' : ''}>${v[0]}</option>`).join('')}</select></label></div>
@@ -8019,8 +8086,9 @@ PAGES.shopscreen = () => {
     <div class="tw"><table class="t"><thead><tr><th></th><th>Perfume</th><th>Photo</th><th></th></tr></thead><tbody>${ssPhotoRows()}</tbody></table></div></div>`;
 };
 TOOLS.shopscreen = {
-  mount(){ ssPrep().then(() => { const host = $('#ss-prev'); if (!host) return; if (SS.pv) SS.pv.destroy(); SS.pv = new SSPlayer(host, {}); TOOLS.shopscreen.refresh(); }); if (!SS.tick) SS.tick = setInterval(() => TOOLS.shopscreen.refresh(), 30000); },
-  refresh(){ if (SS.pv && !document.body.contains(SS.pv.host)) { SS.pv.destroy(); SS.pv = null; return; } const sc = ssScr(UI.ssSel); if (!SS.pv || !sc) return; SS.pv.set(ssBuild(sc, new Date(), {fest:UI.ssFest || ''})); }
+  mount(){ if (ssExtOk()) DESK.projDisplays().then(list => { const sel = $('#ss-where'); if (!sel || !Array.isArray(list)) return; const first = sel.querySelector('option[value=window]'); list.forEach(d => { const o = document.createElement('option'); o.value = d.id; o.textContent = d.label; sel.insertBefore(o, first); }); sel.querySelector('option[value=auto]').textContent = list.length > 1 ? 'Second screen (automatic)' : 'Second screen (none connected yet, opens a window)'; const cur = ssWhere(); sel.value = [...sel.options].some(o => o.value === cur) ? cur : 'auto'; }).catch(() => {});
+    const kp = $('#ss-keep'); if (kp && UI.ssKeepTop) { kp.scrollTop = UI.ssKeepTop; UI.ssKeepTop = 0; } ssPrep().then(() => { const host = $('#ss-prev'); if (!host) return; if (SS.pv) SS.pv.destroy(); SS.pv = new SSPlayer(host, {}); TOOLS.shopscreen.refresh(); }); if (!SS.tick) SS.tick = setInterval(() => TOOLS.shopscreen.refresh(), 30000); },
+  refresh(){ ssExtPush(); if (SS.pv && !document.body.contains(SS.pv.host)) { SS.pv.destroy(); SS.pv = null; return; } const sc = ssScr(UI.ssSel); if (!SS.pv || !sc) return; SS.pv.set(ssBuild(sc, new Date(), {fest:UI.ssFest || ''})); }
 };
 
 /* ---------- editing a slide ---------- */
@@ -8029,10 +8097,10 @@ function ssSlideForm(sid, type){
   const sc = ssScr(UI.ssSel), old = sid ? (sc.slides || []).find(x => x.id === sid) : null, t = old ? old.type : type, sl = old || {id:uid(), type:t};
   const prodOpts = sortedProds().filter(p => (p.status || 'active') !== 'inactive').map(p => [p.id, pName(p.id) + (ssImg(p.id) ? '' : ' (no photo)')]);
   let body = '';
-  if (t === 'hero') body = `<label>Perfume<select name="pid" required><option value="">Choose…</option>${prodOpts.map(([v, l]) => `<option value="${v}" ${sl.pid === v ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></label><label>Small heading<input name="eyebrow" value="${esc(sl.eyebrow == null ? 'New arrival' : sl.eyebrow)}" placeholder="New arrival"></label><label>Line under the name (optional)<input name="sub" value="${esc(sl.sub || '')}"></label>`;
+  if (t === 'hero') body = `<label>Perfume (shows even when out of stock)<select name="pid" required><option value="">Choose…</option>${prodOpts.map(([v, l]) => `<option value="${v}" ${sl.pid === v ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></label><label>Small heading<input name="eyebrow" value="${esc(sl.eyebrow == null ? 'New arrival' : sl.eyebrow)}" placeholder="New arrival"></label><label>Line under the name (optional)<input name="sub" value="${esc(sl.sub || '')}"></label>`;
   else if (t === 'best') body = `<label>Title<input name="title" value="${esc(sl.title || 'Bestsellers')}"></label><label>Small heading<input name="eyebrow" value="${esc(sl.eyebrow == null ? 'Customer favourites' : sl.eyebrow)}"></label><div class="grid2"><label>How many perfumes<select name="n"><option value="3" ${num(sl.n) === 3 ? 'selected' : ''}>3</option><option value="4" ${num(sl.n) !== 3 ? 'selected' : ''}>4</option></select></label><label class="check" style="align-self:end"><input type="checkbox" name="needImg" ${sl.needImg !== false ? 'checked' : ''}> Only perfumes that have a photo</label></div><p class="small mut">The best sellers of the last 30 days, worked out from your sales.</p>`;
-  else if (t === 'promo') body = `<label>Which promotion<select name="promoId"><option value="">Any live promotion at the Point of sale</option>${Object.values(S.promos).sort((a, b) => String(b.start).localeCompare(String(a.start))).map(p => `<option value="${p.id}" ${sl.promoId === p.id ? 'selected' : ''}>${esc(p.name)} (${esc(promoBadge(p))}, ${fmtDate(p.start)} to ${fmtDate(p.end)})</option>`).join('')}</select></label><p class="small mut">Promotions come from <b>Marketing › Promotions</b>. A promotion shows only on the dates and for the perfumes you set there, and only if it applies at the Point of sale.</p><label>Title (leave empty to use the promotion name)<input name="title" value="${esc(sl.title || '')}"></label><label>Line under the title (optional)<input name="text" value="${esc(sl.text || '')}"></label><label>Small heading<input name="eyebrow" value="${esc(sl.eyebrow == null ? 'Special offer' : sl.eyebrow)}"></label><fieldset><legend>Pick the perfumes yourself (up to 3; leave empty to pick automatically)</legend>${ssChecks('pids', prodOpts, sl.pids)}</fieldset>`;
-  else if (t === 'season') body = `<label>Season<select name="fest"><option value="any" ${!sl.fest || sl.fest === 'any' ? 'selected' : ''}>Whichever season is on</option>${Object.entries(SS_FEST_COPY).map(([k, v]) => `<option value="${k}" ${sl.fest === k ? 'selected' : ''}>${v[0]} only</option>`).join('')}</select></label><p class="small mut">This slide appears only during the season (Christmas 1 to 30 Dec, Black Friday weekend, and so on) and uses that season’s design.</p><label>Title (leave empty for the usual words; put *stars* around a word to highlight it)<input name="title" value="${esc(sl.title || '')}"></label><label>Line under the title (optional)<input name="text" value="${esc(sl.text || '')}"></label><fieldset><legend>Pick the perfumes yourself (up to 3; leave empty to show your best sellers)</legend>${ssChecks('pids', prodOpts, sl.pids)}</fieldset>`;
+  else if (t === 'promo') body = `<label>Which promotion<select name="promoId"><option value="">Any live promotion at the Point of sale</option>${Object.values(S.promos).sort((a, b) => String(b.start).localeCompare(String(a.start))).map(p => `<option value="${p.id}" ${sl.promoId === p.id ? 'selected' : ''}>${esc(p.name)} (${esc(promoBadge(p))}, ${fmtDate(p.start)} to ${fmtDate(p.end)})</option>`).join('')}</select></label><p class="small mut">Promotions come from <b>Marketing › Promotions</b>. A promotion shows only on the dates and for the perfumes you set there, and only if it applies at the Point of sale.</p><label>Title (leave empty to use the promotion name)<input name="title" value="${esc(sl.title || '')}"></label><label>Line under the title (optional)<input name="text" value="${esc(sl.text || '')}"></label><label>Small heading<input name="eyebrow" value="${esc(sl.eyebrow == null ? 'Special offer' : sl.eyebrow)}"></label><fieldset><legend>Pick the perfumes yourself (up to 3; they show even when out of stock. Leave empty to pick automatically)</legend>${ssChecks('pids', prodOpts, sl.pids)}</fieldset>`;
+  else if (t === 'season') body = `<label>Season<select name="fest"><option value="any" ${!sl.fest || sl.fest === 'any' ? 'selected' : ''}>Whichever season is on</option>${Object.entries(SS_FEST_COPY).map(([k, v]) => `<option value="${k}" ${sl.fest === k ? 'selected' : ''}>${v[0]} only</option>`).join('')}</select></label><p class="small mut">This slide appears only during the season (Christmas 1 to 30 Dec, Black Friday weekend, and so on) and uses that season’s design.</p><label>Title (leave empty for the usual words; put *stars* around a word to highlight it)<input name="title" value="${esc(sl.title || '')}"></label><label>Line under the title (optional)<input name="text" value="${esc(sl.text || '')}"></label><fieldset><legend>Pick the perfumes yourself (up to 3; they show even when out of stock. Leave empty to show your best sellers)</legend>${ssChecks('pids', prodOpts, sl.pids)}</fieldset>`;
   else if (t === 'list') body = `<fieldset><legend>Categories to show (leave all empty for everything)</legend>${ssChecks('cats', CATS().map(c => [c, c]), sl.cats)}</fieldset><p class="small mut">If the list is long it is split across several slides by itself. Prices follow your live promotions.</p>`;
   else if (t === 'qr') body = `<label>Web address the code opens<input name="url" value="${esc(sl.url || STORE_URL)}"></label><label>Title<input name="title" value="${esc(sl.title || 'Scan to *shop*')}"></label><label>Line under the title<input name="text" value="${esc(sl.text || 'Browse every fragrance and order from your phone')}"></label><label class="check"><input type="checkbox" name="phone" ${sl.phone !== false ? 'checked' : ''}> Show my WhatsApp number (${esc(ssPhone() || 'add it in Settings')})</label>`;
   else if (t === 'pic') body = `<label>Picture (a flyer or photo, the wider the better; 1920 × 1080 fits the screen exactly)<input type="file" name="pic" accept="image/*" ${S.images['ss_' + sl.id] ? '' : 'required'}></label>${S.images['ss_' + sl.id] ? `<img src="${S.images['ss_' + sl.id].data}" alt="" style="max-width:260px;border-radius:8px;border:1px solid var(--line)"><p class="small mut">Leave the file empty to keep this picture.</p>` : ''}<p class="small mut">Tip: in <b>Marketing › Flyers &amp; adverts</b> you can design a flyer and download it as a picture to use here.</p>`;
@@ -8067,17 +8135,19 @@ Object.assign(ACT, {
   ssDelSlide: d => confirmBox('Remove this slide from the screen?', async () => { await ssSave(c => { const s = c.screens.find(x => x.id === UI.ssSel); s.slides = s.slides.filter(x => x.id !== d.id); }); render(true); }, 'Remove'),
   ssMove: async d => { await ssSave(c => { const s = c.screens.find(x => x.id === UI.ssSel), i = s.slides.findIndex(x => x.id === d.id), j = i + num(d.d); if (i < 0 || j < 0 || j >= s.slides.length) return; [s.slides[i], s.slides[j]] = [s.slides[j], s.slides[i]]; }); render(true); },
   ssPv: (d, b) => { if (!SS.pv) return; if (d.c === 'prev') SS.pv.prev(); else if (d.c === 'next') SS.pv.next(); else { SS.pv.pause(SS.pv.playing); b.textContent = SS.pv.playing ? 'Pause' : 'Play'; } },
-  ssProject: d => ssProject(d.id), ssVideo: d => ssVideoForm(d.id), ssVideoGo: d => ssVideoGo(d.id), ssVideoStop: () => { if (SSV.busy) SSV.abort.v = true; else closeModal(); },
+  ssProject: d => ssStart(d.id), ssExtStop: () => ssExtStop({shell:true}), ssExtCmd: d => { try { DESK.projSend({type:'cmd', cmd:d.c}); } catch(e) {} }, ssVideo: d => ssVideoForm(d.id), ssVideoGo: d => ssVideoGo(d.id), ssVideoStop: () => { if (SSV.busy) SSV.abort.v = true; else closeModal(); },
   ssHdDel: d => confirmBox('Remove the HD photo? The standard photo is used again.', async () => { await del('images', 'hd_' + d.id); render(true); }, 'Remove')
 });
 document.addEventListener('change', async e => {
   const t = e.target; if (!t.dataset) return;
   if (t.dataset.ssHd) { const f = t.files && t.files[0]; if (!f) return; try { const data = await shrinkImage(f, 1800, 450000); await put('images', {id:'hd_' + t.dataset.ssHd, data}); toast('HD photo saved'); render(true); } catch(x) { toast(x.message || 'Could not save the photo', true); } t.value = ''; return; }
   if (!t.dataset.ssf) return; const k = t.dataset.ssf, sc = ssScr(UI.ssSel); if (!sc) return;
+  if (k === 'where') { try { localStorage.setItem('if-ss-where', t.value); } catch(x) {} return; }
   if (k === 'prevFest') { UI.ssFest = t.value; TOOLS.shopscreen.refresh(); return; }
+  if (k === 'keep') UI.ssKeepTop = document.querySelector('#ss-keep')?.scrollTop || 0;
   await ssSave(c => { const s = c.screens.find(x => x.id === sc.id); if (!s) return;
     if (k === 'name') s.name = t.value.trim() || s.name; else if (k === 'loc') s.loc = t.value; else if (k === 'theme') s.theme = t.value; else if (k === 'sec') s.sec = num(t.value) || 8; else if (k === 'tr') s.tr = t.value;
-    else if (k === 'seasons') s.seasons = t.checked; else if (k === 'hideOut') s.hideOut = t.checked;
+    else if (k === 'keep') s.keep = [...document.querySelectorAll('[data-ssf=keep]:checked')].map(x => x.value); else if (k === 'seasons') s.seasons = t.checked; else if (k === 'hideOut') s.hideOut = t.checked;
     else if (k === 'slideOn') { const sl = s.slides.find(x => x.id === t.dataset.id); if (sl) sl.on = t.checked; } });
   render(true);
 });

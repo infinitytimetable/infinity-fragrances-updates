@@ -1,6 +1,7 @@
 const { contextBridge, ipcRenderer } = require('electron');
 const call = (ch, ...a) => ipcRenderer.invoke(ch, ...a);
-contextBridge.exposeInMainWorld('IFDesktop', {
+const IS_PROJ = process.argv.includes('--if-proj');   // the TV window only gets the small IFProj bridge, never the hub's full one
+if (!IS_PROJ) contextBridge.exposeInMainWorld('IFDesktop', {
   platform: process.platform,
   load: () => call('load'),
   save: text => call('save', text),
@@ -20,5 +21,17 @@ contextBridge.exposeInMainWorld('IFDesktop', {
   installUpdateText: (html, sig) => call('install-update-text', html, sig),
   shellVersion: () => call('shell-version'),
   install: () => call('install'),
-  uninstall: () => call('uninstall')
+  uninstall: () => call('uninstall'),
+  /* Shop screen projector window (second screen) */
+  projDisplays: () => call('proj-displays'),
+  projOpen: o => call('proj-open', o),
+  projSend: m => ipcRenderer.send('proj-send', m),
+  projClose: () => call('proj-close'),
+  projState: () => call('proj-state'),
+  onProj: cb => { ipcRenderer.removeAllListeners('proj-event'); ipcRenderer.on('proj-event', (e, m) => cb(m)); }
+});
+/* used only by the projector window itself */
+if (IS_PROJ) contextBridge.exposeInMainWorld('IFProj', {
+  on: cb => { ipcRenderer.removeAllListeners('proj-msg'); ipcRenderer.on('proj-msg', (e, m) => cb(m)); },
+  ctl: c => ipcRenderer.send('proj-ctl', c)
 });
