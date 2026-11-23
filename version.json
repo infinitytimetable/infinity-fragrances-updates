@@ -1,20 +1,20 @@
 {
- "version": "2.18.1",
+ "version": "2.19.0",
  "date": "2026-11-23",
  "notes": [
-  "Fixes: the money expected from resellers shows the right amounts again, resellers see what is owed to them, and adding the first staff member or job works on a new install",
-  "Safer: customer names can no longer run code, and the phone and PC apps check every update file themselves before installing it"
+  "Expected money and profit: tap the dashboard tiles to open the table, group it by town or recruiter, and download it as Excel or PDF",
+  "New tile: Profit after expenses, shown next to Expected profit"
  ],
  "android": {
-  "file": "android-2.18.1.html",
-  "sig": "xIjeVcTeNpbnZrvM5o973snByax0MWBmmdvUYRWa4SA9HPeuRckjyWbNPJsXzddDpaId7zOWcurQxWxToM4EAg==",
-  "size": 2449178,
+  "file": "android-2.19.0.html",
+  "sig": "sPlLcLNg+MsIZQPXu+789pVji+C/oCA1456Gt85IKQscvlxCazrB0nlbKTZ2OAKtdRIyY3Uk27u3OKeOFBL5dg==",
+  "size": 2461702,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.18.1.html",
-  "sig": "2USw76yYy025yP6d4jsqTKtd9g2cf7AQWPmlPmxCmOxJqGVu+iAU/dZLc23QXL46kqDCyEBoXh5AgU11JiSFVw==",
-  "size": 2444166,
+  "file": "desktop-2.19.0.html",
+  "sig": "VRZr3tpZwQfKkbDPljDmKT7342l00PFDbAiUloqJrv2SOtk9rPPMJdh2cLmlPH4/PGU6k2B3iYlHttHRHqTCpA==",
+  "size": 2456690,
   "minShell": "2.5.0"
  },
  "apk": {

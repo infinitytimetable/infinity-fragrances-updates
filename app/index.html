@@ -83,6 +83,17 @@ main{padding:26px clamp(16px,3vw,40px) 90px;min-width:0;max-width:1240px}
 .tile .v{font-size:24px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums;line-height:1.2}
 .tile .s{font-size:12.5px;color:var(--muted);margin-top:4px}
 .tile.hl{border-color:var(--accent);box-shadow:inset 0 3px 0 var(--accent)}
+.tile.go{cursor:pointer}.tile.go:hover{border-color:var(--accent)}.tile.go:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.exp-ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:4px 0 12px}.exp-ctl .lab{font-size:13px;color:var(--muted);font-weight:600}.exp-ctl .actions{margin-left:auto}
+.exp-tbl table.t th{white-space:normal;line-height:1.25;vertical-align:bottom;padding:9px 7px;letter-spacing:.03em}.exp-tbl table.t td{padding:9px 7px;font-size:13.5px}.exp-tbl table.t td:first-child{min-width:104px}
+.exp-tbl tr.grp td{background:var(--soft);font-weight:700;border-top:2px solid var(--line)}.exp-tbl tr.sub td{font-weight:700;background:var(--soft)}
+.exp-cards{display:none}.exp-grp{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap;margin:14px 2px 6px}.exp-grp b{font-size:15px}
+.exp-card{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;background:var(--surface)}.exp-card.tot{border-color:var(--accent)}
+.exp-card .h{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.exp-card .big{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.exp-card .big div{background:var(--soft);border-radius:10px;padding:8px 10px}.exp-card .big .lb{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600}.exp-card .big b{font-size:18px;font-variant-numeric:tabular-nums}
+.exp-card dl{display:grid;grid-template-columns:1fr auto;gap:4px 12px;margin:0;font-size:13.5px}.exp-card dt{color:var(--muted)}.exp-card dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:700px){.exp-tbl{display:none}.exp-cards{display:block}.exp-ctl .actions{margin-left:0;width:100%}}
+.doc table.xr td,.doc table.xr th{font-size:10.5px;padding:4px 5px}.doc table.xr th{font-size:8.5px;letter-spacing:.05em}.doc table.xr tr.g td{background:#f6f3ec;font-weight:700}.doc table.xr tr.s td{font-weight:700;border-top:1px solid #16130f}.doc table.xr tfoot td{font-weight:800;border-top:2px solid #16130f;border-bottom:0}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:18px}
 .card h2{font-size:17px;font-weight:700;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}
@@ -1343,7 +1354,7 @@ function render(force){
   if (fid) { const el = document.getElementById(fid); if (el) { el.focus(); if (sel) try { el.setSelectionRange(sel[0], sel[1]); } catch(e) {} } }
 }
 const head = (title, sub, actions = '') => `<div class="head"><div><h1>${title}</h1>${sub ? `<p>${sub}</p>` : ''}</div><div class="actions">${actions}</div></div>`;
-const tile = (k, v, s = '', hl = false) => `<div class="tile${hl ? ' hl' : ''}"><div class="k">${k}</div><div class="v">${v}</div>${s ? `<div class="s">${s}</div>` : ''}</div>`;
+const tile = (k, v, s = '', hl = false, go = '') => `<div class="tile${hl ? ' hl' : ''}${go ? ' go' : ''}"${go ? ` role="link" tabindex="0" data-act="expGo" data-r="${go}"` : ''}><div class="k">${k}</div><div class="v">${v}</div>${s ? `<div class="s">${s}</div>` : ''}</div>`;
 const btn = (label, act, data = {}, cls = '') => `<button type="button" class="btn ${cls}" data-act="${act}" ${Object.entries(data).map(([k, v]) => `data-${k}="${esc(v)}"`).join(' ')}>${label}</button>`;
 const monthFilter = () => `<label for="f-month">Month <input type="month" id="f-month" value="${UI.month}"></label>`;
 const empty = t => `<div class="empty">${t}</div>`;
@@ -1381,11 +1392,11 @@ const dashboardV1 = C => {
       ${tile('Net profit this month', signed(s.net), `after cost, commission and expenses`)}
       ${tile('Money on hand', signed(totalMoney), `Cash ${money(C.bal.cash)} · MoMo ${money(C.bal.momo)} · Bank ${money(C.bal.bank)}`)}
       ${tile('Owed by resellers', money(owed), `for bottles already sold · next settlement ${fmtDate(nextDueDate())}`)}
-      ${(() => { const E = expectedAll(C).t; return tile('Expected from resellers', money(E.totalCash), `when all ${int(E.bottles)} bottles they hold are sold, after their commission`, true) + tile('Expected profit on stock out', signed(E.profit), `after cost and all commission`); })()}
+      ${(() => { const E = expectedAll(C).t; return tile('Expected from resellers', money(E.totalCash), `when all ${int(E.bottles)} bottles they hold are sold, after their commission`, true, 'debtors') + tile('Expected profit on stock out', signed(E.profit), `after cost and all commission`, false, 'debtors') + tile('Profit after expenses', signed(E.profit - s.expenses), `also after ${money(s.expenses)} expenses this month`, false, 'debtors'); })()}
       ${tile('Commission due', money(due), `earned by resellers, not yet paid`)}
       ${tile('Stock value at cost', money(C.storeValue + C.heldValue), `${int(C.heldBottles)} bottles with resellers`)}
       ${tile('Active resellers', int(active), `in ${townCounts.length} town${townCounts.length === 1 ? '' : 's'}`)}
-    </div><button type="button" class="btn sm home-more" data-act="homeMore">${UI.homeMore ? 'Fewer figures' : 'More figures (4)'}</button>
+    </div><button type="button" class="btn sm home-more" data-act="homeMore">${UI.homeMore ? 'Fewer figures' : 'More figures (5)'}</button>
     <!--GOALS-->
     ${trendsCard(C)}
     ${insightsCard()}
@@ -1521,6 +1532,63 @@ PAGES.commissions = C => {
 };
 
 /* Debtors & creditors */
+
+/* ---------- Expected money and profit from each reseller: table, phone cards, Excel, PDF ---------- */
+const EXP_KEYS = ['bottles', 'value', 'own', 'team', 'owedNow', 'totalCash', 'cost', 'profit'];
+function expGroups(C, mode){
+  const {rows, t} = expectedAll(C), by = new Map();
+  const keyOf = id => { const r = S.resellers[id] || {}; return mode === 'town' ? (rTown(id) || 'No town') : mode === 'team' ? (r.recruiterId && S.resellers[r.recruiterId] ? 'Recruited by ' + rName(r.recruiterId) : 'Recruited by you') : ''; };
+  for (const row of rows) { const k = keyOf(row[0]); if (!by.has(k)) by.set(k, {label:k, rows:[], sub:Object.fromEntries(EXP_KEYS.map(x => [x, 0]))}); const g = by.get(k); g.rows.push(row); EXP_KEYS.forEach(x => g.sub[x] += row[1][x] || 0); }
+  const groups = [...by.values()]; if (mode !== 'none') groups.sort((a, b) => b.sub.totalCash - a.sub.totalCash || a.label.localeCompare(b.label));
+  return {groups, t};
+}
+const expMode = () => ['town', 'team'].includes(UI.expGroup) ? UI.expGroup : 'none';
+function expCard(C){
+  const mode = expMode(), {groups, t} = expGroups(C, mode), ex = monthStats(thisMonth()).expenses, grouped = mode !== 'none';
+  const seg = [['none', 'No grouping'], ['town', 'By town'], ['team', 'By recruiter']].map(([k, l]) => `<button type="button" class="${mode === k ? 'on' : ''}" data-act="expGroup" data-k="${k}">${l}</button>`).join('');
+  const cells = e => `<td class="n">${int(e.bottles)}</td><td class="n">${money(e.value)}</td><td class="n">${money(e.own)}</td><td class="n">${money(e.team)}</td><td class="n">${signed(e.owedNow)}</td><td class="n"><b>${money(e.totalCash)}</b></td><td class="n">${money(e.cost)}</td><td class="n"><b>${signed(e.profit)}</b></td>`;
+  const body = groups.map(g => (grouped ? `<tr class="grp"><td colspan="10">${esc(g.label)} <span class="small mut">· ${g.rows.length} reseller${g.rows.length === 1 ? '' : 's'}</span></td></tr>` : '')
+    + g.rows.map(([id, e]) => `<tr><td><button class="link" data-act="resView" data-id="${id}">${esc(rName(id))}</button></td><td>${esc(rTown(id))}</td>${cells(e)}</tr>`).join('')
+    + (grouped ? `<tr class="sub"><td colspan="2">Subtotal</td>${cells(g.sub)}</tr>` : '')).join('');
+  const kv = e => `<dl><dt>Bottles held</dt><dd>${int(e.bottles)}</dd><dt>Value at selling price</dt><dd>${money(e.value)}</dd><dt>Their commission</dt><dd>${money(e.own)}</dd><dt>Team commission</dt><dd>${money(e.team)}</dd><dt>Already owed</dt><dd>${signed(e.owedNow)}</dd><dt>Cost of stock</dt><dd>${money(e.cost)}</dd></dl>`;
+  const big = e => `<div class="big"><div><span class="lb">Expected to receive</span><b>${money(e.totalCash)}</b></div><div><span class="lb">Expected profit</span><b>${signed(e.profit)}</b></div></div>`;
+  const cards = groups.map(g => (grouped ? `<div class="exp-grp"><b>${esc(g.label)}</b><span class="small mut">${g.rows.length} reseller${g.rows.length === 1 ? '' : 's'} · receive ${money(g.sub.totalCash)} · profit ${signed(g.sub.profit)}</span></div>` : '')
+    + g.rows.map(([id, e]) => `<div class="exp-card"><div class="h"><button class="link" data-act="resView" data-id="${id}"><b>${esc(rName(id))}</b></button><span class="small mut">${esc(rTown(id))}</span></div>${big(e)}${kv(e)}</div>`).join('')).join('')
+    + `<div class="exp-card tot"><div class="h"><b>Total</b><span class="small mut">${groups.reduce((n, g) => n + g.rows.length, 0)} resellers</span></div>${big(t)}${kv(t)}</div>`;
+  return `<div class="card" id="exp-card"><h2>Expected money and profit from each reseller</h2>
+    <p class="hint">Based on the bottles each reseller holds now, at your selling prices. <b>Expected to receive</b> = value at selling price, minus their commission, plus anything already owed for bottles sold. <b>Expected profit</b> = value at selling price, minus their commission, minus team commission, minus the cost of the stock. It does not include your expenses.</p>
+    <div class="exp-ctl"><span class="lab">Group</span><span class="seg" data-seg="expgroup" style="margin:0">${seg}</span><span class="actions">${btn('PDF / print', 'expReport', {}, 'sm')}${btn('Excel', 'expXlsx', {}, 'sm ghost')}</span></div>
+    ${groups.length ? `<div class="tw exp-tbl"><table class="t"><thead><tr><th>Reseller</th><th>Town</th><th class="n">Bottles held</th><th class="n">Value at selling price</th><th class="n">Their commission</th><th class="n">Team commission</th><th class="n">Already owed</th><th class="n">Expected to receive</th><th class="n">Cost of stock</th><th class="n">Expected profit</th></tr></thead><tbody>${body}</tbody><tfoot><tr><td colspan="2">Total</td>${cells(t)}</tr></tfoot></table></div><div class="exp-cards">${cards}</div>
+    <p class="small" style="margin:10px 0 0">Expected profit <b>${signed(t.profit)}</b> · after this month's expenses (${money(ex)}): <b>${signed(t.profit - ex)}</b></p>` : empty('No stock is out with resellers.')}</div>`;
+}
+function expSheets(C, mode){
+  const {groups, t} = expGroups(C, mode), grouped = mode !== 'none', rows = [], f = e => [num(e.bottles), r2(e.value), r2(e.own), r2(e.team), r2(e.owedNow), r2(e.totalCash), r2(e.cost), r2(e.profit)], ex = monthStats(thisMonth()).expenses;
+  for (const g of groups) { for (const [id, e] of g.rows) { const r = S.resellers[id] || {}; rows.push([rName(id), rTown(id), r.recruiterId && S.resellers[r.recruiterId] ? rName(r.recruiterId) : 'You', g.label].concat(f(e))); } if (grouped) rows.push(['Subtotal: ' + g.label, '', '', g.label].concat(f(g.sub))); }
+  rows.push(['TOTAL', '', '', ''].concat(f(t)));
+  return [{name:'Expected by reseller', head:['Reseller', 'Town', 'Recruited by', 'Group', 'Bottles held', 'Value at selling price', 'Their commission', 'Team commission', 'Already owed', 'Expected to receive', 'Cost of stock', 'Expected profit'], rows},
+    {name:'Summary', head:['Item', 'Amount'], rows:[['Expected from resellers', r2(t.totalCash)], ['Expected profit (after cost and all commission)', r2(t.profit)], [`Expenses in ${monthLabel(thisMonth())}`, r2(ex)], ['Profit after expenses', r2(t.profit - ex)], ['Bottles held by resellers', num(t.bottles)], [`As at`, today()]]}];
+}
+function expReportPages(){
+  const C = compute(), mode = expMode(), {groups, t} = expGroups(C, mode), grouped = mode !== 'none', ex = monthStats(thisMonth()).expenses;
+  const P = 'width:794px;height:1123px;display:flex;flex-direction:column;position:relative';
+  const kpi = (k, v, sub) => `<div style="border:1px solid #e6e1d6;border-radius:10px;padding:10px 12px"><div style="font-size:10px;letter-spacing:.08em;color:#6e675c;font-weight:700;text-transform:uppercase">${k}</div><div style="font-size:18px;font-weight:800;margin-top:3px">${v}</div><div style="font-size:10.5px;color:#6e675c;margin-top:2px">${sub}</div></div>`;
+  const foot = (pg, n) => `<div style="position:absolute;left:44px;right:44px;bottom:26px;display:flex;justify-content:space-between;font-size:11px;color:#8a8170"><span>${[S.settings.businessName, bizPhone(), bizEmail(), bizAddress()].filter(Boolean).map(esc).join(' · ')}</span><span>Page ${pg} of ${n}</span></div>`;
+  const cells = e => `<td class="n">${int(e.bottles)}</td><td class="n">${money(e.value)}</td><td class="n">${money(e.own)}</td><td class="n">${money(e.team)}</td><td class="n">${money(e.owedNow)}</td><td class="n"><b>${money(e.totalCash)}</b></td><td class="n">${money(e.cost)}</td><td class="n"><b>${money(e.profit)}</b></td>`;
+  const items = []; for (const g of groups) { if (grouped) items.push(`<tr class="g"><td colspan="10">${esc(g.label)} · ${g.rows.length} reseller${g.rows.length === 1 ? '' : 's'}</td></tr>`); g.rows.forEach(([id, e]) => items.push(`<tr><td>${esc(rName(id))}</td><td>${esc(rTown(id))}</td>${cells(e)}</tr>`)); if (grouped) items.push(`<tr class="s"><td colspan="2">Subtotal</td>${cells(g.sub)}</tr>`); }
+  const chunks = [], FIRST = 28, NEXT = 40; let i = 0; while (i < items.length || !chunks.length) { const n = chunks.length ? NEXT : FIRST; chunks.push(items.slice(i, i + n)); i += n; }
+  const thead = `<thead><tr><th>Reseller</th><th>Town</th><th class="n">Held</th><th class="n">Value at selling price</th><th class="n">Their comm.</th><th class="n">Team comm.</th><th class="n">Already owed</th><th class="n">Expected to receive</th><th class="n">Cost of stock</th><th class="n">Expected profit</th></tr></thead>`;
+  const note = `<div style="margin:14px 44px 0;padding:10px 14px;border:1px solid #e6e1d6;border-radius:10px;font-size:10.5px;color:#4a4439;line-height:1.5"><b>How this is worked out.</b> Value = bottles held × your selling price. <b>Expected to receive</b> = value − their commission + money already owed for bottles sold. <b>Expected profit</b> = value − their commission − team commission − cost of the stock. Your running expenses are not included: after this month's expenses (${money(ex)}) the profit is <b>${money(t.profit - ex)}</b>.</div>`;
+  return chunks.map((rows, k) => `<div class="doc" data-w="794" data-h="1123" style="${P}">${k === 0 ? docHeader('Expected money and profit', contactBlock()) : `<div style="padding:30px 44px 10px;font-size:13px;color:#6e675c">Expected money and profit from resellers · continued</div>`}
+    ${k === 0 ? `<div style="padding:4px 44px 0;font-size:12px;color:#6e675c">As at ${fmtDate(today())}${grouped ? ' · grouped ' + (mode === 'town' ? 'by town' : 'by recruiter') : ''}</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:12px 44px 0">${kpi('Expected from resellers', money(t.totalCash), int(t.bottles) + ' bottles held')}${kpi('Expected profit', money(t.profit), 'after cost and all commission')}${kpi('Expenses this month', money(ex), monthLabel(thisMonth()))}${kpi('Profit after expenses', money(t.profit - ex), 'expected profit − expenses')}</div>` : ''}
+    <div style="padding:${k === 0 ? 14 : 4}px 44px 0"><table class="xr">${thead}<tbody>${rows.join('')}</tbody>${k === chunks.length - 1 ? `<tfoot><tr><td colspan="2">Total</td>${cells(t)}</tr></tfoot>` : ''}</table></div>
+    ${k === chunks.length - 1 ? note : ''}${foot(k + 1, chunks.length)}</div>`);
+}
+function showExpReport(){
+  const nm = 'Infinity-Fragrances-expected-from-resellers-' + today();
+  modal('Expected money and profit', `<div class="actions" style="margin-bottom:12px">${btn('Download PDF', 'expDoc', {fmt:'pdf', name:nm}, 'pri sm')}${btn('Print', 'printDoc', {}, 'sm')}${btn('Download images', 'expDoc', {fmt:'png', name:nm}, 'sm ghost')}${btn('Excel', 'expXlsx', {}, 'sm ghost')}</div>
+    <div class="preview" id="doc-prev">${expReportPages().map(pg => `<div class="docwrap">${pg}</div>`).join('')}</div>`, null, {wide:true, nofocus:true});
+  requestAnimationFrame(() => fitDocs($('#doc-prev')));
+}
 PAGES.debtors = C => {
   const t = today(), cut = lastDueDate(), nxt = nextDueDate();
   const ids = Object.keys(C.acc).filter(id => S.resellers[id] && (Math.abs(C.acc[id].owed) > 0.009 || Math.abs(C.acc[id].due) > 0.009)).sort((a, b) => C.acc[b].net - C.acc[a].net);
@@ -1530,17 +1598,13 @@ PAGES.debtors = C => {
   return head('Debtors &amp; creditors', `Resellers pay on the ${sDay()}th of each month for what they sold, keeping their commission. Next settlement day: <b>${fmtDate(nxt)}</b>.`,
       btn('Monthly settlement', 'settle', {}, 'pri') + btn('Customer paid', 'moneyIn', {cat:'Customer payment'}) + btn('Pay supplier', 'moneyOut', {cat:'Supplier payment'}))
     + `<div class="tiles">
-      ${(() => { const E = expectedAll(C).t; return tile('Expected from resellers', money(E.totalCash), `${int(E.bottles)} bottles held, after their commission`, true) + tile('Expected profit', signed(E.profit), 'on stock out with resellers'); })()}
+      ${(() => { const E = expectedAll(C).t, ex = monthStats(thisMonth()).expenses; return tile('Expected from resellers', money(E.totalCash), `${int(E.bottles)} bottles held, after their commission`, true, 'debtors') + tile('Expected profit', signed(E.profit), 'after cost and all commission', false, 'debtors') + tile('Profit after expenses', signed(E.profit - ex), `also after ${money(ex)} expenses this month`, false, 'debtors'); })()}
       ${tile('Resellers owe you now', money(totOwed), 'for bottles already sold')}
       ${tile('You owe resellers', money(totDue), 'commission due')}
       ${tile('Customers on credit', money(cust.reduce((x, [, v]) => x + v, 0)), 'direct sales not yet paid')}
       ${tile('You owe suppliers', money(sup.reduce((x, [, v]) => x + v, 0)), 'stock bought on credit')}
     </div>
-    ${(() => { const {rows, t} = expectedAll(C); return `<div class="card"><h2>Expected money and profit from each reseller</h2>
-      <p class="hint">Based on the bottles each reseller holds now, at your selling prices. Expected to receive = what they will pay you after keeping their commission, plus anything already owed for bottles sold.</p>
-      ${rows.length ? `<div class="tw"><table class="t"><thead><tr><th>Reseller</th><th>Town</th><th class="n">Bottles held</th><th class="n">Value at selling price</th><th class="n">Their commission</th><th class="n">Team commission</th><th class="n">Already owed</th><th class="n">Expected to receive</th><th class="n">Cost of stock</th><th class="n">Expected profit</th></tr></thead><tbody>
-        ${rows.map(([id, e]) => `<tr><td><button class="link" data-act="resView" data-id="${id}">${esc(rName(id))}</button></td><td>${esc(rTown(id))}</td><td class="n">${int(e.bottles)}</td><td class="n">${money(e.value)}</td><td class="n">${money(e.own)}</td><td class="n">${money(e.team)}</td><td class="n">${signed(e.owedNow)}</td><td class="n"><b>${money(e.totalCash)}</b></td><td class="n">${money(e.cost)}</td><td class="n"><b>${signed(e.profit)}</b></td></tr>`).join('')}
-      </tbody><tfoot><tr><td colspan="2">Total</td><td class="n">${int(t.bottles)}</td><td class="n">${money(t.value)}</td><td class="n">${money(t.own)}</td><td class="n">${money(t.team)}</td><td class="n">${signed(t.owedNow)}</td><td class="n">${money(t.totalCash)}</td><td class="n">${money(t.cost)}</td><td class="n">${signed(t.profit)}</td></tr></tfoot></table></div>` : empty('No stock is out with resellers.')}</div>`; })()}
+    ${expCard(C)}
     <div class="card"><h2>Reseller accounts</h2>${ids.length ? `<div class="tw"><table class="t"><thead><tr><th>Reseller</th><th>Town</th><th class="n">Sold</th><th class="n">Paid to you</th><th class="n">Owes you</th><th class="n">Comm. due</th><th class="n">Net</th><th>Last payment</th><th></th></tr></thead><tbody>
       ${ids.map(id => { const a = C.acc[id], arr = arrears(id), days = daysBetween(cut, t), od = arr > 0.009;
         return `<tr><td><button class="link" data-act="resView" data-id="${id}">${esc(rName(id))}</button></td><td>${esc(rTown(id))}</td><td class="n">${money(a.sales)}</td><td class="n">${money(a.remit)}</td><td class="n">${signed(a.owed)}</td><td class="n">${money(a.due)}</td><td class="n"><b>${signed(a.net)}</b></td>
@@ -2254,8 +2318,9 @@ function fixNumbers(o){
 }
 
 /* ======================= Version 2.0 ======================= */
-const APP_VERSION = '2.18.1';
+const APP_VERSION = '2.19.0';
 const CHANGELOG = [
+  ['2.19.0', '23 Nov 2026', ['Expected money and profit from each reseller: tap the dashboard tiles to open the table, group it by town or recruiter, view it as cards on your phone, and download it as Excel or PDF or print it', 'New tile: Profit after expenses, next to Expected profit (after cost and all commission)']],
   ['2.18.1', '22 Nov 2026', ['Fixes: expected money from resellers shows the right amounts again, resellers see what is owed to them, adding the first staff member or job works on a new install', 'Safer updates: the phone and PC apps now check every update file themselves and only install app updates signed by Infinity Fragrances']],
   ['2.18.0', '18 Nov 2026', ['New menus: Dashboard, Sales, Online Business, Shops, Stock, Operations, Resellers, Human Resources, Finance (Money, Pay, Reports & tax), Marketing, Users & Access, Settings', 'New pages: Online pages & links, Deliveries & riders, Shop sales & cash-ups, Stock in shops, Shop staff, Shop customers, Business ideas, All logins, Access by position, Reseller applications, App updates, Help', 'Payroll now in Finance; Staff and Employee agreements in Human Resources', 'Shop app Home shows business ideas and insights']],
   ['2.17.0', '18 Nov 2026', ['Staff logins with access rights per position: limited admin app for office staff, shopkeeper app for shop staff and cashiers, manager logins for senior staff', 'Approvals: stock and money changes by limited staff wait for the admin', 'Notifications bell with unread count in every app', 'Rider links: each rider gets one personal delivery link', 'Shopkeeper app Home and a new POS with photos, discounts, scanner and calculator', 'Hide finished items, show older, edit or cancel pending requests in the reseller and shop apps', 'Contacts directory', 'Settings for each section (gear button) and Marketing Assistant position']],
@@ -7031,6 +7096,10 @@ const ACT = {
   remReset: async () => { $('#rem-tpl').value = DEFAULT_REMINDER; await putSettings({reminderTemplate:''}); toast('Standard message restored'); TOOLS.reminders.refresh(); },
   remCopy: async d => { try { await navigator.clipboard.writeText(reminderText(d.id)); await markReminded(d.id); TOOLS.reminders.refresh(); toast('Reminder copied'); } catch(e) { toast('Copy did not work here. Use the WhatsApp button instead.', true); } },
   festPrev: d => { UI.festPreview = d.k; render(true); }, festEnd: () => { UI.festPreview = ''; render(true); },
+  expGo: d => { if (route() !== d.r) location.hash = d.r; let n = 0; const iv = setInterval(() => { const el = $('#exp-card'); if (el) { clearInterval(iv); el.scrollIntoView({behavior:'smooth', block:'start'}); } else if (++n > 25) clearInterval(iv); }, 120); },
+  expGroup: d => { UI.expGroup = d.k; const y = scrollY; render(true); scrollTo(0, y); },
+  expXlsx: () => { toast('Preparing Excel…'); saveFile(`Infinity-Fragrances-expected-from-resellers-${today()}.xlsx`, xlsxBlob(expSheets(compute(), expMode()))); },
+  expReport: () => showExpReport(),
   report: () => showReport(), reportCSV: () => reportCSV(), trendN: d => { UI.trend = +d.n; render(); }, insTab: d => { UI.ins = d.k; render(true); }, homeMore: () => { UI.homeMore = !UI.homeMore; render(true); }, lowAll: () => { UI.lowAll = !UI.lowAll; render(true); },
   camScan: () => camScan(), scanClose: () => scanStop(), scanPhoto: () => { scanStop(); camPhoto(); },
   scanTorch: async () => { try { const t = LSCAN.stream.getVideoTracks()[0]; LSCAN.torch = !LSCAN.torch; await t.applyConstraints({advanced:[{torch:LSCAN.torch}]}); } catch(e) { toast('This phone does not allow the light here.', true); } },
