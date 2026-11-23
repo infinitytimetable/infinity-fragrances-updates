@@ -804,6 +804,181 @@ body.bell-on .head,body.bell-on .res-head,body.bell-on .sec-row{padding-right:52
 .tips-list{margin:0;padding-left:22px}.tips-list li{margin:6px 0}td.warnc{background:color-mix(in srgb,#f59f00 22%,transparent);font-weight:700}
 @media (max-width:640px){.sec-row.part{flex-direction:column;align-items:flex-start;gap:2px}.lnk{flex-direction:column}}
 .part-chips{display:flex;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:8px}.part-chips a{flex:1;text-align:center;padding:9px 6px;font-weight:700;font-size:13px;color:var(--ink);text-decoration:none;background:var(--surface)}.part-chips a+a{border-left:1px solid var(--line)}.part-chips a.on{background:var(--accent);color:var(--accent-ink)}
+/*SS-CSS:BEGIN*/
+/* ===== Shop screen: player styles (all classes start with ss-) ===== */
+.ss-host{position:relative;overflow:hidden;background:#000;transition:background .8s ease}
+.ss-stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;margin:-540px 0 0 -960px;transform:scale(var(--s,1));transform-origin:50% 50%;overflow:hidden;background:#000;--spark:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0C12 7 17 12 24 12 17 12 12 17 12 24 12 17 7 12 0 12 7 12 12 7 12 0Z' fill='%23e8c15a'/%3E%3C/svg%3E")}
+.ss-stage *{box-sizing:border-box;margin:0;padding:0}
+.ss-stage img{max-width:none;display:block}
+.ss-slide{position:absolute;inset:0;opacity:0;visibility:hidden;overflow:hidden;background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.2;text-align:left;transition:opacity 1s ease,transform 1s ease,visibility 0s linear 1s}
+.ss-slide.ss-active{opacity:1;visibility:visible;z-index:2;transition:opacity 1s ease,transform 1s ease,visibility 0s}
+.ss-stage[data-tr=slide] .ss-slide{transform:translateX(7%)}
+.ss-stage[data-tr=slide] .ss-slide.ss-out{transform:translateX(-7%)}
+.ss-stage[data-tr=zoom] .ss-slide{transform:scale(1.07)}
+.ss-stage[data-tr=zoom] .ss-slide.ss-out{transform:scale(.95)}
+.ss-stage .ss-slide.ss-active{transform:none}
+.ss-bar{position:absolute;left:0;bottom:0;height:8px;width:100%;transform:scaleX(0);transform-origin:0 50%;z-index:10}
+.ss-stage.ss-x .ss-slide,.ss-stage.ss-x .ss-in{transition:none!important}
+.ss-stage.ss-x .ss-in{opacity:1!important;transform:none!important}
+.ss-pic{position:absolute;inset:0;width:100%;height:100%}
+.ss-pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.ss-txt-center{position:absolute;left:160px;right:160px;top:100px;bottom:80px;display:flex;flex-direction:column;justify-content:space-between}
+.ss-txt-body{display:flex;flex-direction:column;gap:34px;max-width:1500px}
+.ss-txt-body .ss-ttl{font-size:max(100px,calc(150px*var(--ts,1)))}
+.ss-txt-body .ss-txt{font-size:48px;line-height:1.38;color:var(--mut);max-width:1300px;white-space:pre-line}
+.ss-hero-mid .ss-was{font-size:56px;color:var(--mut);text-decoration:line-through;margin-left:20px;font-weight:400}
+.ss-hero-mid .ss-price{display:flex;align-items:baseline}
+.ss-lgn{display:flex;flex-direction:column;gap:4px}
+.ss-lgs{font-size:30px;color:var(--mut)}
+.ss-lg .ss-pg{display:flex;align-items:baseline;gap:14px}
+.ss-lr .ss-w{font-size:30px;color:var(--mut);text-decoration:line-through;margin-right:10px}
+.ss-grid-n{display:grid;grid-template-columns:repeat(var(--n,3),300px);gap:30px;justify-content:center}
+/* ---------- design themes: colours, fonts, shapes ---------- */
+.ss-slide[data-ssth=noir]{--bg:#0c0a07;--bg2:#171309;--fg:#fbf5e6;--mut:#cfc3a8;--acc:#e9cf8f;--ink:#0c0a07;--plate:#f3ecdc;--rule:rgba(251,245,230,.30);--dim:rgba(233,207,143,.35);--hb:#000;--hf:#fbf5e6;--hacc:#e9cf8f;--frame:rgba(233,207,143,.32);--head:'Playfair Display',Georgia,serif;--body:'Inter',system-ui,sans-serif;--hw:600;--ts:1;--tt:none;--ar:999px 999px 10px 10px;--cr:8px;--sh:0 40px 80px rgba(0,0,0,.55)}
+.ss-slide[data-ssth=ivory]{--bg:#f6f1e6;--bg2:#ebe2cd;--fg:#16130f;--mut:#5a5242;--acc:#8a6420;--ink:#ffffff;--plate:#fffaf0;--rule:rgba(22,19,15,.32);--dim:rgba(138,100,32,.35);--hb:#16130f;--hf:#fbf5e6;--hacc:#e9cf8f;--frame:rgba(22,19,15,.20);--head:'Cormorant Garamond',Georgia,serif;--body:'Jost',system-ui,sans-serif;--hw:600;--ts:1.18;--tt:none;--ar:999px 999px 4px 4px;--cr:4px;--sh:0 30px 60px rgba(60,40,10,.25)}
+.ss-slide[data-ssth=emerald]{--bg:#0a2d1b;--bg2:#06200f;--fg:#fff8ec;--mut:#d9d2bd;--acc:#e8c15a;--ink:#0a2d1b;--plate:#fff8ec;--rule:rgba(255,248,236,.32);--dim:rgba(232,193,90,.35);--hb:#06200f;--hf:#fff8ec;--hacc:#e8c15a;--frame:rgba(232,193,90,.42);--head:'DM Serif Display',Georgia,serif;--body:'Lato',system-ui,sans-serif;--hw:400;--ts:1;--tt:none;--ar:999px 999px 10px 10px;--cr:8px;--sh:0 36px 70px rgba(0,0,0,.5)}
+.ss-slide[data-ssth=midnight]{--bg:#0a1020;--bg2:#131c33;--fg:#eef3fb;--mut:#aab6cf;--acc:#a9c0ff;--ink:#0a1020;--plate:#e9eef8;--rule:rgba(238,243,251,.30);--dim:rgba(169,192,255,.35);--hb:#060b17;--hf:#eef3fb;--hacc:#a9c0ff;--frame:rgba(169,192,255,.22);--head:'Space Grotesk',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif;--hw:700;--ts:.92;--tt:none;--ar:36px;--cr:22px;--sh:0 40px 80px rgba(0,0,0,.55)}
+.ss-slide[data-ssth=blush]{--bg:#f6dedb;--bg2:#efcbc7;--fg:#3a1f26;--mut:#6b4a52;--acc:#9c2b4a;--ink:#ffffff;--plate:#fff7f4;--rule:rgba(58,31,38,.32);--dim:rgba(156,43,74,.35);--hb:#3a1f26;--hf:#fff7f4;--hacc:#f2b8c6;--frame:rgba(156,43,74,.26);--head:'Bodoni Moda',Georgia,serif;--body:'Poppins',system-ui,sans-serif;--hw:600;--ts:.95;--tt:none;--ar:200px 200px 24px 24px;--cr:24px;--sh:0 30px 60px rgba(100,30,50,.25)}
+.ss-slide[data-ssth=bold]{--bg:#000000;--bg2:#161616;--fg:#ffffff;--mut:#d0d0d0;--acc:#f2c94c;--ink:#000000;--plate:#ffffff;--rule:rgba(255,255,255,.32);--dim:rgba(242,201,76,.35);--hb:#f2c94c;--hf:#000000;--hacc:#000000;--frame:transparent;--head:'Montserrat',system-ui,sans-serif;--body:'Montserrat',system-ui,sans-serif;--hw:800;--ts:.7;--tt:uppercase;--ar:0;--cr:0;--sh:0 36px 70px rgba(0,0,0,.6)}
+.ss-slide[data-ssth=oud]{--bg:#2a0f12;--bg2:#1d0a0c;--fg:#fbeedd;--mut:#dcc3a8;--acc:#f0b36a;--ink:#2a0f12;--plate:#f7ead6;--rule:rgba(251,238,221,.32);--dim:rgba(240,179,106,.35);--hb:#170709;--hf:#fbeedd;--hacc:#f0b36a;--frame:rgba(240,179,106,.5);--head:'Cinzel',Georgia,serif;--body:'Lato',system-ui,sans-serif;--hw:600;--ts:.8;--tt:none;--ar:999px 999px 0 0;--cr:0;--pbd:5px solid #f0b36a;--sh:0 36px 70px rgba(0,0,0,.55)}
+
+/* theme backgrounds */
+.ss-deco{position:absolute;inset:0;pointer-events:none}
+.ss-frame{position:absolute;inset:32px;border:1px solid var(--frame);pointer-events:none}
+.ss-slide[data-ssth=noir] .ss-deco{background:radial-gradient(closest-side at 80% 42%,rgba(201,162,74,.24),transparent 75%)}
+.ss-slide[data-ssth=ivory] .ss-deco{background:radial-gradient(circle at 12% 8%,rgba(255,255,255,.75),transparent 55%),radial-gradient(circle at 92% 95%,rgba(138,100,32,.10),transparent 45%)}
+.ss-slide[data-ssth=emerald] .ss-deco{background:var(--spark) 780px 120px/52px 52px no-repeat,var(--spark) 1760px 96px/34px 34px no-repeat,var(--spark) 1840px 640px/40px 40px no-repeat,var(--spark) 90px 920px/30px 30px no-repeat,var(--spark) 1500px 960px/38px 38px no-repeat,radial-gradient(closest-side at 62% 45%,rgba(31,110,68,.60),transparent 78%)}
+.ss-slide[data-ssth=midnight] .ss-deco{background:radial-gradient(circle at 78% 50%,transparent 0 420px,rgba(169,192,255,.20) 421px 423px,transparent 424px),repeating-linear-gradient(0deg,rgba(169,192,255,.06) 0 1px,transparent 1px 90px),repeating-linear-gradient(90deg,rgba(169,192,255,.06) 0 1px,transparent 1px 90px)}
+.ss-slide[data-ssth=blush] .ss-deco{background:radial-gradient(circle at 88% 12%,rgba(255,255,255,.70),transparent 40%),radial-gradient(circle at 4% 96%,rgba(156,43,74,.16),transparent 45%)}
+.ss-slide[data-ssth=bold] .ss-deco{background:linear-gradient(var(--acc),var(--acc)) 0 100%/100% 18px no-repeat,linear-gradient(110deg,#000 0%,#000 40%,#1c1c1c 100%)}
+.ss-slide[data-ssth=oud] .ss-deco{background:radial-gradient(closest-side at 76% 45%,rgba(240,179,106,.24),transparent 78%)}
+.ss-slide[data-ssth=oud] .ss-frame{box-shadow:inset 0 0 0 12px transparent,inset 0 0 0 13px var(--frame)}
+
+/* entrance animation */
+.ss-in{opacity:0;transform:translateY(34px);transition:opacity .4s ease,transform .4s ease}
+.ss-slide.ss-active .ss-in{opacity:1;transform:none;transition:opacity .9s ease calc(var(--d,0)*.13s + .35s),transform .9s ease calc(var(--d,0)*.13s + .35s)}
+
+/* shared pieces */
+.ss-brand{display:flex;align-items:center;gap:24px}
+.ss-brand img{width:92px;height:92px;border-radius:50%;display:block}
+.ss-brand span{font-size:28px;letter-spacing:.22em;text-transform:uppercase;color:var(--acc);font-weight:500}
+.ss-eyebrow{display:flex;align-items:center;gap:24px}
+.ss-eyebrow .ss-ln{display:block;width:72px;height:3px;background:var(--acc)}
+.ss-eyebrow .ss-et{font-size:32px;letter-spacing:.30em;text-transform:uppercase;color:var(--acc);font-weight:600}
+.ss-ttl{font-family:var(--head);font-weight:var(--hw);text-transform:var(--tt,none);line-height:1.02}
+.ss-ttl em,.ss-ttl .ss-a{font-style:italic;color:var(--acc);font-weight:inherit}
+.ss-ttl .ss-a{font-style:normal}
+.ss-foot{display:flex;align-items:center;justify-content:space-between}
+.ss-foot.ss-abs{position:absolute;left:96px;right:96px;bottom:44px}
+.ss-dots{display:flex;align-items:center;gap:14px}
+.ss-dots span{display:block;width:18px;height:9px;border-radius:5px;background:var(--dim)}
+.ss-dots span.ss-on{width:54px;background:var(--acc)}
+.ss-tag{font-family:var(--head);font-style:italic;font-size:30px;color:var(--mut);font-weight:400;text-transform:none;white-space:nowrap}
+.ss-plate{position:relative;overflow:hidden;background:var(--plate);border-radius:var(--ar);border:var(--pbd,0);box-shadow:var(--sh)}
+.ss-plate img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply;display:block}
+.ss-price{font-family:var(--head);font-weight:var(--hw);color:var(--acc);line-height:1}
+
+/* hero */
+.ss-hero-text{position:absolute;left:132px;top:100px;bottom:80px;width:980px;display:flex;flex-direction:column;justify-content:space-between}
+.ss-hero-mid{display:flex;flex-direction:column;gap:26px}
+.ss-hero-mid .ss-ttl{font-size:max(104px,calc(150px*var(--ts,1)))}
+.ss-hero-mid .ss-sub{font-family:var(--head);font-style:italic;font-size:52px;color:var(--acc)}
+.ss-hero-mid .ss-meta{font-size:36px;color:var(--mut);letter-spacing:.04em}
+.ss-hero-mid .ss-price{font-size:180px;margin-top:10px}
+.ss-hero-plate{position:absolute;right:150px;top:90px;width:600px;height:900px}
+
+/* promo */
+.ss-promo-text{position:absolute;left:132px;top:100px;bottom:80px;width:660px;display:flex;flex-direction:column;justify-content:space-between}
+.ss-promo-mid{display:flex;flex-direction:column;gap:30px}
+.ss-promo-mid .ss-ttl{font-size:max(96px,calc(160px*var(--ts,1)))}
+.ss-promo-mid .ss-ttl.ss-sm{font-size:max(80px,calc(110px*var(--ts,1)))}
+.ss-promo-mid .ss-txt{font-size:40px;line-height:1.38;color:var(--mut)}
+.ss-cards{position:absolute;left:830px;top:190px;width:960px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:30px}
+.ss-card{border-radius:var(--cr);overflow:hidden;box-shadow:var(--sh);background:var(--bg2)}
+.ss-cphoto{position:relative;height:450px;background:var(--plate)}
+.ss-cphoto img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
+.ss-badge{position:absolute;left:16px;top:16px;background:var(--acc);color:var(--ink);font-weight:700;font-size:32px;padding:8px 18px;border-radius:6px}
+.ss-cinfo{padding:24px 26px 30px;display:flex;flex-direction:column;gap:6px}
+.ss-cname{font-family:var(--head);font-weight:var(--hw);font-size:max(32px,calc(44px*var(--ts,1)));text-transform:var(--tt,none);line-height:1.1}
+.ss-csize{font-size:28px;color:var(--mut)}
+.ss-crow{display:flex;align-items:baseline;gap:18px;margin-top:8px}
+.ss-cprice{font-family:var(--head);font-weight:var(--hw);font-size:68px;line-height:1;color:var(--acc)}
+.ss-crow .ss-was{font-size:34px;color:var(--mut)}
+
+/* price list */
+.ss-band{position:absolute;left:0;top:0;right:0;height:180px;background:var(--hb);color:var(--hf);display:flex;align-items:center;justify-content:space-between;padding:0 96px}
+.ss-band .ss-brand span{color:var(--hacc)}
+.ss-band .ss-ttl{font-size:max(64px,calc(92px*var(--ts,1)))}
+.ss-cols{position:absolute;left:96px;top:230px;width:1728px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:96px}
+.ss-col{display:flex;flex-direction:column;gap:20px}
+.ss-lh{display:flex;align-items:baseline;justify-content:space-between;border-bottom:3px solid var(--fg);padding-bottom:12px}
+.ss-lh .ss-lht{font-family:var(--head);font-weight:var(--hw);font-size:max(40px,calc(58px*var(--ts,1)));text-transform:var(--tt,none)}
+.ss-lh .ss-lhs{font-size:30px;color:var(--mut)}
+.ss-lr{display:flex;align-items:baseline;gap:14px}
+.ss-lr .ss-n{font-size:38px;font-weight:500;white-space:nowrap}
+.ss-lr .ss-d{flex:1;border-bottom:3px dotted var(--rule);transform:translateY(-8px)}
+.ss-lr .ss-p{font-family:var(--head);font-weight:var(--hw);font-size:46px;color:var(--acc)}
+.ss-lg{display:flex;flex-direction:column;gap:4px}
+.ss-lg .ss-p{font-family:var(--head);font-weight:var(--hw);font-size:60px;line-height:1.1;color:var(--acc)}
+.ss-lg .ss-nm{font-size:36px;line-height:1.4;font-weight:500}
+.ss-sp{height:22px}
+
+/* bestsellers */
+.ss-best-top{position:absolute;left:96px;right:96px;top:60px;display:flex;align-items:flex-end;justify-content:space-between}
+.ss-best-top .ss-ttl{font-size:max(80px,calc(112px*var(--ts,1)));margin-top:8px}
+.ss-best-grid{position:absolute;left:96px;top:285px;width:1728px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:96px}
+.ss-bp{display:flex;flex-direction:column;gap:18px}
+.ss-bp .ss-plate{width:360px;height:480px}
+.ss-bp .ss-r{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.ss-bp .ss-nm{font-family:var(--head);font-weight:var(--hw);font-size:max(34px,calc(40px*var(--ts,1)));line-height:1.12;text-transform:var(--tt,none)}
+.ss-bp .ss-pr{font-family:var(--head);font-weight:var(--hw);font-size:52px;line-height:1;color:var(--acc);white-space:nowrap}
+.ss-bp .ss-mt{font-size:26px;color:var(--mut);white-space:nowrap}
+
+/* QR */
+.ss-qr-text{position:absolute;left:132px;top:100px;bottom:80px;width:920px;display:flex;flex-direction:column;justify-content:space-between}
+.ss-qr-mid{display:flex;flex-direction:column;gap:30px}
+.ss-qr-mid .ss-ttl{font-size:max(100px,calc(170px*var(--ts,1)))}
+.ss-qr-mid .ss-txt{font-size:42px;line-height:1.4;color:var(--mut);max-width:780px}
+.ss-wa{display:flex;align-items:baseline;gap:24px;margin-top:6px}
+.ss-wa .ss-wal{font-size:30px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut)}
+.ss-wa .ss-wan{font-family:var(--head);font-weight:var(--hw);font-size:62px;color:var(--acc)}
+.ss-qr-box{position:absolute;right:170px;top:230px;width:560px;display:flex;flex-direction:column;align-items:center;gap:36px}
+.ss-qr-plate{width:540px;height:540px;background:#f6f1e6;border-radius:22px;display:grid;place-items:center;box-shadow:var(--sh)}
+.ss-qr-plate svg{width:410px;height:410px;display:block}
+.ss-qr-box .ss-cap{white-space:nowrap;font-size:30px;color:var(--acc);font-weight:500;text-align:center}
+
+.ss-lg .ss-w{font-size:30px;color:var(--mut);text-decoration:line-through}
+.ss-ttl .ss-pn{font-size:.45em;color:var(--mut);margin-left:16px;font-family:var(--body);font-weight:400}
+/* projector (full window for the HDMI screen or a cast) */
+.ss-proj{position:fixed;inset:0;z-index:9999;background:#000;cursor:default}
+.ss-proj.ss-idle{cursor:none}
+.ss-pv{position:absolute;inset:0}
+.ss-host{position:relative;overflow:hidden;background:#000;transition:background .8s ease}
+.ss-ctl{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);display:flex;gap:8px;padding:8px;border-radius:14px;background:rgba(20,18,15,.88);box-shadow:0 8px 30px rgba(0,0,0,.5);transition:opacity .4s;z-index:3}
+.ss-ctl.ss-hide{opacity:0;pointer-events:none}
+.ss-ctl button{font:600 15px/1 system-ui,sans-serif;color:#f4ecd8;background:#2c2820;border:1px solid #4a4336;border-radius:10px;padding:12px 16px;cursor:pointer;min-height:44px}
+.ss-ctl button:hover,.ss-ctl button:focus-visible{background:#a67c2e;color:#fff;outline:none}
+/* editor page */
+.ssed-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:980px){.ssed-grid{grid-template-columns:1fr}}
+.ssed-prev{position:relative;width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:#000}
+.ssed-row{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.ssed-row.off{opacity:.55}
+.ssed-on{display:flex;align-items:center;padding:6px}
+.ssed-on input{width:22px;height:22px}
+.ssed-main{flex:1;min-width:0}
+.ssed-main .small{margin-top:4px}
+.ssed-btns{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.ssed-add{display:flex;gap:8px;flex-wrap:wrap}
+@media (max-width:600px){.ssed-row{flex-wrap:wrap}.ssed-btns{width:100%;justify-content:flex-start}}
+.ss-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;background:#14110c;color:#e9cf8f;font:600 64px/1.2 system-ui,sans-serif;text-align:center;padding:0 160px}
+.ss-empty[hidden]{display:none}
+.ss-empty small{font:400 38px/1.4 system-ui,sans-serif;color:#a69d8e}
+body.ss-projecting > *:not(.ss-proj){display:none!important}
+.ss-hint{position:absolute;top:22px;left:50%;transform:translateX(-50%);max-width:92%;padding:10px 16px;border-radius:10px;background:rgba(20,18,15,.88);color:#f4ecd8;font:600 16px/1.3 system-ui,sans-serif;text-align:center;z-index:3}
+.ss-hint[hidden]{display:none}
+.ss-proj .ss-pv{position:absolute;inset:0;width:100%;height:100%}
+/*SS-CSS:END*/
 </style>
 <script>try{var L=JSON.parse(localStorage.getItem('if-look')||'{}'),R=document.documentElement;var F=localStorage.getItem('if-forceskin');R.dataset.skin=F||L.skin||'classic';if(L.mode&&L.mode!=='auto')R.dataset.theme=L.mode;R.dataset.text=L.text||'normal';if(L.motion===false)R.dataset.motion='off';}catch(e){}</script>
 </head>
@@ -1321,7 +1496,7 @@ function monthStats(m){
 
 /* ---------- render ---------- */
 const PAGES = {};
-const ROUTES = ['dashboard','messages','approvals','contacts','feedback','hiring','staff','ratings','riders','links','shopsales','shopstock','shopstaff','shopcust','ideas','resapps','empagree','payroll','logins','access','updates','help','pos','orders','customers','portal','invoices','suppliers','broadcast','activity','settlement','leaderboard','team','planner','profit','reminders','agreements','resellers','commissions','payslips','debtors','products','stocktake','shops','stock','purchases','dispatch','sales','cashbook','expenses','promos','catalogue','adverts','studio','prospects','monthreport','reports','setup','company'];
+const ROUTES = ['dashboard','messages','approvals','contacts','feedback','hiring','staff','ratings','riders','links','shopsales','shopstock','shopstaff','shopcust','ideas','resapps','empagree','payroll','logins','access','updates','help','pos','orders','customers','portal','invoices','suppliers','broadcast','activity','settlement','leaderboard','team','planner','profit','reminders','agreements','resellers','commissions','payslips','debtors','products','stocktake','shops','stock','purchases','dispatch','sales','cashbook','expenses','promos','catalogue','adverts','shopscreen','studio','prospects','monthreport','reports','setup','company'];
 function route(){ const h = location.hash.slice(1); return ROUTES.includes(h) ? h : 'dashboard'; }
 const GROUPS = [
   {label:'Dashboard', tabs:[['dashboard','Dashboard'],['approvals','Approvals'],['feedback','Suggestions'],['contacts','Contacts']]},
@@ -1334,7 +1509,7 @@ const GROUPS = [
   {label:'Resellers', tabs:[['resellers','Towns & resellers'],['portal','Requests & logins'],['resapps','Applications'],['settlement','Settlement day'],['reminders','Reminders'],['team','Recruits & bonuses'],['leaderboard','Leaderboard'],['agreements','Reseller agreements']]},
   {label:'Human Resources', tabs:[['hiring','Careers & applications'],['staff','Staff'],['empagree','Employee agreements']]},
   {label:'Finance', parts:[['Money', [['cashbook','Cash book'],['expenses','Expenses'],['invoices','Invoices & quotes'],['debtors','Money owed']]], ['Pay', [['payroll','Payroll'],['commissions','Reseller commissions'],['payslips','Reseller payslips']]], ['Reports & tax', [['monthreport','Monthly report'],['reports','Profit & reports'],['profit','Profit by perfume'],['company','Company profile & tax']]]]},
-  {label:'Marketing', tabs:[['promos','Promotions'],['adverts','Flyers & adverts'],['broadcast','WhatsApp broadcast'],['studio','Photo studio'],['prospects','Prospects & advice']]},
+  {label:'Marketing', tabs:[['promos','Promotions'],['adverts','Flyers & adverts'],['shopscreen','Shop screen'],['broadcast','WhatsApp broadcast'],['studio','Photo studio'],['prospects','Prospects & advice']]},
   {label:'Users & Access', tabs:[['logins','All logins'],['access','Access by position'],['activity','Activity log']]},
   {label:'Settings', tabs:[['setup','Settings & backup'],['updates','App updates'],['help','Help']]}
 ];
@@ -1356,7 +1531,7 @@ function tabsHTML(r){
   if (tabs.length < 2) return gear ? `<div class="sec-row">${gear}</div>` : '';
   return `<div class="sec-row"><nav class="tabs" aria-label="${esc(g.label)}">${tabs.map(([id, l]) => `<a href="#${id}" class="${id === r ? 'on' : ''}">${esc(l)}</a>`).join('')}</nav>${gear}</div>`;
 }
-const TOOL_PAGES = new Set(['catalogue','adverts','studio','pos','prospects','reminders']);
+const TOOL_PAGES = new Set(['catalogue','adverts','studio','pos','prospects','reminders','shopscreen']);
 function render(force){
   try { const fk = applyFestive(); if (fk && !UI.festPreview) setTimeout(() => festGreet(fk), 600); } catch(e) {}
   if (DESK && MODE === 'desktop' && APP_ROLE !== 'reseller') { const g = gateHTML(); if (g) { document.body.classList.remove('res-mode'); navOff(); $('#main').dataset.page = ''; $('#main').innerHTML = g; return; } }
@@ -2351,8 +2526,11 @@ function fixNumbers(o){
 }
 
 /* ======================= Version 2.0 ======================= */
-const APP_VERSION = '2.21.1';
+const APP_VERSION = '2.22.2';
 const CHANGELOG = [
+  ['2.22.2', '23 Nov 2026', ['Shop screen projector fixed: it now fills the whole screen with the slideshow (it showed a black screen before), asks for real full screen, and also works with F11 or a double-click', 'Lighter and quicker: the hub is hidden while the projector plays, it starts at once without waiting for downloads, and it keeps only the slides it needs in memory', 'If your screen is not widescreen, the empty bars take the slide colour instead of black']],
+  ['2.22.1', '23 Nov 2026', ['Shop screen: perfumes you pick by hand on a slide now show even when they are out of stock', 'New list on each screen: always show these perfumes, even when out of stock (they also appear on the price list)']],
+  ['2.22.0', '23 Nov 2026', ['New: Shop screen (Marketing menu). Show your perfumes, prices and offers on the TV or monitor in your shop, like the screens in restaurants', 'Seven designs and fonts: Noir Gold, Ivory Editorial, Emerald Christmas, Midnight Silver, Rose Blush, Black Friday Bold and Royal Oud. Mix them, or let the season pick (Christmas, New Year, Valentine’s, Black Friday and more)', 'Slides: featured perfume, bestsellers (picked from your sales), promotions, seasonal gifts, price lists by category, a QR code to your online shop, your own pictures and messages', 'Hide out-of-stock perfumes, set dates, times and days for each slide, and keep a different screen for each shop', 'Start projector: plug the TV into the computer with HDMI (or cast the window wirelessly) and it plays full screen', 'Video for USB: save the slideshow as a video file to copy onto a flash drive and play on any TV', 'HD photos: add a sharper photo for any perfume so it looks good on a 4K screen']],
   ['2.21.1', '23 Nov 2026', ['Messages fixes: deleting a conversation now finishes cleanly, and chats between two other people no longer add to the Admin unread count', 'A message you are reading clears its bell dot straight away, and the Seen-by list now follows follow-up posts', 'Safer: only Admin and managers can send messages as the office (paste the updated Firebase rules once)']],
   ['2.21.0', '23 Nov 2026', ['Messages: a new inbox in the Admin hub, the reseller app and the shop and staff app, like Messenger and email together', 'Write to people with To and CC, start group chats, and send announcements to all resellers, a town, shops and staff or hand-picked people, with a Seen-by list', 'Send photos, use one-tap quick replies, and see new messages in the bell and as phone alerts', 'Resellers who use a personal link can read announcements and write to the office from it', 'Admin can read every conversation (people are told), and can nudge anyone who has not read a message on WhatsApp']],
   ['2.20.0', '23 Nov 2026', ['Reseller links for resellers who do not use the app: one personal link each, opened with the last 4 digits of their phone number', 'They tick what they sold, see what they should pay after their commission, say how they are paying (cash, MTN MoMo, Airtel Money or bank, with an optional photo), and send it for your approval', 'The same link confirms parcels received (with shortages), and makes PDF reports with their name: settlement report, stock received note, stock held and history', 'Send links from Resellers, Settlement day and Dispatch. One-time Firebase rules update needed (Requests & logins page → Copy rules)']],
@@ -2472,7 +2650,7 @@ function docSummary(col, d){
   if (col === 'receipts') return `${d.no} · ${money(d.total)}`;
   if (col === 'dispatches') return `${d.no} to ${dnTo(d)}`;
   if (col === 'invoices') return `${d.no} · ${d.customer || ''}`;
-  if (col === 'images') return `Photo for ${pName(d.id)}`;
+  if (col === 'images') return /^ss_/.test(d.id) ? 'Shop screen picture' : `${/^hd_/.test(d.id) ? 'HD photo' : 'Photo'} for ${pName(String(d.id).replace(/^hd_/, ''))}`;
   return d.name || d.no || d.id || '';
 }
 function logWrite(action, col, before, after){
@@ -4899,7 +5077,7 @@ function accessDef(title){
   if (/stock|store ?keeper|warehouse/.test(t)) return A(['dashboard', 'products', 'stock', 'stocktake', 'purchases', 'suppliers', 'planner', 'dispatch', 'shopstock', 'contacts']);
   if (/operation/.test(t)) return A(['dashboard', 'orders', 'riders', 'dispatch', 'stock', 'customers', 'contacts', 'feedback']);
   if (/secretary|admin|receptionist/.test(t)) return A(['dashboard', 'hiring', 'customers', 'invoices', 'contacts', 'feedback', 'empagree', 'agreements']);
-  if (/marketing/.test(t)) return A(['dashboard', 'adverts', 'catalogue', 'studio', 'promos', 'broadcast', 'prospects', 'customers', 'contacts', 'links', 'ratings']);
+  if (/marketing/.test(t)) return A(['dashboard', 'adverts', 'shopscreen', 'catalogue', 'studio', 'promos', 'broadcast', 'prospects', 'customers', 'contacts', 'links', 'ratings']);
   return {app:'none', screens:[]};
 }
 const posOfTitle = t => posAll().find(p => (p.title || '').toLowerCase() === String(t || '').toLowerCase());
@@ -5280,7 +5458,7 @@ PAGES.shopcust = () => {
     + `<div class="filters"><input type="search" id="sc-q" placeholder="Search name or phone" value="${esc(UI.scQ || '')}"><select id="f-scshop"><option value="">All shops</option>${ls.map(l => `<option value="${l.id}" ${sh === l.id ? 'selected' : ''}>${esc(l.name)}</option>`).join('')}</select><div class="seg">${[['all', 'Everyone'], ['regular', 'Came back'], ['away', 'Not seen 30+ days']].map(([k, l]) => btn(l, 'scF', {v:k}, f === k ? 'on' : '')).join('')}</div></div>`
     + (list.length ? `<div class="card"><div class="tw"><table class="t"><thead><tr><th>Customer</th><th>Shop</th><th class="n">Visits</th><th class="n">Bottles</th><th class="n">Spent</th><th>Last visit</th><th>Favourite</th><th></th></tr></thead><tbody>${list.slice(0, 400).map(c => `<tr><td><b>${esc(c.name || 'Customer')}</b><div class="small mut">${esc(c.phone || '')}</div></td><td class="small">${[...c.shops].map(id => esc(shopOf(id)?.name || '')).join(', ')}</td><td class="n">${c.visits}</td><td class="n">${int(c.bottles)}</td><td class="n">${money(c.spent)}</td><td class="small">${fmtDate(c.last)}${c.last < cut30 ? ' <span class="pill warn">away</span>' : ''}</td><td class="small">${esc(fav(c))}</td><td>${c.phone ? `<a class="btn sm" target="_blank" rel="noopener" href="${waLink(c.phone, `Hello ${String(c.name || '').split(' ')[0] || 'there'}, thank you for shopping at ${bizName()}! ${fav(c) ? `We have your favourite ${fav(c)} in stock.` : 'We have new perfumes in stock.'} Come and see us soon.`)}">WhatsApp</a>` : ''}</td></tr>`).join('')}</tbody></table></div></div>` : empty('No shop customers yet. Ask for the customer\'s name and phone on each sale in the shop app.'));
 };
-const MENU_HELP = {'Messages':'Chat with your team, shops and resellers inside the app. Copy people in, send announcements and start groups.', 'Dashboard':'Today at a glance, approvals waiting for you, suggestions from your team and everyone\'s contacts.', 'Sales':'Sell at the counter, see every sale and look after your customers and loyalty points.', 'Online Business':'Online shop orders, customer ratings, riders and deliveries, the online catalogue and all your public links.', 'Shops':'Each shop\'s details, sales and cash-ups, stock, staff, customers and ideas for selling more.', 'Stock':'Your perfumes and every stock movement.', 'Operations':'Sending parcels, counting stock, planning reorders, buying stock and your suppliers.', 'Resellers':'Resellers by town, their requests and logins, applications, settlement day, reminders, recruits, the leaderboard and agreements.', 'Human Resources':'Positions and job applications, your staff and their employment agreements.', 'Finance':'Money in and out, invoices, money owed, pay for staff and resellers, reports and your company and tax details.', 'Marketing':'Promotions, flyers, WhatsApp broadcasts, product photos and prospects.', 'Users & Access':'Every login, what each position can open and the record of who did what.', 'Settings':'Business settings, backups, app updates and this help.'};
+const MENU_HELP = {'Messages':'Chat with your team, shops and resellers inside the app. Copy people in, send announcements and start groups.', 'Dashboard':'Today at a glance, approvals waiting for you, suggestions from your team and everyone\'s contacts.', 'Sales':'Sell at the counter, see every sale and look after your customers and loyalty points.', 'Online Business':'Online shop orders, customer ratings, riders and deliveries, the online catalogue and all your public links.', 'Shops':'Each shop\'s details, sales and cash-ups, stock, staff, customers and ideas for selling more.', 'Stock':'Your perfumes and every stock movement.', 'Operations':'Sending parcels, counting stock, planning reorders, buying stock and your suppliers.', 'Resellers':'Resellers by town, their requests and logins, applications, settlement day, reminders, recruits, the leaderboard and agreements.', 'Human Resources':'Positions and job applications, your staff and their employment agreements.', 'Finance':'Money in and out, invoices, money owed, pay for staff and resellers, reports and your company and tax details.', 'Marketing':'Promotions, flyers, the Shop screen for your TV, WhatsApp broadcasts, product photos and prospects.', 'Users & Access':'Every login, what each position can open and the record of who did what.', 'Settings':'Business settings, backups, app updates and this help.'};
 PAGES.help = () => head('Help', 'What is in each menu. Tap a menu name to go there.')
   + GROUPS.filter(g => g.tabs.some(t => allowed(t[0]))).map(g => `<div class="card"><h2><a href="#${g.tabs.find(t => allowed(t[0]))[0]}">${esc(g.label)}</a></h2><p style="margin:0 0 8px">${esc(MENU_HELP[g.label] || '')}</p><div class="small">${g.tabs.filter(t => allowed(t[0])).map(([k, l]) => `<a class="pill" href="#${k}">${esc(l)}</a>`).join(' ')}</div></div>`).join('')
   + `<div class="card"><h2>Good to know</h2><ul class="list small"><li>The ⚙ Settings button on a page changes settings for that part of the hub.</li><li>The bell at the top shows notifications. Tap one to go to it.</li><li>Back up your records regularly from Settings & backup.</li></ul></div>`;
@@ -7623,6 +7801,368 @@ const ACT = {
   csv: d => exportCSV(d.k),
   copyStmt: async () => { const t = $('#f-stmt'); try { await navigator.clipboard.writeText(t.value); toast('Statement copied'); } catch(e) { t.select(); toast('Press and hold to copy the selected text'); } },
 };
+/*SS-JS:BEGIN*/
+/* ================= SHOP SCREEN: perfumes, prices and offers on the TV in your shop ================= */
+const SS_THEMES = [['noir','Noir Gold'],['ivory','Ivory Editorial'],['emerald','Emerald Christmas'],['midnight','Midnight Silver'],['blush','Rose Blush'],['bold','Black Friday Bold'],['oud','Royal Oud']];
+const SS_FEST_THEME = {christmas:'emerald', newyear:'midnight', valentine:'blush', women:'blush', easter:'ivory', mothers:'blush', africa:'emerald', blackfriday:'bold', independence:'emerald'};
+const SS_MIX = ['noir','ivory','midnight','blush','oud'];
+const SS_FEST_COPY = {
+  christmas:['Christmas','The gift of *fragrance*','Wrapped and ready for someone special'],
+  newyear:['New Year','A fresh *start*','Begin the year smelling good'],
+  valentine:['Valentine’s Day','Say it with *fragrance*','Gifts for the one you love'],
+  women:['Women’s Day','Celebrate *her*','Fragrances for every woman'],
+  easter:['Easter','Fresh *scents* for the season','Treat yourself and your family'],
+  mothers:['Mother’s Day','For the *queen* of your home','A gift she will remember'],
+  africa:['Africa Day','Celebrate *Africa Day*','A new scent for the celebration'],
+  blackfriday:['Black Friday','The biggest *weekend* of the year','Great prices on your favourite scents'],
+  independence:['Independence Day','Proudly *Zambian*','A new scent for the holiday']
+};
+const SS_TYPES = {hero:'Featured perfume', best:'Bestsellers', promo:'Promotion', season:'Seasonal gifts', list:'Price list', qr:'Scan to order', pic:'Your own picture', txt:'Your own message'};
+const SS_TYPE_HELP = {hero:'One perfume, big and bold', best:'Your top sellers, picked for you', promo:'Perfumes on offer, with the new price', season:'Christmas, Black Friday and other seasons', list:'Every perfume and price, by category', qr:'A code customers scan to shop online', pic:'A flyer or photo shown full screen', txt:'A short message of your own'};
+const SS_DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const SS = {pv:null, proj:null, tick:0};
+const ssTag = () => S.settings.tagline || 'Smell good. Live infinitely.';
+const ssRich = s => esc(s).replace(/\*([^*\n]+)\*/g, '<em>$1</em>').replace(/\n/g, '<br>');
+const ssMoney = n => { n = r2(num(n)); return (S.settings.currency || 'K') + (Number.isInteger(n) ? n.toLocaleString('en-US') : n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})); };
+const ssSig = o => JSON.stringify(o, (k, v) => typeof v === 'string' && v.length > 3000 ? 'L' + v.length + v.slice(-24) : v);
+function ssPhone(){ const p = String(bizPhone() || '').replace(/[^\d+]/g, ''); return /^\+260\d{9}$/.test(p) ? p.replace(/^(\+260)(\d{3})(\d{3})(\d{3})$/, '$1 $2 $3 $4') : bizPhone(); }
+function ssFonts(){ if (document.getElementById('ss-fonts')) return; const l = document.createElement('link'); l.id = 'ss-fonts'; l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,500;0,600;1,500&family=Cinzel:wght@500;600&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&family=Jost:wght@400;500;600&family=Lato:wght@400;700&family=Montserrat:wght@500;600;800&family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Poppins:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap'; document.head.appendChild(l); }
+async function ssPrep(){ ssFonts(); }
+
+/* ---------- saved settings ---------- */
+const ssCfg = () => (S.settings.ss && Array.isArray(S.settings.ss.screens)) ? S.settings.ss : {screens:[]};
+const ssScr = id => ssCfg().screens.find(x => x.id === id) || ssCfg().screens[0] || null;
+async function ssSave(mut){ const cfg = clean(ssCfg()); if (!Array.isArray(cfg.screens)) cfg.screens = []; mut(cfg); await putSettings({ss:cfg}); }
+const ssStarter = () => [{id:uid(), type:'best'}, {id:uid(), type:'promo'}, {id:uid(), type:'season', fest:'any'}, {id:uid(), type:'list'}, {id:uid(), type:'qr'}];
+const ssNewScreen = (name, loc) => ({id:uid(), name, loc:loc || 'main', theme:'mix', seasons:true, hideOut:true, sec:8, tr:'fade', slides:ssStarter()});
+
+/* ---------- what is on the screen right now ---------- */
+const ssOk = p => p && (p.status || 'active') !== 'inactive' && num(p.sellPrice) > 0;
+const ssImg = pid => S.images['hd_' + pid]?.data || imgOf(pid) || '';
+function ssPrice(pid){ const base = num(S.products[pid]?.sellPrice), b = bestPromo(pid, base, 'pos'); return b && b.price < base ? {now:b.price, was:base} : {now:base, was:0}; }
+function ssItem(p){ const pr = ssPrice(p.id); return {id:p.id, name:p.name, size:p.size ? p.size + ' ml' : '', cat:p.category || '', img:ssImg(p.id), now:pr.now, was:pr.was}; }
+function ssPool(sc, stock){ const st = stock || compute().storeLoc[sc.loc || 'main'] || {}, keep = sc.keep || []; return sortedProds().filter(p => ssOk(p) && (sc.hideOut === false || num(st[p.id]) > 0 || keep.includes(p.id))); }
+function ssBest(sc, pool, n, needImg){
+  const since = iso(addDays(new Date(), -30)), here = {}, all = {};
+  for (const m of Object.values(S.moves)) { if (m.kind !== 'sale' || (m.date || '') < since) continue; const q = num(m.qty); all[m.productId] = (all[m.productId] || 0) + q; if (!m.resellerId && (m.loc || 'main') === (sc.loc || 'main')) here[m.productId] = (here[m.productId] || 0) + q; }
+  return pool.filter(p => !needImg || ssImg(p.id)).sort((a, b) => (here[b.id] || 0) - (here[a.id] || 0) || (all[b.id] || 0) - (all[a.id] || 0) || (ssImg(b.id) ? 1 : 0) - (ssImg(a.id) ? 1 : 0) || a.name.localeCompare(b.name)).slice(0, n);
+}
+function ssWhen(sl, d){
+  if (sl.on === false) return false;
+  const ds = iso(d); if (sl.from && ds < sl.from) return false; if (sl.to && ds > sl.to) return false;
+  if (sl.dows && sl.dows.length && !sl.dows.includes(d.getDay())) return false;
+  if (sl.t1 || sl.t2) { const hm = pad(d.getHours()) + ':' + pad(d.getMinutes()), a = sl.t1 || '00:00', b = sl.t2 || '23:59'; if (a <= b ? (hm < a || hm > b) : (hm < a && hm > b)) return false; }
+  return true;
+}
+function ssTheme(sc, sl, ci, fest, pref){
+  if (sl.theme) return sl.theme;
+  if (pref) return pref;
+  if (sc.seasons !== false && fest) return SS_FEST_THEME[fest] || 'noir';
+  if (sc.theme && sc.theme !== 'mix') return sc.theme;
+  return SS_MIX[ci % SS_MIX.length];
+}
+function ssQR(url){ const s = coQR(url); const m = s && s.match(/viewBox="0 0 (\d+) \d+"[^>]*><path fill="[^"]*" d="([^"]*)"/); return m ? {w:+m[1], p:m[2]} : null; }
+function ssListPages(sc, sl, pool){
+  const catsAll = CATS(), want = (sl.cats && sl.cats.length) ? sl.cats : null, byCat = {};
+  pool.forEach(p => { const c = p.category || 'Other'; if (!want || want.includes(c)) (byCat[c] = byCat[c] || []).push(p); });
+  const order = [...catsAll.filter(c => byCat[c]), ...Object.keys(byCat).filter(c => !catsAll.includes(c))];
+  const cmp = (a, b) => num(b.size) - num(a.size) || a.now - b.now;
+  const blocks = order.map(c => {
+    const ps = byCat[c].map(p => ({n:p.name, size:p.size ? p.size + ' ml' : '', ...ssPrice(p.id)})), sizes = new Set(ps.map(x => x.size)), head = sizes.size === 1 ? ps[0].size : '';
+    if (ps.length <= 6) return {h:c, s:head, u:ps.sort((a, b) => cmp({size:a.size.replace(' ml', ''), now:a.now}, {size:b.size.replace(' ml', ''), now:b.now}) || a.n.localeCompare(b.n)).map(x => ({t:'r', n:x.n + (sizes.size > 1 && x.size ? ' ' + x.size : ''), now:x.now, was:x.was, hgt:1}))};
+    const g = {}; ps.forEach(x => { const k = x.size + '|' + x.now + '|' + x.was; (g[k] = g[k] || {size:x.size, now:x.now, was:x.was, names:[]}).names.push(x.n); });
+    return {h:c, s:head, u:Object.values(g).sort((a, b) => cmp({size:a.size.replace(' ml', ''), now:a.now}, {size:b.size.replace(' ml', ''), now:b.now})).map(x => { const names = x.names.sort().join(', '); return {t:'g', size:sizes.size > 1 ? x.size : '', now:x.now, was:x.was, names, hgt:1.35 + Math.ceil(names.length / 28) * 0.9}; })};
+  });
+  const CAP = 12.4, cols = []; let col = [], used = 0;
+  const push = () => { if (col.length) cols.push(col); col = []; used = 0; };
+  blocks.forEach(b => { let cur = null;
+    b.u.forEach((u, ui) => {
+      if (used + u.hgt + (cur ? 0 : 2) > CAP && col.length) { push(); cur = null; }
+      if (!cur) { cur = {h:b.h, s:ui > 0 ? 'continued' : b.s, u:[]}; col.push(cur); used += 2; }
+      cur.u.push(u); used += u.hgt;
+    });
+    used += 0.4; });
+  push();
+  const np = Math.ceil(cols.length / 3), pages = []; let at = 0; for (let k = 0; k < np; k++) { const take = Math.ceil((cols.length - at) / (np - k)); pages.push(cols.slice(at, at + take)); at += take; }
+  return pages;
+}
+function ssOne(sc, sl, pool, fest, d, ci, all){
+  const base = k => ({k, id:sl.id, sec:num(sl.sec) || num(sc.sec) || 8}), th = pref => ssTheme(sc, sl, ci, fest, pref);
+  switch (sl.type) {
+    case 'hero': { const p = all.find(x => x.id === sl.pid); if (!p) return null; const it = ssItem(p); return {...base('hero'), theme:th(), eyebrow:sl.eyebrow == null ? 'New arrival' : sl.eyebrow, sub:sl.sub || '', meta:[it.size, it.cat].filter(Boolean).join('  ·  '), item:it}; }
+    case 'best': { const ps = ssBest(sc, pool, num(sl.n) || 4, sl.needImg !== false); if (ps.length < 2) return null; return {...base('best'), theme:th(), eyebrow:sl.eyebrow == null ? 'Customer favourites' : sl.eyebrow, title:sl.title || 'Bestsellers', items:ps.map(ssItem)}; }
+    case 'promo': {
+      const live = Object.values(S.promos).filter(pr => promoLive(pr, iso(d)) && (pr.channels || {}).pos).sort((a, b) => String(b.start).localeCompare(String(a.start)));
+      const pr = sl.promoId ? live.find(x => x.id === sl.promoId) : live[0]; if (!pr) return null;
+      let ps = (sl.pids && sl.pids.length) ? sl.pids.map(id => all.find(x => x.id === id)).filter(Boolean) : ssBest(sc, pool.filter(p => promoApplies(pr, p.id)), 3, true);
+      if (!ps.length && !(sl.pids && sl.pids.length)) ps = ssBest(sc, pool.filter(p => promoApplies(pr, p.id)), 3, false);
+      if (!ps.length) return null;
+      const items = ps.slice(0, 3).map(p => { const it = ssItem(p); if (pr.kind !== 'bxgy') { const np = promoUnit(pr, num(p.sellPrice)); it.now = np; it.was = np < num(p.sellPrice) ? num(p.sellPrice) : 0; } else { it.now = num(p.sellPrice); it.was = 0; } return it; });
+      return {...base('promo'), theme:th(/black\s*friday/i.test(pr.name) || fest === 'blackfriday' ? 'bold' : null), eyebrow:sl.eyebrow == null ? 'Special offer' : sl.eyebrow, titleHTML:ssRich(sl.title || pr.name), text:sl.text || pr.note || ('Until ' + fmtDate(pr.end)), badge:promoBadge(pr), items};
+    }
+    case 'season': {
+      const f = (sl.fest && sl.fest !== 'any') ? sl.fest : fest; if (!f || (sl.fest && sl.fest !== 'any' && fest !== sl.fest)) return null;
+      const cp = SS_FEST_COPY[f]; let ps = (sl.pids && sl.pids.length) ? sl.pids.map(id => all.find(x => x.id === id)).filter(Boolean) : ssBest(sc, pool, 3, true); if (!ps.length) return null;
+      return {...base('promo'), theme:th(SS_FEST_THEME[f]), eyebrow:sl.eyebrow == null ? cp[0] : sl.eyebrow, titleHTML:ssRich(sl.title || cp[1]), text:sl.text || cp[2], badge:'', items:ps.slice(0, 3).map(ssItem)};
+    }
+    case 'list': { const pages = ssListPages(sc, sl, pool); if (!pages.length) return null; const t = th(); return pages.map((cols, k) => ({...base('list'), id:sl.id + (pages.length > 1 ? '#' + (k + 1) : ''), sec:num(sl.sec) || (num(sc.sec) || 8) + 4, theme:t, page:k + 1, pages:pages.length, cols})); }
+    case 'qr': { const q = ssQR(sl.url || STORE_URL); return {...base('qr'), theme:th(), titleHTML:ssRich(sl.title || 'Scan to *shop*'), text:sl.text || 'Browse every fragrance and order from your phone', phone:sl.phone === false ? '' : ssPhone(), cap:sl.cap || 'Point your phone camera at the code', qr:q}; }
+    case 'pic': { const im = S.images['ss_' + sl.id]?.data; if (!im) return null; return {...base('pic'), theme:th(), img:im}; }
+    case 'txt': { if (!sl.title && !sl.text) return null; return {...base('txt'), theme:th(), eyebrow:sl.eyebrow || '', titleHTML:ssRich(sl.title || ''), text:sl.text || '', qr:sl.url ? ssQR(sl.url) : null, cap:sl.cap || ''}; }
+  }
+  return null;
+}
+function ssBuild(sc, d, opt){
+  d = d || new Date(); opt = opt || {};
+  const pool = ssPool(sc), all = sortedProds().filter(ssOk), fest = opt.fest !== undefined && opt.fest !== '' ? opt.fest : festivalFor(iso(d)), out = [];
+  (sc.slides || []).forEach((sl, ci) => { if (!opt.all && !ssWhen(sl, d)) return; const r = ssOne(sc, sl, pool, fest, d, ci, all); if (r) (Array.isArray(r) ? r : [r]).forEach(x => out.push(x)); });
+  out.forEach((s, i) => { s.i = i; s.n = out.length; });
+  return {slides:out, tr:sc.tr || 'fade', sig:ssSig({o:out, t:sc.tr, g:ssTag(), b:bizName()})};
+}
+
+/* ---------- slide pictures ---------- */
+const ssDots = (i, n) => '<div class="ss-dots">' + Array.from({length:n}, (_, k) => `<span class="${k === i ? 'ss-on' : ''}"></span>`).join('') + '</div>';
+const ssFoot = (s, abs) => `<div class="ss-foot${abs ? ' ss-abs' : ''} ss-in" style="--d:7">${ssDots(s.i, s.n)}<div class="ss-tag">${esc(ssTag())}</div></div>`;
+const ssBrand = d => `<div class="ss-brand ss-in" style="--d:${d || 0}"><img src="${LOGO}" alt=""><span>${esc(bizName())}</span></div>`;
+const ssEye = (t, d) => t ? `<div class="ss-eyebrow ss-in" style="--d:${d}"><span class="ss-ln"></span><span class="ss-et">${esc(t)}</span></div>` : '';
+const ssPlate = (src, alt, cls, d) => `<div class="ss-plate ${cls} ss-in" style="--d:${d}"><img src="${src || PLACEHOLDER}" alt="${esc(alt)}"></div>`;
+const ssWas = n => n ? `<span class="ss-was">${esc(ssMoney(n))}</span>` : '';
+const ssQrSvg = q => q ? `<svg role="img" aria-label="QR code" viewBox="0 0 ${q.w} ${q.w}" shape-rendering="crispEdges"><path fill="#111111" d="${q.p}"/></svg>` : '<div style="font-size:30px;color:#444;padding:30px;text-align:center">QR code is loading</div>';
+const SS_HTML = {
+  hero: s => { const it = s.item; return `<div class="ss-deco"></div><div class="ss-frame"></div><div class="ss-hero-text">${ssBrand(0)}<div class="ss-hero-mid">${ssEye(s.eyebrow, 1)}<div class="ss-ttl ss-in" style="--d:2">${esc(it.name)}</div>${s.sub ? `<div class="ss-sub ss-in" style="--d:3">${esc(s.sub)}</div>` : ''}<div class="ss-meta ss-in" style="--d:3">${esc(s.meta)}</div><div class="ss-price ss-in" style="--d:4"><span>${esc(ssMoney(it.now))}</span>${ssWas(it.was)}</div></div>${ssFoot(s)}</div>${ssPlate(it.img, it.name, 'ss-hero-plate', 2)}`; },
+  promo: s => `<div class="ss-deco"></div><div class="ss-frame"></div><div class="ss-promo-text">${ssBrand(0)}<div class="ss-promo-mid">${ssEye(s.eyebrow, 1)}<div class="ss-ttl ss-in${s.titleHTML.replace(/<[^>]+>/g, '').length > 14 ? ' ss-sm' : ''}" style="--d:2">${s.titleHTML}</div><div class="ss-txt ss-in" style="--d:3">${esc(s.text)}</div></div>${ssFoot(s)}</div>
+    <div class="ss-cards" style="--n:${s.items.length}">${s.items.map((it, k) => `<div class="ss-card ss-in" style="--d:${k + 2}"><div class="ss-cphoto"><img src="${it.img || PLACEHOLDER}" alt="${esc(it.name)}">${s.badge && it.was ? `<span class="ss-badge">${esc(s.badge)}</span>` : ''}</div><div class="ss-cinfo"><div class="ss-cname">${esc(it.name)}</div><div class="ss-csize">${esc(it.size)}</div><div class="ss-crow"><span class="ss-cprice">${esc(ssMoney(it.now))}</span>${ssWas(it.was)}</div></div></div>`).join('')}</div>`,
+  best: s => `<div class="ss-deco"></div><div class="ss-best-top"><div>${ssEye(s.eyebrow, 0)}<div class="ss-ttl ss-in" style="--d:1">${esc(s.title)}</div></div>${ssBrand(1)}</div><div class="ss-best-grid" style="--n:${s.items.length}">${s.items.map((it, k) => `<div class="ss-bp ss-in" style="--d:${k + 1}"><div class="ss-plate"><img src="${it.img || PLACEHOLDER}" alt="${esc(it.name)}"></div><div class="ss-nm">${esc(it.name)}</div><div class="ss-r"><div class="ss-mt">${esc(it.size)}</div><div class="ss-pr">${esc(ssMoney(it.now))}</div></div></div>`).join('')}</div>${ssFoot(s, true)}`,
+  list: s => `<div class="ss-deco"></div><div class="ss-band"><div class="ss-brand ss-in" style="--d:0"><img src="${LOGO}" alt=""><div class="ss-ttl">Price list${s.pages > 1 ? ` <span class="ss-pn">${s.page}/${s.pages}</span>` : ''}</div></div><div class="ss-brand"><span>${esc(bizName())}</span></div></div><div class="ss-cols" style="width:${Math.min(1728, s.cols.length * 576 + (s.cols.length - 1) * 96)}px;left:${Math.round((1920 - Math.min(1728, s.cols.length * 576 + (s.cols.length - 1) * 96)) / 2)}px;grid-template-columns:repeat(${s.cols.length},minmax(0,1fr))">${s.cols.map((c, ci) => `<div class="ss-col ss-in" style="--d:${ci + 1}">${c.map(b => `<div class="ss-lh"><span class="ss-lht">${esc(b.h)}</span><span class="ss-lhs">${esc(b.s)}</span></div>${b.u.map(u => u.t === 'r' ? `<div class="ss-lr"><span class="ss-n">${esc(u.n)}</span><span class="ss-d"></span>${u.was ? `<span class="ss-w">${esc(ssMoney(u.was))}</span>` : ''}<span class="ss-p">${esc(ssMoney(u.now))}</span></div>` : `<div class="ss-lg"><div class="ss-pg"><div class="ss-p">${esc(ssMoney(u.now))}</div>${u.was ? `<span class="ss-w">${esc(ssMoney(u.was))}</span>` : ''}<span class="ss-lgs">${esc(u.size)}</span></div><div class="ss-nm">${esc(u.names)}</div></div>`).join('')}<div class="ss-sp"></div>`).join('')}</div>`).join('')}</div>${ssFoot(s, true)}`,
+  qr: s => `<div class="ss-deco"></div><div class="ss-frame"></div><div class="ss-qr-text">${ssBrand(0)}<div class="ss-qr-mid">${ssEye('Order online', 1)}<div class="ss-ttl ss-in" style="--d:2">${s.titleHTML}</div><div class="ss-txt ss-in" style="--d:3">${esc(s.text)}</div>${s.phone ? `<div class="ss-wa ss-in" style="--d:4"><span class="ss-wal">WhatsApp</span><span class="ss-wan">${esc(s.phone)}</span></div>` : ''}</div>${ssFoot(s)}</div><div class="ss-qr-box ss-in" style="--d:2"><div class="ss-qr-plate">${ssQrSvg(s.qr)}</div><div class="ss-cap">${esc(s.cap)}</div></div>`,
+  pic: s => `<div class="ss-pic"><img src="${s.img}" alt=""></div>`,
+  txt: s => `<div class="ss-deco"></div><div class="ss-frame"></div><div class="ss-txt-center">${ssBrand(0)}<div class="ss-txt-body">${ssEye(s.eyebrow, 1)}<div class="ss-ttl ss-in" style="--d:2">${s.titleHTML}</div>${s.text ? `<div class="ss-txt ss-in" style="--d:3">${esc(s.text)}</div>` : ''}</div>${ssFoot(s)}</div>${s.qr ? `<div class="ss-qr-box ss-in" style="--d:2;right:120px"><div class="ss-qr-plate">${ssQrSvg(s.qr)}</div>${s.cap ? `<div class="ss-cap">${esc(s.cap)}</div>` : ''}</div>` : ''}`
+};
+
+/* ---------- the player (preview, projector and video all use this) ---------- */
+class SSPlayer {
+  constructor(host, o){
+    this.host = host; this.o = o || {}; this.idx = -1; this.playing = true; this.tm = 0; this.els = []; this.sig = ''; this.data = null; this.lazy = !this.o.exportMode;
+    host.classList.add('ss-host'); host.innerHTML = '<div class="ss-stage" data-tr="fade"><div class="ss-bar"></div><div class="ss-empty" hidden><div>Nothing to show right now</div><small>Check that your perfumes are in stock, your slides are switched on and their dates have started.</small></div></div>';
+    this.stage = host.firstChild; this.bar = this.stage.firstChild; this.empty = this.bar.nextSibling; if (this.o.exportMode) this.stage.classList.add('ss-x');
+    if (typeof ResizeObserver !== 'undefined') { this.ro = new ResizeObserver(() => this.fit()); this.ro.observe(host); } this.fit();
+  }
+  fit(){ const w = this.host.clientWidth, h = this.host.clientHeight; if (w && h) this.stage.style.setProperty('--s', Math.min(w / 1920, h / 1080)); }
+  mk(i){
+    const N = this.els.length; i = ((i % N) + N) % N; if (this.els[i]) return this.els[i];
+    const s = this.data.slides[i], e = document.createElement('section'); e.className = 'ss-slide'; e.dataset.ssth = s.theme; e.dataset.sid = s.id; e.innerHTML = SS_HTML[s.k](s);
+    this.stage.insertBefore(e, this.bar); void e.offsetWidth; this.els[i] = e; return e;
+  }
+  set(data){
+    if (data.sig === this.sig) return; this.sig = data.sig;
+    const cur = this.data && this.idx >= 0 && this.data.slides[this.idx] ? this.data.slides[this.idx].id : '';
+    this.data = data; this.stage.dataset.tr = data.tr || 'fade';
+    this.els.forEach(e => e && e.remove()); this.els = new Array(data.slides.length).fill(null);
+    clearTimeout(this.tm); this.idx = -1; this.empty.hidden = data.slides.length > 0; if (!data.slides.length) return;
+    if (!this.lazy) data.slides.forEach((s, i) => this.mk(i));
+    const k = cur ? data.slides.findIndex(s => s.id === cur) : -1; this.go(k >= 0 ? k : 0);
+  }
+  go(i){
+    const N = this.els.length; if (!N) return; const prev = this.idx; this.idx = ((i % N) + N) % N;
+    this.mk(this.idx);
+    if (this.lazy) { this.mk(this.idx + 1); const keep = new Set([this.idx, prev, (this.idx + 1) % N]); this.els.forEach((e, k) => { if (e && !keep.has(k)) { e.remove(); this.els[k] = null; } }); }
+    this.els.forEach((e, k) => { if (!e) return; e.classList.toggle('ss-active', k === this.idx); e.classList.toggle('ss-out', k === prev && k !== this.idx); e.setAttribute('aria-hidden', k === this.idx ? 'false' : 'true'); });
+    const cur = this.els[this.idx], sec = this.data.slides[this.idx].sec; clearTimeout(this.tm);
+    if (!this.o.exportMode) { const bg = getComputedStyle(cur).getPropertyValue('--bg').trim(); if (bg) this.host.style.background = bg; }
+    if (this.o.bar) { const b = this.bar; b.style.transition = 'none'; b.style.transform = 'scaleX(0)'; b.style.opacity = this.playing && N > 1 ? '1' : '0'; void b.offsetWidth; if (this.playing && N > 1) { b.style.background = getComputedStyle(cur).getPropertyValue('--acc'); b.style.transition = 'transform ' + sec + 's linear'; b.style.transform = 'scaleX(1)'; } }
+    if (this.playing && N > 1 && !this.o.exportMode) this.tm = setTimeout(() => this.go(this.idx + 1), sec * 1000);
+  }
+  next(){ this.go(this.idx + 1); } prev(){ this.go(this.idx - 1); }
+  pause(on){ this.playing = !on; clearTimeout(this.tm); if (this.idx >= 0) this.go(this.idx); }
+  destroy(){ clearTimeout(this.tm); if (this.ro) this.ro.disconnect(); this.host.innerHTML = ''; this.els = []; }
+}
+function ssFlatten(root){
+  root.querySelectorAll('.ss-plate img, .ss-cphoto img').forEach(im => {
+    try { const box = im.parentElement, W = box.offsetWidth, H = box.offsetHeight; if (!W || !H || !im.naturalWidth) return;
+      const c = document.createElement('canvas'); c.width = W * 2; c.height = H * 2; const x = c.getContext('2d'); x.fillStyle = getComputedStyle(box).backgroundColor; x.fillRect(0, 0, c.width, c.height);
+      const k = Math.min(c.width / im.naturalWidth, c.height / im.naturalHeight), w = im.naturalWidth * k, h = im.naturalHeight * k; x.globalCompositeOperation = 'multiply'; x.drawImage(im, (c.width - w) / 2, (c.height - h) / 2, w, h);
+      im.src = c.toDataURL('image/jpeg', 0.93); im.style.mixBlendMode = 'normal'; im.style.objectFit = 'fill'; } catch(e) {}
+  });
+}
+
+/* ---------- projector: full screen for the HDMI TV or a cast. Light on purpose: the hub is hidden while it plays ---------- */
+const ssFsEl = () => document.fullscreenElement || document.webkitFullscreenElement || null;
+function ssProject(id){
+  const sc = ssScr(id); if (!sc) return; ssCloseProj();
+  const ov = document.createElement('div'); ov.className = 'ss-proj'; ov.innerHTML = '<div class="ss-pv"></div><div class="ss-hint" hidden>Press F11 to fill the whole screen. Press Esc to close.</div><div class="ss-ctl" role="toolbar" aria-label="Projector controls"><button type="button" data-p="prev">Previous</button><button type="button" data-p="play">Pause</button><button type="button" data-p="next">Next</button><button type="button" data-p="fs">Full screen</button><button type="button" data-p="x">Exit</button></div>';
+  const sy = window.scrollY; document.body.classList.add('ss-projecting'); document.body.appendChild(ov);
+  if (SS.pv) SS.pv.pause(true);
+  const pl = new SSPlayer(ov.querySelector('.ss-pv'), {bar:true}), ctl = ov.querySelector('.ss-ctl'), hint = ov.querySelector('.ss-hint'), fsb = ov.querySelector('[data-p=fs]'); let hideT = 0, hintT = 0, wl = null;
+  const load = () => { if (document.hidden && pl.data) return; const cur = ssScr(id); if (cur) pl.set(ssBuild(cur)); };
+  const show = () => { ctl.classList.remove('ss-hide'); ov.classList.remove('ss-idle'); clearTimeout(hideT); hideT = setTimeout(() => { ctl.classList.add('ss-hide'); ov.classList.add('ss-idle'); }, 3500); };
+  const fsToggle = () => { const inFs = !!ssFsEl(); try { const f = inFs ? (document.exitFullscreen || document.webkitExitFullscreen) : (ov.requestFullscreen || ov.webkitRequestFullscreen), r = f && f.call(inFs ? document : ov); if (r && r.catch) r.catch(() => {}); } catch(e) {} };
+  const syncFs = () => { const on = !!ssFsEl(); fsb.textContent = on ? 'Exit full screen' : 'Full screen'; clearTimeout(hintT); hint.hidden = true; if (!on) hintT = setTimeout(() => { hint.hidden = false; setTimeout(() => { hint.hidden = true; }, 7000); }, 900); };
+  const act = k => { if (k === 'prev') pl.prev(); else if (k === 'next') pl.next(); else if (k === 'play') { pl.pause(pl.playing); ov.querySelector('[data-p=play]').textContent = pl.playing ? 'Pause' : 'Play'; } else if (k === 'fs') fsToggle(); else if (k === 'x') ssCloseProj(); };
+  const key = e => { const k = e.key; if (!['Escape', 'ArrowLeft', 'ArrowRight', ' ', 'f', 'F'].includes(k)) return; e.preventDefault(); e.stopPropagation(); show(); if (k === 'Escape') act('x'); else if (k === 'ArrowLeft') act('prev'); else if (k === 'ArrowRight') act('next'); else if (k === ' ') act('play'); else fsToggle(); };
+  ov.addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (b) act(b.dataset.p); show(); }); ov.addEventListener('dblclick', e => { if (!e.target.closest('.ss-ctl')) fsToggle(); });
+  ov.addEventListener('mousemove', show); ov.addEventListener('touchstart', show, {passive:true}); document.addEventListener('keydown', key, true);
+  document.addEventListener('fullscreenchange', syncFs); document.addEventListener('webkitfullscreenchange', syncFs);
+  try { if (navigator.wakeLock) navigator.wakeLock.request('screen').then(l => { wl = l; }).catch(() => {}); } catch(e) {}
+  const t = setInterval(load, 30000);
+  SS.proj = {ov, pl, id, load, close(){ clearTimeout(hideT); clearTimeout(hintT); clearInterval(t); document.removeEventListener('keydown', key, true); document.removeEventListener('fullscreenchange', syncFs); document.removeEventListener('webkitfullscreenchange', syncFs); try { wl && wl.release(); } catch(e) {}
+    try { if (ssFsEl()) { const r = (document.exitFullscreen || document.webkitExitFullscreen).call(document); if (r && r.catch) r.catch(() => {}); } } catch(e) {}
+    pl.destroy(); ov.remove(); document.body.classList.remove('ss-projecting'); SS.proj = null; window.scrollTo(0, sy); if (SS.pv && document.body.contains(SS.pv.host)) SS.pv.pause(false); }};
+  fsToggle(); ssFonts(); load(); show(); syncFs();
+}
+function ssCloseProj(){ if (SS.proj) SS.proj.close(); }
+
+/* ---------- video file for a USB flash drive ---------- */
+async function ssRecord(sc, opt, prog, abort){
+  if (typeof MediaRecorder === 'undefined' || !HTMLCanvasElement.prototype.captureStream) throw Error('This device cannot make a video. Use the PC app or Chrome on a computer.');
+  await ssPrep(); const data = ssBuild(sc); if (!data.slides.length) throw Error('There is nothing to show right now. Check the schedule and stock on this screen.');
+  if (!window.html2canvas) await loadScript(LIBS.h2c);
+  const mimes = ['video/mp4;codecs=avc1.640028', 'video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'], mime = mimes.find(m => MediaRecorder.isTypeSupported(m));
+  if (!mime) throw Error('This device cannot save video files.');
+  const W = opt.w, H = Math.round(W * 9 / 16), host = document.createElement('div'); host.style.cssText = 'position:fixed;left:-20000px;top:0;width:1920px;height:1080px;z-index:-1'; document.body.appendChild(host);
+  const pl = new SSPlayer(host, {exportMode:true}), caps = [];
+  try {
+    pl.set(data); pl.stage.style.setProperty('--s', 1);
+    for (let i = 0; i < pl.els.length; i++) {
+      if (abort.v) throw Error('Cancelled'); prog(`Preparing slide ${i + 1} of ${pl.els.length}`, i / pl.els.length);
+      pl.go(i); void pl.els[i].offsetWidth; try { await document.fonts.ready; } catch(e) {} await new Promise(r => setTimeout(r, 450)); ssFlatten(pl.els[i]); await new Promise(r => setTimeout(r, 80));
+      caps.push(await window.html2canvas(pl.els[i], {scale:W / 1920, backgroundColor:null, width:1920, height:1080, windowWidth:1920, windowHeight:1080, useCORS:true, logging:false}));
+    }
+  } finally { pl.destroy(); host.remove(); }
+  const out = document.createElement('canvas'); out.width = W; out.height = H; const cx = out.getContext('2d'), secs = data.slides.map(s => s.sec), total = secs.reduce((a, b) => a + b, 0), FADE = Math.min(1, ...secs.map(s => s * 0.3));
+  const dz = (cv, z) => { const w = W * z, h = H * z; cx.drawImage(cv, (W - w) / 2, (H - h) / 2, w, h); };
+  const draw = t => { let acc = 0, i = 0; while (i < secs.length - 1 && t >= acc + secs[i]) { acc += secs[i]; i++; } const into = t - acc;
+    cx.globalAlpha = 1; cx.fillStyle = '#000'; cx.fillRect(0, 0, W, H); dz(caps[i], 1 + 0.03 * Math.min(1, into / secs[i]));
+    const left = secs[i] - into; if (left < FADE && secs.length > 0) { cx.globalAlpha = 1 - left / FADE; dz(caps[(i + 1) % secs.length], 1); cx.globalAlpha = 1; } };
+  const rec = new MediaRecorder(out.captureStream(30), {mimeType:mime, videoBitsPerSecond:W >= 3000 ? 24e6 : 10e6}), chunks = []; rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+  const stopped = new Promise(r => { rec.onstop = r; }); draw(0); rec.start(1000); const t0 = performance.now();
+  await new Promise((res, rej) => { const tick = () => { const t = (performance.now() - t0) / 1000; if (abort.v) { try { rec.stop(); } catch(e) {} return rej(Error('Cancelled')); } if (t >= total) { draw(total - 0.001); return res(); } draw(t); prog(`Recording the video: ${Math.round(t)} of ${Math.round(total)} seconds. Keep this window open.`, 0.15 + 0.85 * t / total); setTimeout(tick, 33); }; tick(); });
+  rec.stop(); await stopped;
+  return {blob:new Blob(chunks, {type:mime.split(';')[0]}), ext:mime.startsWith('video/mp4') ? 'mp4' : 'webm', seconds:total};
+}
+function ssVideoForm(id){
+  const sc = ssScr(id); if (!sc) return; const n = ssBuild(sc), tot = n.slides.reduce((a, s) => a + s.sec, 0);
+  modal('Video for a USB flash drive', `<p>Makes one video of this screen (${n.slides.length} slide${n.slides.length === 1 ? '' : 's'}, about ${tot} seconds) that you copy onto a flash drive and play on any TV. Photos and prices are the ones showing right now.</p>
+    <label for="f-vw">Quality<select id="f-vw"><option value="1920">Full HD 1920 × 1080 (recommended, plays on every TV)</option><option value="3840">4K 3840 × 2160 (large file, only for 4K TVs)</option></select></label>
+    <p class="small mut">The video is recorded in real time, so it takes as long as it plays. Keep this window open and on screen. On the TV, switch on <b>Repeat</b> in the USB player so it loops. Some older TVs cannot play .webm files; if yours cannot, tell me the TV model.</p>
+    <div id="ssv-prog" class="small" style="min-height:22px" aria-live="polite"></div><div class="m-foot"><button type="button" class="btn ghost" data-act="ssVideoStop">Cancel</button><button type="button" class="btn pri" data-act="ssVideoGo" data-id="${id}">Make the video</button></div>`, null, {nofocus:true});
+}
+const SSV = {abort:{v:false}, busy:false};
+async function ssVideoGo(id){
+  if (SSV.busy) return; const sc = ssScr(id), w = +($('#f-vw')?.value || 1920), box = $('#ssv-prog'), go = $('[data-act=ssVideoGo]'); SSV.abort = {v:false}; SSV.busy = true; if (go) go.disabled = true;
+  try { const r = await ssRecord(sc, {w}, (m, f) => { if (box) box.innerHTML = `${esc(m)}<div style="height:8px;border-radius:4px;background:var(--line);margin-top:6px;overflow:hidden"><div style="height:100%;width:${Math.round(f * 100)}%;background:var(--gold)"></div></div>`; }, SSV.abort);
+    await saveFile(`${bizName().replace(/[^\w]+/g, '-')}-shop-screen-${today()}.${r.ext}`, r.blob); closeModal(); toast(`Video saved (${Math.round(r.blob.size / 1048576)} MB, .${r.ext}). Copy it to your flash drive.`); }
+  catch(e) { if (box) box.innerHTML = `<span style="color:var(--bad,#b00020)">${esc(e.message === 'Cancelled' ? 'Cancelled.' : e.message || 'Could not make the video.')}</span>`; if (go) go.disabled = false; }
+  SSV.busy = false;
+}
+
+/* ---------- the Shop screen page ---------- */
+const ssSummary = sl => ({
+  hero: () => S.products[sl.pid] ? pName(sl.pid) : 'Choose a perfume', best: () => `Top ${num(sl.n) || 4} sellers of the last 30 days`,
+  promo: () => sl.promoId ? (S.promos[sl.promoId]?.name || 'That promotion was deleted') : 'Any live promotion at the Point of sale',
+  season: () => sl.fest && sl.fest !== 'any' ? SS_FEST_COPY[sl.fest][0] + ' only' : 'Whichever season is on (Christmas, Black Friday…)',
+  list: () => sl.cats && sl.cats.length ? sl.cats.join(', ') : 'All categories', qr: () => 'QR code to ' + (sl.url ? sl.url.replace(/^https?:\/\//, '').slice(0, 40) : 'your online shop'),
+  pic: () => S.images['ss_' + sl.id] ? 'Full-screen picture' : 'No picture yet', txt: () => sl.title || sl.text || 'Message'
+}[sl.type] || (() => ''))();
+function ssSched(sl){ const b = []; if (sl.from || sl.to) b.push(`${sl.from ? fmtDate(sl.from) : 'now'} to ${sl.to ? fmtDate(sl.to) : 'no end'}`); if (sl.t1 || sl.t2) b.push(`${sl.t1 || '00:00'}–${sl.t2 || '23:59'}`); if (sl.dows && sl.dows.length) b.push(sl.dows.map(x => SS_DOW[x]).join(' ')); return b.join(' · '); }
+function ssPhotoRows(){
+  return sortedProds().filter(p => (p.status || 'active') !== 'inactive').map(p => { const hd = S.images['hd_' + p.id]?.data, std = imgOf(p.id);
+    return `<tr><td style="width:54px"><img class="p" src="${hd || std || PLACEHOLDER}" alt="" style="width:40px;height:40px;object-fit:contain"></td><td><b>${esc(p.name)}</b> <span class="small mut">${p.size ? p.size + ' ml' : ''}</span></td><td>${hd ? '<span class="pill good">HD photo</span>' : std ? '<span class="pill">Standard photo</span>' : '<span class="pill warn">No photo</span>'}</td><td class="n"><label class="btn sm ${hd ? 'ghost' : ''}" style="cursor:pointer">${hd ? 'Replace' : 'Upload HD photo'}<input type="file" accept="image/*" data-ss-hd="${p.id}" hidden></label>${hd ? ' ' + btn('Remove', 'ssHdDel', {id:p.id}, 'sm ghost') : ''}</td></tr>`; }).join('');
+}
+PAGES.shopscreen = () => {
+  const scs = ssCfg().screens;
+  const intro = 'Show your perfumes, prices and offers on the TV in your shop, like the screens in restaurants. Plug the TV into this computer with an HDMI cable (or cast the screen wirelessly) and press <b>Start projector</b>.';
+  if (!scs.length) return head('Shop screen', intro) + `<div class="card" style="text-align:center;padding:32px 20px"><h2 style="margin-top:0">Make your first shop screen</h2><p class="mut" style="max-width:560px;margin:0 auto 16px">We start you with five slides: bestsellers, a promotion, a seasonal gift slide, a price list and a QR code to your online shop. You can change, add, remove and re-time every slide.</p>${btn('Create my shop screen', 'ssNew', {}, 'pri')}</div>`;
+  const sc = ssScr(UI.ssSel); UI.ssSel = sc.id;
+  const built = ssBuild(sc), live = new Set(built.slides.map(s => String(s.id).split('#')[0])), nonSeason = (sc.slides || []).length;
+  const sel = (name, opts, cur) => `<select data-ssf="${name}">${opts.map(([v, l]) => `<option value="${esc(v)}" ${String(cur) === String(v) ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
+  return head('Shop screen', intro, btn('Start projector', 'ssProject', {id:sc.id}, 'pri') + btn('Video for USB', 'ssVideo', {id:sc.id}))
+  + `<div class="seg" style="margin-bottom:12px;flex-wrap:wrap">${scs.map(x => `<button type="button" data-act="ssPick" data-id="${x.id}" class="${x.id === sc.id ? 'on' : ''}">${esc(x.name)}</button>`).join('')}<button type="button" data-act="ssNew">+ New screen</button></div>
+  <div class="card"><h2 style="margin-top:0">This screen</h2><div class="grid2">
+    <label>Name<input data-ssf="name" value="${esc(sc.name)}"></label>
+    ${multiLoc() ? `<label>Shows stock of<select data-ssf="loc">${locs().map(l => `<option value="${l.id}" ${(sc.loc || 'main') === l.id ? 'selected' : ''}>${esc(l.name)}</option>`).join('')}</select></label>` : ''}
+    <label>Design<select data-ssf="theme"><option value="mix" ${sc.theme === 'mix' || !sc.theme ? 'selected' : ''}>Mix: a different design on each slide</option>${SS_THEMES.map(([k, v]) => `<option value="${k}" ${sc.theme === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
+    <label>Time on each slide${sel('sec', [[5, '5 seconds'], [8, '8 seconds'], [10, '10 seconds'], [15, '15 seconds'], [20, '20 seconds'], [30, '30 seconds']], num(sc.sec) || 8)}</label>
+    <label>How slides change${sel('tr', [['fade', 'Fade'], ['slide', 'Slide'], ['zoom', 'Zoom']], sc.tr || 'fade')}</label>
+    <div><div><label class="check"><input type="checkbox" data-ssf="seasons" ${sc.seasons !== false ? 'checked' : ''}> Change to the season’s design by date (Christmas, Black Friday…)</label></div><div><label class="check"><input type="checkbox" data-ssf="hideOut" ${sc.hideOut !== false ? 'checked' : ''}> Hide perfumes that are out of stock here</label></div></div>
+  </div><fieldset style="margin-top:10px"><legend>Always show these perfumes, even when out of stock</legend><div class="picks" id="ss-keep">${sortedProds().filter(p => (p.status || 'active') !== 'inactive').map(p => `<label><input type="checkbox" data-ssf="keep" value="${p.id}" ${(sc.keep || []).includes(p.id) ? 'checked' : ''}> ${esc(pName(p.id))}</label>`).join('')}</div><p class="small mut" style="margin:0">Other out-of-stock perfumes stay hidden. These also appear on the price list.</p></fieldset><div class="actions" style="margin-top:8px">${scs.length > 1 ? btn('Delete this screen', 'ssDelScreen', {id:sc.id}, 'sm ghost') : ''}</div></div>
+  <div class="ssed-grid">
+    <div class="card"><h2 style="margin-top:0">Preview</h2><div class="ssed-prev" id="ss-prev"></div>
+      <div class="actions" style="margin-top:10px;align-items:center">${btn('Previous', 'ssPv', {c:'prev'}, 'sm')}${btn('Pause', 'ssPv', {c:'play'}, 'sm')}${btn('Next', 'ssPv', {c:'next'}, 'sm')}<label class="small mut" style="margin-left:auto;display:flex;gap:6px;align-items:center">Preview a season<select data-ssf="prevFest" style="width:auto"><option value="">Today (automatic)</option>${Object.entries(SS_FEST_COPY).map(([k, v]) => `<option value="${k}" ${UI.ssFest === k ? 'selected' : ''}>${v[0]}</option>`).join('')}</select></label></div>
+      <p class="small mut" style="margin-bottom:0">${built.slides.length} slide${built.slides.length === 1 ? '' : 's'} showing right now${nonSeason > built.slides.length ? ` (the others are waiting for their dates, a promotion or stock)` : ''}.</p></div>
+    <div class="card"><h2 style="margin-top:0">Slides</h2>
+      ${(sc.slides || []).length ? (sc.slides || []).map((sl, i) => { const on = live.has(String(sl.id)), sched = ssSched(sl); return `<div class="ssed-row ${sl.on === false ? 'off' : ''}"><label class="ssed-on" title="Show this slide"><input type="checkbox" data-ssf="slideOn" data-id="${sl.id}" ${sl.on !== false ? 'checked' : ''} aria-label="Show this slide"></label>
+        <div class="ssed-main"><b>${esc(SS_TYPES[sl.type] || sl.type)}</b> <span class="small mut">${esc(ssSummary(sl))}</span><div class="small">${sl.on === false ? '<span class="pill">Switched off</span>' : on ? '<span class="pill good">Showing now</span>' : '<span class="pill warn">Not showing right now</span>'}${sl.theme ? ` <span class="pill">${esc(SS_THEMES.find(t => t[0] === sl.theme)?.[1] || sl.theme)}</span>` : ''}${sched ? ` <span class="pill">${esc(sched)}</span>` : ''}</div></div>
+        <div class="ssed-btns">${btn('↑', 'ssMove', {id:sl.id, d:-1}, 'sm ghost" aria-label="Move up')}${btn('↓', 'ssMove', {id:sl.id, d:1}, 'sm ghost" aria-label="Move down')}${btn('Edit', 'ssEdit', {id:sl.id}, 'sm')}${btn('Remove', 'ssDelSlide', {id:sl.id}, 'sm ghost')}</div></div>`; }).join('') : '<p class="mut">No slides yet. Add one below.</p>'}
+      <h3 style="margin:16px 0 8px">Add a slide</h3><div class="ssed-add">${Object.entries(SS_TYPES).map(([k, v]) => `<button type="button" class="btn sm" data-act="ssAdd" data-t="${k}" title="${esc(SS_TYPE_HELP[k])}">+ ${v}</button>`).join('')}</div></div>
+  </div>
+  <div class="card"><h2 style="margin-top:0">Sharper photos for the big screen</h2><p class="small mut">Your standard photos are small, so they look soft on a 4K TV. Add an HD photo of a perfume (a clear picture of the bottle on a plain white background, at least 1200 pixels tall) and the screen uses it instead. HD photos are shared with your other devices, so add the perfumes you show most first.</p>
+    <div class="tw"><table class="t"><thead><tr><th></th><th>Perfume</th><th>Photo</th><th></th></tr></thead><tbody>${ssPhotoRows()}</tbody></table></div></div>`;
+};
+TOOLS.shopscreen = {
+  mount(){ const kp = $('#ss-keep'); if (kp && UI.ssKeepTop) { kp.scrollTop = UI.ssKeepTop; UI.ssKeepTop = 0; } ssPrep().then(() => { const host = $('#ss-prev'); if (!host) return; if (SS.pv) SS.pv.destroy(); SS.pv = new SSPlayer(host, {}); TOOLS.shopscreen.refresh(); }); if (!SS.tick) SS.tick = setInterval(() => TOOLS.shopscreen.refresh(), 30000); },
+  refresh(){ if (SS.pv && !document.body.contains(SS.pv.host)) { SS.pv.destroy(); SS.pv = null; return; } const sc = ssScr(UI.ssSel); if (!SS.pv || !sc) return; SS.pv.set(ssBuild(sc, new Date(), {fest:UI.ssFest || ''})); }
+};
+
+/* ---------- editing a slide ---------- */
+const ssChecks = (name, items, picked) => `<div class="picks">${items.map(([v, l]) => `<label><input type="checkbox" name="${name}" value="${esc(v)}" ${(picked || []).includes(v) ? 'checked' : ''}> ${esc(l)}</label>`).join('')}</div>`;
+function ssSlideForm(sid, type){
+  const sc = ssScr(UI.ssSel), old = sid ? (sc.slides || []).find(x => x.id === sid) : null, t = old ? old.type : type, sl = old || {id:uid(), type:t};
+  const prodOpts = sortedProds().filter(p => (p.status || 'active') !== 'inactive').map(p => [p.id, pName(p.id) + (ssImg(p.id) ? '' : ' (no photo)')]);
+  let body = '';
+  if (t === 'hero') body = `<label>Perfume (shows even when out of stock)<select name="pid" required><option value="">Choose…</option>${prodOpts.map(([v, l]) => `<option value="${v}" ${sl.pid === v ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></label><label>Small heading<input name="eyebrow" value="${esc(sl.eyebrow == null ? 'New arrival' : sl.eyebrow)}" placeholder="New arrival"></label><label>Line under the name (optional)<input name="sub" value="${esc(sl.sub || '')}"></label>`;
+  else if (t === 'best') body = `<label>Title<input name="title" value="${esc(sl.title || 'Bestsellers')}"></label><label>Small heading<input name="eyebrow" value="${esc(sl.eyebrow == null ? 'Customer favourites' : sl.eyebrow)}"></label><div class="grid2"><label>How many perfumes<select name="n"><option value="3" ${num(sl.n) === 3 ? 'selected' : ''}>3</option><option value="4" ${num(sl.n) !== 3 ? 'selected' : ''}>4</option></select></label><label class="check" style="align-self:end"><input type="checkbox" name="needImg" ${sl.needImg !== false ? 'checked' : ''}> Only perfumes that have a photo</label></div><p class="small mut">The best sellers of the last 30 days, worked out from your sales.</p>`;
+  else if (t === 'promo') body = `<label>Which promotion<select name="promoId"><option value="">Any live promotion at the Point of sale</option>${Object.values(S.promos).sort((a, b) => String(b.start).localeCompare(String(a.start))).map(p => `<option value="${p.id}" ${sl.promoId === p.id ? 'selected' : ''}>${esc(p.name)} (${esc(promoBadge(p))}, ${fmtDate(p.start)} to ${fmtDate(p.end)})</option>`).join('')}</select></label><p class="small mut">Promotions come from <b>Marketing › Promotions</b>. A promotion shows only on the dates and for the perfumes you set there, and only if it applies at the Point of sale.</p><label>Title (leave empty to use the promotion name)<input name="title" value="${esc(sl.title || '')}"></label><label>Line under the title (optional)<input name="text" value="${esc(sl.text || '')}"></label><label>Small heading<input name="eyebrow" value="${esc(sl.eyebrow == null ? 'Special offer' : sl.eyebrow)}"></label><fieldset><legend>Pick the perfumes yourself (up to 3; they show even when out of stock. Leave empty to pick automatically)</legend>${ssChecks('pids', prodOpts, sl.pids)}</fieldset>`;
+  else if (t === 'season') body = `<label>Season<select name="fest"><option value="any" ${!sl.fest || sl.fest === 'any' ? 'selected' : ''}>Whichever season is on</option>${Object.entries(SS_FEST_COPY).map(([k, v]) => `<option value="${k}" ${sl.fest === k ? 'selected' : ''}>${v[0]} only</option>`).join('')}</select></label><p class="small mut">This slide appears only during the season (Christmas 1 to 30 Dec, Black Friday weekend, and so on) and uses that season’s design.</p><label>Title (leave empty for the usual words; put *stars* around a word to highlight it)<input name="title" value="${esc(sl.title || '')}"></label><label>Line under the title (optional)<input name="text" value="${esc(sl.text || '')}"></label><fieldset><legend>Pick the perfumes yourself (up to 3; they show even when out of stock. Leave empty to show your best sellers)</legend>${ssChecks('pids', prodOpts, sl.pids)}</fieldset>`;
+  else if (t === 'list') body = `<fieldset><legend>Categories to show (leave all empty for everything)</legend>${ssChecks('cats', CATS().map(c => [c, c]), sl.cats)}</fieldset><p class="small mut">If the list is long it is split across several slides by itself. Prices follow your live promotions.</p>`;
+  else if (t === 'qr') body = `<label>Web address the code opens<input name="url" value="${esc(sl.url || STORE_URL)}"></label><label>Title<input name="title" value="${esc(sl.title || 'Scan to *shop*')}"></label><label>Line under the title<input name="text" value="${esc(sl.text || 'Browse every fragrance and order from your phone')}"></label><label class="check"><input type="checkbox" name="phone" ${sl.phone !== false ? 'checked' : ''}> Show my WhatsApp number (${esc(ssPhone() || 'add it in Settings')})</label>`;
+  else if (t === 'pic') body = `<label>Picture (a flyer or photo, the wider the better; 1920 × 1080 fits the screen exactly)<input type="file" name="pic" accept="image/*" ${S.images['ss_' + sl.id] ? '' : 'required'}></label>${S.images['ss_' + sl.id] ? `<img src="${S.images['ss_' + sl.id].data}" alt="" style="max-width:260px;border-radius:8px;border:1px solid var(--line)"><p class="small mut">Leave the file empty to keep this picture.</p>` : ''}<p class="small mut">Tip: in <b>Marketing › Flyers &amp; adverts</b> you can design a flyer and download it as a picture to use here.</p>`;
+  else if (t === 'txt') body = `<label>Small heading (optional)<input name="eyebrow" value="${esc(sl.eyebrow || '')}"></label><label>Title (put *stars* around a word to highlight it)<input name="title" value="${esc(sl.title || '')}"></label><label>Message<textarea name="text" rows="3">${esc(sl.text || '')}</textarea></label><label>Web address for a QR code (optional)<input name="url" value="${esc(sl.url || '')}" placeholder="https://"></label><label>Words under the QR code (optional)<input name="cap" value="${esc(sl.cap || '')}"></label>`;
+  const sched = `<fieldset><legend>When to show it (leave empty to always show)</legend><div class="grid2"><label>From date<input type="date" name="from" value="${sl.from || ''}"></label><label>Until date<input type="date" name="to" value="${sl.to || ''}"></label><label>From time<input type="time" name="t1" value="${sl.t1 || ''}"></label><label>Until time<input type="time" name="t2" value="${sl.t2 || ''}"></label></div><div class="picks" style="margin-top:6px">${[1, 2, 3, 4, 5, 6, 0].map(x => `<label><input type="checkbox" name="dows" value="${x}" ${(sl.dows || []).includes(x) ? 'checked' : ''}> ${SS_DOW[x]}</label>`).join('')}</div></fieldset>`;
+  const look = `<div class="grid2"><label>Design<select name="theme"><option value="">Automatic</option>${SS_THEMES.map(([k, v]) => `<option value="${k}" ${sl.theme === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label><label>Seconds on screen<input type="number" name="sec" min="3" max="120" value="${sl.sec || ''}" placeholder="${num(sc.sec) || 8}"></label></div>`;
+  modal((old ? 'Edit: ' : 'Add: ') + SS_TYPES[t], body + look + sched, async (d, f) => {
+    const pick = n => [...f.querySelectorAll(`input[name=${n}]:checked`)].map(x => x.value), o = {id:sl.id, type:t, on:sl.on !== false};
+    if (t === 'hero') { if (!d.pid) throw Error('Choose a perfume.'); Object.assign(o, {pid:d.pid, eyebrow:d.eyebrow, sub:d.sub}); }
+    if (t === 'best') Object.assign(o, {title:d.title, eyebrow:d.eyebrow, n:num(d.n) || 4, needImg:!!f.elements.needImg.checked});
+    if (t === 'promo') Object.assign(o, {promoId:d.promoId, title:d.title, text:d.text, eyebrow:d.eyebrow, pids:pick('pids').slice(0, 3)});
+    if (t === 'season') Object.assign(o, {fest:d.fest, title:d.title, text:d.text, pids:pick('pids').slice(0, 3)});
+    if (t === 'list') Object.assign(o, {cats:pick('cats')});
+    if (t === 'qr') Object.assign(o, {url:(d.url || '').trim(), title:d.title, text:d.text, phone:!!f.elements.phone.checked});
+    if (t === 'txt') { if (!d.title && !d.text) throw Error('Type a title or a message.'); Object.assign(o, {eyebrow:d.eyebrow, title:d.title, text:d.text, url:(d.url || '').trim(), cap:d.cap}); }
+    if (t === 'pic') { const file = f.elements.pic.files[0]; if (file) { const data = await shrinkImage(file, 1920, 600000); await put('images', {id:'ss_' + sl.id, data}); } else if (!S.images['ss_' + sl.id]) throw Error('Choose a picture.'); }
+    if (t === 'qr' && o.url && !/^https?:\/\//i.test(o.url)) throw Error('The web address must start with https://');
+    if (d.theme) o.theme = d.theme; if (num(d.sec) >= 3) o.sec = num(d.sec);
+    if (d.from) o.from = d.from; if (d.to) o.to = d.to; if (d.from && d.to && d.to < d.from) throw Error('The end date is before the start date.');
+    if (d.t1) o.t1 = d.t1; if (d.t2) o.t2 = d.t2; const dw = pick('dows').map(Number); if (dw.length) o.dows = dw;
+    await ssSave(c => { const s = c.screens.find(x => x.id === sc.id); s.slides = s.slides || []; const k = s.slides.findIndex(x => x.id === o.id); if (k >= 0) s.slides[k] = o; else s.slides.push(o); });
+    render(true);
+  }, {wide:true, nofocus:!!old});
+}
+
+/* ---------- buttons and fields ---------- */
+Object.assign(ACT, {
+  ssNew: () => modal('New shop screen', `<label>Name<input name="name" placeholder="e.g. Main shop window" required></label>${multiLoc() ? `<label>Shows stock of<select name="loc">${locs().map(l => `<option value="${l.id}">${esc(l.name)}</option>`).join('')}</select></label>` : ''}<p class="small mut">Each shop can have its own screen with its own slides. We start you with five slides that you can change.</p>`, async d => { const n = ssNewScreen(d.name.trim(), d.loc); await ssSave(c => c.screens.push(n)); UI.ssSel = n.id; render(true); }),
+  ssPick: d => { UI.ssSel = d.id; render(true); },
+  ssDelScreen: d => confirmBox('Delete this screen and all its slides? Your perfumes and promotions stay as they are.', async () => { await ssSave(c => { c.screens = c.screens.filter(x => x.id !== d.id); }); UI.ssSel = ''; render(true); }),
+  ssAdd: d => ssSlideForm('', d.t), ssEdit: d => ssSlideForm(d.id),
+  ssDelSlide: d => confirmBox('Remove this slide from the screen?', async () => { await ssSave(c => { const s = c.screens.find(x => x.id === UI.ssSel); s.slides = s.slides.filter(x => x.id !== d.id); }); render(true); }, 'Remove'),
+  ssMove: async d => { await ssSave(c => { const s = c.screens.find(x => x.id === UI.ssSel), i = s.slides.findIndex(x => x.id === d.id), j = i + num(d.d); if (i < 0 || j < 0 || j >= s.slides.length) return; [s.slides[i], s.slides[j]] = [s.slides[j], s.slides[i]]; }); render(true); },
+  ssPv: (d, b) => { if (!SS.pv) return; if (d.c === 'prev') SS.pv.prev(); else if (d.c === 'next') SS.pv.next(); else { SS.pv.pause(SS.pv.playing); b.textContent = SS.pv.playing ? 'Pause' : 'Play'; } },
+  ssProject: d => ssProject(d.id), ssVideo: d => ssVideoForm(d.id), ssVideoGo: d => ssVideoGo(d.id), ssVideoStop: () => { if (SSV.busy) SSV.abort.v = true; else closeModal(); },
+  ssHdDel: d => confirmBox('Remove the HD photo? The standard photo is used again.', async () => { await del('images', 'hd_' + d.id); render(true); }, 'Remove')
+});
+document.addEventListener('change', async e => {
+  const t = e.target; if (!t.dataset) return;
+  if (t.dataset.ssHd) { const f = t.files && t.files[0]; if (!f) return; try { const data = await shrinkImage(f, 1800, 450000); await put('images', {id:'hd_' + t.dataset.ssHd, data}); toast('HD photo saved'); render(true); } catch(x) { toast(x.message || 'Could not save the photo', true); } t.value = ''; return; }
+  if (!t.dataset.ssf) return; const k = t.dataset.ssf, sc = ssScr(UI.ssSel); if (!sc) return;
+  if (k === 'prevFest') { UI.ssFest = t.value; TOOLS.shopscreen.refresh(); return; }
+  if (k === 'keep') UI.ssKeepTop = document.querySelector('#ss-keep')?.scrollTop || 0;
+  await ssSave(c => { const s = c.screens.find(x => x.id === sc.id); if (!s) return;
+    if (k === 'name') s.name = t.value.trim() || s.name; else if (k === 'loc') s.loc = t.value; else if (k === 'theme') s.theme = t.value; else if (k === 'sec') s.sec = num(t.value) || 8; else if (k === 'tr') s.tr = t.value;
+    else if (k === 'keep') s.keep = [...document.querySelectorAll('[data-ssf=keep]:checked')].map(x => x.value); else if (k === 'seasons') s.seasons = t.checked; else if (k === 'hideOut') s.hideOut = t.checked;
+    else if (k === 'slideOn') { const sl = s.slides.find(x => x.id === t.dataset.id); if (sl) sl.on = t.checked; } });
+  render(true);
+});
+/*SS-JS:END*/
 /* ======================= 2.21: messages (inbox, chats, groups, announcements, CC) ======================= */
 const MSG = {me:null, key:'', list:[], unsub:null, mUnsub:null, mTid:'', msgs:[], mLoad:false, primed:false, err:'', view:'inbox', tid:'', filter:'all', q:'', c:null, rt:{}, ph:'', cache:{}, n:0, linkSig:'', stick:false, mt:0, cleaned:false};
 const MSG_WIN = 600000, MSG_KEEP = 365 * 86400000;

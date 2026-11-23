@@ -1,20 +1,20 @@
 {
- "version": "2.22.1",
+ "version": "2.22.2",
  "date": "2026-11-23",
  "notes": [
-  "Shop screen: perfumes you pick by hand now show even when out of stock",
-  "New list: always show these perfumes, even when out of stock"
+  "Shop screen projector fixed: it now fills the whole screen with the slideshow, and is lighter and quicker to start",
+  "Real full screen, plus F11 and double-click; empty side bars take the slide colour"
  ],
  "android": {
-  "file": "android-2.22.1.html",
-  "sig": "NXchmSZsZbJzLCNyQzcDwz4TW8/jzMbGB/9bs0MIvw0VsF/0lo7ZEWHI7IbYdZK0eiI4x2qrsaE5HtE0fTQetA==",
-  "size": 2605912,
+  "file": "android-2.22.2.html",
+  "sig": "U9MqtghZcPO3sjI5eIjwaIf3qsiR2ggR44V/Rp8aUElhAOdfOlAFleb0dHe65F3pszgk0Wg7sdDYdYQzBu3PnA==",
+  "size": 2608953,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.22.1.html",
-  "sig": "cKlmpskzsFo0acJBN+CdsOkoYe7+F9XaDEMoQY+WsyNjNVmxcTyfMAxpG0+GPb5Mu4xMbv1+UQKcmAoJGUuRzQ==",
-  "size": 2600900,
+  "file": "desktop-2.22.2.html",
+  "sig": "0JqAhPjraFU6e8hiYAlFVSePUfEkWFtv1kp0lU2wJF0Sezd7211m8swIppkBttcACHdUA43f2p8FiFrLWzsoFg==",
+  "size": 2603941,
   "minShell": "2.5.0"
  },
  "apk": {

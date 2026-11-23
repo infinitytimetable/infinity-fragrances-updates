@@ -806,7 +806,7 @@ body.bell-on .head,body.bell-on .res-head,body.bell-on .sec-row{padding-right:52
 .part-chips{display:flex;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:8px}.part-chips a{flex:1;text-align:center;padding:9px 6px;font-weight:700;font-size:13px;color:var(--ink);text-decoration:none;background:var(--surface)}.part-chips a+a{border-left:1px solid var(--line)}.part-chips a.on{background:var(--accent);color:var(--accent-ink)}
 /*SS-CSS:BEGIN*/
 /* ===== Shop screen: player styles (all classes start with ss-) ===== */
-.ss-host{position:relative;overflow:hidden;background:#000}
+.ss-host{position:relative;overflow:hidden;background:#000;transition:background .8s ease}
 .ss-stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;margin:-540px 0 0 -960px;transform:scale(var(--s,1));transform-origin:50% 50%;overflow:hidden;background:#000;--spark:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0C12 7 17 12 24 12 17 12 12 17 12 24 12 17 7 12 0 12 7 12 12 7 12 0Z' fill='%23e8c15a'/%3E%3C/svg%3E")}
 .ss-stage *{box-sizing:border-box;margin:0;padding:0}
 .ss-stage img{max-width:none;display:block}
@@ -817,7 +817,7 @@ body.bell-on .head,body.bell-on .res-head,body.bell-on .sec-row{padding-right:52
 .ss-stage[data-tr=zoom] .ss-slide{transform:scale(1.07)}
 .ss-stage[data-tr=zoom] .ss-slide.ss-out{transform:scale(.95)}
 .ss-stage .ss-slide.ss-active{transform:none}
-.ss-bar{position:absolute;left:0;bottom:0;height:8px;width:0;z-index:10}
+.ss-bar{position:absolute;left:0;bottom:0;height:8px;width:100%;transform:scaleX(0);transform-origin:0 50%;z-index:10}
 .ss-stage.ss-x .ss-slide,.ss-stage.ss-x .ss-in{transition:none!important}
 .ss-stage.ss-x .ss-in{opacity:1!important;transform:none!important}
 .ss-pic{position:absolute;inset:0;width:100%;height:100%}
@@ -953,7 +953,7 @@ body.bell-on .head,body.bell-on .res-head,body.bell-on .sec-row{padding-right:52
 .ss-proj{position:fixed;inset:0;z-index:9999;background:#000;cursor:default}
 .ss-proj.ss-idle{cursor:none}
 .ss-pv{position:absolute;inset:0}
-.ss-host{position:relative;overflow:hidden;background:#000}
+.ss-host{position:relative;overflow:hidden;background:#000;transition:background .8s ease}
 .ss-ctl{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);display:flex;gap:8px;padding:8px;border-radius:14px;background:rgba(20,18,15,.88);box-shadow:0 8px 30px rgba(0,0,0,.5);transition:opacity .4s;z-index:3}
 .ss-ctl.ss-hide{opacity:0;pointer-events:none}
 .ss-ctl button{font:600 15px/1 system-ui,sans-serif;color:#f4ecd8;background:#2c2820;border:1px solid #4a4336;border-radius:10px;padding:12px 16px;cursor:pointer;min-height:44px}
@@ -974,6 +974,10 @@ body.bell-on .head,body.bell-on .res-head,body.bell-on .sec-row{padding-right:52
 .ss-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;background:#14110c;color:#e9cf8f;font:600 64px/1.2 system-ui,sans-serif;text-align:center;padding:0 160px}
 .ss-empty[hidden]{display:none}
 .ss-empty small{font:400 38px/1.4 system-ui,sans-serif;color:#a69d8e}
+body.ss-projecting > *:not(.ss-proj){display:none!important}
+.ss-hint{position:absolute;top:22px;left:50%;transform:translateX(-50%);max-width:92%;padding:10px 16px;border-radius:10px;background:rgba(20,18,15,.88);color:#f4ecd8;font:600 16px/1.3 system-ui,sans-serif;text-align:center;z-index:3}
+.ss-hint[hidden]{display:none}
+.ss-proj .ss-pv{position:absolute;inset:0;width:100%;height:100%}
 /*SS-CSS:END*/
 </style>
 <script>try{var L=JSON.parse(localStorage.getItem('if-look')||'{}'),R=document.documentElement;var F=localStorage.getItem('if-forceskin');R.dataset.skin=F||L.skin||'classic';if(L.mode&&L.mode!=='auto')R.dataset.theme=L.mode;R.dataset.text=L.text||'normal';if(L.motion===false)R.dataset.motion='off';}catch(e){}</script>
@@ -2507,8 +2511,9 @@ function fixNumbers(o){
 }
 
 /* ======================= Version 2.0 ======================= */
-const APP_VERSION = '2.22.1';
+const APP_VERSION = '2.22.2';
 const CHANGELOG = [
+  ['2.22.2', '23 Nov 2026', ['Shop screen projector fixed: it now fills the whole screen with the slideshow (it showed a black screen before), asks for real full screen, and also works with F11 or a double-click', 'Lighter and quicker: the hub is hidden while the projector plays, it starts at once without waiting for downloads, and it keeps only the slides it needs in memory', 'If your screen is not widescreen, the empty bars take the slide colour instead of black']],
   ['2.22.1', '23 Nov 2026', ['Shop screen: perfumes you pick by hand on a slide now show even when they are out of stock', 'New list on each screen: always show these perfumes, even when out of stock (they also appear on the price list)']],
   ['2.22.0', '23 Nov 2026', ['New: Shop screen (Marketing menu). Show your perfumes, prices and offers on the TV or monitor in your shop, like the screens in restaurants', 'Seven designs and fonts: Noir Gold, Ivory Editorial, Emerald Christmas, Midnight Silver, Rose Blush, Black Friday Bold and Royal Oud. Mix them, or let the season pick (Christmas, New Year, Valentine’s, Black Friday and more)', 'Slides: featured perfume, bestsellers (picked from your sales), promotions, seasonal gifts, price lists by category, a QR code to your online shop, your own pictures and messages', 'Hide out-of-stock perfumes, set dates, times and days for each slide, and keep a different screen for each shop', 'Start projector: plug the TV into the computer with HDMI (or cast the window wirelessly) and it plays full screen', 'Video for USB: save the slideshow as a video file to copy onto a flash drive and play on any TV', 'HD photos: add a sharper photo for any perfume so it looks good on a 4K screen']],
   ['2.21.1', '23 Nov 2026', ['Messages fixes: deleting a conversation now finishes cleanly, and chats between two other people no longer add to the Admin unread count', 'A message you are reading clears its bell dot straight away, and the Seen-by list now follows follow-up posts', 'Safer: only Admin and managers can send messages as the office (paste the updated Firebase rules once)']],
@@ -7807,7 +7812,7 @@ const ssMoney = n => { n = r2(num(n)); return (S.settings.currency || 'K') + (Nu
 const ssSig = o => JSON.stringify(o, (k, v) => typeof v === 'string' && v.length > 3000 ? 'L' + v.length + v.slice(-24) : v);
 function ssPhone(){ const p = String(bizPhone() || '').replace(/[^\d+]/g, ''); return /^\+260\d{9}$/.test(p) ? p.replace(/^(\+260)(\d{3})(\d{3})(\d{3})$/, '$1 $2 $3 $4') : bizPhone(); }
 function ssFonts(){ if (document.getElementById('ss-fonts')) return; const l = document.createElement('link'); l.id = 'ss-fonts'; l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,500;0,600;1,500&family=Cinzel:wght@500;600&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&family=Jost:wght@400;500;600&family=Lato:wght@400;700&family=Montserrat:wght@500;600;800&family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Poppins:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap'; document.head.appendChild(l); }
-async function ssPrep(){ ssFonts(); if (!window.ZXing) { try { await loadAny(ZX_SRCS); } catch(e) {} } }
+async function ssPrep(){ ssFonts(); }
 
 /* ---------- saved settings ---------- */
 const ssCfg = () => (S.settings.ss && Array.isArray(S.settings.ss.screens)) ? S.settings.ss : {screens:[]};
@@ -7922,30 +7927,38 @@ const SS_HTML = {
 /* ---------- the player (preview, projector and video all use this) ---------- */
 class SSPlayer {
   constructor(host, o){
-    this.host = host; this.o = o || {}; this.idx = -1; this.playing = true; this.tm = 0; this.els = []; this.sig = ''; this.data = null;
+    this.host = host; this.o = o || {}; this.idx = -1; this.playing = true; this.tm = 0; this.els = []; this.sig = ''; this.data = null; this.lazy = !this.o.exportMode;
     host.classList.add('ss-host'); host.innerHTML = '<div class="ss-stage" data-tr="fade"><div class="ss-bar"></div><div class="ss-empty" hidden><div>Nothing to show right now</div><small>Check that your perfumes are in stock, your slides are switched on and their dates have started.</small></div></div>';
     this.stage = host.firstChild; this.bar = this.stage.firstChild; this.empty = this.bar.nextSibling; if (this.o.exportMode) this.stage.classList.add('ss-x');
     if (typeof ResizeObserver !== 'undefined') { this.ro = new ResizeObserver(() => this.fit()); this.ro.observe(host); } this.fit();
   }
   fit(){ const w = this.host.clientWidth, h = this.host.clientHeight; if (w && h) this.stage.style.setProperty('--s', Math.min(w / 1920, h / 1080)); }
+  mk(i){
+    const N = this.els.length; i = ((i % N) + N) % N; if (this.els[i]) return this.els[i];
+    const s = this.data.slides[i], e = document.createElement('section'); e.className = 'ss-slide'; e.dataset.ssth = s.theme; e.dataset.sid = s.id; e.innerHTML = SS_HTML[s.k](s);
+    this.stage.insertBefore(e, this.bar); void e.offsetWidth; this.els[i] = e; return e;
+  }
   set(data){
-    if (data.sig === this.sig) return; this.sig = data.sig; this.data = data;
-    const cur = this.els[this.idx] ? this.els[this.idx].dataset.sid : '';
-    this.stage.dataset.tr = data.tr || 'fade';
-    this.els.forEach(e => e.remove());
-    this.els = data.slides.map(s => { const e = document.createElement('section'); e.className = 'ss-slide'; e.dataset.ssth = s.theme; e.dataset.sid = s.id; e.innerHTML = SS_HTML[s.k](s); this.stage.insertBefore(e, this.bar); return e; });
-    clearTimeout(this.tm); this.idx = -1; this.empty.hidden = this.els.length > 0; if (!this.els.length) return;
-    const k = cur ? this.els.findIndex(e => e.dataset.sid === cur) : -1; this.go(k >= 0 ? k : 0);
+    if (data.sig === this.sig) return; this.sig = data.sig;
+    const cur = this.data && this.idx >= 0 && this.data.slides[this.idx] ? this.data.slides[this.idx].id : '';
+    this.data = data; this.stage.dataset.tr = data.tr || 'fade';
+    this.els.forEach(e => e && e.remove()); this.els = new Array(data.slides.length).fill(null);
+    clearTimeout(this.tm); this.idx = -1; this.empty.hidden = data.slides.length > 0; if (!data.slides.length) return;
+    if (!this.lazy) data.slides.forEach((s, i) => this.mk(i));
+    const k = cur ? data.slides.findIndex(s => s.id === cur) : -1; this.go(k >= 0 ? k : 0);
   }
   go(i){
     const N = this.els.length; if (!N) return; const prev = this.idx; this.idx = ((i % N) + N) % N;
-    this.els.forEach((e, k) => { e.classList.toggle('ss-active', k === this.idx); e.classList.toggle('ss-out', k === prev && k !== this.idx); e.setAttribute('aria-hidden', k === this.idx ? 'false' : 'true'); });
-    const sec = this.data.slides[this.idx].sec; clearTimeout(this.tm);
-    if (this.o.bar) { const b = this.bar; b.style.transition = 'none'; b.style.width = '0'; b.style.opacity = this.playing && N > 1 ? '1' : '0'; void b.offsetWidth; if (this.playing && N > 1) { b.style.background = getComputedStyle(this.els[this.idx]).getPropertyValue('--acc'); b.style.transition = 'width ' + sec + 's linear'; b.style.width = '100%'; } }
+    this.mk(this.idx);
+    if (this.lazy) { this.mk(this.idx + 1); const keep = new Set([this.idx, prev, (this.idx + 1) % N]); this.els.forEach((e, k) => { if (e && !keep.has(k)) { e.remove(); this.els[k] = null; } }); }
+    this.els.forEach((e, k) => { if (!e) return; e.classList.toggle('ss-active', k === this.idx); e.classList.toggle('ss-out', k === prev && k !== this.idx); e.setAttribute('aria-hidden', k === this.idx ? 'false' : 'true'); });
+    const cur = this.els[this.idx], sec = this.data.slides[this.idx].sec; clearTimeout(this.tm);
+    if (!this.o.exportMode) { const bg = getComputedStyle(cur).getPropertyValue('--bg').trim(); if (bg) this.host.style.background = bg; }
+    if (this.o.bar) { const b = this.bar; b.style.transition = 'none'; b.style.transform = 'scaleX(0)'; b.style.opacity = this.playing && N > 1 ? '1' : '0'; void b.offsetWidth; if (this.playing && N > 1) { b.style.background = getComputedStyle(cur).getPropertyValue('--acc'); b.style.transition = 'transform ' + sec + 's linear'; b.style.transform = 'scaleX(1)'; } }
     if (this.playing && N > 1 && !this.o.exportMode) this.tm = setTimeout(() => this.go(this.idx + 1), sec * 1000);
   }
   next(){ this.go(this.idx + 1); } prev(){ this.go(this.idx - 1); }
-  pause(on){ this.playing = !on; this.go(this.idx < 0 ? 0 : this.idx); }
+  pause(on){ this.playing = !on; clearTimeout(this.tm); if (this.idx >= 0) this.go(this.idx); }
   destroy(){ clearTimeout(this.tm); if (this.ro) this.ro.disconnect(); this.host.innerHTML = ''; this.els = []; }
 }
 function ssFlatten(root){
@@ -7957,21 +7970,29 @@ function ssFlatten(root){
   });
 }
 
-/* ---------- projector: full window, for the HDMI screen or a cast ---------- */
+/* ---------- projector: full screen for the HDMI TV or a cast. Light on purpose: the hub is hidden while it plays ---------- */
+const ssFsEl = () => document.fullscreenElement || document.webkitFullscreenElement || null;
 function ssProject(id){
   const sc = ssScr(id); if (!sc) return; ssCloseProj();
-  const ov = document.createElement('div'); ov.className = 'ss-proj'; ov.innerHTML = '<div class="ss-pv"></div><div class="ss-ctl" role="toolbar" aria-label="Projector controls"><button type="button" data-p="prev">Previous</button><button type="button" data-p="play">Pause</button><button type="button" data-p="next">Next</button><button type="button" data-p="fs">Full screen</button><button type="button" data-p="x">Exit</button></div>';
-  document.body.appendChild(ov); const pl = new SSPlayer(ov.querySelector('.ss-pv'), {bar:true}), ctl = ov.querySelector('.ss-ctl'); let hideT = 0, wl = null;
-  const load = () => { const cur = ssScr(id); if (cur) pl.set(ssBuild(cur)); };
+  const ov = document.createElement('div'); ov.className = 'ss-proj'; ov.innerHTML = '<div class="ss-pv"></div><div class="ss-hint" hidden>Press F11 to fill the whole screen. Press Esc to close.</div><div class="ss-ctl" role="toolbar" aria-label="Projector controls"><button type="button" data-p="prev">Previous</button><button type="button" data-p="play">Pause</button><button type="button" data-p="next">Next</button><button type="button" data-p="fs">Full screen</button><button type="button" data-p="x">Exit</button></div>';
+  const sy = window.scrollY; document.body.classList.add('ss-projecting'); document.body.appendChild(ov);
+  if (SS.pv) SS.pv.pause(true);
+  const pl = new SSPlayer(ov.querySelector('.ss-pv'), {bar:true}), ctl = ov.querySelector('.ss-ctl'), hint = ov.querySelector('.ss-hint'), fsb = ov.querySelector('[data-p=fs]'); let hideT = 0, hintT = 0, wl = null;
+  const load = () => { if (document.hidden && pl.data) return; const cur = ssScr(id); if (cur) pl.set(ssBuild(cur)); };
   const show = () => { ctl.classList.remove('ss-hide'); ov.classList.remove('ss-idle'); clearTimeout(hideT); hideT = setTimeout(() => { ctl.classList.add('ss-hide'); ov.classList.add('ss-idle'); }, 3500); };
-  const act = k => { if (k === 'prev') pl.prev(); else if (k === 'next') pl.next(); else if (k === 'play') { pl.pause(pl.playing); ov.querySelector('[data-p=play]').textContent = pl.playing ? 'Pause' : 'Play'; } else if (k === 'fs') { try { if (document.fullscreenElement) document.exitFullscreen(); else ov.requestFullscreen && ov.requestFullscreen().catch(() => {}); } catch(e) {} } else if (k === 'x') ssCloseProj(); };
-  const key = e => { const k = e.key; if (!['Escape', 'ArrowLeft', 'ArrowRight', ' ', 'f', 'F'].includes(k)) return; e.preventDefault(); e.stopPropagation(); show(); if (k === 'Escape') act('x'); else if (k === 'ArrowLeft') act('prev'); else if (k === 'ArrowRight') act('next'); else if (k === ' ') act('play'); else act('fs'); };
-  ov.addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (b) act(b.dataset.p); show(); }); ov.addEventListener('mousemove', show); ov.addEventListener('touchstart', show, {passive:true}); document.addEventListener('keydown', key, true);
+  const fsToggle = () => { const inFs = !!ssFsEl(); try { const f = inFs ? (document.exitFullscreen || document.webkitExitFullscreen) : (ov.requestFullscreen || ov.webkitRequestFullscreen), r = f && f.call(inFs ? document : ov); if (r && r.catch) r.catch(() => {}); } catch(e) {} };
+  const syncFs = () => { const on = !!ssFsEl(); fsb.textContent = on ? 'Exit full screen' : 'Full screen'; clearTimeout(hintT); hint.hidden = true; if (!on) hintT = setTimeout(() => { hint.hidden = false; setTimeout(() => { hint.hidden = true; }, 7000); }, 900); };
+  const act = k => { if (k === 'prev') pl.prev(); else if (k === 'next') pl.next(); else if (k === 'play') { pl.pause(pl.playing); ov.querySelector('[data-p=play]').textContent = pl.playing ? 'Pause' : 'Play'; } else if (k === 'fs') fsToggle(); else if (k === 'x') ssCloseProj(); };
+  const key = e => { const k = e.key; if (!['Escape', 'ArrowLeft', 'ArrowRight', ' ', 'f', 'F'].includes(k)) return; e.preventDefault(); e.stopPropagation(); show(); if (k === 'Escape') act('x'); else if (k === 'ArrowLeft') act('prev'); else if (k === 'ArrowRight') act('next'); else if (k === ' ') act('play'); else fsToggle(); };
+  ov.addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (b) act(b.dataset.p); show(); }); ov.addEventListener('dblclick', e => { if (!e.target.closest('.ss-ctl')) fsToggle(); });
+  ov.addEventListener('mousemove', show); ov.addEventListener('touchstart', show, {passive:true}); document.addEventListener('keydown', key, true);
+  document.addEventListener('fullscreenchange', syncFs); document.addEventListener('webkitfullscreenchange', syncFs);
   try { if (navigator.wakeLock) navigator.wakeLock.request('screen').then(l => { wl = l; }).catch(() => {}); } catch(e) {}
-  try { ov.requestFullscreen && ov.requestFullscreen().catch(() => {}); } catch(e) {}
-  SS.proj = {ov, pl, id, load, close(){ clearTimeout(hideT); clearInterval(t); document.removeEventListener('keydown', key, true); try { wl && wl.release(); } catch(e) {} try { if (document.fullscreenElement) document.exitFullscreen(); } catch(e) {} pl.destroy(); ov.remove(); SS.proj = null; }};
   const t = setInterval(load, 30000);
-  ssPrep().then(() => { load(); show(); });
+  SS.proj = {ov, pl, id, load, close(){ clearTimeout(hideT); clearTimeout(hintT); clearInterval(t); document.removeEventListener('keydown', key, true); document.removeEventListener('fullscreenchange', syncFs); document.removeEventListener('webkitfullscreenchange', syncFs); try { wl && wl.release(); } catch(e) {}
+    try { if (ssFsEl()) { const r = (document.exitFullscreen || document.webkitExitFullscreen).call(document); if (r && r.catch) r.catch(() => {}); } } catch(e) {}
+    pl.destroy(); ov.remove(); document.body.classList.remove('ss-projecting'); SS.proj = null; window.scrollTo(0, sy); if (SS.pv && document.body.contains(SS.pv.host)) SS.pv.pause(false); }};
+  fsToggle(); ssFonts(); load(); show(); syncFs();
 }
 function ssCloseProj(){ if (SS.proj) SS.proj.close(); }
 
