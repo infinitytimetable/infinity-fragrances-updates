@@ -1,21 +1,19 @@
 {
- "version": "2.23.0",
+ "version": "2.23.1",
  "date": "2026-11-23",
  "notes": [
-  "Shop screen projector in its own window on the TV screen (Windows app 2.23 and newer), so the hub stays free for the Point of sale",
-  "Choose the screen, control it from the hub; changes reach the TV by themselves",
-  "Needs the new PC app once. Older apps keep using the projector inside the hub window"
+  "Shop screen: if the PC app is too old for the separate TV window, the page now says so and gives the download link with the update steps"
  ],
  "android": {
-  "file": "android-2.23.0.html",
-  "sig": "s/4QRWC8PZiEikyA2f9PSte2wfTcVUEayYJx9J1x9NRyDJ8lBd3RuvD8X8WqV0Xb4VzEsufT6iuamDTM5anu6w==",
-  "size": 2615786,
+  "file": "android-2.23.1.html",
+  "sig": "by2UZmyJFFT3ZBQRoQjJFXMv803ic8tuRjL8DkSmvfOyOF542jSnVncAC5sXrwE+X0o8q98BMtDmkOmflhrKrw==",
+  "size": 2617160,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.23.0.html",
-  "sig": "vXlYyhnTJN3EyPQn+a6oUIXq7RIwx1m2MExGHbNJMATRwTGUtinDGmpAm3xHeFMxYDBvzi7/6Lzrp+ohsc34bQ==",
-  "size": 2610774,
+  "file": "desktop-2.23.1.html",
+  "sig": "U2VsbSYHYSNLF0CgvmCjjWpCpT4wy8Q8tx3UnoR1fZvh7/oc6sivMa9Hqyr63YHtfIs9yLKIryiUXr2y5jYA1w==",
+  "size": 2612148,
   "minShell": "2.5.0"
  },
  "apk": {
