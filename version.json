@@ -1,20 +1,20 @@
 {
- "version": "2.21.0",
+ "version": "2.21.1",
  "date": "2026-11-23",
  "notes": [
-  "Messages: a new inbox in the Admin hub, reseller app and shop app. Write to people with To and CC, start groups, send announcements with a Seen-by list, photos and quick replies",
-  "Resellers who use a personal link can read announcements and write to the office. New messages show in the bell and as phone alerts"
+  "Messages fixes: deleting a conversation now finishes cleanly, chats between two other people no longer add to the Admin unread count, and a message you are reading clears its bell dot",
+  "Safer: only Admin and managers can send messages as the office (paste the updated Firebase rules once)"
  ],
  "android": {
-  "file": "android-2.21.0.html",
-  "sig": "UiQUD6NFROzhpETwGghZJ4ftxICkO7uV2WLgE5LkuKDYPDpL/X+Vd0s0M/WPoj6Ck2uLiWK3EzFCL6qMi9KZWw==",
-  "size": 2534316,
+  "file": "android-2.21.1.html",
+  "sig": "wqaKl2/WTJr0wwf41CWkZSIB0Da+/Y6Gvf9wIgIJuOmHflRLFs2eR33/6g9CJ2M45kaHXlvCFr5nxPhbGG30kQ==",
+  "size": 2535867,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.21.0.html",
-  "sig": "DbBaX5EEMbhf+l1V/+Xws1wzuNrhqEm+dofcLYRk2BUauuBP6nd+iGP6OsoxRX6xR4Bqt8InfspvTJZGg8qoSg==",
-  "size": 2529304,
+  "file": "desktop-2.21.1.html",
+  "sig": "vPq+4qdi7DBQUE5gDUElkS9qIWWNe6fbRu4QeX7hePdctKOrhAFZjFau5B831pIVDmBe4AUpXywH/z5/r3rSaw==",
+  "size": 2530855,
   "minShell": "2.5.0"
  },
  "apk": {

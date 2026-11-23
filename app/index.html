@@ -2336,8 +2336,9 @@ function fixNumbers(o){
 }
 
 /* ======================= Version 2.0 ======================= */
-const APP_VERSION = '2.21.0';
+const APP_VERSION = '2.21.1';
 const CHANGELOG = [
+  ['2.21.1', '23 Nov 2026', ['Messages fixes: deleting a conversation now finishes cleanly, and chats between two other people no longer add to the Admin unread count', 'A message you are reading clears its bell dot straight away, and the Seen-by list now follows follow-up posts', 'Safer: only Admin and managers can send messages as the office (paste the updated Firebase rules once)']],
   ['2.21.0', '23 Nov 2026', ['Messages: a new inbox in the Admin hub, the reseller app and the shop and staff app, like Messenger and email together', 'Write to people with To and CC, start group chats, and send announcements to all resellers, a town, shops and staff or hand-picked people, with a Seen-by list', 'Send photos, use one-tap quick replies, and see new messages in the bell and as phone alerts', 'Resellers who use a personal link can read announcements and write to the office from it', 'Admin can read every conversation (people are told), and can nudge anyone who has not read a message on WhatsApp']],
   ['2.20.0', '23 Nov 2026', ['Reseller links for resellers who do not use the app: one personal link each, opened with the last 4 digits of their phone number', 'They tick what they sold, see what they should pay after their commission, say how they are paying (cash, MTN MoMo, Airtel Money or bank, with an optional photo), and send it for your approval', 'The same link confirms parcels received (with shortages), and makes PDF reports with their name: settlement report, stock received note, stock held and history', 'Send links from Resellers, Settlement day and Dispatch. One-time Firebase rules update needed (Requests & logins page → Copy rules)']],
   ['2.19.0', '23 Nov 2026', ['Expected money and profit from each reseller: tap the dashboard tiles to open the table, group it by town or recruiter, view it as cards on your phone, and download it as Excel or PDF or print it', 'New tile: Profit after expenses, next to Expected profit (after cost and all commission)']],
@@ -3637,6 +3638,7 @@ service cloud.firestore {
         allow read: if signedIn() && (isFull() || request.auth.uid in get(/databases/$(database)/documents/threads/$(t)).data.members);
         allow create: if signedIn() && (isFull() || (request.auth.uid in getAfter(/databases/$(database)/documents/threads/$(t)).data.members && getAfter(/databases/$(database)/documents/threads/$(t)).data.kind != 'broadcast'
           && request.resource.data.by == request.auth.uid && request.resource.data.name == me().name
+          && (!('off' in request.resource.data) || request.resource.data.off == false)
           && request.resource.data.keys().hasOnly(['by', 'name', 'off', 'text', 'ph', 'at', 'cid'])
           && request.resource.data.text is string && request.resource.data.text.size() < 2001
           && (!('ph' in request.resource.data) || (request.resource.data.ph is string && request.resource.data.ph.size() < 300000))));
@@ -4980,7 +4982,7 @@ function bellStart(){
   if (key === BELL.key) return; if (BELL.unsub) { try { BELL.unsub(); } catch(e) {} } BELL.unsub = null; BELL.items = []; BELL.key = key; BELL.primed = false;
   b.hidden = !key; document.body.classList.toggle('bell-on', !!key); if (!key) return;
   BELL.unsub = FB.listen(`inbox/${key}/items`, null, null, list => { const old = new Set(BELL.items.map(x => x.id)); BELL.items = list.sort((a, b) => (b.at || '').localeCompare(a.at || '')).slice(0, 100);
-    const fresh = BELL.primed ? BELL.items.filter(x => !old.has(x.id) && !x.read) : []; BELL.primed = true; bellPaint(); if (fresh.length) { b.classList.remove('ring'); void b.offsetWidth; b.classList.add('ring'); }
+    const fresh = BELL.primed ? BELL.items.filter(x => !old.has(x.id) && !x.read) : []; BELL.primed = true; bellPaint(); try { msgBellSync(); } catch(e) {} if (fresh.length) { b.classList.remove('ring'); void b.offsetWidth; b.classList.add('ring'); }
     if ($('#bell-list')) bellOpen(); });
 }
 function bellPaint(){ const n = BELL.items.filter(x => !x.read).length, el = $('#bell-n'); if (!el) return; el.hidden = !n; el.textContent = n > 99 ? '99+' : n; }
@@ -7680,6 +7682,7 @@ function msgGot(list){
   const fresh = MSG.primed ? MSG.list.filter(t => msgUnread(t) && (t.last?.at || '') !== old.get(t.id)) : [];
   MSG.primed = true;
   fresh.filter(t => !(msgOpenNow() && MSG.view === 'thread' && MSG.tid === t.id && !document.hidden)).slice(0, 2).forEach(t => { const who = t.last?.off ? bizName() : (t.last?.by || 'Someone'); appNotify(who, msgPrev(t.last)); toast(`New message from ${who}`); });
+  if (MSG.view === 'thread' && MSG.tid && old.has(MSG.tid) && !MSG.list.some(x => x.id === MSG.tid)) { ACT.msgBack(); toast('That conversation was deleted'); }
   msgBadge(); if (me.full) msgLinkWatch();
   if (msgOpenNow()) msgPaint();
 }
@@ -7688,7 +7691,7 @@ function msgSub(tid){
   MSG.mTid = tid; MSG.msgs = []; MSG.mLoad = true;
   MSG.mUnsub = FB.listen(`threads/${tid}/msgs`, null, null, list => { if (MSG.mTid !== tid) return; MSG.msgs = list.sort((a, b) => (a.at || '').localeCompare(b.at || '')); MSG.mLoad = false; MSG.stick = true; if (msgOpenNow()) msgPaint(); }, () => { MSG.mLoad = false; });
 }
-function msgUnread(t){ const me = MSG.me; return !!(me && t && t.last && t.last.from !== me.id && (t.last.at || '') > ((t.reads || {})[me.id] || '')); }
+function msgUnread(t){ const me = MSG.me; return !!(me && t && t.last && (t.members || []).includes(me.id) && t.last.from !== me.id && (t.last.at || '') > ((t.reads || {})[me.id] || '')); }
 function msgBadge(){
   const n = MSG.me ? MSG.list.filter(msgUnread).length : 0; MSG.n = n;
   const b = $('#msgbtn-n'); if (b) { b.hidden = !n; b.textContent = n > 99 ? '99+' : n; }
@@ -7701,13 +7704,19 @@ function msgFab(){
   b.hidden = false; document.body.classList.add('msg-on'); msgBadge();
 }
 function msgMark(t){
-  const me = MSG.me; if (!me || !t?.last) return; const iso = nowISO(), stamp = (t.last.at || '') > iso ? t.last.at : iso;
+  const me = MSG.me; if (!me || !t?.last || !(t.members || []).includes(me.id)) return; const iso = nowISO(), stamp = (t.last.at || '') > iso ? t.last.at : iso;
   t.reads = {...(t.reads || {}), [me.id]: stamp}; msgBadge();
   try { FB.set('threads/' + t.id, {reads:{[me.id]:stamp}}, true).catch(() => {}); } catch(e) {}
 }
+function msgBellSync(){
+  if (!MSG.me || MSG.view !== 'thread' || !MSG.tid || document.hidden || !BELL.key || !msgOpenNow()) return;
+  const l = BELL.items.filter(x => !x.read && x.link === 'msg:' + MSG.tid); if (!l.length) return;
+  l.forEach(x => { x.read = true; }); bellPaint();
+  FB.batch(l.map(x => ['merge', `inbox/${BELL.key}/items/${x.id}`, {read:true}])).catch(() => {});
+}
 function msgMount(){
   const th = $('#msg-thread'); if (th && MSG.stick) { th.scrollTop = th.scrollHeight; } MSG.stick = false;
-  if (MSG.view === 'thread' && MSG.me && !document.hidden && msgOpenNow()) { const t = msgThread(); if (t && msgUnread(t)) msgMark(t); }
+  if (MSG.view === 'thread' && MSG.me && !document.hidden && msgOpenNow()) { const t = msgThread(); if (t && msgUnread(t)) msgMark(t); try { msgBellSync(); } catch(e) {} }
 }
 function msgPaint(){
   const el = $('#msg-root'); if (!el) return;
@@ -7772,7 +7781,7 @@ function msgToCc(t){
 function msgSeen(t){
   const d = msgDir(), at = t.at || '', groups = new Map();
   (t.members || []).forEach(id => { if (id === 'office') return; const c = d.byId[id]; const k = c ? c.key : id; const g = groups.get(k) || {c, ids:[], name:c?.name || t.names?.[id] || 'Someone'}; g.ids.push(id); groups.set(k, g); });
-  const rows = [...groups.values()].map(g => { const link = g.ids.every(i => String(i).startsWith('rl:')), seen = g.ids.some(i => !String(i).startsWith('rl:') && (t.reads || {})[i] && (t.reads || {})[i] >= (t.kind === 'broadcast' ? at : (t.last?.at || ''))); return {...g, link, seen}; });
+  const rows = [...groups.values()].map(g => { const link = g.ids.every(i => String(i).startsWith('rl:')), seen = g.ids.some(i => !String(i).startsWith('rl:') && (t.reads || {})[i] && (t.reads || {})[i] >= (t.last?.at || at)); return {...g, link, seen}; });
   return rows;
 }
 function msgThreadHTML(){
@@ -7846,6 +7855,7 @@ function msgSendNew(){
   else if (c.mode === 'group') { people = c.to.map(k => d.byKey[k]).filter(Boolean); if (!(c.gname || '').trim()) return toast('Give the group a name.', true); if (!people.length) return toast('Choose at least one member.', true); }
   else { people = c.to.map(k => d.byKey[k]).filter(Boolean); if (!people.length) return toast('Choose who to send this to.', true); if (!text && !ph) return toast('Type a message first.', true); }
   if (text.length > 2000) return toast('That message is too long.', true);
+  if (c.mode !== 'broadcast') { const none = [...people, ...(c.mode === 'direct' ? c.cc.map(k => d.byKey[k]).filter(Boolean) : [])].filter(p => !(p.ids || []).length); if (none.length) return toast(`${none.map(p => p.name).join(', ')} ${none.length === 1 ? 'has' : 'have'} no app login or link yet, so ${none.length === 1 ? 'they' : 'they'} cannot get messages. Make a login or link first.`, true); }
   const ccPeople = c.mode === 'direct' ? c.cc.map(k => d.byKey[k]).filter(Boolean) : [], ids = msgUniq(people.flatMap(p => p.ids)), ccIds = msgUniq(ccPeople.flatMap(p => p.ids).filter(i => !ids.includes(i)));
   const members = msgUniq([me.id, ...ids, ...ccIds]); if (members.length > (me.full ? 400 : 8)) return toast(me.full ? 'That is too many people for one message.' : 'You can write to up to 7 people at once.', true);
   const kind = c.mode === 'broadcast' ? 'broadcast' : c.mode === 'group' ? 'group' : 'direct', subject = kind === 'broadcast' ? c.subj.trim() : kind === 'group' ? c.gname.trim() : (c.subj || '').trim();
@@ -7901,7 +7911,7 @@ function msgDelThread(){
   const t = msgThread(); if (!t || !MSG.me.full) return;
   confirmBox(`Delete this conversation for everyone? All its messages are removed and this cannot be undone.`, async () => {
     try { const l = await FB.list(`threads/${t.id}/msgs`); const ops = l.map(x => ['del', `threads/${t.id}/msgs/${x.id}`]); for (let i = 0; i < ops.length; i += 400) await FB.batch(ops.slice(i, i + 400)); await FB.del('threads/' + t.id); } catch(e) { return toast(fbMsg(e), true); }
-    MSG.list = MSG.list.filter(x => x.id !== t.id); msgBack(); toast('Conversation deleted');
+    MSG.list = MSG.list.filter(x => x.id !== t.id); ACT.msgBack(); msgBadge(); toast('Conversation deleted');
   }, 'Delete');
 }
 function msgGroupEdit(){
