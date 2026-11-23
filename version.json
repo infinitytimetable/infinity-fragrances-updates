@@ -1,20 +1,20 @@
 {
- "version": "2.21.1",
+ "version": "2.22.0",
  "date": "2026-11-23",
  "notes": [
-  "Messages fixes: deleting a conversation now finishes cleanly, chats between two other people no longer add to the Admin unread count, and a message you are reading clears its bell dot",
-  "Safer: only Admin and managers can send messages as the office (paste the updated Firebase rules once)"
+  "New: Shop screen (Marketing menu). Show perfumes, prices and offers on the TV in your shop, with seven designs, seasonal looks, a projector mode for HDMI and a video you can put on a flash drive",
+  "HD photos for sharper pictures on big screens"
  ],
  "android": {
-  "file": "android-2.21.1.html",
-  "sig": "wqaKl2/WTJr0wwf41CWkZSIB0Da+/Y6Gvf9wIgIJuOmHflRLFs2eR33/6g9CJ2M45kaHXlvCFr5nxPhbGG30kQ==",
-  "size": 2535867,
+  "file": "android-2.22.0.html",
+  "sig": "+UNOYs8P6WZQ5oz5IxmLWNTi6tJq8+QG9oRy+1zmMmX4DCttQzTaZ8V4SQVNkdctqNsUoldneUX1rA6aozRz8w==",
+  "size": 2604690,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.21.1.html",
-  "sig": "vPq+4qdi7DBQUE5gDUElkS9qIWWNe6fbRu4QeX7hePdctKOrhAFZjFau5B831pIVDmBe4AUpXywH/z5/r3rSaw==",
-  "size": 2530855,
+  "file": "desktop-2.22.0.html",
+  "sig": "J0BaLeU42SQS4sz2mZpVRClYFaqIRbwE/p6iQzGK7vizWV/WuJpCa3UGLZnELoK8EBYD+lwnc95JO9IpswDAXQ==",
+  "size": 2599678,
   "minShell": "2.5.0"
  },
  "apk": {
