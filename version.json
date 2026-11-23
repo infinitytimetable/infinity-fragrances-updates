@@ -1,20 +1,20 @@
 {
- "version": "2.20.0",
+ "version": "2.21.0",
  "date": "2026-11-23",
  "notes": [
-  "Reseller link: send each reseller a personal link to report sales, pay and confirm stock received",
-  "Link reports wait for your approval in Resellers, then fill the settlement form for you; PDF reports carry the reseller's name"
+  "Messages: a new inbox in the Admin hub, reseller app and shop app. Write to people with To and CC, start groups, send announcements with a Seen-by list, photos and quick replies",
+  "Resellers who use a personal link can read announcements and write to the office. New messages show in the bell and as phone alerts"
  ],
  "android": {
-  "file": "android-2.20.0.html",
-  "sig": "vw+180RgwMtFbodv/4wHP0uLDRuBjWCPBf7ysIsraqTf9r24TxCUXKhQBXAgKKAK8OxU9EaWZzcNuKpJxqVPWQ==",
-  "size": 2482971,
+  "file": "android-2.21.0.html",
+  "sig": "UiQUD6NFROzhpETwGghZJ4ftxICkO7uV2WLgE5LkuKDYPDpL/X+Vd0s0M/WPoj6Ck2uLiWK3EzFCL6qMi9KZWw==",
+  "size": 2534316,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.20.0.html",
-  "sig": "3jNeyttKatp2e7yBpmKs9aB/1cRJ8QT2KZPn61Qa9bqi/kCy888J1Yj9m4Veufvt1HIuYdt3+mih1lCQJRuMkg==",
-  "size": 2477959,
+  "file": "desktop-2.21.0.html",
+  "sig": "DbBaX5EEMbhf+l1V/+Xws1wzuNrhqEm+dofcLYRk2BUauuBP6nd+iGP6OsoxRX6xR4Bqt8InfspvTJZGg8qoSg==",
+  "size": 2529304,
   "minShell": "2.5.0"
  },
  "apk": {

@@ -83,6 +83,17 @@ main{padding:26px clamp(16px,3vw,40px) 90px;min-width:0;max-width:1240px}
 .tile .v{font-size:24px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums;line-height:1.2}
 .tile .s{font-size:12.5px;color:var(--muted);margin-top:4px}
 .tile.hl{border-color:var(--accent);box-shadow:inset 0 3px 0 var(--accent)}
+.tile.go{cursor:pointer}.tile.go:hover{border-color:var(--accent)}.tile.go:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.exp-ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:4px 0 12px}.exp-ctl .lab{font-size:13px;color:var(--muted);font-weight:600}.exp-ctl .actions{margin-left:auto}
+.exp-tbl table.t th{white-space:normal;line-height:1.25;vertical-align:bottom;padding:9px 7px;letter-spacing:.03em}.exp-tbl table.t td{padding:9px 7px;font-size:13.5px}.exp-tbl table.t td:first-child{min-width:104px}
+.exp-tbl tr.grp td{background:var(--soft);font-weight:700;border-top:2px solid var(--line)}.exp-tbl tr.sub td{font-weight:700;background:var(--soft)}
+.exp-cards{display:none}.exp-grp{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap;margin:14px 2px 6px}.exp-grp b{font-size:15px}
+.exp-card{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;background:var(--surface)}.exp-card.tot{border-color:var(--accent)}
+.exp-card .h{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.exp-card .big{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.exp-card .big div{background:var(--soft);border-radius:10px;padding:8px 10px}.exp-card .big .lb{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600}.exp-card .big b{font-size:18px;font-variant-numeric:tabular-nums}
+.exp-card dl{display:grid;grid-template-columns:1fr auto;gap:4px 12px;margin:0;font-size:13.5px}.exp-card dt{color:var(--muted)}.exp-card dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:700px){.exp-tbl{display:none}.exp-cards{display:block}.exp-ctl .actions{margin-left:0;width:100%}}
+.doc table.xr td,.doc table.xr th{font-size:10.5px;padding:4px 5px}.doc table.xr th{font-size:8.5px;letter-spacing:.05em}.doc table.xr tr.g td{background:#f6f3ec;font-weight:700}.doc table.xr tr.s td{font-weight:700;border-top:1px solid #16130f}.doc table.xr tfoot td{font-weight:800;border-top:2px solid #16130f;border-bottom:0}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:18px}
 .card h2{font-size:17px;font-weight:700;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}
@@ -768,6 +779,22 @@ body.bell-on .head,body.bell-on .res-head,body.bell-on .sec-row{padding-right:52
 .tickgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:4px 12px;margin:8px 0 12px}.tickgrid .chk{font-weight:500}
 .shop-hello{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .pos2-top{display:flex;gap:8px;align-items:center}.pos2-top input{flex:1;min-width:0;padding:11px 14px;border:1px solid var(--line);border-radius:10px;font-size:16px;background:var(--surface);color:var(--ink)}
+.msg-ht .small a{color:var(--gold);font-weight:700;text-decoration:underline}
+.msg-fab{right:64px}body.msg-on .head,body.msg-on .res-head,body.msg-on .sec-row{padding-right:108px}
+.msg-wrap{max-width:860px}.msg-top{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.msg-chips,.msg-qr{display:flex;gap:6px;overflow-x:auto;padding:8px 0 6px;scrollbar-width:none}.msg-chip{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 12px;font:inherit;font-size:13.5px;cursor:pointer}.msg-chip.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.msg-list{list-style:none;margin:0;padding:0}.msg-row{display:flex;gap:12px;align-items:center;padding:11px 8px;border-bottom:1px solid var(--line);color:inherit;text-decoration:none;border-radius:10px}.msg-row:hover{background:var(--soft)}
+.msg-av{width:42px;height:42px;border-radius:50%;background:var(--soft);display:flex;align-items:center;justify-content:center;font-weight:800;flex:none;font-size:15px}
+.msg-mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.msg-t{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.msg-p{color:var(--muted);font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.msg-row.unread .msg-t,.msg-row.unread .msg-p{font-weight:800;color:var(--ink)}.msg-end{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex:none}.msg-dot{width:10px;height:10px;border-radius:50%;background:#d6336c;display:inline-block}
+.msg-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}.msg-ht{flex:1;min-width:140px}
+.msg-thread{display:flex;flex-direction:column;gap:6px;padding:6px 2px;max-height:56vh;min-height:140px;overflow-y:auto;-webkit-overflow-scrolling:touch}.msg-day{align-self:center;font-size:12px;color:var(--muted);margin:8px 0 2px}
+.msg-b{max-width:84%;padding:8px 12px;border-radius:14px;background:var(--soft);color:var(--ink);align-self:flex-start;overflow-wrap:anywhere;white-space:pre-wrap}.msg-b.me{align-self:flex-end;background:var(--ink);color:var(--surface)}.msg-b.me a,.msg-m a{color:inherit}
+.msg-a{font-size:12px;font-weight:700;opacity:.75;margin-bottom:2px}.msg-m{font-size:11.5px;opacity:.7;margin-top:3px;text-align:right;white-space:normal}.msg-ph{display:block;max-width:100%;max-height:260px;border-radius:10px;margin-bottom:4px;cursor:zoom-in}
+.msg-reply{display:flex;gap:8px;align-items:flex-end}.msg-reply textarea{flex:1;min-width:0;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:12px;font:inherit;font-size:16px;background:var(--surface);color:var(--ink);resize:vertical}.msg-send{display:flex;flex-direction:column;gap:6px}
+.msg-to{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0}.msg-pick{border:1px solid var(--line);border-radius:12px;padding:10px;margin:6px 0 10px;max-height:340px;overflow:auto}
+.msg-grp{font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:10px 0 4px}.msg-pk{display:flex;gap:10px;align-items:center;width:100%;text-align:left;border:0;background:none;padding:8px 6px;border-radius:8px;color:inherit;font:inherit;cursor:pointer}.msg-pk:hover{background:var(--soft)}.msg-pk.off{opacity:.5;cursor:default}
+.msg-ck{width:22px;height:22px;border:2px solid var(--line);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:800;flex:none}.msg-pk.on .msg-ck{background:var(--ink);border-color:var(--ink);color:var(--surface)}.msg-box{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:6px 10px}
 .chips-row{display:flex;gap:6px;overflow-x:auto;padding:10px 0 4px;scrollbar-width:none}.chips-row .chip{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 13px;font-weight:600;cursor:pointer}.chips-row .chip.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .pos2-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-top:10px}.pos2-p{display:flex;flex-direction:column;gap:3px;text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:14px;padding:8px;cursor:pointer;font:inherit}.pos2-p[hidden]{display:none}.pos2-p.in{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent)}.pos2-p.out{opacity:.5}
 .pos2-img{position:relative;aspect-ratio:1;border-radius:10px;background:color-mix(in srgb,var(--surface) 85%,var(--ink) 15%);display:flex;align-items:center;justify-content:center;overflow:hidden}.pos2-img img{width:100%;height:100%;object-fit:contain;background:#fff}.pos2-img>span{font-size:34px;font-weight:700;opacity:.4}.pos2-q{position:absolute;top:6px;right:6px;background:var(--accent);color:var(--accent-ink);border-radius:999px;min-width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:13px}.pos2-q[hidden]{display:none}
@@ -979,7 +1006,7 @@ function schedule(){ if (pending) return; pending = true; requestAnimationFrame(
 const clean = o => JSON.parse(JSON.stringify(o));
 async function put(col, obj){
   obj = {...obj}; if (!obj.id) obj.id = uid(); if (!obj.createdAt) obj.createdAt = nowISO(); obj.updatedAt = nowISO();
-  const before = S[col][obj.id]; S[col][obj.id] = obj; schedule(); logWrite(before ? 'edit' : 'add', col, before, obj); syncPush(col, obj);
+  const before = S[col][obj.id]; S[col][obj.id] = obj; schedule(); if (rlCol(col)) rlSched(); logWrite(before ? 'edit' : 'add', col, before, obj); syncPush(col, obj);
   if (DB) {
     const {id, ...body} = obj;
     try { await DB.collection(col).doc(id).set(clean(body)); }
@@ -988,7 +1015,7 @@ async function put(col, obj){
   return obj;
 }
 async function del(col, id){
-  logWrite('delete', col, S[col][id], null); delete S[col][id]; schedule(); syncPush(col, {id}, true);
+  logWrite('delete', col, S[col][id], null); delete S[col][id]; schedule(); if (rlCol(col)) rlSched(); syncPush(col, {id}, true);
   if (DB) { try { await DB.collection(col).doc(id).delete(); } catch(e) { toast('Not deleted: ' + (e.message || e.code), true); } }
   else saveLocal();
 }
@@ -1236,10 +1263,11 @@ function monthStats(m){
 
 /* ---------- render ---------- */
 const PAGES = {};
-const ROUTES = ['dashboard','approvals','contacts','feedback','hiring','staff','ratings','riders','links','shopsales','shopstock','shopstaff','shopcust','ideas','resapps','empagree','payroll','logins','access','updates','help','pos','orders','customers','portal','invoices','suppliers','broadcast','activity','settlement','leaderboard','team','planner','profit','reminders','agreements','resellers','commissions','payslips','debtors','products','stocktake','shops','stock','purchases','dispatch','sales','cashbook','expenses','promos','catalogue','adverts','studio','prospects','monthreport','reports','setup','company'];
+const ROUTES = ['dashboard','messages','approvals','contacts','feedback','hiring','staff','ratings','riders','links','shopsales','shopstock','shopstaff','shopcust','ideas','resapps','empagree','payroll','logins','access','updates','help','pos','orders','customers','portal','invoices','suppliers','broadcast','activity','settlement','leaderboard','team','planner','profit','reminders','agreements','resellers','commissions','payslips','debtors','products','stocktake','shops','stock','purchases','dispatch','sales','cashbook','expenses','promos','catalogue','adverts','studio','prospects','monthreport','reports','setup','company'];
 function route(){ const h = location.hash.slice(1); return ROUTES.includes(h) ? h : 'dashboard'; }
 const GROUPS = [
   {label:'Dashboard', tabs:[['dashboard','Dashboard'],['approvals','Approvals'],['feedback','Suggestions'],['contacts','Contacts']]},
+  {label:'Messages', tabs:[['messages','Messages']]},
   {label:'Sales', tabs:[['pos','Point of sale'],['sales','Sales book'],['customers','Customers & loyalty']]},
   {label:'Online Business', tabs:[['orders','Online shop orders'],['ratings','Customer ratings'],['riders','Deliveries & riders'],['catalogue','Online catalogue'],['links','Online pages & links']]},
   {label:'Shops', tabs:[['shops','Shops'],['shopsales','Sales & cash-ups'],['shopstock','Stock in shops'],['shopstaff','Shop staff'],['shopcust','Shop customers'],['ideas','Business ideas']]},
@@ -1297,10 +1325,11 @@ function render(force){
   if (r === 'monthreport' && $('#doc-prev')) requestAnimationFrame(() => fitDocs($('#doc-prev')));
   const at = document.querySelector('main .tabs a.on'); if (at && at.parentElement.scrollWidth > at.parentElement.clientWidth) at.parentElement.scrollLeft = at.offsetLeft - at.parentElement.clientWidth / 2 + at.offsetWidth / 2;
   if (ready) TOOLS[r]?.mount?.();
+  try { msgStart(); msgBadge(); } catch(e) {}
   if (fid) { const el = document.getElementById(fid); if (el) { el.focus(); if (sel) try { el.setSelectionRange(sel[0], sel[1]); } catch(e) {} } }
 }
 const head = (title, sub, actions = '') => `<div class="head"><div><h1>${title}</h1>${sub ? `<p>${sub}</p>` : ''}</div><div class="actions">${actions}</div></div>`;
-const tile = (k, v, s = '', hl = false) => `<div class="tile${hl ? ' hl' : ''}"><div class="k">${k}</div><div class="v">${v}</div>${s ? `<div class="s">${s}</div>` : ''}</div>`;
+const tile = (k, v, s = '', hl = false, go = '') => `<div class="tile${hl ? ' hl' : ''}${go ? ' go' : ''}"${go ? ` role="link" tabindex="0" data-act="expGo" data-r="${go}"` : ''}><div class="k">${k}</div><div class="v">${v}</div>${s ? `<div class="s">${s}</div>` : ''}</div>`;
 const btn = (label, act, data = {}, cls = '') => `<button type="button" class="btn ${cls}" data-act="${act}" ${Object.entries(data).map(([k, v]) => `data-${k}="${esc(v)}"`).join(' ')}>${label}</button>`;
 const monthFilter = () => `<label for="f-month">Month <input type="month" id="f-month" value="${UI.month}"></label>`;
 const empty = t => `<div class="empty">${t}</div>`;
@@ -1338,11 +1367,11 @@ const dashboardV1 = C => {
       ${tile('Net profit this month', signed(s.net), `after cost, commission and expenses`)}
       ${tile('Money on hand', signed(totalMoney), `Cash ${money(C.bal.cash)} · MoMo ${money(C.bal.momo)} · Bank ${money(C.bal.bank)}`)}
       ${tile('Owed by resellers', money(owed), `for bottles already sold · next settlement ${fmtDate(nextDueDate())}`)}
-      ${(() => { const E = expectedAll(C).t; return tile('Expected from resellers', money(E.totalCash), `when all ${int(E.bottles)} bottles they hold are sold, after their commission`, true) + tile('Expected profit on stock out', signed(E.profit), `after cost and all commission`); })()}
+      ${(() => { const E = expectedAll(C).t; return tile('Expected from resellers', money(E.totalCash), `when all ${int(E.bottles)} bottles they hold are sold, after their commission`, true, 'debtors') + tile('Expected profit on stock out', signed(E.profit), `after cost and all commission`, false, 'debtors') + tile('Profit after expenses', signed(E.profit - s.expenses), `also after ${money(s.expenses)} expenses this month`, false, 'debtors'); })()}
       ${tile('Commission due', money(due), `earned by resellers, not yet paid`)}
       ${tile('Stock value at cost', money(C.storeValue + C.heldValue), `${int(C.heldBottles)} bottles with resellers`)}
       ${tile('Active resellers', int(active), `in ${townCounts.length} town${townCounts.length === 1 ? '' : 's'}`)}
-    </div><button type="button" class="btn sm home-more" data-act="homeMore">${UI.homeMore ? 'Fewer figures' : 'More figures (4)'}</button>
+    </div><button type="button" class="btn sm home-more" data-act="homeMore">${UI.homeMore ? 'Fewer figures' : 'More figures (5)'}</button>
     <!--GOALS-->
     ${trendsCard(C)}
     ${insightsCard()}
@@ -1478,6 +1507,63 @@ PAGES.commissions = C => {
 };
 
 /* Debtors & creditors */
+
+/* ---------- Expected money and profit from each reseller: table, phone cards, Excel, PDF ---------- */
+const EXP_KEYS = ['bottles', 'value', 'own', 'team', 'owedNow', 'totalCash', 'cost', 'profit'];
+function expGroups(C, mode){
+  const {rows, t} = expectedAll(C), by = new Map();
+  const keyOf = id => { const r = S.resellers[id] || {}; return mode === 'town' ? (rTown(id) || 'No town') : mode === 'team' ? (r.recruiterId && S.resellers[r.recruiterId] ? 'Recruited by ' + rName(r.recruiterId) : 'Recruited by you') : ''; };
+  for (const row of rows) { const k = keyOf(row[0]); if (!by.has(k)) by.set(k, {label:k, rows:[], sub:Object.fromEntries(EXP_KEYS.map(x => [x, 0]))}); const g = by.get(k); g.rows.push(row); EXP_KEYS.forEach(x => g.sub[x] += row[1][x] || 0); }
+  const groups = [...by.values()]; if (mode !== 'none') groups.sort((a, b) => b.sub.totalCash - a.sub.totalCash || a.label.localeCompare(b.label));
+  return {groups, t};
+}
+const expMode = () => ['town', 'team'].includes(UI.expGroup) ? UI.expGroup : 'none';
+function expCard(C){
+  const mode = expMode(), {groups, t} = expGroups(C, mode), ex = monthStats(thisMonth()).expenses, grouped = mode !== 'none';
+  const seg = [['none', 'No grouping'], ['town', 'By town'], ['team', 'By recruiter']].map(([k, l]) => `<button type="button" class="${mode === k ? 'on' : ''}" data-act="expGroup" data-k="${k}">${l}</button>`).join('');
+  const cells = e => `<td class="n">${int(e.bottles)}</td><td class="n">${money(e.value)}</td><td class="n">${money(e.own)}</td><td class="n">${money(e.team)}</td><td class="n">${signed(e.owedNow)}</td><td class="n"><b>${money(e.totalCash)}</b></td><td class="n">${money(e.cost)}</td><td class="n"><b>${signed(e.profit)}</b></td>`;
+  const body = groups.map(g => (grouped ? `<tr class="grp"><td colspan="10">${esc(g.label)} <span class="small mut">· ${g.rows.length} reseller${g.rows.length === 1 ? '' : 's'}</span></td></tr>` : '')
+    + g.rows.map(([id, e]) => `<tr><td><button class="link" data-act="resView" data-id="${id}">${esc(rName(id))}</button></td><td>${esc(rTown(id))}</td>${cells(e)}</tr>`).join('')
+    + (grouped ? `<tr class="sub"><td colspan="2">Subtotal</td>${cells(g.sub)}</tr>` : '')).join('');
+  const kv = e => `<dl><dt>Bottles held</dt><dd>${int(e.bottles)}</dd><dt>Value at selling price</dt><dd>${money(e.value)}</dd><dt>Their commission</dt><dd>${money(e.own)}</dd><dt>Team commission</dt><dd>${money(e.team)}</dd><dt>Already owed</dt><dd>${signed(e.owedNow)}</dd><dt>Cost of stock</dt><dd>${money(e.cost)}</dd></dl>`;
+  const big = e => `<div class="big"><div><span class="lb">Expected to receive</span><b>${money(e.totalCash)}</b></div><div><span class="lb">Expected profit</span><b>${signed(e.profit)}</b></div></div>`;
+  const cards = groups.map(g => (grouped ? `<div class="exp-grp"><b>${esc(g.label)}</b><span class="small mut">${g.rows.length} reseller${g.rows.length === 1 ? '' : 's'} · receive ${money(g.sub.totalCash)} · profit ${signed(g.sub.profit)}</span></div>` : '')
+    + g.rows.map(([id, e]) => `<div class="exp-card"><div class="h"><button class="link" data-act="resView" data-id="${id}"><b>${esc(rName(id))}</b></button><span class="small mut">${esc(rTown(id))}</span></div>${big(e)}${kv(e)}</div>`).join('')).join('')
+    + `<div class="exp-card tot"><div class="h"><b>Total</b><span class="small mut">${groups.reduce((n, g) => n + g.rows.length, 0)} resellers</span></div>${big(t)}${kv(t)}</div>`;
+  return `<div class="card" id="exp-card"><h2>Expected money and profit from each reseller</h2>
+    <p class="hint">Based on the bottles each reseller holds now, at your selling prices. <b>Expected to receive</b> = value at selling price, minus their commission, plus anything already owed for bottles sold. <b>Expected profit</b> = value at selling price, minus their commission, minus team commission, minus the cost of the stock. It does not include your expenses.</p>
+    <div class="exp-ctl"><span class="lab">Group</span><span class="seg" data-seg="expgroup" style="margin:0">${seg}</span><span class="actions">${btn('PDF / print', 'expReport', {}, 'sm')}${btn('Excel', 'expXlsx', {}, 'sm ghost')}</span></div>
+    ${groups.length ? `<div class="tw exp-tbl"><table class="t"><thead><tr><th>Reseller</th><th>Town</th><th class="n">Bottles held</th><th class="n">Value at selling price</th><th class="n">Their commission</th><th class="n">Team commission</th><th class="n">Already owed</th><th class="n">Expected to receive</th><th class="n">Cost of stock</th><th class="n">Expected profit</th></tr></thead><tbody>${body}</tbody><tfoot><tr><td colspan="2">Total</td>${cells(t)}</tr></tfoot></table></div><div class="exp-cards">${cards}</div>
+    <p class="small" style="margin:10px 0 0">Expected profit <b>${signed(t.profit)}</b> · after this month's expenses (${money(ex)}): <b>${signed(t.profit - ex)}</b></p>` : empty('No stock is out with resellers.')}</div>`;
+}
+function expSheets(C, mode){
+  const {groups, t} = expGroups(C, mode), grouped = mode !== 'none', rows = [], f = e => [num(e.bottles), r2(e.value), r2(e.own), r2(e.team), r2(e.owedNow), r2(e.totalCash), r2(e.cost), r2(e.profit)], ex = monthStats(thisMonth()).expenses;
+  for (const g of groups) { for (const [id, e] of g.rows) { const r = S.resellers[id] || {}; rows.push([rName(id), rTown(id), r.recruiterId && S.resellers[r.recruiterId] ? rName(r.recruiterId) : 'You', g.label].concat(f(e))); } if (grouped) rows.push(['Subtotal: ' + g.label, '', '', g.label].concat(f(g.sub))); }
+  rows.push(['TOTAL', '', '', ''].concat(f(t)));
+  return [{name:'Expected by reseller', head:['Reseller', 'Town', 'Recruited by', 'Group', 'Bottles held', 'Value at selling price', 'Their commission', 'Team commission', 'Already owed', 'Expected to receive', 'Cost of stock', 'Expected profit'], rows},
+    {name:'Summary', head:['Item', 'Amount'], rows:[['Expected from resellers', r2(t.totalCash)], ['Expected profit (after cost and all commission)', r2(t.profit)], [`Expenses in ${monthLabel(thisMonth())}`, r2(ex)], ['Profit after expenses', r2(t.profit - ex)], ['Bottles held by resellers', num(t.bottles)], [`As at`, today()]]}];
+}
+function expReportPages(){
+  const C = compute(), mode = expMode(), {groups, t} = expGroups(C, mode), grouped = mode !== 'none', ex = monthStats(thisMonth()).expenses;
+  const P = 'width:794px;height:1123px;display:flex;flex-direction:column;position:relative';
+  const kpi = (k, v, sub) => `<div style="border:1px solid #e6e1d6;border-radius:10px;padding:10px 12px"><div style="font-size:10px;letter-spacing:.08em;color:#6e675c;font-weight:700;text-transform:uppercase">${k}</div><div style="font-size:18px;font-weight:800;margin-top:3px">${v}</div><div style="font-size:10.5px;color:#6e675c;margin-top:2px">${sub}</div></div>`;
+  const foot = (pg, n) => `<div style="position:absolute;left:44px;right:44px;bottom:26px;display:flex;justify-content:space-between;font-size:11px;color:#8a8170"><span>${[S.settings.businessName, bizPhone(), bizEmail(), bizAddress()].filter(Boolean).map(esc).join(' · ')}</span><span>Page ${pg} of ${n}</span></div>`;
+  const cells = e => `<td class="n">${int(e.bottles)}</td><td class="n">${money(e.value)}</td><td class="n">${money(e.own)}</td><td class="n">${money(e.team)}</td><td class="n">${money(e.owedNow)}</td><td class="n"><b>${money(e.totalCash)}</b></td><td class="n">${money(e.cost)}</td><td class="n"><b>${money(e.profit)}</b></td>`;
+  const items = []; for (const g of groups) { if (grouped) items.push(`<tr class="g"><td colspan="10">${esc(g.label)} · ${g.rows.length} reseller${g.rows.length === 1 ? '' : 's'}</td></tr>`); g.rows.forEach(([id, e]) => items.push(`<tr><td>${esc(rName(id))}</td><td>${esc(rTown(id))}</td>${cells(e)}</tr>`)); if (grouped) items.push(`<tr class="s"><td colspan="2">Subtotal</td>${cells(g.sub)}</tr>`); }
+  const chunks = [], FIRST = 28, NEXT = 40; let i = 0; while (i < items.length || !chunks.length) { const n = chunks.length ? NEXT : FIRST; chunks.push(items.slice(i, i + n)); i += n; }
+  const thead = `<thead><tr><th>Reseller</th><th>Town</th><th class="n">Held</th><th class="n">Value at selling price</th><th class="n">Their comm.</th><th class="n">Team comm.</th><th class="n">Already owed</th><th class="n">Expected to receive</th><th class="n">Cost of stock</th><th class="n">Expected profit</th></tr></thead>`;
+  const note = `<div style="margin:14px 44px 0;padding:10px 14px;border:1px solid #e6e1d6;border-radius:10px;font-size:10.5px;color:#4a4439;line-height:1.5"><b>How this is worked out.</b> Value = bottles held × your selling price. <b>Expected to receive</b> = value − their commission + money already owed for bottles sold. <b>Expected profit</b> = value − their commission − team commission − cost of the stock. Your running expenses are not included: after this month's expenses (${money(ex)}) the profit is <b>${money(t.profit - ex)}</b>.</div>`;
+  return chunks.map((rows, k) => `<div class="doc" data-w="794" data-h="1123" style="${P}">${k === 0 ? docHeader('Expected money and profit', contactBlock()) : `<div style="padding:30px 44px 10px;font-size:13px;color:#6e675c">Expected money and profit from resellers · continued</div>`}
+    ${k === 0 ? `<div style="padding:4px 44px 0;font-size:12px;color:#6e675c">As at ${fmtDate(today())}${grouped ? ' · grouped ' + (mode === 'town' ? 'by town' : 'by recruiter') : ''}</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:12px 44px 0">${kpi('Expected from resellers', money(t.totalCash), int(t.bottles) + ' bottles held')}${kpi('Expected profit', money(t.profit), 'after cost and all commission')}${kpi('Expenses this month', money(ex), monthLabel(thisMonth()))}${kpi('Profit after expenses', money(t.profit - ex), 'expected profit − expenses')}</div>` : ''}
+    <div style="padding:${k === 0 ? 14 : 4}px 44px 0"><table class="xr">${thead}<tbody>${rows.join('')}</tbody>${k === chunks.length - 1 ? `<tfoot><tr><td colspan="2">Total</td>${cells(t)}</tr></tfoot>` : ''}</table></div>
+    ${k === chunks.length - 1 ? note : ''}${foot(k + 1, chunks.length)}</div>`);
+}
+function showExpReport(){
+  const nm = 'Infinity-Fragrances-expected-from-resellers-' + today();
+  modal('Expected money and profit', `<div class="actions" style="margin-bottom:12px">${btn('Download PDF', 'expDoc', {fmt:'pdf', name:nm}, 'pri sm')}${btn('Print', 'printDoc', {}, 'sm')}${btn('Download images', 'expDoc', {fmt:'png', name:nm}, 'sm ghost')}${btn('Excel', 'expXlsx', {}, 'sm ghost')}</div>
+    <div class="preview" id="doc-prev">${expReportPages().map(pg => `<div class="docwrap">${pg}</div>`).join('')}</div>`, null, {wide:true, nofocus:true});
+  requestAnimationFrame(() => fitDocs($('#doc-prev')));
+}
 PAGES.debtors = C => {
   const t = today(), cut = lastDueDate(), nxt = nextDueDate();
   const ids = Object.keys(C.acc).filter(id => S.resellers[id] && (Math.abs(C.acc[id].owed) > 0.009 || Math.abs(C.acc[id].due) > 0.009)).sort((a, b) => C.acc[b].net - C.acc[a].net);
@@ -1487,17 +1573,13 @@ PAGES.debtors = C => {
   return head('Debtors &amp; creditors', `Resellers pay on the ${sDay()}th of each month for what they sold, keeping their commission. Next settlement day: <b>${fmtDate(nxt)}</b>.`,
       btn('Monthly settlement', 'settle', {}, 'pri') + btn('Customer paid', 'moneyIn', {cat:'Customer payment'}) + btn('Pay supplier', 'moneyOut', {cat:'Supplier payment'}))
     + `<div class="tiles">
-      ${(() => { const E = expectedAll(C).t; return tile('Expected from resellers', money(E.totalCash), `${int(E.bottles)} bottles held, after their commission`, true) + tile('Expected profit', signed(E.profit), 'on stock out with resellers'); })()}
+      ${(() => { const E = expectedAll(C).t, ex = monthStats(thisMonth()).expenses; return tile('Expected from resellers', money(E.totalCash), `${int(E.bottles)} bottles held, after their commission`, true, 'debtors') + tile('Expected profit', signed(E.profit), 'after cost and all commission', false, 'debtors') + tile('Profit after expenses', signed(E.profit - ex), `also after ${money(ex)} expenses this month`, false, 'debtors'); })()}
       ${tile('Resellers owe you now', money(totOwed), 'for bottles already sold')}
       ${tile('You owe resellers', money(totDue), 'commission due')}
       ${tile('Customers on credit', money(cust.reduce((x, [, v]) => x + v, 0)), 'direct sales not yet paid')}
       ${tile('You owe suppliers', money(sup.reduce((x, [, v]) => x + v, 0)), 'stock bought on credit')}
     </div>
-    ${(() => { const {rows, t} = expectedAll(C); return `<div class="card"><h2>Expected money and profit from each reseller</h2>
-      <p class="hint">Based on the bottles each reseller holds now, at your selling prices. Expected to receive = what they will pay you after keeping their commission, plus anything already owed for bottles sold.</p>
-      ${rows.length ? `<div class="tw"><table class="t"><thead><tr><th>Reseller</th><th>Town</th><th class="n">Bottles held</th><th class="n">Value at selling price</th><th class="n">Their commission</th><th class="n">Team commission</th><th class="n">Already owed</th><th class="n">Expected to receive</th><th class="n">Cost of stock</th><th class="n">Expected profit</th></tr></thead><tbody>
-        ${rows.map(([id, e]) => `<tr><td><button class="link" data-act="resView" data-id="${id}">${esc(rName(id))}</button></td><td>${esc(rTown(id))}</td><td class="n">${int(e.bottles)}</td><td class="n">${money(e.value)}</td><td class="n">${money(e.own)}</td><td class="n">${money(e.team)}</td><td class="n">${signed(e.owedNow)}</td><td class="n"><b>${money(e.totalCash)}</b></td><td class="n">${money(e.cost)}</td><td class="n"><b>${signed(e.profit)}</b></td></tr>`).join('')}
-      </tbody><tfoot><tr><td colspan="2">Total</td><td class="n">${int(t.bottles)}</td><td class="n">${money(t.value)}</td><td class="n">${money(t.own)}</td><td class="n">${money(t.team)}</td><td class="n">${signed(t.owedNow)}</td><td class="n">${money(t.totalCash)}</td><td class="n">${money(t.cost)}</td><td class="n">${signed(t.profit)}</td></tr></tfoot></table></div>` : empty('No stock is out with resellers.')}</div>`; })()}
+    ${expCard(C)}
     <div class="card"><h2>Reseller accounts</h2>${ids.length ? `<div class="tw"><table class="t"><thead><tr><th>Reseller</th><th>Town</th><th class="n">Sold</th><th class="n">Paid to you</th><th class="n">Owes you</th><th class="n">Comm. due</th><th class="n">Net</th><th>Last payment</th><th></th></tr></thead><tbody>
       ${ids.map(id => { const a = C.acc[id], arr = arrears(id), days = daysBetween(cut, t), od = arr > 0.009;
         return `<tr><td><button class="link" data-act="resView" data-id="${id}">${esc(rName(id))}</button></td><td>${esc(rTown(id))}</td><td class="n">${money(a.sales)}</td><td class="n">${money(a.remit)}</td><td class="n">${signed(a.owed)}</td><td class="n">${money(a.due)}</td><td class="n"><b>${signed(a.net)}</b></td>
@@ -1799,7 +1881,7 @@ function resView(rid){
     <dl class="kv"><dt>Town</dt><dd>${esc(tName(r.townId))}</dd><dt>Phone</dt><dd>${esc(r.phone || '—')}</dd><dt>Commission</dt><dd>${commLabel(r)}</dd><dt>Recruited by</dt><dd>${r.recruiterId ? `<button type="button" class="link" data-act="resView" data-id="${r.recruiterId}">${esc(rName(r.recruiterId))}</button>` : 'You'}</dd><dt>Joined</dt><dd>${fmtDate(r.joinDate) || '—'}</dd>${r.notes ? `<dt>Notes</dt><dd>${esc(r.notes)}</dd>` : ''}</dl>
     ${(() => { const e = expectedFor(rid, C); return `<div class="tiles" style="margin-top:14px">${tile('Value of stock held', money(e.value), int(e.bottles) + ' bottles at selling price')}${tile('Expected to receive', money(e.totalCash), 'after their commission of ' + money(e.own), true)}${tile('Expected profit', signed(e.profit), 'after cost and all commission')}</div>`; })()}
     <div class="tiles">${tile('Holding', int(h.reduce((t, [, v]) => t + v, 0)) + ' bottles')}${tile('Owes you', signed(a.owed))}${tile('Commission due', money(a.due))}${tile('Net', signed(a.net), a.net >= 0 ? 'they owe you' : 'you owe them', true)}</div>
-    <div class="actions" style="margin-bottom:16px">${btn('Settle', 'settleDay', {id:rid}, 'pri sm')}${btn('Price list', 'priceList', {id:rid}, 'sm')}${btn('Reseller page', 'resPage', {id:rid}, 'sm')}${btn('Record sales', 'saleRes', {id:rid}, 'sm')}${btn('Dispatch stock', 'issue', {id:rid}, 'sm')}${btn('Monthly settlement', 'settle', {id:rid}, 'sm')}${btn('Pay commission', 'payComm', {id:rid}, 'sm')}${btn('Return stock', 'returnStock', {id:rid}, 'sm')}${btn('Summary report', 'resReport', {id:rid}, 'sm')}${btn('Edit', 'resEdit', {id:rid}, 'sm ghost')}</div>
+    <div class="actions" style="margin-bottom:16px">${btn('Settle', 'settleDay', {id:rid}, 'pri sm')}${btn('Price list', 'priceList', {id:rid}, 'sm')}${btn('Reseller link', 'rlLink', {id:rid}, 'sm')}${btn('Message', 'msgTo', {k:'res:' + rid}, 'sm')}${btn('Reseller page', 'resPage', {id:rid}, 'sm')}${btn('Record sales', 'saleRes', {id:rid}, 'sm')}${btn('Dispatch stock', 'issue', {id:rid}, 'sm')}${btn('Monthly settlement', 'settle', {id:rid}, 'sm')}${btn('Pay commission', 'payComm', {id:rid}, 'sm')}${btn('Return stock', 'returnStock', {id:rid}, 'sm')}${btn('Summary report', 'resReport', {id:rid}, 'sm')}${btn('Edit', 'resEdit', {id:rid}, 'sm ghost')}</div>
     <div class="cols"><div><h3 style="font-size:15px;margin-bottom:6px">Stock held</h3>${h.length ? `<ul class="list">${h.map(([p, v]) => `<li><span>${esc(pName(p))}</span><b>${v}</b></li>`).join('')}</ul>` : '<p class="mut small">None</p>'}</div>
     <div><h3 style="font-size:15px;margin-bottom:6px">Their team</h3>${tree(rid, 1) || '<p class="mut small">Has not recruited anyone yet.</p>'}</div></div>
     <h3 style="font-size:15px;margin:16px 0 6px">Statement</h3>
@@ -2211,8 +2293,11 @@ function fixNumbers(o){
 }
 
 /* ======================= Version 2.0 ======================= */
-const APP_VERSION = '2.18.1';
+const APP_VERSION = '2.21.0';
 const CHANGELOG = [
+  ['2.21.0', '23 Nov 2026', ['Messages: a new inbox in the Admin hub, the reseller app and the shop and staff app, like Messenger and email together', 'Write to people with To and CC, start group chats, and send announcements to all resellers, a town, shops and staff or hand-picked people, with a Seen-by list', 'Send photos, use one-tap quick replies, and see new messages in the bell and as phone alerts', 'Resellers who use a personal link can read announcements and write to the office from it', 'Admin can read every conversation (people are told), and can nudge anyone who has not read a message on WhatsApp']],
+  ['2.20.0', '23 Nov 2026', ['Reseller links for resellers who do not use the app: one personal link each, opened with the last 4 digits of their phone number', 'They tick what they sold, see what they should pay after their commission, say how they are paying (cash, MTN MoMo, Airtel Money or bank, with an optional photo), and send it for your approval', 'The same link confirms parcels received (with shortages), and makes PDF reports with their name: settlement report, stock received note, stock held and history', 'Send links from Resellers, Settlement day and Dispatch. One-time Firebase rules update needed (Requests & logins page → Copy rules)']],
+  ['2.19.0', '23 Nov 2026', ['Expected money and profit from each reseller: tap the dashboard tiles to open the table, group it by town or recruiter, view it as cards on your phone, and download it as Excel or PDF or print it', 'New tile: Profit after expenses, next to Expected profit (after cost and all commission)']],
   ['2.18.1', '22 Nov 2026', ['Fixes: expected money from resellers shows the right amounts again, resellers see what is owed to them, adding the first staff member or job works on a new install', 'Safer updates: the phone and PC apps now check every update file themselves and only install app updates signed by Infinity Fragrances']],
   ['2.18.0', '18 Nov 2026', ['New menus: Dashboard, Sales, Online Business, Shops, Stock, Operations, Resellers, Human Resources, Finance (Money, Pay, Reports & tax), Marketing, Users & Access, Settings', 'New pages: Online pages & links, Deliveries & riders, Shop sales & cash-ups, Stock in shops, Shop staff, Shop customers, Business ideas, All logins, Access by position, Reseller applications, App updates, Help', 'Payroll now in Finance; Staff and Employee agreements in Human Resources', 'Shop app Home shows business ideas and insights']],
   ['2.17.0', '18 Nov 2026', ['Staff logins with access rights per position: limited admin app for office staff, shopkeeper app for shop staff and cashiers, manager logins for senior staff', 'Approvals: stock and money changes by limited staff wait for the admin', 'Notifications bell with unread count in every app', 'Rider links: each rider gets one personal delivery link', 'Shopkeeper app Home and a new POS with photos, discounts, scanner and calculator', 'Hide finished items, show older, edit or cancel pending requests in the reseller and shop apps', 'Contacts directory', 'Settings for each section (gear button) and Marketing Assistant position']],
@@ -2264,7 +2349,7 @@ const lockOn = () => APP_ROLE !== 'manager' && users().length > 0;
 async function sha(s){ const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
 function allowed(r){
   if (r === 'approvals' && FB_ME?.limited && APP_ROLE === 'manager') return false;
-  if (APP_ROLE === 'manager') return !!SESSION && (FB_ME?.limited ? (r === 'setup' || r === 'help' || r === 'updates' || (FB_ME.screens || []).some(k => k === r || SCREEN_ALIAS[r] === k)) : !['activity', 'logins', 'access'].includes(r));
+  if (APP_ROLE === 'manager') return !!SESSION && (FB_ME?.limited ? (r === 'setup' || r === 'help' || r === 'updates' || r === 'messages' || (FB_ME.screens || []).some(k => k === r || SCREEN_ALIAS[r] === k)) : !['activity', 'logins', 'access'].includes(r));
   if (!lockOn()) return true; if (!SESSION) return false;
   if (SESSION.role === 'owner') return true;
   if (SESSION.role === 'manager') return !['setup', 'activity', 'logins', 'access'].includes(r);
@@ -2703,7 +2788,7 @@ const GOOGLE_CLIENT_ID = ''; /*GOOGLE_CLIENT_ID*/
 const canGoogle = () => !!(GOOGLE_CLIENT_ID && DESK && DESK.googleSignIn);
 const fbCfg = () => FB_BAKED || S.settings.firebase || null;
 let FB = null, FB_USER = null, FB_ROLE = null, FB_ME = null, FB_ERR = '';
-const REQ_TYPES = {sale:'Sale', payment:'Payment', order:'Stock order', return:'Return', customer:'New customer', received:'Parcel received'};
+const REQ_TYPES = {sale:'Sale', payment:'Payment', order:'Stock order', return:'Return', customer:'New customer', received:'Parcel received', linkpay:'Sales report (link)', linkrecv:'Parcel confirmed (link)'};
 
 /* thin wrapper so the rest of the code does not depend on Firebase details (and can be tested) */
 async function fbLoad(){
@@ -2736,7 +2821,8 @@ async function fbLoad(){
     add: async (c, d) => (await db.collection(c).add(d)).id,
     list: async (c, field, val) => snapList(await (field ? db.collection(c).where(field, '==', val) : db.collection(c)).get()),
     watch: (p, cb) => db.doc(p).onSnapshot(s => cb(s.exists ? {id:s.id, ...s.data()} : null), e => { FB_ERR = fbMsg(e); }),
-    listen: (c, field, val, cb) => (field ? db.collection(c).where(field, '==', val) : db.collection(c)).onSnapshot(s => cb(snapList(s)), e => { FB_ERR = e.message; }),
+    listen: (c, field, val, cb, onErr) => (field ? db.collection(c).where(field, '==', val) : db.collection(c)).onSnapshot(s => cb(snapList(s)), e => { if (onErr) onErr(e); else FB_ERR = e.message; }),
+    listenHas: (c, field, val, cb, onErr) => db.collection(c).where(field, 'array-contains', val).onSnapshot(s => cb(snapList(s)), e => { if (onErr) onErr(e); else FB_ERR = e.message; }),
     batch: async ops => { const b = db.batch(); ops.forEach(([k, p, d]) => k === 'del' ? b.delete(ref(p)) : b.set(ref(p), d, k === 'merge' ? {merge:true} : {})); await b.commit(); },
     syncWrite: (items, onErr) => { let b = db.batch(), n = 0, size = 0; const ts = fb.firestore.FieldValue.serverTimestamp(), who = app.auth().currentUser?.uid || '';
       const go = () => { if (n) b.commit().catch(e => onErr && onErr(e)); b = db.batch(); n = 0; size = 0; };
@@ -2759,7 +2845,7 @@ async function fbStart(){
     let roleErr = false; if (u) { try { FB_ME = await FB.get('users/' + u.uid); FB_ROLE = FB_ME?.role || 'none'; } catch(e) { roleErr = true; FB_ROLE = APP_ROLE === 'manager' ? 'manager' : 'none'; FB_ERR = fbMsg(e); } }
     if (APP_ROLE === 'manager' && u && FB_ROLE !== 'manager' && !roleErr) { await appSignOut('This manager login was turned off by the admin.'); return; }
     if (DESK && MODE === 'desktop') await ownerAuthCheck(u);
-    if (FB_ROLE === 'shop') { shopStart(); if (FB_ME?.name && DCFG.resName !== FB_ME.name) setCfg({resName:FB_ME.name}); }
+    if (FB_ROLE === 'shop') { shopStart(); if (FB_ME?.name && DCFG.resName !== FB_ME.name) setCfg({resName:FB_ME.name}); alertsSetupFor('reseller'); }
     else if (FB_ROLE === 'reseller') { resStart(); if (FB_ME?.name && DCFG.resName !== FB_ME.name) setCfg({resName:FB_ME.name}); alertsSetupFor('reseller'); }
     else if (FB_ROLE === 'manager' && DESK && MODE === 'desktop') { await mgrStart(); }
     else if (FB_ROLE === 'owner' && !(DESK && MODE === 'desktop' && APP_ROLE !== 'owner')) { ownerListen(); syncStart(); if (DESK && APP_ROLE === 'owner' && DCFG.ownerUid) alertsSetupFor('owner'); }
@@ -2790,6 +2876,7 @@ function ownerListen(){
     if (apprPrimed) list.filter(x => !old.has(x.id)).forEach(x => { if (S.settings.apprNotify !== false) appNotify('Approval needed', `${x.byName}: ${x.label}`); toast(`${x.byName} sent a change for approval`); });
     apprPrimed = true; if (route() === 'approvals') render(true); else updatePortalBadge(); }));
   OWN.riderTok = new Set(); setTimeout(riderListen, 1500);
+  OWN.rlTok = new Set(); OWN.lacts = {}; OWN.lreqs = {}; OWN.rlSig = {}; OWN.rlPrimed = {}; setTimeout(rlListen, 1800);
   let jobsPrimed = false;
   OWN.unsubs.push(FB.listen('applications', 'kind', 'job', list => { const old = new Set((OWN.jobApps || []).map(x => x.id)); OWN.jobApps = list.sort((a, b) => (b.at || '').localeCompare(a.at || ''));
     if (jobsPrimed) list.filter(x => !old.has(x.id)).forEach(x => { appNotify('New job application', `${x.name}: ${x.positionTitle || ''} (${x.type === 'pt' ? 'part time' : 'full time'})`); toast(`New job application from ${x.name}`); });
@@ -2826,7 +2913,7 @@ async function autoSale(rid, q){
     catch(e) { await FB.update(path, {status:'pending', auto:false, autoNote:String(e.message || e).slice(0, 200)}).catch(() => {}); toast(`${rName(rid)}'s sale needs your check: ${e.message || e}`, true); } }
   finally { setTimeout(() => OWN.auto.delete(q.id), 120000); }
 }
-const pendingAll = () => Object.entries(OWN.reqs).flatMap(([rid, l]) => l.map(q => ({...q, rid}))).sort((a, b) => (a.at || '').localeCompare(b.at || ''));
+const pendingAll = () => [...Object.entries(OWN.reqs).flatMap(([rid, l]) => l.map(q => ({...q, rid}))), ...Object.values(OWN.lreqs || {}).flat()].sort((a, b) => (a.at || '').localeCompare(b.at || ''));
 function updatePortalBadge(){ const fb = (OWN.ideas || []).filter(x => x.status === 'new').length, fr = (OWN.rates || []).filter(x => !x.seen).length; document.querySelectorAll('a[href="#feedback"]').forEach(a => a.dataset.badge = fb || ''); document.querySelectorAll('a[href="#ratings"]').forEach(a => a.dataset.badge = fr || ''); document.querySelectorAll('a[href="#resapps"]').forEach(a => a.dataset.badge = (OWN.apps || []).length || ''); const hj = (OWN.jobApps || []).filter(x => x.status === 'new').length; document.querySelectorAll('a[href="#hiring"]').forEach(a => a.dataset.badge = hj || ''); const ap = (OWN.approvals || []).length; document.querySelectorAll('a[href="#approvals"]').forEach(a => a.dataset.badge = ap || ''); const n = pendingAll().length + (OWN.apps || []).length + (OWN.orders || []).filter(o => o.status === 'new').length + Object.values(OWN.shopReqs || {}).flat().length; document.querySelectorAll('a[href="#portal"]').forEach(a => a.dataset.badge = n || ''); }
 function snapshotFor(rid){
   const r = S.resellers[rid], C = compute(), a = C.acc[rid] || {sales:0, remit:0, earned:0, paid:0, net:0}, st = statement(rid);
@@ -2837,7 +2924,7 @@ function snapshotFor(rid){
     statement:st.rows.slice(-40).map(e => ({date:e.date, text:e.text, dr:r2(e.dr), cr:r2(e.cr), bal:r2(e.bal)})), recruits:kids, nextDue:nextDueDate(), settleDay:sDay(), graceDay:num(S.settings.graceDay) || 15,
     parcels:Object.values(S.dispatches).filter(d => d.resellerId === rid).sort((x, y) => (y.date || '').localeCompare(x.date || '') || (y.no || '').localeCompare(x.no || '')).slice(0, 15).map(d => ({id:d.id, no:d.no || '', date:d.date || '', courier:d.method === 'hand' ? 'Delivered by hand' : (d.courier || ''), waybill:d.waybill || '', status:d.status || 'dispatched', deliveredDate:d.deliveredDate || '', items:(d.lines || []).map(l => ({name:pName(l.productId), qty:num(l.qty), price:num(l.unitPrice), gift:!!l.gift}))})),
     month:(() => { const rows = boardRows(today().slice(0, 7)), i = rows.findIndex(x => x.r.id === rid), me = rows[i] || {b:0, t:targetOf(r)}; return {label:monthLabel(today().slice(0, 7)), bottles:me.b, target:me.t, rank:me.b ? i + 1 : 0, sellers:rows.filter(x => x.b > 0).length}; })(),
-    badges:badgesFor(rid, C).map(([icon, text]) => ({icon, text})), lowHeld:num(S.settings.lowHeld ?? 2), payslips:resSlips(rid), maxMarkup:num(S.settings.adMarkup ?? 15), festive:S.settings.festive || 'auto', festOff:S.settings.festOff || [], festIcon:S.settings.festIcon !== false, creditLimit:(c => ({limit:c.limit, used:c.used, available:c.limit ? c.available : 0}))(creditOf(rid, C)),
+    contacts:msgResContacts(rid), badges:badgesFor(rid, C).map(([icon, text]) => ({icon, text})), lowHeld:num(S.settings.lowHeld ?? 2), payslips:resSlips(rid), maxMarkup:num(S.settings.adMarkup ?? 15), festive:S.settings.festive || 'auto', festOff:S.settings.festOff || [], festIcon:S.settings.festIcon !== false, creditLimit:(c => ({limit:c.limit, used:c.used, available:c.limit ? c.available : 0}))(creditOf(rid, C)),
     business:S.settings.businessName || 'Infinity Fragrances', businessPhone:S.settings.phone || '', tagline:S.settings.tagline || '', updatedAt:nowISO()};
 }
 function publicDocs(){
@@ -2876,11 +2963,12 @@ PAGES.portal = () => {
   const rs = sortedRes(true), pend = pendingAll(), last = OWN.published || (() => { try { return localStorage.getItem('if-published') || ''; } catch(e) { return ''; } })();
   return head('Online reseller accounts', `Signed in as ${esc(FB_USER.email)}. Resellers see only their own stock and statement. Their sales, payments, orders and returns wait here for your approval.`, btn('Update resellers now', 'fbPublish', {}, 'pri') + (canGoogle() && !(FB.providers?.() || []).includes('google.com') ? btn('Link Google account', 'fbLinkGoogle', {}, 'ghost') : '') + btn('Sign out', 'fbOut', {}, 'ghost'))
     + `<div class="tiles">${tile('Waiting for approval', int(pend.length), '', pend.length > 0)}${tile('Resellers with a login', `${rs.filter(r => r.portalUid).length} of ${rs.length}`)}${tile('Last update sent', last ? fmtDateTime(last) : 'Never')}</div>`
-    + `<div class="card"><h2>Waiting for your approval</h2>${pend.length ? `<div class="tw"><table class="t"><thead><tr><th style="width:34px"><input type="checkbox" id="rq-all" aria-label="Select all"></th><th>When</th><th>Reseller</th><th>Type</th><th>Details</th><th></th></tr></thead><tbody>${pend.map(q => `<tr><td><input type="checkbox" class="rq-sel" data-rid="${q.rid}" data-id="${q.id}" aria-label="Select"></td><td class="small">${esc(fmtDateTime(q.at))}</td><td><b>${esc(rName(q.rid))}</b></td><td><span class="pill acc">${REQ_TYPES[q.type] || esc(q.type)}</span></td><td class="small">${reqText(q)}</td><td><div class="actions">${(q.type === 'order' ? btn('Review', 'reqReview', {rid:q.rid, id:q.id}, 'sm pri') : btn('Approve', 'reqOk', {rid:q.rid, id:q.id}, 'sm pri'))}${btn('Reject', 'reqNo', {rid:q.rid, id:q.id}, 'sm ghost danger')}</div></td></tr>`).join('')}</tbody></table></div><div class="actions" style="margin-top:10px">${btn('Approve selected', 'reqOkSel', {}, 'sm pri')}${btn('Reject selected', 'reqNoSel', {}, 'sm ghost danger')}</div>` : '<p class="mut">Nothing waiting.</p>'}</div>` + appsCard()
+    + `<div class="card"><h2>Waiting for your approval</h2>${pend.length ? `<div class="tw"><table class="t"><thead><tr><th style="width:34px"><input type="checkbox" id="rq-all" aria-label="Select all"></th><th>When</th><th>Reseller</th><th>Type</th><th>Details</th><th></th></tr></thead><tbody>${pend.map(q => `<tr><td>${q.link ? '' : `<input type="checkbox" class="rq-sel" data-rid="${q.rid}" data-id="${q.id}" aria-label="Select">`}</td><td class="small">${esc(fmtDateTime(q.at))}</td><td><b>${esc(rName(q.rid))}</b></td><td><span class="pill acc">${REQ_TYPES[q.type] || esc(q.type)}</span></td><td class="small">${reqText(q)}</td><td><div class="actions">${(q.type === 'order' ? btn('Review', 'reqReview', {rid:q.rid, id:q.id}, 'sm pri') : btn(q.type === 'linkpay' ? 'Review and approve' : 'Approve', 'reqOk', {rid:q.rid, id:q.id}, 'sm pri'))}${btn('Reject', 'reqNo', {rid:q.rid, id:q.id}, 'sm ghost danger')}</div></td></tr>`).join('')}</tbody></table></div><div class="actions" style="margin-top:10px">${btn('Approve selected', 'reqOkSel', {}, 'sm pri')}${btn('Reject selected', 'reqNoSel', {}, 'sm ghost danger')}</div>` : '<p class="mut">Nothing waiting.</p>'}</div>` + appsCard()
     + `<div class="card"><h2>Reseller logins</h2><div class="tw"><table class="t"><thead><tr><th>Reseller</th><th>Login ID</th><th></th></tr></thead><tbody>${rs.map(r => `<tr><td><b>${esc(r.name)}</b><div class="small mut">${esc(tName(r.townId))}</div></td><td>${r.portalLogin ? `<code>${esc(r.portalLogin)}</code>` : '<span class="mut">No login yet</span>'}</td><td><div class="actions">${r.portalUid ? btn('New PIN / login', 'accReset', {id:r.id}, 'sm ghost') + btn('Remove access', 'accRemove', {id:r.id}, 'sm ghost danger') : btn('Create login', 'accNew', {id:r.id}, 'sm pri')}</div></td></tr>`).join('')}</tbody></table></div>
       <p class="hint">Resellers install the Infinity Fragrances app on Android, choose "I'm a reseller", and sign in with their login ID and PIN.</p></div>` + rulesCard();
 };
 function reqText(q){
+  if (q.link) return rlReqText(q);
   const L = (q.lines || []).map(l => `${esc(l.name || pName(l.productId))} × ${num(l.qty)}${l.price ? ' @ ' + money(l.price) : ''}`).join(', ');
   if (q.type === 'order' && q.rid && !q.approvedLines) { const cr = creditOf(q.rid), v = (q.lines || []).reduce((t, l) => t + num(l.qty) * num(l.price || S.products[l.productId]?.sellPrice), 0); if (cr.limit && v > cr.available + 0.009) return `${L} <span class="pill bad">over credit limit by ${money(v - cr.available)}</span>`; }
   if (q.type === 'order' && q.approvedLines) return `Asked: ${L}<br><b>Approved:</b> ${q.approvedLines.map(l => `${esc(l.name)} × ${l.qty}`).join(', ')}${(q.unavailable || []).length ? `<br><span class="neg">Not available: ${q.unavailable.map(esc).join(', ')}</span>` : ''}`;
@@ -2891,7 +2979,7 @@ function reqText(q){
   return `${L}${q.note ? ` · “${esc(q.note)}”` : ''}`;
 }
 async function reqApprove(rid, id, bulk, qObj){
-  const q = qObj || (OWN.reqs[rid] || []).find(x => x.id === id); if (!q) return; const r = S.resellers[rid];
+  const q = qObj || findReq(rid, id); if (!q) return; if (q.link) return rlApprove(q); const r = S.resellers[rid];
   try {
     const C = compute(), h = C.held[rid] || {};
     if (q.type === 'sale') {
@@ -2918,6 +3006,7 @@ async function reqApprove(rid, id, bulk, qObj){
   } catch(e) { if (bulk) throw e; toast(fbMsg(e), true); }
 }
 function reqReject(rid, id){
+  const lq = (OWN.lreqs?.[rid] || []).find(x => x.id === id); if (lq) return rlReject(lq);
   modal('Reject request', `<label for="f-rr">Reason (the reseller will see this)<input id="f-rr" name="why" required placeholder="e.g. Payment not received on MoMo"></label>`, async d => { await FB.update(`portal/${rid}/requests/${id}`, {status:'rejected', reason:d.why.trim(), decidedAt:FB.now()}); logNote('decline', 'requests', `${rName(rid)}: request declined (${d.why.trim()})`); fbNotify(S.resellers[rid]?.portalUid, `A request was not approved: ${d.why.trim()}`); toast('Rejected'); }, {label:'Reject'});
 }
 async function accCreate(rid, reset){
@@ -2941,13 +3030,13 @@ function resStart(){
   let firstSnap = true, firstReq = true; RES.cart = RES.cart || {};
   RES.unsubs.push(FB.watch('portal/' + rid, d => {
     if (!firstSnap && d && RES.snap) { const old = new Set((RES.snap.parcels || []).map(x => x.id)); (d.parcels || []).filter(x => !old.has(x.id)).forEach(x => { appNotify('Parcel on the way', `${x.no}: ${x.items.reduce((t, i) => t + i.qty, 0)} bottles ${x.courier ? 'by ' + x.courier : ''}`); toast(`New parcel ${x.no} is on the way`); }); }
-    firstSnap = false; RES.snap = d; if (!['order', 'pay', 'sell', 'ads'].includes(RES.tab)) render(true); }));
+    firstSnap = false; RES.snap = d; if (!['order', 'pay', 'sell', 'ads', 'messages'].includes(RES.tab)) render(true); }));
   (async () => { try { for (const k of ['leaderboard', 'promotions', 'prices', 'catalog']) RES.pub[k] = await FB.get('public/' + k); RES.cat = {}; for (let i = 0; i < num(RES.pub.catalog?.parts); i++) Object.assign(RES.cat, (await FB.get('public/cat_' + i))?.imgs || {}); } catch(e) { FB_ERR = fbMsg(e); } if (RES.tab !== 'pay' && RES.tab !== 'sell') render(true); })();
   RES.unsubs.push(FB.listen('suggestions', 'by', FB_USER.uid, list => { RES.ideas = list.sort((a, b) => (b.at || '').localeCompare(a.at || '')); if (RES.tab === 'ideas') render(true); }));
   RES.unsubs.push(FB.listen(`portal/${rid}/requests`, 'by', FB_USER.uid, list => {
     const prev = Object.fromEntries((RES.reqs || []).map(q => [q.id, q.status]));
     if (!firstReq) list.forEach(q => { if (prev[q.id] === 'pending' && (q.status === 'approved' || q.status === 'rejected')) { const t = `${REQ_TYPES[q.type] || 'Request'} ${q.status === 'approved' ? 'approved ✅' : 'not approved' + (q.reason ? ': ' + q.reason : '')}`; appNotify(bizName(), t); toast(t); } });
-    firstReq = false; RES.reqs = list.sort((a, b) => (b.at || '').localeCompare(a.at || '')); if (!['order', 'pay', 'sell', 'ads'].includes(RES.tab)) render(true); }));
+    firstReq = false; RES.reqs = list.sort((a, b) => (b.at || '').localeCompare(a.at || '')); if (!['order', 'pay', 'sell', 'ads', 'messages'].includes(RES.tab)) render(true); }));
 }
 const resPendingQty = () => { const m = {}; RES.reqs.filter(q => (q.status === 'pending' || q.status === 'claimed') && (q.type === 'sale' || q.type === 'return')).forEach(q => (q.lines || []).forEach(l => m[l.productId] = (m[l.productId] || 0) + num(l.qty))); return m; };
 const resAvail = () => { const pend = resPendingQty(); return (RES.snap?.held || []).map(x => ({...x, avail:Math.max(0, x.qty - (pend[x.productId] || 0))})); };
@@ -2969,8 +3058,8 @@ function resSell(){
   resSubmit('sale', {lines, customer, phone, customerPhone:phone, date:today(), pay:RES.sPay || 'cash', auto:true});
 }
 function resUI(){
-  const s = RES.snap, tabs = [['home', 'My stock'], ['sell', 'Record sale'], ['pay', 'Report payment'], ['parcels', 'Parcels'], ['order', 'Order / return'], ['ads', 'Adverts'], ['statement', 'Statement'], ['slips', 'Payslips'], ['board', 'Leaderboard'], ['promos', 'Prices & promotions'], ['team', 'My recruits'], ['ideas', 'Suggestions'], ['account', 'Account']];
-  const nav = `<nav class="res-tabs">${tabs.map(([k, l]) => `<button type="button" data-act="resTab" data-k="${k}" class="${RES.tab === k ? 'on' : ''}">${l}</button>`).join('')}</nav>`;
+  const s = RES.snap, tabs = [['home', 'My stock'], ['sell', 'Record sale'], ['pay', 'Report payment'], ['parcels', 'Parcels'], ['order', 'Order / return'], ['ads', 'Adverts'], ['statement', 'Statement'], ['slips', 'Payslips'], ['board', 'Leaderboard'], ['promos', 'Prices & promotions'], ['team', 'My recruits'], ['messages', 'Messages'], ['ideas', 'Suggestions'], ['account', 'Account']];
+  const nav = `<nav class="res-tabs">${tabs.map(([k, l]) => `<button type="button" data-act="resTab" data-k="${k}" class="${RES.tab === k ? 'on' : ''}">${l}${k === 'messages' && MSG.n ? ` (${MSG.n})` : ''}</button>`).join('')}</nav>`;
   if (!s) return `<div class="res-wrap">${nav}<div class="card"><p>${FB_ERR ? esc(FB_ERR) : 'Loading your stock…'}</p><p class="hint">If this takes long, ask ${esc(S.settings.businessName || 'Infinity Fragrances')} to tap "Update resellers now".</p></div></div>`;
   const pend = RES.reqs.filter(q => q.status === 'pending');
   const ST = {pending:['Waiting', 'warn'], claimed:['Recording…', 'warn'], approved:['Approved', 'good'], rejected:['Rejected', 'bad'], cancelled:['Cancelled', '']};
@@ -2980,7 +3069,7 @@ function resUI(){
     const banner = dd <= 3 && (s.owes > 0 || s.heldBottles > 0) ? `<div class="card" style="border-left:5px solid var(--gold)"><b>Settlement ${dd === 0 ? 'is today' : `in ${dd} day${dd === 1 ? '' : 's'}`} (${fmtDate(s.nextDue)}).</b> Report what you sold and pay${s.owes ? ` <b>${money(s.owes)}</b>` : ' what you owe'} (keep your commission). ${btn('Report payment', 'resTab', {k:'pay'}, 'sm pri')}</div>` : '';
     const low = s.heldBottles <= num(s.lowHeld ?? 2) ? `<div class="card" style="border-left:5px solid var(--s1)"><b>You are running low${s.heldBottles ? ` (${s.heldBottles} left)` : ''}.</b> Order more before your customers go elsewhere. ${btn('Order stock', 'resTab', {k:'order'}, 'sm pri')}</div>` : '';
     const prog = `<div class="card"><h2>${esc(mo.label || 'This month')}</h2><div style="background:var(--line);border-radius:8px;height:14px;overflow:hidden"><div style="width:${pc}%;height:100%;background:${pc >= 100 ? 'var(--s3)' : 'var(--gold)'}"></div></div><p style="margin:6px 0 10px"><b>${int(mo.bottles)}</b> of ${int(mo.target)} bottles${pc >= 100 ? ' · <b>Target hit! 🎯</b>' : mo.target ? ` · ${int(Math.max(0, mo.target - mo.bottles))} to go` : ''}${mo.rank ? ` · #${mo.rank} of ${mo.sellers} sellers` : ''}</p>${(s.badges || []).length ? `<div style="display:flex;gap:6px;flex-wrap:wrap">${s.badges.map(b => `<span class="pill">${b.icon} ${esc(b.text)}</span>`).join('')}</div>` : '<p class="small mut">Sell bottles to earn badges.</p>'}</div>`;
-    body = banner + low + prog + `<div class="tiles">${tile('Perfume with you', int(s.heldBottles) + ' bottles')}${tile('Worth at selling price', money(s.heldValue))}${tile('You owe now', money(s.owes), typeof s.credit === 'number' && s.credit > 0 ? `we owe you ${money(s.credit)}` : '', s.owes > 0)}${tile('Next settlement', fmtDate(s.nextDue), `late after the ${ord(s.graceDay)}`)}</div>
+    body = msgBanner() + banner + low + prog + `<div class="tiles">${tile('Perfume with you', int(s.heldBottles) + ' bottles')}${tile('Worth at selling price', money(s.heldValue))}${tile('You owe now', money(s.owes), typeof s.credit === 'number' && s.credit > 0 ? `we owe you ${money(s.credit)}` : '', s.owes > 0)}${tile('Next settlement', fmtDate(s.nextDue), `late after the ${ord(s.graceDay)}`)}</div>
       <div class="card"><h2>Your perfumes</h2>${s.held.length ? `<div class="tw"><table class="t"><thead><tr><th>Perfume</th><th class="n">With you</th><th class="n">Price</th></tr></thead><tbody>${resAvail().map(x => `<tr><td>${esc(x.name)}${x.size ? ' ' + esc(x.size) + 'ml' : ''}</td><td class="n">${x.qty}${x.avail !== x.qty ? `<div class="small mut">${x.qty - x.avail} waiting</div>` : ''}</td><td class="n"><b>${money(x.price)}</b></td></tr>`).join('')}</tbody></table></div>` : '<p class="mut">No perfume with you right now. Use “Order / return” to ask for stock.</p>'}</div>
       ${reqListCard('res', RES.reqs, ST)}
       <p class="hint">Updated by ${esc(s.business)} on ${esc(fmtDateTime(s.updatedAt))}.</p>` + resShortcuts();
@@ -3015,6 +3104,8 @@ function resUI(){
     body = `<div class="card"><h2>Promotions</h2>${pr.length ? `<ul class="list">${pr.map(p => `<li><span><b>${esc(p.name)}</b> · ${esc(p.scope)}<div class="small mut">${fmtDate(p.start)} – ${fmtDate(p.end)}${p.resellers ? ' · applies to your sales' : ''}</div></span><span class="pill acc">${esc(p.badge)}</span></li>`).join('')}</ul>` : '<p class="mut">No promotions right now.</p>'}</div><div class="card"><h2>Price list</h2><div class="tw"><table class="t"><thead><tr><th>Perfume</th><th>Type</th><th class="n">Price</th></tr></thead><tbody>${pl.map(p => `<tr><td>${esc(p.name)}${p.size ? ' ' + esc(p.size) + 'ml' : ''}</td><td class="small">${esc(p.category)}</td><td class="n">${money(p.price)}</td></tr>`).join('')}</tbody></table></div></div>`;
   } else if (RES.tab === 'team') {
     body = `<div class="card"><h2>My recruits</h2><p class="hint">You earn 2.5% of the selling price on every bottle your recruits sell.</p>${s.recruits.length ? `<ul class="list">${s.recruits.map(k => `<li><span><b>${esc(k.name)}</b> <span class="small mut">${esc(k.town)}</span><div class="small mut">${int(k.bottlesThisMonth)} bottles this month</div></span><b>${money(k.bonusTotal)} bonus</b></li>`).join('')}</ul>` : '<p class="mut">No recruits yet. Bring in a new reseller and earn on their sales!</p>'}</div>`;
+  } else if (RES.tab === 'messages') {
+    body = `<div id="msg-root">${msgBody()}</div>`;
   } else if (RES.tab === 'ideas') {
     body = ideasPortalHTML(RES.ideas || []);
   } else if (RES.tab === 'account') {
@@ -3136,7 +3227,7 @@ async function ownerVerified(u){
   OWNER_SIGNING = false; APP_ROLE = 'owner'; resSkinOn(false); await setCfg({appRole:'owner', ownerUid:u.uid}); UI.signMsg = ''; UI.signTab = ''; PIN_FAILS = 0; FB_ERR = '';
   document.body.classList.remove('res-mode'); try { LIC = await licCheck(); } catch(e) {}
   const o = users().find(x => x.role === 'owner'); if (o) { SESSION = {id:o.id, name:o.name, role:'owner'}; touchIdle(); }
-  ownerListen(); syncStart(); alertsSetupFor('owner'); render(true);
+  ownerListen(); syncStart(); alertsSetupFor('owner'); try { bellStart(); } catch(e) {} render(true);
 }
 async function ownerAuthCheck(u){
   if (OWNER_SIGNING && u) {
@@ -3405,7 +3496,7 @@ service cloud.firestore {
     }
     match /notify/{who} {
       allow read: if signedIn() && ((who == 'owner' && isAdmin()) || request.auth.uid == who);
-      allow write: if isAdmin() || (who == 'owner' && request.resource.data.keys().hasOnly(['at', 'msg']) && request.resource.data.msg is string && request.resource.data.msg.size() < 200);
+      allow write: if isAdmin() || ((who == 'owner' || signedIn()) && request.resource.data.keys().hasOnly(['at', 'msg']) && request.resource.data.msg is string && request.resource.data.msg.size() < 200);
     }
     match /applications/{id} {
       allow create: if request.resource.data.status == 'new' && request.resource.data.size() < 45
@@ -3476,6 +3567,40 @@ service cloud.firestore {
         allow read, update, delete: if isAdmin();
       }
     }
+    match /rlinks/{t} {
+      allow get: if true;
+      allow list, write: if isAdmin();
+      match /acts/{id} {
+        allow create: if get(/databases/$(database)/documents/rlinks/$(t)).data.on == true
+          && request.resource.data.keys().hasOnly(['kind', 'no', 'chk', 'at', 'date', 'lines', 'amount', 'mode', 'ref', 'proof', 'note', 'dispatchId', 'due', 'done', 'text', 'tid', 'cid'])
+          && request.resource.data.kind in ['settle', 'received', 'ping', 'msg'] && request.resource.data.done == false
+          && request.resource.data.chk is string && request.resource.data.chk.size() < 80
+          && (!('lines' in request.resource.data) || (request.resource.data.lines is list && request.resource.data.lines.size() < 80))
+          && (!('proof' in request.resource.data) || (request.resource.data.proof is string && request.resource.data.proof.size() < 300000))
+          && (!('note' in request.resource.data) || (request.resource.data.note is string && request.resource.data.note.size() < 500))
+          && (!('ref' in request.resource.data) || (request.resource.data.ref is string && request.resource.data.ref.size() < 100))
+          && (!('text' in request.resource.data) || (request.resource.data.text is string && request.resource.data.text.size() < 800));
+        allow read, update, delete: if isAdmin();
+      }
+    }
+    function isFull() { return isOwner() || (isManager() && me().get('limited', false) != true); }
+    match /threads/{t} {
+      allow read: if signedIn() && (isFull() || request.auth.uid in resource.data.members);
+      allow create: if signedIn() && (isFull() || (request.resource.data.kind == 'direct' && request.resource.data.by == request.auth.uid && request.auth.uid in request.resource.data.members && request.resource.data.members.size() <= 8));
+      allow update: if signedIn() && (isFull() || (request.auth.uid in resource.data.members && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['last', 'upd', 'reads'])
+        && (!('reads' in request.resource.data.diff(resource.data).affectedKeys()) || request.resource.data.reads.diff(resource.data.reads).affectedKeys().hasOnly([request.auth.uid]))));
+      allow delete: if isFull();
+      match /msgs/{m} {
+        allow read: if signedIn() && (isFull() || request.auth.uid in get(/databases/$(database)/documents/threads/$(t)).data.members);
+        allow create: if signedIn() && (isFull() || (request.auth.uid in getAfter(/databases/$(database)/documents/threads/$(t)).data.members && getAfter(/databases/$(database)/documents/threads/$(t)).data.kind != 'broadcast'
+          && request.resource.data.by == request.auth.uid && request.resource.data.name == me().name
+          && request.resource.data.keys().hasOnly(['by', 'name', 'off', 'text', 'ph', 'at', 'cid'])
+          && request.resource.data.text is string && request.resource.data.text.size() < 2001
+          && (!('ph' in request.resource.data) || (request.resource.data.ph is string && request.resource.data.ph.size() < 300000))));
+        allow update: if isFull();
+        allow delete: if isFull() || (signedIn() && resource.data.by == request.auth.uid);
+      }
+    }
     match /store/{doc} {
       allow read: if true;
       allow write: if isAdmin();
@@ -3504,6 +3629,149 @@ service cloud.firestore {
 }`;
 const rulesCard = () => `<details class="card"><summary><b>Firebase security rules</b> <span class="small mut">(paste these in Firebase → Firestore Database → Rules → Publish)</span></summary><pre class="small" style="white-space:pre-wrap;max-height:300px;overflow:auto;background:var(--soft);padding:10px;border-radius:8px">${esc(FS_RULES)}</pre><div class="actions">${btn('Copy rules', 'copyRules', {}, 'sm pri')}</div></details>`;
 
+
+/* ======================= 2.20: reseller links (for resellers who do not use the app) ======================= */
+const RL_URL = 'https://infinitytimetable.github.io/infinity-fragrances-updates/reseller/';
+const RL_MODES = {cash:'Cash', mtn:'MTN MoMo', airtel:'Airtel Money', bank:'Bank'};
+const RL_CH = {cash:'cash', mtn:'momo', airtel:'momo', bank:'bank'};
+const rlPin = r => String(r?.phone || '').replace(/\D/g, '').slice(-4);
+const rlLinked = () => sortedRes(true).filter(r => r.linkToken && r.linkOn !== false);
+const rlB64 = u8 => { let s = ''; u8.forEach(b => { s += String.fromCharCode(b); }); return btoa(s); };
+const RLK = {};
+async function rlKey(token, pin){
+  const id = token + '|' + pin; if (RLK[id]) return RLK[id];
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveKey']);
+  return RLK[id] = await crypto.subtle.deriveKey({name:'PBKDF2', salt:new TextEncoder().encode('if-rl|' + token), iterations:120000, hash:'SHA-256'}, base, {name:'AES-GCM', length:256}, false, ['encrypt']);
+}
+const rlChk = (token, pin) => sha('chk|' + token + '|' + pin);
+function rlCol(c){ return c === 'moves' || c === 'cash' || c === 'dispatches' || c === 'resellers' || c === 'products'; }
+function rlSched(){ try { if (!ADM() || !FB || FB_ME?.limited || !rlLinked().length) return; clearTimeout(OWN.rlT); OWN.rlT = setTimeout(() => rlPublishAll(), 4000); } catch(e) {} }
+async function rlPublishAll(force){ for (const r of rlLinked()) { try { await rlPublish(r.id, force); } catch(e) {} } }
+function rlHist(rid){
+  const by = {}, A = m => by[m] || (by[m] = {month:m, bottles:0, value:0, comm:0, paid:0});
+  for (const m of Object.values(S.moves)) if (m.kind === 'sale' && m.resellerId === rid && m.date) { const o = A(m.date.slice(0, 7)); o.bottles += num(m.qty); o.value += num(m.qty) * num(m.unitPrice); (m.comm || []).forEach(c => { if (c.rid === rid && c.level === 0) o.comm += num(c.amount); }); }
+  for (const c of Object.values(S.cash)) if (c.resellerId === rid && c.kind === 'in' && c.date) A(c.date.slice(0, 7)).paid += num(c.amount);
+  return Object.values(by).sort((a, b) => b.month.localeCompare(a.month)).slice(0, 12).map(o => ({month:o.month, label:monthLabel(o.month), bottles:o.bottles, value:r2(o.value), comm:r2(o.comm), paid:r2(o.paid)}));
+}
+function rlPayload(rid){
+  const r = S.resellers[rid], C = compute(), a = C.acc[rid] || {net:0};
+  const held = heldOf(rid, C).map(([p, q]) => { const pr = S.products[p] || {}, price = resPrice(rid, p, C); return {p, name:pr.name || pName(p), size:pr.size || '', qty:q, price, per:Math.round(ownComm(r, 1, price, C.hr?.[rid]?.[p]) * 10000) / 10000}; }).sort((x, y) => x.name.localeCompare(y.name));
+  const parcels = Object.values(S.dispatches).filter(d => d.resellerId === rid).sort((x, y) => (y.date || '').localeCompare(x.date || '') || (y.no || '').localeCompare(x.no || '')).slice(0, 10).map(d => ({id:d.id, no:d.no || '', date:d.date || '', courier:d.method === 'hand' ? 'Delivered by hand' : (d.courier || ''), waybill:d.waybill || '', status:d.status === 'delivered' ? 'delivered' : 'dispatched', deliveredDate:d.deliveredDate || '', recvNote:d.recvNote || '', recvLines:Object.fromEntries((d.recvLines || []).map(l => [l.productId, num(l.qty)])), items:(d.lines || []).map(l => ({p:l.productId, name:pName(l.productId), qty:num(l.qty), gift:!!l.gift}))}));
+  const pend = (OWN.lreqs?.[rid] || []).map(x => ({no:x.no || x.id, kind:x.kind, at:x.at || '', status:'pending', reason:'', decided:''}));
+  const reports = [...pend, ...(r.linkLog || [])].sort((x, y) => (y.at || '').localeCompare(x.at || '')).slice(0, 14);
+  return {name:r.name, town:tName(r.townId), phone:r.phone || '', biz:bizName(), bizPhone:S.settings.phone || '', whatsapp:S.settings.storeWhatsapp || S.settings.phone || '', held, net:r2(a.net), parcels, hist:rlHist(rid), reports};
+}
+async function rlPublish(rid, force){
+  const r = S.resellers[rid]; if (!r?.linkToken || !FB || !ADM() || FB_ME?.limited) return {err:'not ready'};
+  const pin = rlPin(r), on = r.linkOn !== false, doc = {on, biz:bizName(), v:1};
+  if (on && pin.length === 4) {
+    const pl = rlPayload(rid); try { pl.msgs = await msgLinkData(rid); } catch(e) { pl.msgs = []; } const sig = r.linkToken + '|' + pin + '|' + JSON.stringify(pl); OWN.rlSig = OWN.rlSig || {};
+    if (!force && OWN.rlSig[rid] === sig) return {ok:true, skipped:true};
+    try { const key = await rlKey(r.linkToken, pin), iv = crypto.getRandomValues(new Uint8Array(12)); pl.at = nowISO(); const ct = await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, new TextEncoder().encode(JSON.stringify(pl))); doc.iv = rlB64(iv); doc.ct = rlB64(new Uint8Array(ct)); doc.at = pl.at; OWN.rlSig[rid] = sig; } catch(e) { return {err:'Could not lock the figures: ' + (e.message || e)}; }
+  }
+  try { await FB.set('rlinks/' + r.linkToken, doc); return {ok:true}; } catch(e) { return {err:fbMsg(e)}; }
+}
+function rlRulesHelp(err){
+  return `<div class="hint" style="border-left:4px solid var(--bad);padding-left:10px"><b>One quick step in Firebase is needed.</b> (${esc(String(err).slice(0, 120))})<ol class="small" style="padding-left:18px;margin:6px 0">
+    <li>Tap <b>Copy rules</b> below.</li><li>Open <b>console.firebase.google.com</b> → your project → <b>Firestore Database</b> → <b>Rules</b>.</li><li>Select everything there, paste, then tap <b>Publish</b>.</li><li>Come back and tap <b>Test the link</b>.</li></ol>${btn('Copy rules', 'copyRules', {}, 'sm pri')}</div>`;
+}
+const rlNewToken = () => (uid() + uid()).replace(/[^a-z0-9]/g, '').slice(0, 24);
+const rlUrl = r => RL_URL + '#k=' + r.linkToken;
+const rlFirst = r => String(r.name || '').split(' ')[0];
+const rlMsg = r => `Hello ${rlFirst(r)}, this is your personal ${bizName()} link. Open it to report what you sold, pay, and confirm stock you receive. When it asks, type the last 4 digits of your phone number. Keep it private.\n${rlUrl(r)}`;
+async function rlLink(rid){
+  let r = S.resellers[rid]; if (!r) return;
+  if (!FB || !ADM()) return toast('Sign in to your admin account first (Resellers → Requests & logins).', true);
+  if (!r.linkToken) { r = await put('resellers', {...r, linkToken:rlNewToken(), linkOn:true}); }
+  const res = await rlPublish(rid, true); rlListen(); rlLinkModal(rid, res);
+}
+function rlLinkModal(rid, res){
+  const r = S.resellers[rid], url = rlUrl(r), pin = rlPin(r), waiting = (OWN.lreqs?.[rid] || []).length;
+  modal(`${esc(r.name)}: reseller link`, `<p class="small" style="word-break:break-all"><a href="${url}" target="_blank" rel="noopener">${url}</a></p>
+    ${pin.length === 4 ? `<p class="hint">When they open it, they type the last 4 digits of their phone number: <b>${pin}</b>. They tick what they sold, say how they are paying, and confirm parcels. Nothing changes in your books until you approve it.${waiting ? ` <b>${waiting} report${waiting === 1 ? '' : 's'} waiting in Requests.</b>` : ''}</p>` : `<p class="neg"><b>Add their phone number first.</b> The link is locked with the last 4 digits of it. ${btn('Edit reseller', 'resEdit', {id:rid}, 'sm')}</p>`}
+    ${res?.err ? rlRulesHelp(res.err) : ''}
+    <div class="actions">${r.phone && pin.length === 4 ? `<a class="btn pri" target="_blank" rel="noopener" href="${waLink(r.phone, rlMsg(r))}">Send on WhatsApp</a>` : ''}${btn('Copy link', 'copyTxt', {t:url})}${btn('Test the link', 'rlTest', {id:rid}, 'ghost')}${r.linkOn === false ? btn('Turn link back on', 'rlOn', {id:rid, v:'1'}) : btn('Turn link off', 'rlOn', {id:rid, v:''}, 'ghost')}${btn('Make a new link', 'rlNew', {id:rid}, 'ghost')}</div><div id="rl-test" class="small" style="margin-top:8px"></div>`, null, {nofocus:true});
+}
+async function rlTest(rid){
+  const r = S.resellers[rid], box = $('#rl-test'); if (!r?.linkToken) return; if (box) box.textContent = 'Testing…';
+  const res = await rlPublish(rid, true); if (res.err) { if (box) box.innerHTML = rlRulesHelp(res.err); return; }
+  try { const id = await FB.add(`rlinks/${r.linkToken}/acts`, {kind:'ping', chk:'ping', at:nowISO(), done:false}); try { await FB.del(`rlinks/${r.linkToken}/acts/${id}`); } catch(e) {} if (box) box.innerHTML = '<b style="color:var(--good)">✓ The link is ready. Your resellers can send reports.</b>'; }
+  catch(e) { if (box) box.innerHTML = rlRulesHelp(fbMsg(e)); }
+}
+async function rlOn(rid, on){ const r = S.resellers[rid]; if (!r) return; await put('resellers', {...r, linkOn:on}); const res = await rlPublish(rid, true); rlLinkModal(rid, res); toast(on ? 'Link is on' : 'Link is off'); }
+function rlNew(rid){ const r = S.resellers[rid]; confirmBox(`Make a new link for ${esc(r.name)}? The old link stops working, so send them the new one.`, async () => { const old = r.linkToken; await put('resellers', {...S.resellers[rid], linkToken:rlNewToken(), linkOn:true}); try { if (old) await FB.del('rlinks/' + old); } catch(e) {} const res = await rlPublish(rid, true); rlListen(); rlLinkModal(rid, res); }, 'Make new link'); }
+async function rlMake(rid){ const r = S.resellers[rid]; if (!r) return; if (!FB || !ADM()) return toast('Sign in to your admin account first (Resellers → Requests & logins).', true); if (!r.linkToken) await put('resellers', {...r, linkToken:rlNewToken(), linkOn:true}); await rlPublish(rid, true); rlListen(); rlSendAll(); }
+function rlSendAll(){
+  const C = compute(), rs = sortedRes().filter(r => heldOf(r.id, C).length || (C.acc[r.id]?.net || 0) > 0.009 || r.linkToken);
+  const msg = r => `Hello ${rlFirst(r)}, it is settlement time (the ${ord(sDay())}). Open your personal ${bizName()} link, tick what you sold and tell us how you are paying: ${rlUrl(r)}\nWhen it asks, type the last 4 digits of your phone number.`;
+  const row = r => { const pin = rlPin(r), ok = r.linkToken && r.linkOn !== false && pin.length === 4 && r.phone, held = heldOf(r.id, C).reduce((t, [, v]) => t + v, 0);
+    return `<li><span><b>${esc(r.name)}</b> <span class="small mut">${esc(tName(r.townId))} · ${held} bottles</span></span><span class="actions">${ok ? `<a class="btn sm pri" target="_blank" rel="noopener" href="${waLink(r.phone, msg(r))}">WhatsApp</a>` : (!r.phone || pin.length < 4) ? '<span class="small neg">Add phone number</span>' : btn('Make link', 'rlMake', {id:r.id}, 'sm')}${btn('Link', 'rlLink', {id:r.id}, 'sm ghost')}</span></li>`; };
+  modal('Send reseller links', `<p class="hint">Each reseller gets one personal link. They open it, type the last 4 digits of their phone number, tick what they sold and say how they are paying. You approve it in Requests.</p><ul class="list">${rs.map(row).join('') || '<li class="mut">No resellers hold stock yet.</li>'}</ul>`, null, {nofocus:true, wide:true});
+}
+function rlDispBtn(d){
+  const r = S.resellers[d.resellerId]; if (!r || d.toLoc) return '';
+  if (r.linkToken && r.linkOn !== false && rlPin(r).length === 4 && r.phone) return `<a class="btn sm" target="_blank" rel="noopener" href="${waLink(r.phone, `Hello ${rlFirst(r)}, your parcel ${d.no} is on the way. When it reaches you, open your personal link and confirm what you received: ${rlUrl(r)}\nType the last 4 digits of your phone number when it asks.`)}">Ask them to confirm</a>`;
+  return btn('Reseller link', 'rlLink', {id:r.id}, 'sm ghost');
+}
+/* ---- listening for what resellers send ---- */
+const findReq = (rid, id) => (OWN.reqs[rid] || []).find(x => x.id === id) || (OWN.lreqs?.[rid] || []).find(x => x.id === id);
+function rlListen(){
+  if (!FB || FB_ME?.limited || !ADM()) return; OWN.rlTok = OWN.rlTok || new Set(); OWN.lreqs = OWN.lreqs || {};
+  rlLinked().filter(r => !OWN.rlTok.has(r.linkToken)).forEach(r => { const token = r.linkToken; OWN.rlTok.add(token); OWN.unsubs.push(FB.listen(`rlinks/${token}/acts`, 'done', false, list => rlActs(r.id, token, list))); });
+  if (!OWN.rlBoot) { OWN.rlBoot = 1; setTimeout(() => rlPublishAll(true), 3500); }
+}
+function rlValid(rid, a){
+  const r = S.resellers[rid], okLine = l => l && S.products[l.p] && Number.isInteger(l.q) && l.q >= 0 && l.q <= 5000;
+  if (a.kind === 'settle') return Array.isArray(a.lines) && a.lines.every(l => okLine(l) && l.q > 0) && num(a.amount) >= 0 && num(a.amount) < 1e8 && !!RL_MODES[a.mode];
+  if (a.kind === 'msg') return typeof a.text === 'string' && a.text.trim().length > 0 && a.text.length <= 700;
+  if (a.kind === 'received') { const dn = S.dispatches[a.dispatchId]; return !!dn && dn.resellerId === rid && Array.isArray(a.lines) && a.lines.every(okLine); }
+  return false;
+}
+async function rlActs(rid, token, list){
+  const r = S.resellers[rid]; if (!r || r.linkToken !== token) return;
+  const pin = rlPin(r), good = pin.length === 4 ? await rlChk(token, pin) : null;
+  const real = list.filter(a => a.kind !== 'ping');
+  real.filter(a => a.chk !== good && Date.now() - Date.parse(a.at || 0) > 2 * 86400000).forEach(a => { try { FB.del(`rlinks/${token}/acts/${a.id}`); } catch(e) {} });
+  const pendAll = real.filter(a => good && a.chk === good && rlValid(rid, a)).sort((x, y) => (x.at || '').localeCompare(y.at || ''));
+  pendAll.filter(a => a.kind === 'msg').forEach(a => msgFromLink(r, token, a));
+  const pend = pendAll.filter(a => a.kind !== 'msg');
+  OWN.lreqs = OWN.lreqs || {}; OWN.rlPrimed = OWN.rlPrimed || {}; OWN.rlSeen = OWN.rlSeen || new Set();
+  OWN.lreqs[rid] = pend.map(a => ({...a, date:/^\d{4}-\d{2}-\d{2}$/.test(a.date || '') ? a.date : today(), proof:/^data:image\/(jpeg|png);base64,[A-Za-z0-9+\/=]+$/.test(a.proof || '') ? a.proof : '', ref:String(a.ref || '').slice(0, 80), note:String(a.note || '').slice(0, 400), rid, token, link:true, type:a.kind === 'received' ? 'linkrecv' : 'linkpay'}));
+  pend.forEach(a => { if (OWN.rlSeen.has(a.id)) return; OWN.rlSeen.add(a.id); if (OWN.rlPrimed[rid]) { const t = a.kind === 'received' ? `${r.name} confirmed a parcel` : `${r.name} sent a sales report`; appNotify('New request', t); toast(t + ': it is waiting for your approval'); } });
+  OWN.rlPrimed[rid] = true; rlSched();
+  if (route() === 'portal') render(true); else updatePortalBadge();
+}
+function rlReqText(q){
+  if (q.type === 'linkrecv') {
+    const dn = S.dispatches[q.dispatchId], short = (q.lines || []).map(l => { const it = (dn?.lines || []).find(x => x.productId === l.p); return it && num(l.q) < num(it.qty) ? `${num(it.qty) - num(l.q)} × ${esc(pName(l.p))}` : ''; }).filter(Boolean);
+    return `Parcel <b>${esc(dn?.no || '?')}</b> received${q.date ? ' on ' + fmtDate(q.date) : ''} ${short.length ? `<span class="pill bad">short: ${short.join(', ')}</span>` : '<span class="pill good">all items</span>'}${q.note ? `<br>“${esc(q.note)}”` : ''}`;
+  }
+  const C = compute(); let val = 0, own = 0;
+  (q.lines || []).forEach(l => { const price = resPrice(q.rid, l.p, C); val += num(l.q) * price; own += commFor(q.rid, num(l.q), price, C.hr?.[q.rid]?.[l.p]).find(c => c.level === 0)?.amount || 0; });
+  const a = C.acc[q.rid] || {net:0}, should = Math.max(0, r2(a.net + val - own)), paid = num(q.amount), diff = r2(should - paid);
+  return `${(q.lines || []).map(l => `${esc(pName(l.p))} × ${num(l.q)}`).join(', ') || 'No bottles reported'}<br>Value ${money(val)} − their commission ${money(own)} → they should pay <b>${money(should)}</b><br>Paid <b>${money(paid)}</b> by ${esc(RL_MODES[q.mode] || q.mode || '')}${q.ref ? ' · ref ' + esc(q.ref) : ''} ${Math.abs(diff) > 0.009 ? `<span class="pill warn">${diff > 0 ? 'short by ' + money(diff) : 'extra ' + money(-diff)}</span>` : '<span class="pill good">matches</span>'}${q.proof ? ' ' + btn('📎 View photo', 'reqProof', {rid:q.rid, id:q.id}, 'sm ghost') : ''}${q.note ? `<br>“${esc(q.note)}”` : ''}`;
+}
+async function rlDecide(a, status, reason){
+  try { await FB.update(`rlinks/${a.token}/acts/${a.id}`, {done:true, status, reason:reason || '', proof:'', decided:today()}); } catch(e) { toast(fbMsg(e), true); throw e; }
+  const r = S.resellers[a.rid]; if (!r) return; const e = {no:a.no || a.id, kind:a.kind, at:a.at || '', status, reason:reason || '', decided:today()};
+  await put('resellers', {...r, linkLog:[e, ...(r.linkLog || []).filter(x => x.no !== e.no)].slice(0, 30)});
+  OWN.lreqs[a.rid] = (OWN.lreqs[a.rid] || []).filter(x => x.id !== a.id); updatePortalBadge();
+}
+async function rlApprove(q){
+  const r = S.resellers[q.rid]; if (!r) return;
+  if (q.type === 'linkpay') {
+    const sold = {}; (q.lines || []).forEach(l => { sold[l.p] = (sold[l.p] || 0) + num(l.q); });
+    const ref = ((q.mode === 'mtn' || q.mode === 'airtel' ? RL_MODES[q.mode] + ' ' : '') + (q.ref || '')).trim();
+    settleDayForm(q.rid, {sold, amount:num(q.amount) || '', channel:RL_CH[q.mode] || 'cash', ref, date:q.date || today(), at:q.at, proof:q.proof || '', note:q.note || '', act:q}); return;
+  }
+  const dn = S.dispatches[q.dispatchId]; if (!dn) { toast('That parcel was not found.', true); return; }
+  const short = (q.lines || []).map(l => { const it = (dn.lines || []).find(x => x.productId === l.p); return it && num(l.q) < num(it.qty) ? `${num(it.qty) - num(l.q)} × ${esc(pName(l.p))}` : ''; }).filter(Boolean);
+  const go = async () => { if (dn.status !== 'delivered') await put('dispatches', {...dn, status:'delivered', deliveredDate:q.date || today(), receivedBy:r.name, recvNote:q.note || '', recvLines:(q.lines || []).map(l => ({productId:l.p, qty:num(l.q)}))}); await rlDecide(q, 'approved'); toast('Parcel confirmed'); };
+  if (short.length) confirmBox(`${esc(r.name)} says these were short: ${short.join(', ')}. Mark the parcel as delivered anyway? You will need to sort out the missing bottles with them.`, go, 'Mark delivered'); else await go();
+}
+function rlReject(q){
+  modal('Reject this report', `<label for="f-rr">Reason (the reseller will see this)<input id="f-rr" name="why" required placeholder="e.g. Payment not received on MoMo"></label>`, async d => { await rlDecide(q, 'rejected', d.why.trim()); logNote('decline', 'requests', `${rName(q.rid)}: link report declined (${d.why.trim()})`); toast('Rejected'); }, {label:'Reject'});
+}
 
 /* ======================= reseller adverts (posters & flyers) ======================= */
 const AD_FMT = {status:['WhatsApp status', 1080, 1920], square:['Square post', 1080, 1080], flyer:['Flyer (A5, print)', 1240, 1754]};
@@ -3735,7 +4003,7 @@ function updSchedule(){
 
 
 /* ---- reseller phone menu & fixed Rose Quartz look ---- */
-const RES_TABS = [['home', 'My stock'], ['sell', 'Record sale'], ['pay', 'Report payment'], ['parcels', 'Parcels'], ['order', 'Order / return'], ['ads', 'Adverts'], ['statement', 'Statement'], ['slips', 'Payslips'], ['board', 'Leaderboard'], ['promos', 'Prices & promotions'], ['team', 'My recruits'], ['ideas', 'Suggestions'], ['account', 'Account']];
+const RES_TABS = [['home', 'My stock'], ['sell', 'Record sale'], ['pay', 'Report payment'], ['parcels', 'Parcels'], ['order', 'Order / return'], ['ads', 'Adverts'], ['statement', 'Statement'], ['slips', 'Payslips'], ['board', 'Leaderboard'], ['promos', 'Prices & promotions'], ['team', 'My recruits'], ['messages', 'Messages'], ['ideas', 'Suggestions'], ['account', 'Account']];
 const RES_ICONS = {sell:'<path d="M6 7h12l-1 13H7z"/><path d="M9 7a3 3 0 0 1 6 0"/>', order:'<circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/><path d="M2.5 3.5h3l2.4 11.5h10.6l2-8H6.7"/>', pay:'<rect x="2.5" y="5.5" width="19" height="13" rx="2.5"/><path d="M2.5 10h19M6.5 15h3"/>'};
 function resBottomBar(){
   const bb = $('#bottombar'); if (!bb) return; const main = [['home', 'Home', ico('home')], ['sell', 'Sell', ico('sell')], ['order', 'Order', ico('order')], ['pay', 'Pay', ico('pay')]];
@@ -3747,7 +4015,7 @@ function openResDrawer(){
   const s = RES.snap || {}, el = $('#modal'); el.classList.add('drawer-on');
   el.innerHTML = `<div class="drawer-sheet" role="dialog" aria-modal="true" aria-label="All pages"><div class="drawer-head"><img src="${LOGO}" alt=""><b>${esc(s.business || bizName())}</b><button type="button" class="x" data-act="close" style="margin-left:auto" aria-label="Close">×</button></div>
     <div class="small mut" style="margin:-2px 4px 6px">${esc(s.name || '')}${s.town ? ' · ' + esc(s.town) : ''}</div>
-    ${[['My stock', ['home', 'parcels', 'order']], ['Selling', ['sell', 'ads', 'promos']], ['Money', ['pay', 'statement', 'slips']], ['Team', ['board', 'team']], ['Me', ['ideas', 'account']]].map(([g, ks]) => `<div class="drawer-grp">${g}</div><div class="drawer-links">${ks.map(k => RES_TABS.find(t => t[0] === k)).filter(Boolean).map(([k, l]) => `<a href="javascript:void 0" data-act="resTab" data-k="${k}" class="${RES.tab === k ? 'on' : ''}">${esc(l)}</a>`).join('')}</div>`).join('')}
+    ${[['My stock', ['home', 'parcels', 'order']], ['Selling', ['sell', 'ads', 'promos']], ['Money', ['pay', 'statement', 'slips']], ['Team', ['board', 'team']], ['Me', ['messages', 'ideas', 'account']]].map(([g, ks]) => `<div class="drawer-grp">${g}</div><div class="drawer-links">${ks.map(k => RES_TABS.find(t => t[0] === k)).filter(Boolean).map(([k, l]) => `<a href="javascript:void 0" data-act="resTab" data-k="${k}" class="${RES.tab === k ? 'on' : ''}">${esc(l)}${k === 'messages' && MSG.n ? ' (' + MSG.n + ')' : ''}</a>`).join('')}</div>`).join('')}
     <div class="drawer-foot"><span class="small mut">Version ${APP_VERSION}</span><span class="actions">${btn('Lock', 'resLock', {}, 'sm')}${btn('Sign out', 'appOut', {}, 'sm ghost')}</span></div></div>`;
   el.hidden = false;
 }
@@ -3852,7 +4120,7 @@ function shopSnapshot(sid){
     .map(r => ({id:r.id, no:r.no, date:r.date, time:r.time, total:num(r.total), pay:r.pay, customer:r.customer || '', bottles:(r.lines || []).reduce((s2, x) => s2 + num(x.qty), 0), token:r.token || ''}));
   const lastNo = Object.values(S.receipts).filter(r => r.shop === sid).reduce((m, r) => Math.max(m, parseInt(String(r.no).split('-').pop()) || 0), 0);
   const parcels = Object.values(S.dispatches).filter(d => d.toLoc === sid).sort((a, b) => (b.date || '').localeCompare(a.date || '') || (b.no || '').localeCompare(a.no || '')).slice(0, 15).map(d => ({id:d.id, no:d.no, date:d.date, courier:d.courier || '', waybill:d.waybill || '', status:d.status, deliveredDate:d.deliveredDate || '', items:(d.lines || []).map(x => ({name:pName(x.productId), qty:num(x.qty)}))}));
-  return {name:l.name, town:l.town || '', address:l.address || '', code:shopCode(l), keeper:l.keeper || '', stock, recent, parcels, festive:S.settings.festive || 'auto', festOff:S.settings.festOff || [], festIcon:S.settings.festIcon !== false, lastCashup:(c => c ? {date:c.date, diff:c.diff} : null)(lastCashup(sid)), lastNo, today:t, business:bizName(), businessPhone:S.settings.phone || '', tagline:S.settings.tagline || '', notice:S.settings.shopNotice || '', tips:shopTips(), insights:shopInsights(sid).slice(0, 6), target:num(S.settings.shopTarget) || 0, low:num(S.settings.shopLowLevel || S.settings.lowStock || 2), discMax:num(S.settings.shopDiscMax ?? 10), credit:S.settings.shopCredit !== false, momoNo:S.settings.storeMomo || '', airtelNo:S.settings.storeAirtel || '', month:(m => ({bottles:Object.values(S.receipts).filter(r => r.shop === sid && (r.date || '').startsWith(m)).reduce((a, r) => a + (r.lines || []).reduce((b, x) => b + num(x.qty), 0), 0)}))(t.slice(0, 7)), updatedAt:nowISO()};
+  return {team:msgTeam(), name:l.name, town:l.town || '', address:l.address || '', code:shopCode(l), keeper:l.keeper || '', stock, recent, parcels, festive:S.settings.festive || 'auto', festOff:S.settings.festOff || [], festIcon:S.settings.festIcon !== false, lastCashup:(c => c ? {date:c.date, diff:c.diff} : null)(lastCashup(sid)), lastNo, today:t, business:bizName(), businessPhone:S.settings.phone || '', tagline:S.settings.tagline || '', notice:S.settings.shopNotice || '', tips:shopTips(), insights:shopInsights(sid).slice(0, 6), target:num(S.settings.shopTarget) || 0, low:num(S.settings.shopLowLevel || S.settings.lowStock || 2), discMax:num(S.settings.shopDiscMax ?? 10), credit:S.settings.shopCredit !== false, momoNo:S.settings.storeMomo || '', airtelNo:S.settings.storeAirtel || '', month:(m => ({bottles:Object.values(S.receipts).filter(r => r.shop === sid && (r.date || '').startsWith(m)).reduce((a, r) => a + (r.lines || []).reduce((b, x) => b + num(x.qty), 0), 0)}))(t.slice(0, 7)), updatedAt:nowISO()};
 }
 async function publishShop(sid){ const l = shopOf(sid); if (!l || !shopLive(l) || !ADM() || FB_ME?.limited) return; try { await FB.set('shops/' + sid, shopSnapshot(sid)); } catch(e) {} }
 const publishShops = () => locs().filter(shopLive).forEach(l => publishShop(l.id));
@@ -3910,8 +4178,8 @@ PAGES.feedback = () => {
 let SHOP = {snap:null, sales:[], reqs:[], tab:'home', disc:'', cat:{}, ccat:'', cart:{}, pay:'cash', unsubs:[], q:'', counting:false, count:{}};
 function shopStart(){
   SHOP.unsubs.forEach(f => { try { f(); } catch(e) {} }); SHOP.unsubs = []; const sid = FB_ME.shopId; let first = true;
-  SHOP.unsubs.push(FB.watch('shops/' + sid, d => { SHOP.snap = d; if (!first && SHOP.tab !== 'sell') render(true); else if (first) render(true); first = false; }));
-  SHOP.unsubs.push(FB.listen(`shops/${sid}/sales`, 'by', FB_USER.uid, list => { SHOP.sales = list.sort((a, b) => (b.at || '').localeCompare(a.at || '')); if (SHOP.tab !== 'sell') render(true); }));
+  SHOP.unsubs.push(FB.watch('shops/' + sid, d => { SHOP.snap = d; if (!first && SHOP.tab !== 'sell' && SHOP.tab !== 'messages') render(true); else if (first) render(true); first = false; }));
+  SHOP.unsubs.push(FB.listen(`shops/${sid}/sales`, 'by', FB_USER.uid, list => { SHOP.sales = list.sort((a, b) => (b.at || '').localeCompare(a.at || '')); if (SHOP.tab !== 'sell' && SHOP.tab !== 'messages') render(true); }));
   SHOP.unsubs.push(FB.listen('suggestions', 'by', FB_USER.uid, list => { SHOP.ideas = list.sort((a, b) => (b.at || '').localeCompare(a.at || '')); if (SHOP.tab === 'ideas') render(true); }));
   SHOP.unsubs.push(FB.listen(`shops/${sid}/requests`, 'by', FB_USER.uid, list => { SHOP.reqs = list.sort((a, b) => (b.at || '').localeCompare(a.at || '')); if (SHOP.tab === 'order' || SHOP.tab === 'home') render(true); }));
   if (!shopCan(SHOP.tab)) SHOP.tab = shopTabs()[0][0];
@@ -3954,6 +4222,8 @@ function shopUI(){
     body = `<div class="card"><h2>Ask for stock</h2><form id="shop-ord"><div class="tw"><table class="t"><thead><tr><th>Perfume</th><th class="n">In shop</th><th class="n">Want</th></tr></thead><tbody>${av.map(p => `<tr><td>${esc(p.name)}</td><td class="n">${p.avail}</td><td class="n"><input type="number" min="0" name="o_${p.id}" placeholder="0" style="width:70px;text-align:right"></td></tr>`).join('')}</tbody></table></div>
       <label for="so-n">Note (optional)<input id="so-n" name="note"></label><div class="actions" style="margin-top:10px">${btn('Send request', 'shopOrder', {}, 'pri')}</div></form></div>
       ${reqListCard('shop', SHOP.reqs.filter(q => q.type !== 'received'))}`;
+  } else if (SHOP.tab === 'messages') {
+    body = `<div id="msg-root">${msgBody()}</div>`;
   } else if (SHOP.tab === 'ideas') {
     body = ideasPortalHTML(SHOP.ideas || []);
   } else {
@@ -4661,6 +4931,7 @@ function limitedListen(){
 const BELL = {items:[], key:'', unsub:null, primed:false};
 function inboxAdd(key, title, body, link){ if (!FB || !key) return; try { (FB.addQ || FB.add)(`inbox/${key}/items`, {title:String(title || '').slice(0, 110), body:String(body || '').slice(0, 390), link:link || '', at:nowISO(), read:false, by:FB_USER?.uid || ''}); } catch(e) {} }
 function bellStart(){
+  try { msgStart(); } catch(e) {}
   let b = $('#bell'); if (!b) { b = document.createElement('button'); b.id = 'bell'; b.type = 'button'; b.className = 'bell'; b.dataset.act = 'bellOpen'; b.setAttribute('aria-label', 'Notifications'); b.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg><b id="bell-n" hidden></b>'; document.body.appendChild(b); }
   const key = !FB_USER ? '' : (FB_ROLE === 'owner' || (FB_ROLE === 'manager' && !FB_ME?.limited)) ? 'admin' : FB_USER.uid;
   if (key === BELL.key) return; if (BELL.unsub) { try { BELL.unsub(); } catch(e) {} } BELL.unsub = null; BELL.items = []; BELL.key = key; BELL.primed = false;
@@ -4679,7 +4950,7 @@ async function bellGo(id){
   const x = BELL.items.find(i => i.id === id); if (!x) return;
   if (!x.read) { x.read = true; bellPaint(); try { await FB.update(`inbox/${BELL.key}/items/${id}`, {read:true}); } catch(e) {} }
   if (!x.link) return bellOpen(); closeModal();
-  if (x.link.startsWith('#')) location.hash = x.link.slice(1); else if (x.link.startsWith('res:') && typeof RES !== 'undefined') { RES.tab = x.link.slice(4); render(true); } else if (x.link.startsWith('shop:')) { SHOP.tab = x.link.slice(5); render(true); }
+  if (x.link.startsWith('msg:')) msgGo(x.link.slice(4)); else if (x.link.startsWith('#')) location.hash = x.link.slice(1); else if (x.link.startsWith('res:') && typeof RES !== 'undefined') { RES.tab = x.link.slice(4); render(true); } else if (x.link.startsWith('shop:')) { SHOP.tab = x.link.slice(5); render(true); }
 }
 async function bellAll(){ const l = BELL.items.filter(x => !x.read); l.forEach(x => x.read = true); bellPaint(); try { await FB.batch(l.map(x => ['merge', `inbox/${BELL.key}/items/${x.id}`, {read:true}])); } catch(e) {} bellOpen(); }
 async function bellClear(){ const l = BELL.items.filter(x => x.read); BELL.items = BELL.items.filter(x => !x.read); try { await FB.batch(l.map(x => ['del', `inbox/${BELL.key}/items/${x.id}`])); } catch(e) {} bellOpen(); }
@@ -4756,7 +5027,7 @@ function reqEdit(app, id){
 }
 
 /* ---- shopkeeper app: home and POS ---- */
-function shopTabs(){ const sc = FB_ME?.screens; return SHOP_SCREENS.filter(([k]) => !sc || !sc.length || sc.includes(k) || k === 'account').map(([k, l]) => [k, k === 'sell' ? 'Sell' : k === 'today' ? 'Today' : k === 'stock' ? 'Stock' : k === 'order' ? 'Order' : k === 'ideas' ? 'Ideas' : k === 'account' ? 'Me' : l]); }
+function shopTabs(){ const sc = FB_ME?.screens; return SHOP_SCREENS.filter(([k]) => !sc || !sc.length || sc.includes(k) || k === 'account').map(([k, l]) => [k, k === 'sell' ? 'Sell' : k === 'today' ? 'Today' : k === 'stock' ? 'Stock' : k === 'order' ? 'Order' : k === 'ideas' ? 'Ideas' : k === 'account' ? 'Me' : l]).concat([['messages', 'Messages']]); }
 const shopCan = k => shopTabs().some(t => t[0] === k);
 function shopDisc(sub){ const v = String(SHOP.disc || '').trim(); if (!v) return 0; const d = v.endsWith('%') ? r2(sub * num(v) / 100) : num(v); const max = r2(sub * num(SHOP.snap?.discMax ?? 10) / 100); return d > max + 0.001 ? -1 : Math.min(d, sub); }
 function shopHome(av, mine){
@@ -4765,7 +5036,7 @@ function shopHome(av, mine){
   const msgs = BELL.items.slice(0, 3), mo = num(s.month?.bottles), tg = num(s.target), pc = tg ? Math.min(100, mo / tg * 100) : 0, hr = new Date().getHours();
   const SC = {sell:['Sell', 'sell'], today:['Close the day', 'today'], stock:['Count stock', 'stock'], order:['Order stock', 'order'], ideas:['Suggestions', 'ideas'], account:['My PIN', 'account']};
   const SCI = {sell:RES_SC_ICONS.sell, today:'<rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/><path d="M3.5 9.5h17M8 2.5v4M16 2.5v4"/>', stock:RES_SC_ICONS.parcels, order:RES_SC_ICONS.order, ideas:RES_SC_ICONS.ideas, account:RES_SC_ICONS.account};
-  return `<div class="card shop-hello"><div><div class="small mut">${hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening'}</div><div class="serif" style="font-size:24px;line-height:1.1">${esc(String(FB_ME?.name || '').split(' ')[0])}</div><div class="small mut">${esc(FB_ME?.title || 'Shop team')} · ${esc(s.name)}</div></div>${shopCan('sell') ? btn('New sale', 'shopTab', {k:'sell'}, 'pri') : ''}</div>`
+  return `${msgBanner()}<div class="card shop-hello"><div><div class="small mut">${hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening'}</div><div class="serif" style="font-size:24px;line-height:1.1">${esc(String(FB_ME?.name || '').split(' ')[0])}</div><div class="small mut">${esc(FB_ME?.title || 'Shop team')} · ${esc(s.name)}</div></div>${shopCan('sell') ? btn('New sale', 'shopTab', {k:'sell'}, 'pri') : ''}</div>`
     + (s.notice ? `<div class="card" style="border-left:5px solid var(--gold)"><b>From the office:</b> ${esc(s.notice)}</div>` : '')
     + `<div class="tiles">${tile('Sales today', money(tot), `${mine.length} receipt${mine.length === 1 ? '' : 's'}`)}${tile('Bottles today', int(bottles))}${tile('Cash · MoMo · Airtel', `${money(by.cash || 0)}`, `MoMo ${money(by.momo || 0)} · Airtel ${money(by.airtel || 0)}`)}${tile('Last closed', s.lastCashup ? fmtDate(s.lastCashup.date) : 'Not yet', s.lastCashup?.diff ? (s.lastCashup.diff < 0 ? 'short ' : 'over ') + money(Math.abs(s.lastCashup.diff)) : '')}</div>`
     + (tg ? `<div class="card"><h2>This month</h2><div style="background:var(--line);border-radius:8px;height:14px;overflow:hidden"><div style="width:${pc}%;height:100%;background:${pc >= 100 ? 'var(--s3)' : 'var(--gold)'}"></div></div><p style="margin:6px 0 0"><b>${int(mo)}</b> of ${int(tg)} bottles${pc >= 100 ? ' · <b>Target hit! 🎯</b>' : ` · ${int(Math.max(0, tg - mo))} to go`}</p></div>` : '')
@@ -4949,7 +5220,7 @@ PAGES.shopcust = () => {
     + `<div class="filters"><input type="search" id="sc-q" placeholder="Search name or phone" value="${esc(UI.scQ || '')}"><select id="f-scshop"><option value="">All shops</option>${ls.map(l => `<option value="${l.id}" ${sh === l.id ? 'selected' : ''}>${esc(l.name)}</option>`).join('')}</select><div class="seg">${[['all', 'Everyone'], ['regular', 'Came back'], ['away', 'Not seen 30+ days']].map(([k, l]) => btn(l, 'scF', {v:k}, f === k ? 'on' : '')).join('')}</div></div>`
     + (list.length ? `<div class="card"><div class="tw"><table class="t"><thead><tr><th>Customer</th><th>Shop</th><th class="n">Visits</th><th class="n">Bottles</th><th class="n">Spent</th><th>Last visit</th><th>Favourite</th><th></th></tr></thead><tbody>${list.slice(0, 400).map(c => `<tr><td><b>${esc(c.name || 'Customer')}</b><div class="small mut">${esc(c.phone || '')}</div></td><td class="small">${[...c.shops].map(id => esc(shopOf(id)?.name || '')).join(', ')}</td><td class="n">${c.visits}</td><td class="n">${int(c.bottles)}</td><td class="n">${money(c.spent)}</td><td class="small">${fmtDate(c.last)}${c.last < cut30 ? ' <span class="pill warn">away</span>' : ''}</td><td class="small">${esc(fav(c))}</td><td>${c.phone ? `<a class="btn sm" target="_blank" rel="noopener" href="${waLink(c.phone, `Hello ${String(c.name || '').split(' ')[0] || 'there'}, thank you for shopping at ${bizName()}! ${fav(c) ? `We have your favourite ${fav(c)} in stock.` : 'We have new perfumes in stock.'} Come and see us soon.`)}">WhatsApp</a>` : ''}</td></tr>`).join('')}</tbody></table></div></div>` : empty('No shop customers yet. Ask for the customer\'s name and phone on each sale in the shop app.'));
 };
-const MENU_HELP = {'Dashboard':'Today at a glance, approvals waiting for you, suggestions from your team and everyone\'s contacts.', 'Sales':'Sell at the counter, see every sale and look after your customers and loyalty points.', 'Online Business':'Online shop orders, customer ratings, riders and deliveries, the online catalogue and all your public links.', 'Shops':'Each shop\'s details, sales and cash-ups, stock, staff, customers and ideas for selling more.', 'Stock':'Your perfumes and every stock movement.', 'Operations':'Sending parcels, counting stock, planning reorders, buying stock and your suppliers.', 'Resellers':'Resellers by town, their requests and logins, applications, settlement day, reminders, recruits, the leaderboard and agreements.', 'Human Resources':'Positions and job applications, your staff and their employment agreements.', 'Finance':'Money in and out, invoices, money owed, pay for staff and resellers, reports and your company and tax details.', 'Marketing':'Promotions, flyers, WhatsApp broadcasts, product photos and prospects.', 'Users & Access':'Every login, what each position can open and the record of who did what.', 'Settings':'Business settings, backups, app updates and this help.'};
+const MENU_HELP = {'Messages':'Chat with your team, shops and resellers inside the app. Copy people in, send announcements and start groups.', 'Dashboard':'Today at a glance, approvals waiting for you, suggestions from your team and everyone\'s contacts.', 'Sales':'Sell at the counter, see every sale and look after your customers and loyalty points.', 'Online Business':'Online shop orders, customer ratings, riders and deliveries, the online catalogue and all your public links.', 'Shops':'Each shop\'s details, sales and cash-ups, stock, staff, customers and ideas for selling more.', 'Stock':'Your perfumes and every stock movement.', 'Operations':'Sending parcels, counting stock, planning reorders, buying stock and your suppliers.', 'Resellers':'Resellers by town, their requests and logins, applications, settlement day, reminders, recruits, the leaderboard and agreements.', 'Human Resources':'Positions and job applications, your staff and their employment agreements.', 'Finance':'Money in and out, invoices, money owed, pay for staff and resellers, reports and your company and tax details.', 'Marketing':'Promotions, flyers, WhatsApp broadcasts, product photos and prospects.', 'Users & Access':'Every login, what each position can open and the record of who did what.', 'Settings':'Business settings, backups, app updates and this help.'};
 PAGES.help = () => head('Help', 'What is in each menu. Tap a menu name to go there.')
   + GROUPS.filter(g => g.tabs.some(t => allowed(t[0]))).map(g => `<div class="card"><h2><a href="#${g.tabs.find(t => allowed(t[0]))[0]}">${esc(g.label)}</a></h2><p style="margin:0 0 8px">${esc(MENU_HELP[g.label] || '')}</p><div class="small">${g.tabs.filter(t => allowed(t[0])).map(([k, l]) => `<a class="pill" href="#${k}">${esc(l)}</a>`).join(' ')}</div></div>`).join('')
   + `<div class="card"><h2>Good to know</h2><ul class="list small"><li>The ⚙ Settings button on a page changes settings for that part of the hub.</li><li>The bell at the top shows notifications. Tap one to go to it.</li><li>Back up your records regularly from Settings & backup.</li></ul></div>`;
@@ -5182,7 +5453,7 @@ PAGES.dispatch = C => {
       ${list.map(d => `<tr><td style="white-space:nowrap"><b>${esc(d.no)}</b></td><td>${fmtDate(d.date)}</td><td>${d.toLoc ? `<b>${esc(dnTo(d))}</b><div class="small mut">Shop${shopOf(d.toLoc)?.town ? ' · ' + esc(shopOf(d.toLoc).town) : ''}</div>` : `<button class="link" data-act="resView" data-id="${d.resellerId}">${esc(rName(d.resellerId))}</button><div class="small mut">${esc(rTown(d.resellerId))}</div>`}</td>
         <td>${esc(d.courier)}${d.waybill ? `<div class="small mut">${esc(d.waybill)}</div>` : ''}</td><td class="n">${int(bottles(d))}</td><td class="n">${d.charge ? money(d.charge) : '—'}</td>
         <td>${d.status === 'delivered' ? `<span class="pill good">Delivered ${fmtDate(d.deliveredDate)}</span>${d.receivedBy ? `<div class="small mut">by ${esc(d.receivedBy)}</div>` : ''}` : '<span class="pill warn">On the way</span>'}</td>
-        <td><div class="actions">${btn('Dispatch note', 'docDN', {id:d.id}, 'sm')}${btn('Delivery note', 'docDel', {id:d.id}, 'sm')}${d.status !== 'delivered' ? btn('Mark delivered', 'delivered', {id:d.id}, 'sm ghost') : ''}${btn('Edit', 'editDispatch', {id:d.id}, 'sm ghost')}${btn('Delete', 'delDispatch', {id:d.id}, 'sm ghost danger')}</div></td></tr>`).join('')}
+        <td><div class="actions">${btn('Dispatch note', 'docDN', {id:d.id}, 'sm')}${btn('Delivery note', 'docDel', {id:d.id}, 'sm')}${d.status !== 'delivered' && d.resellerId ? rlDispBtn(d) : ''}${d.status !== 'delivered' ? btn('Mark delivered', 'delivered', {id:d.id}, 'sm ghost') : ''}${btn('Edit', 'editDispatch', {id:d.id}, 'sm ghost')}${btn('Delete', 'delDispatch', {id:d.id}, 'sm ghost danger')}</div></td></tr>`).join('')}
     </tbody></table></div>` : empty('No parcels sent in ' + monthLabel(m) + '. Use Dispatch stock to send perfume to a reseller.')}</div>`;
 };
 const bizEmail = () => S.settings.email || '';
@@ -5694,25 +5965,26 @@ PAGES.settlement = C => {
   const rows = rs.map(r => { const a = C.acc[r.id] || {owed:0, due:0, net:0, lastRemit:''}, h = heldOf(r.id, C), e = expectedFor(r.id, C);
     const paidThis = a.lastRemit && a.lastRemit > iso(addDays(new Date(last + 'T00:00'), -12)); return {r, a, bottles:h.reduce((t, [, v]) => t + v, 0), e, paidThis}; });
   const toSettle = rows.filter(x => x.bottles > 0 || x.a.net > 0.009);
-  return head('Settlement day', `On the ${ord(sDay())} each reseller tells you what they sold. Tap <b>Settle</b>, enter the bottles sold, and the hub records the sales, works out their commission and records the money they pay.`, btn('Send reminders', 'remind', {}, 'pri'))
+  return head('Settlement day', `On the ${ord(sDay())} each reseller tells you what they sold. Tap <b>Settle</b>, enter the bottles sold, and the hub records the sales, works out their commission and records the money they pay.`, btn('Send reminders', 'remind', {}, 'pri') + btn('Send reseller links', 'rlSendAll', {}, 'pri'))
+    + (() => { const n = Object.values(OWN.lreqs || {}).flat().length; return n ? `<div class="card" style="border-left:5px solid var(--acc)"><b>${n} report${n === 1 ? '' : 's'} sent through reseller links ${n === 1 ? 'is' : 'are'} waiting.</b> <a class="btn sm pri" href="#portal">Review</a></div>` : ''; })()
     + `<div class="tiles">${tile('Next settlement', fmtDate(due), `${Math.max(0, daysBetween(today(), due))} days away`)}${tile('Resellers to settle', int(toSettle.length))}
       ${tile('Owed to you now', money(rows.reduce((t, x) => t + Math.max(0, x.a.net), 0)), 'for bottles already reported sold')}${tile('If everything sells', money(rows.reduce((t, x) => t + x.e.totalCash, 0)), 'stock held, after commission', true)}</div>`
     + (rows.length ? `<div class="card"><div class="tw"><table class="t"><thead><tr><th>Reseller</th><th class="n">Bottles held</th><th class="n">Owes now</th><th class="n">Could pay if all sold</th><th>Last payment</th><th></th></tr></thead><tbody>
       ${rows.map(({r, a, bottles, e, paidThis}) => `<tr><td><b>${esc(r.name)}</b><div class="small mut">${esc(tName(r.townId))}</div></td><td class="n">${int(bottles)}</td><td class="n">${signed(Math.max(0, a.net))}</td><td class="n">${money(e.totalCash + Math.max(0, a.net))}</td>
         <td>${a.lastRemit ? fmtDate(a.lastRemit) : '<span class="mut">Never</span>'}${paidThis ? ' <span class="pill good">This month</span>' : ''}</td>
-        <td><div class="actions">${btn('Settle', 'settleDay', {id:r.id}, 'sm pri')}${btn('Price list', 'priceList', {id:r.id}, 'sm ghost')}</div></td></tr>`).join('')}</tbody></table></div></div>` : empty('Add resellers first.'))
+        <td><div class="actions">${btn('Settle', 'settleDay', {id:r.id}, 'sm pri')}${btn('Link', 'rlLink', {id:r.id}, 'sm')}${btn('Price list', 'priceList', {id:r.id}, 'sm ghost')}</div></td></tr>`).join('')}</tbody></table></div></div>` : empty('Add resellers first.'))
     + `<div class="card"><h2>How settlement works</h2><ol class="small" style="padding-left:18px;margin:0">
         <li>Ask the reseller how many of each perfume they sold (or count what is left).</li><li>Tap <b>Settle</b> and enter the bottles sold. The hub shows their commission and what they must pay.</li>
         <li>Enter the money they paid and how (cash, mobile money or bank). Their commission is kept automatically.</li><li>Send them the summary on WhatsApp.</li></ol></div>`;
 };
-function settleDayForm(rid){
+function settleDayForm(rid, pre){
   const r = S.resellers[rid]; if (!r) return; const C = compute(), h = heldOf(rid, C), a = C.acc[rid] || {net:0, owed:0, due:0};
-  modal(`Settle: ${r.name}`, `<div class="grid2">${fDate()}<label for="f-sch">Paid into<select id="f-sch" name="channel">${chOptions('momo')}</select></label></div>
+  modal(`Settle: ${r.name}`, `${pre ? `<div class="hint" style="border-left:4px solid var(--acc);padding-left:10px"><b>Sent by ${esc(r.name)} through their link</b> on ${esc(fmtDateTime(pre.at))}. Check the figures, change anything that is wrong, then save.${pre.note ? `<br>Their note: “${esc(pre.note)}”` : ''}${pre.proof ? `<br><img src="${pre.proof}" alt="Payment photo" style="max-width:100%;max-height:170px;border-radius:8px;margin-top:6px">` : ''}</div>` : ''}<div class="grid2">${fDate(pre?.date)}<label for="f-sch">Paid into<select id="f-sch" name="channel">${chOptions(pre?.channel || 'momo')}</select></label></div>
     ${h.length ? `<div class="tw"><table class="t" id="sd-tab"><thead><tr><th>Perfume</th><th class="n">With them</th><th class="n">Price</th><th class="n">Sold</th><th class="n">Amount</th></tr></thead><tbody>
-      ${h.map(([p, v]) => `<tr><td>${esc(pName(p))}</td><td class="n">${v}</td><td class="n">${money(resPrice(rid, p, C))}</td><td class="n"><input type="number" class="sd-q" name="sold_${p}" data-pid="${p}" min="0" max="${v}" step="1" value="" placeholder="0" style="width:70px;text-align:right"></td><td class="n" id="sd-l-${p}">—</td></tr>`).join('')}
+      ${h.map(([p, v]) => `<tr><td>${esc(pName(p))}</td><td class="n">${v}</td><td class="n">${money(resPrice(rid, p, C))}</td><td class="n"><input type="number" class="sd-q" name="sold_${p}" data-pid="${p}" min="0" max="${v}" step="1" value="${pre?.sold?.[p] ? Math.min(pre.sold[p], v) : ''}" placeholder="0" style="width:70px;text-align:right"></td><td class="n" id="sd-l-${p}">—</td></tr>`).join('')}
       </tbody></table></div><div class="actions" style="margin:6px 0 10px">${btn('All sold', 'sdAll', {}, 'sm ghost')}${btn('None sold', 'sdNone', {}, 'sm ghost')}</div>` : '<p class="hint">They are not holding any bottles.</p>'}
     <div class="card" style="margin:0 0 10px;padding:12px 14px" id="sd-sum"></div>
-    <div class="grid2"><label for="f-samt">Money they paid now<input id="f-samt" name="amount" type="number" min="0" step="0.01"></label><label for="f-sref">Reference<input id="f-sref" name="ref" placeholder="e.g. MoMo ref"></label></div>`,
+    <div class="grid2"><label for="f-samt">Money they paid now<input id="f-samt" name="amount" type="number" min="0" step="0.01" ${pre ? `data-touched="1" value="${esc(pre.amount)}"` : ''}></label><label for="f-sref">Reference<input id="f-sref" name="ref" placeholder="e.g. MoMo ref" value="${esc(pre?.ref || '')}"></label></div>`,
   async d => {
     const C2 = compute(), h2 = C2.held[rid] || {}, lines = [];
     for (const [k, v] of Object.entries(d)) if (k.startsWith('sold_') && num(v) > 0) { const p = k.slice(5), q = Math.round(num(v)); if (q > (h2[p] || 0)) throw Error(`${r.name} holds only ${h2[p] || 0} × ${pName(p)}.`); lines.push({p, q}); }
@@ -5720,7 +5992,8 @@ function settleDayForm(rid){
     for (const l of lines) { const price = resPrice(rid, l.p, C2); await put('moves', {kind:'sale', date:d.date, resellerId:rid, productId:l.p, qty:l.q, unitPrice:price, unitCost:num(S.products[l.p]?.costPrice), customer:'', note:'Settlement', comm:commFor(rid, l.q, price, C2.hr?.[rid]?.[l.p])}); }
     const A = compute().acc[rid] || {owed:0, due:0}, kept = r2(Math.max(0, Math.min(A.due, A.owed)));
     if (kept > 0) await put('cash', {kind:'offset', date:d.date, amount:kept, category:'Commission kept', resellerId:rid, description:'Kept at settlement'});
-    if (amt > 0) await put('cash', {kind:'in', date:d.date, channel:d.channel, amount:amt, category:'Reseller remittance', resellerId:rid, description:('Settlement ' + (d.ref || '')).trim()});
+    if (amt > 0) await put('cash', {kind:'in', date:d.date, channel:d.channel, amount:amt, category:'Reseller remittance', resellerId:rid, description:('Settlement ' + (d.ref || '')).trim(), proof:pre?.proof || ''});
+    if (pre?.act) await rlDecide(pre.act, 'approved');
     toast(`Settlement saved for ${r.name}`); setTimeout(() => settleDone(rid, lines, amt, kept, d.date), 60);
   }, {label:'Save settlement', wide:true});
   SETTLE_RID = rid; const f = $('#m-form'); f.addEventListener('input', e => { if (e.target.name === 'amount') e.target.dataset.touched = 1; settleCalc(); }); settleCalc();
@@ -6988,6 +7261,10 @@ const ACT = {
   remReset: async () => { $('#rem-tpl').value = DEFAULT_REMINDER; await putSettings({reminderTemplate:''}); toast('Standard message restored'); TOOLS.reminders.refresh(); },
   remCopy: async d => { try { await navigator.clipboard.writeText(reminderText(d.id)); await markReminded(d.id); TOOLS.reminders.refresh(); toast('Reminder copied'); } catch(e) { toast('Copy did not work here. Use the WhatsApp button instead.', true); } },
   festPrev: d => { UI.festPreview = d.k; render(true); }, festEnd: () => { UI.festPreview = ''; render(true); },
+  expGo: d => { if (route() !== d.r) location.hash = d.r; let n = 0; const iv = setInterval(() => { const el = $('#exp-card'); if (el) { clearInterval(iv); el.scrollIntoView({behavior:'smooth', block:'start'}); } else if (++n > 25) clearInterval(iv); }, 120); },
+  expGroup: d => { UI.expGroup = d.k; const y = scrollY; render(true); scrollTo(0, y); },
+  expXlsx: () => { toast('Preparing Excel…'); saveFile(`Infinity-Fragrances-expected-from-resellers-${today()}.xlsx`, xlsxBlob(expSheets(compute(), expMode()))); },
+  expReport: () => showExpReport(),
   report: () => showReport(), reportCSV: () => reportCSV(), trendN: d => { UI.trend = +d.n; render(); }, insTab: d => { UI.ins = d.k; render(true); }, homeMore: () => { UI.homeMore = !UI.homeMore; render(true); }, lowAll: () => { UI.lowAll = !UI.lowAll; render(true); },
   camScan: () => camScan(), scanClose: () => scanStop(), scanPhoto: () => { scanStop(); camPhoto(); },
   scanTorch: async () => { try { const t = LSCAN.stream.getVideoTracks()[0]; LSCAN.torch = !LSCAN.torch; await t.applyConstraints({advanced:[{torch:LSCAN.torch}]}); } catch(e) { toast('This phone does not allow the light here.', true); } },
@@ -7014,7 +7291,7 @@ const ACT = {
   catCat: (d, el) => { document.querySelectorAll('[data-act=catCat]').forEach(b => b.classList.toggle('on', b.dataset.k === d.k)); document.querySelectorAll('.cat-card').forEach(c => c.hidden = !!d.k && c.dataset.cat !== d.k); },
   catSend: () => { try { const cr = (RES.snap?.creditLimit || (RES.snap?.credit && typeof RES.snap.credit === 'object' ? RES.snap.credit : null)), t = cartTotals().t; if (cr && cr.limit && t > cr.available + 0.009) return toast(`This order (${money(t)}) is more than your available credit (${money(cr.available)}). Pay what you owe first, or order less.`, true); resSubmit('order', resCollect({dataset:{type:'order'}})); } catch(e) { toast(e.message, true); } },
   resProofDel: () => { RES.proof = ''; const pv = $('#rp-prev'); if (pv) pv.innerHTML = ''; const f = $('#rp-img'); if (f) f.value = ''; },
-  reqProof: d => { const q = (OWN.reqs[d.rid] || []).find(x => x.id === d.id); if (q?.proof) proofModal(q.proof, `${rName(d.rid)}: payment slip`); },
+  reqProof: d => { const q = findReq(d.rid, d.id); if (q?.proof) proofModal(q.proof, `${rName(d.rid)}: payment slip`); },
   reqOkSel: async () => { const sel = [...document.querySelectorAll('.rq-sel:checked')].map(c => ({rid:c.dataset.rid, id:c.dataset.id})); if (!sel.length) return toast('Tick the requests first.', true);
     let ok = 0, orders = 0; const bad = []; for (const x of sel) { const q = (OWN.reqs[x.rid] || []).find(y => y.id === x.id); try { await reqApprove(x.rid, x.id, true); ok++; if (q?.type === 'order') orders++; } catch(e) { bad.push(`${rName(x.rid)}: ${fbMsg(e)}`); } }
     if (bad.length) modal('Some requests were not approved', `<p>${ok} approved.</p><ul class="small">${bad.map(b => `<li>${esc(b)}</li>`).join('')}</ul>`, null, {nofocus:true}); else toast(`${ok} approved${orders ? `. ${orders} order${orders === 1 ? '' : 's'}: send the parcels from Dispatch.` : ''}`); },
@@ -7153,6 +7430,7 @@ const ACT = {
   fbClaim: async () => { try { await FB.batch([['set', 'meta/owner', {uid:FB_USER.uid, email:FB_USER.email, at:FB.now()}], ['set', `users/${FB_USER.uid}`, {role:'owner', email:FB_USER.email, at:FB.now()}]]); FB_ROLE = 'owner'; ownerListen(); render(true); } catch(x) { toast(fbMsg(x), true); } },
   fbOut: async () => { if (DESK && MODE === 'desktop') return ACT.appOut(); try { await FB.signOut(); } catch(e) {} },
   fbPublish: () => publishAll(false),
+  rlLink: d => rlLink(d.id), rlTest: d => rlTest(d.id), rlOn: d => rlOn(d.id, !!d.v), rlNew: d => rlNew(d.id), rlMake: d => rlMake(d.id), rlSendAll: () => rlSendAll(),
   reqOk: d => reqApprove(d.rid, d.id), reqNo: d => reqReject(d.rid, d.id),
   accNew: d => accCreate(d.id, false), accReset: d => confirmBox('Make a new login ID and PIN? The old ones stop working.', () => accCreate(d.id, true), 'Make new login'),
   accRemove: d => { const r = S.resellers[d.id]; confirmBox(`Remove ${esc(r.name)}'s online access? They will no longer be able to sign in.`, async () => { try { await FB.del(`users/${r.portalUid}`); await FB.del(`portal/${r.id}`); } catch(e) {} logNote('login', 'logins', `App access removed for reseller ${r.name}`); await put('resellers', {...r, portalUid:'', portalLogin:''}); ownerListen(); toast('Access removed'); }, 'Remove access'); },
@@ -7285,6 +7563,390 @@ const ACT = {
   csv: d => exportCSV(d.k),
   copyStmt: async () => { const t = $('#f-stmt'); try { await navigator.clipboard.writeText(t.value); toast('Statement copied'); } catch(e) { t.select(); toast('Press and hold to copy the selected text'); } },
 };
+/* ======================= 2.21: messages (inbox, chats, groups, announcements, CC) ======================= */
+const MSG = {me:null, key:'', list:[], unsub:null, mUnsub:null, mTid:'', msgs:[], mLoad:false, primed:false, err:'', view:'inbox', tid:'', filter:'all', q:'', c:null, rt:{}, ph:'', cache:{}, n:0, linkSig:'', stick:false, mt:0, cleaned:false};
+const MSG_WIN = 600000, MSG_KEEP = 365 * 86400000;
+const MSG_QR = {admin:['Thank you, received ✅', 'Please send your sales report', 'Settlement day is coming. Please report what you sold and pay.', 'Your stock is on the way 📦', 'Please call me'], reseller:['Payment sent ✅', 'Please call me', 'I need more stock', 'I received the parcel ✅', 'I will report my sales today', 'Thank you'], staff:['Cash-up done ✅', 'We are running low on stock', 'Parcel received ✅', 'Please call me', 'Thank you']};
+const msgFull = () => FB_ROLE === 'owner' || (FB_ROLE === 'manager' && !FB_ME?.limited);
+function msgWho(){
+  if (!FB_USER || !FB || !FB_ROLE || FB_ROLE === 'none') return null;
+  const full = msgFull(), name = full ? (FB_ROLE === 'owner' ? (SESSION?.name || 'Admin') : (FB_ME?.name || SESSION?.name || 'Manager')) : (FB_ME?.name || 'Me');
+  return {id:full ? 'office' : FB_USER.uid, uid:FB_USER.uid, full, name};
+}
+const msgOpenNow = () => !!(MSG.me && $('#msg-root') && (APP_ROLE === 'reseller' ? (FB_ROLE === 'shop' ? SHOP.tab === 'messages' : RES.tab === 'messages') : route() === 'messages'));
+const msgThread = () => MSG.list.find(t => t.id === MSG.tid) || null;
+const msgLinkify = s => esc(s).replace(/(https?:\/\/(?:(?!&quot;|&#39;|&lt;|&gt;)[^\s<])+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+const msgPhOk = p => typeof p === 'string' && /^data:image\/(jpeg|png);base64,[A-Za-z0-9+\/=]+$/.test(p) && p.length < 300000;
+const msgPrev = l => l ? (l.ph && !l.text ? '📷 Photo' : String(l.text || '')) : '';
+function msgAt(iso){
+  const d = new Date(iso || ''), n = new Date(); if (isNaN(d)) return '';
+  if (d.toDateString() === n.toDateString()) return d.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
+  const y = new Date(n); y.setDate(n.getDate() - 1); if (d.toDateString() === y.toDateString()) return 'Yesterday';
+  return d.toLocaleDateString('en-GB', {day:'numeric', month:'short'});
+}
+const msgDay = iso => { const d = new Date(iso || ''), n = new Date(); if (isNaN(d)) return ''; if (d.toDateString() === n.toDateString()) return 'Today'; const y = new Date(n); y.setDate(n.getDate() - 1); return d.toDateString() === y.toDateString() ? 'Yesterday' : d.toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short', year:'numeric'}); };
+const msgQuick = () => { const me = MSG.me; if (!me) return []; const base = me.full ? MSG_QR.admin : FB_ROLE === 'reseller' ? MSG_QR.reseller : MSG_QR.staff; return me.full ? [...base, ...((S.settings.msgTpl || []).filter(Boolean))] : base; };
+
+/* ---- who a person can write to ---- */
+const msgIdsOf = r => [r.portalUid, r.linkToken && r.linkOn !== false ? 'rl:' + r.id : ''].filter(Boolean);
+function msgStaffDir(){
+  const out = [], used = new Set();
+  Object.values(S.staff || {}).filter(x => x.status !== 'left' && x.loginUid).forEach(x => { used.add(x.loginUid); out.push({key:'stf:' + x.id, name:x.name || 'Staff', sub:x.title || 'Staff', grp:'Staff', ids:[x.loginUid], phone:x.phone || ''}); });
+  locs().filter(l => l.keeperUid && !used.has(l.keeperUid)).forEach(l => out.push({key:'shp:' + l.id, name:l.keeper || l.name, sub:'Shopkeeper · ' + l.name, grp:'Staff', ids:[l.keeperUid], phone:l.phone || ''}));
+  return out;
+}
+function msgResContacts(rid){
+  const r = S.resellers[rid], out = []; if (!r) return out;
+  const up = r.recruiterId && S.resellers[r.recruiterId];
+  if (up && up.status !== 'inactive' && msgIdsOf(up).length) out.push({id:up.id, name:up.name, rel:'upline', ids:msgIdsOf(up)});
+  children(rid).filter(k => k.status !== 'inactive' && msgIdsOf(k).length).forEach(k => out.push({id:k.id, name:k.name, rel:'recruit', ids:msgIdsOf(k)}));
+  return out;
+}
+const msgTeam = () => msgStaffDir().map(c => ({id:c.key, name:c.name, sub:c.sub, ids:c.ids}));
+function msgDir(){
+  const me = MSG.me, list = []; if (!me) return {list, byKey:{}, byId:{}};
+  if (me.full) { sortedRes().forEach(r => list.push({key:'res:' + r.id, name:r.name, sub:'Reseller · ' + (tName(r.townId) || 'no town'), grp:'Resellers', ids:msgIdsOf(r), phone:r.phone || '', town:r.townId || '', rid:r.id})); list.push(...msgStaffDir()); }
+  else {
+    list.push({key:'office', name:bizName(), sub:'Admin and managers', grp:'Office', ids:['office']});
+    if (FB_ROLE === 'reseller') (RES.snap?.contacts || []).forEach(c => list.push({key:'c:' + c.id, name:c.name, sub:c.rel === 'upline' ? 'Your recruiter' : 'One of your recruits', grp:'My team', ids:c.ids || []}));
+    else if (FB_ROLE === 'shop') (SHOP.snap?.team || []).filter(c => !(c.ids || []).includes(me.uid)).forEach(c => list.push({key:'c:' + c.id, name:c.name, sub:c.sub || 'Team', grp:'Team', ids:c.ids || []}));
+    else msgStaffDir().filter(c => !c.ids.includes(me.uid)).forEach(c => list.push(c));
+  }
+  const byKey = {}, byId = {}; list.forEach(c => { byKey[c.key] = c; c.ids.forEach(i => { byId[i] = c; }); });
+  return {list, byKey, byId};
+}
+
+/* ---- listening ---- */
+function msgStop(){
+  try { MSG.unsub && MSG.unsub(); } catch(e) {} try { MSG.mUnsub && MSG.mUnsub(); } catch(e) {}
+  MSG.unsub = MSG.mUnsub = null; MSG.list = []; MSG.msgs = []; MSG.tid = ''; MSG.mTid = ''; MSG.view = 'inbox'; MSG.primed = false; MSG.err = ''; MSG.c = null; MSG.key = ''; MSG.me = null; MSG.n = 0; MSG.cache = {};
+}
+function msgStart(){
+  const me = msgWho(), key = me ? (me.full ? 'full' : me.uid) : '';
+  if (key === MSG.key) return;
+  msgStop(); MSG.key = key; MSG.me = me; msgFab();
+  if (!me || !FB) return;
+  const onErr = e => { MSG.err = /permission|insufficient/i.test((e?.code || '') + ' ' + (e?.message || '')) ? 'rules' : (e?.message || 'error'); if (msgOpenNow()) msgPaint(); };
+  MSG.unsub = me.full ? FB.listen('threads', null, null, msgGot, onErr) : FB.listenHas('threads', 'members', me.uid, msgGot, onErr);
+  if (me.full) setTimeout(msgCleanup, 20000);
+}
+function msgGot(list){
+  const me = MSG.me; if (!me) return; MSG.err = '';
+  const old = new Map(MSG.list.map(t => [t.id, t.last?.at || '']));
+  MSG.list = list.filter(t => t && Array.isArray(t.members)).sort((a, b) => (b.upd || '').localeCompare(a.upd || ''));
+  const fresh = MSG.primed ? MSG.list.filter(t => msgUnread(t) && (t.last?.at || '') !== old.get(t.id)) : [];
+  MSG.primed = true;
+  fresh.filter(t => !(msgOpenNow() && MSG.view === 'thread' && MSG.tid === t.id && !document.hidden)).slice(0, 2).forEach(t => { const who = t.last?.off ? bizName() : (t.last?.by || 'Someone'); appNotify(who, msgPrev(t.last)); toast(`New message from ${who}`); });
+  msgBadge(); if (me.full) msgLinkWatch();
+  if (msgOpenNow()) msgPaint();
+}
+function msgSub(tid){
+  if (MSG.mTid === tid) return; try { MSG.mUnsub && MSG.mUnsub(); } catch(e) {}
+  MSG.mTid = tid; MSG.msgs = []; MSG.mLoad = true;
+  MSG.mUnsub = FB.listen(`threads/${tid}/msgs`, null, null, list => { if (MSG.mTid !== tid) return; MSG.msgs = list.sort((a, b) => (a.at || '').localeCompare(b.at || '')); MSG.mLoad = false; MSG.stick = true; if (msgOpenNow()) msgPaint(); }, () => { MSG.mLoad = false; });
+}
+function msgUnread(t){ const me = MSG.me; return !!(me && t && t.last && t.last.from !== me.id && (t.last.at || '') > ((t.reads || {})[me.id] || '')); }
+function msgBadge(){
+  const n = MSG.me ? MSG.list.filter(msgUnread).length : 0; MSG.n = n;
+  const b = $('#msgbtn-n'); if (b) { b.hidden = !n; b.textContent = n > 99 ? '99+' : n; }
+  document.querySelectorAll('a[href="#messages"]').forEach(a => { a.dataset.badge = n || ''; });
+}
+function msgFab(){
+  let b = $('#msgbtn');
+  if (!MSG.me) { if (b) b.hidden = true; document.body.classList.remove('msg-on'); return; }
+  if (!b) { b = document.createElement('button'); b.id = 'msgbtn'; b.type = 'button'; b.className = 'bell msg-fab'; b.dataset.act = 'msgOpen'; b.setAttribute('aria-label', 'Messages'); b.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L3.5 20.5l1.4-4.6A8 8 0 1 1 21 12z"/></svg><b id="msgbtn-n" hidden></b>'; document.body.appendChild(b); }
+  b.hidden = false; document.body.classList.add('msg-on'); msgBadge();
+}
+function msgMark(t){
+  const me = MSG.me; if (!me || !t?.last) return; const iso = nowISO(), stamp = (t.last.at || '') > iso ? t.last.at : iso;
+  t.reads = {...(t.reads || {}), [me.id]: stamp}; msgBadge();
+  try { FB.set('threads/' + t.id, {reads:{[me.id]:stamp}}, true).catch(() => {}); } catch(e) {}
+}
+function msgMount(){
+  const th = $('#msg-thread'); if (th && MSG.stick) { th.scrollTop = th.scrollHeight; } MSG.stick = false;
+  if (MSG.view === 'thread' && MSG.me && !document.hidden && msgOpenNow()) { const t = msgThread(); if (t && msgUnread(t)) msgMark(t); }
+}
+function msgPaint(){
+  const el = $('#msg-root'); if (!el) return;
+  const ae = document.activeElement, fid = ae && ae.id && el.contains(ae) ? ae.id : null, sel = fid && 'selectionStart' in ae ? [ae.selectionStart, ae.selectionEnd] : null, th = $('#msg-thread'), keep = th ? th.scrollTop : 0, atEnd = th ? th.scrollHeight - th.scrollTop - th.clientHeight < 60 : false;
+  el.innerHTML = msgBody();
+  const th2 = $('#msg-thread'); if (th2) { if (atEnd || MSG.stick) th2.scrollTop = th2.scrollHeight; else th2.scrollTop = keep; }
+  if (fid) { const n = document.getElementById(fid); if (n) { n.focus(); if (sel) try { n.setSelectionRange(sel[0], sel[1]); } catch(e) {} } }
+}
+
+/* ---- names and titles ---- */
+function msgNames(t){
+  const me = MSG.me, d = msgDir(), out = [];
+  (t.members || []).forEach(id => { if (id === me.id || id === me.uid) return; const nm = id === 'office' ? bizName() : (t.names?.[id] || d.byId[id]?.name || ''); if (nm && !out.includes(nm)) out.push(nm); });
+  return out;
+}
+function msgTitle(t){
+  if (t.kind === 'group') return t.subject || 'Group'; if (t.kind === 'broadcast') return t.subject || 'Announcement';
+  const n = msgNames(t), names = n.length ? n.slice(0, 3).join(', ') + (n.length > 3 ? ` +${n.length - 3}` : '') : 'Conversation';
+  return t.subject ? `${t.subject} · ${names}` : names;
+}
+const msgInit = s => String(s || '?').trim().split(/\s+/).slice(0, 2).map(x => x[0] || '').join('').toUpperCase() || '?';
+function msgFilterOk(t){
+  const f = MSG.filter, q = MSG.q.trim().toLowerCase();
+  if (f === 'unread' && !msgUnread(t)) return false; if (f === 'direct' && t.kind !== 'direct') return false; if (f === 'group' && t.kind !== 'group') return false; if (f === 'broadcast' && t.kind !== 'broadcast') return false; if (f === 'others' && (t.members || []).includes('office')) return false;
+  return !q || (msgTitle(t) + ' ' + msgPrev(t.last) + ' ' + msgNames(t).join(' ')).toLowerCase().includes(q);
+}
+function msgRowsHTML(){
+  const me = MSG.me, rows = MSG.list.filter(msgFilterOk);
+  if (!rows.length) return `<li class="empty" style="padding:18px 6px">${MSG.list.length ? 'Nothing matches.' : (MSG.primed ? 'No messages yet. Tap “New message” to start one.' : 'Loading…')}</li>`;
+  return rows.map(t => { const un = msgUnread(t), mine = t.last?.from === me.id, who = mine ? 'You' : (t.last?.off && !me.full ? bizName() : (t.last?.by || '')), n = msgNames(t);
+    return `<li><a href="javascript:void 0" class="msg-row${un ? ' unread' : ''}" data-act="msgOpenT" data-id="${esc(t.id)}"><span class="msg-av">${t.kind === 'broadcast' ? '📢' : t.kind === 'group' ? '👥' : esc(msgInit(n[0] || msgTitle(t)))}</span><span class="msg-mid"><span class="msg-t">${esc(msgTitle(t))}</span><span class="msg-p">${esc(who ? who + ': ' : '')}${esc(msgPrev(t.last))}</span></span><span class="msg-end"><span class="small mut">${esc(msgAt(t.upd))}</span>${un ? '<i class="msg-dot"></i>' : ''}</span></a></li>`; }).join('');
+}
+
+/* ---- screens ---- */
+function msgBody(){
+  clearTimeout(MSG.mt); MSG.mt = setTimeout(msgMount, 25);
+  if (!MSG.me) return `<div class="card"><p>${FB_ERR ? esc(FB_ERR) : 'Sign in to use messages.'}</p></div>`;
+  if (MSG.err === 'rules') return msgRulesCard();
+  if (MSG.view === 'new') return msgComposeHTML();
+  if (MSG.view === 'thread') return msgThreadHTML();
+  return msgInboxHTML();
+}
+function msgRulesCard(){
+  return MSG.me.full ? `<div class="card" style="border-left:5px solid var(--bad)"><h2>One quick step in Firebase</h2><p>Messages need the newest Firebase rules (about 1 minute, once).</p><ol class="small" style="padding-left:18px"><li>Tap <b>Copy rules</b>.</li><li>Open <b>console.firebase.google.com</b> → your project → <b>Firestore Database</b> → <b>Rules</b>.</li><li>Select everything there, paste, then tap <b>Publish</b>.</li><li>Come back here and tap <b>Try again</b>.</li></ol><div class="actions">${btn('Copy rules', 'copyRules', {}, 'sm pri')}${btn('Try again', 'msgRetry', {}, 'sm')}</div></div>`
+    : `<div class="card"><h2>Messages are not switched on yet</h2><p class="mut">Ask ${esc(bizName())} to finish the one-time Firebase step for messages, then open this page again.</p><div class="actions">${btn('Try again', 'msgRetry', {}, 'sm')}</div></div>`;
+}
+function msgInboxHTML(){
+  const me = MSG.me, un = MSG.list.filter(msgUnread).length, nn = BELL.items.filter(x => !x.read).length;
+  const chips = [['all', 'All'], ['unread', 'Unread' + (un ? ` (${un})` : '')], ['direct', 'Chats'], ['group', 'Groups'], ['broadcast', 'Announcements']].concat(me.full ? [['others', 'Others’ chats']] : []);
+  return `<div class="card"><div class="msg-top">${btn('✏️ New message', 'msgNew', {m:'direct'}, 'pri')}${me.full ? btn('📢 Announcement', 'msgNew', {m:'broadcast'}) + btn('👥 New group', 'msgNew', {m:'group'}) + btn('Quick replies', 'msgQEdit', {}, 'sm ghost') : ''}${un ? btn('Mark all read', 'msgAll', {}, 'sm ghost') : ''}</div>
+    <input id="msg-q" type="search" placeholder="Search messages" value="${esc(MSG.q)}" autocomplete="off" style="width:100%;box-sizing:border-box">
+    <div class="msg-chips">${chips.map(([k, l]) => `<button type="button" class="msg-chip${MSG.filter === k ? ' on' : ''}" data-act="msgFilter" data-v="${k}">${esc(l)}</button>`).join('')}</div>
+    <ul class="msg-list" id="msg-list"><li><a href="javascript:void 0" class="msg-row${nn ? ' unread' : ''}" data-act="bellOpen"><span class="msg-av">🔔</span><span class="msg-mid"><span class="msg-t">Notifications</span><span class="msg-p">${nn ? `${nn} new from ${esc(bizName())}` : 'Reminders, approvals and parcel updates'}</span></span><span class="msg-end">${nn ? '<i class="msg-dot"></i>' : ''}</span></a></li>${msgRowsHTML()}</ul>
+    ${me.full ? '' : '<p class="hint" style="margin:10px 0 0">🔒 Messages here are company messages. Admin can read them.</p>'}</div>`;
+}
+function msgToCc(t){
+  const me = MSG.me, d = msgDir(), cc = new Set(t.cc || []), to = [], c2 = [];
+  (t.members || []).forEach(id => { if (id === me.id || id === me.uid) return; const nm = id === 'office' ? bizName() : (t.names?.[id] || d.byId[id]?.name || ''); if (!nm) return; const arr = cc.has(id) ? c2 : to; if (!arr.includes(nm)) arr.push(nm); });
+  const cc2 = c2.filter(x => !to.includes(x)); if (cc.has(me.id) || cc.has(me.uid)) cc2.push('You');
+  return {to, cc:cc2};
+}
+function msgSeen(t){
+  const d = msgDir(), at = t.at || '', groups = new Map();
+  (t.members || []).forEach(id => { if (id === 'office') return; const c = d.byId[id]; const k = c ? c.key : id; const g = groups.get(k) || {c, ids:[], name:c?.name || t.names?.[id] || 'Someone'}; g.ids.push(id); groups.set(k, g); });
+  const rows = [...groups.values()].map(g => { const link = g.ids.every(i => String(i).startsWith('rl:')), seen = g.ids.some(i => !String(i).startsWith('rl:') && (t.reads || {})[i] && (t.reads || {})[i] >= (t.kind === 'broadcast' ? at : (t.last?.at || ''))); return {...g, link, seen}; });
+  return rows;
+}
+function msgThreadHTML(){
+  const me = MSG.me, t = msgThread();
+  if (!t) return `<div class="card"><div class="actions">${btn('‹ Messages', 'msgBack', {}, 'sm')}</div><p class="mut">${MSG.primed ? 'This conversation is not available.' : 'Opening…'}</p></div>`;
+  const canPost = t.kind !== 'broadcast' || me.full, tc = msgToCc(t), rows = me.full ? msgSeen(t) : [], seenN = rows.filter(r => r.seen).length;
+  const meta = t.kind === 'broadcast' ? `📢 Announcement to ${esc(t.aud || 'selected people')}${me.full && rows.length ? ` · <a href="javascript:void 0" data-act="msgPeople">Seen by ${seenN} of ${rows.length}</a>` : ''}` : t.kind === 'group' ? `👥 ${esc(msgNames(t).slice(0, 6).join(', '))}${msgNames(t).length > 6 ? ' …' : ''}` : `To: ${esc(tc.to.join(', ') || '—')}${tc.cc.length ? ` · CC: ${esc(tc.cc.join(', '))}` : ''}${t.subject ? ` · Subject: ${esc(t.subject)}` : ''}`;
+  let day = '', list = '';
+  MSG.msgs.forEach(m => { const dd = msgDay(m.at); if (dd !== day) { day = dd; list += `<div class="msg-day">${esc(dd)}</div>`; } list += msgBubble(m, t); });
+  if (!MSG.msgs.length) list = `<p class="mut" style="text-align:center">${MSG.mLoad ? 'Loading…' : 'No messages yet.'}</p>`;
+  const qr = msgQuick(), ph = MSG.ph;
+  return `<div class="card"><div class="msg-head">${btn('‹ Messages', 'msgBack', {}, 'sm')}<div class="msg-ht"><b>${esc(msgTitle(t))}</b><div class="small mut">${meta}</div></div><span class="actions">${btn('People', 'msgPeople', {}, 'sm ghost')}${me.full && t.kind === 'group' ? btn('Edit group', 'msgGroupEdit', {}, 'sm ghost') : ''}${me.full ? btn('Delete', 'msgDelThread', {}, 'sm ghost danger') : ''}</span></div>
+    ${me.full ? '' : '<p class="hint" style="margin:0 0 8px">🔒 Company messages: Admin can read them.</p>'}
+    <div class="msg-thread" id="msg-thread">${list}</div>
+    ${canPost ? `<div class="msg-qr">${qr.map((q, i) => `<button type="button" class="msg-chip" data-act="msgQR" data-i="${i}">${esc(q)}</button>`).join('')}</div>
+    ${ph ? `<div style="margin:6px 0"><img src="${ph}" alt="Photo to send" class="msg-ph" style="max-width:140px">${btn('Remove photo', 'msgPhDel', {}, 'sm ghost')}</div>` : ''}
+    <div class="msg-reply"><textarea id="msg-text" rows="2" maxlength="2000" placeholder="${t.kind === 'broadcast' ? 'Post a follow-up to the same people' : 'Type a message'}">${esc(MSG.rt[t.id] || '')}</textarea><div class="msg-send"><label class="btn sm ghost" for="msg-file">📷<input type="file" id="msg-file" accept="image/*" hidden></label>${btn('Send', 'msgReply', {}, 'pri')}</div></div>`
+      : (t.allowReply ? `<div class="actions" style="margin-top:8px">${btn('Reply to the office', 'msgReplyOffice', {}, 'pri')}</div>` : '<p class="hint" style="margin:8px 0 0">This is an announcement. Replies are switched off.</p>')}</div>`;
+}
+function msgBubble(m, t){
+  const me = MSG.me, mine = m.by === me.uid || (me.full && !!m.off), who = mine ? '' : (m.off && !me.full ? `${esc(bizName())}${m.name && m.name !== 'Admin' ? ' · ' + esc(m.name) : ''}` : esc(m.name || 'Someone')), canDel = me.full || (m.by === me.uid && Date.now() - Date.parse(m.at || 0) < MSG_WIN);
+  const own = me.full && m.off ? `<span class="small mut"> · ${esc(m.name || 'Admin')}</span>` : '';
+  return `<div class="msg-b${mine ? ' me' : ''}">${who ? `<div class="msg-a">${who}</div>` : ''}${msgPhOk(m.ph) ? `<img class="msg-ph" src="${m.ph}" alt="Photo" data-act="msgPh" data-id="${esc(m.id)}">` : ''}${m.text ? `<div>${msgLinkify(m.text)}</div>` : ''}<div class="msg-m">${esc(msgAt(m.at))}${own}${canDel ? ` · <a href="javascript:void 0" data-act="msgUnsend" data-id="${esc(m.id)}">${me.full ? 'Delete' : 'Unsend'}</a>` : ''}</div></div>`;
+}
+
+/* ---- compose ---- */
+function msgNew(m, pre){ MSG.view = 'new'; MSG.c = {mode:m || 'direct', to:[], cc:[], subj:'', text:'', ph:'', aud:'res', allow:false, gname:'', pick:'', find:'', ...(pre || {})}; msgShow(); }
+function msgShow(){
+  closeModal();
+  if (APP_ROLE === 'reseller') { if (FB_ROLE === 'shop') SHOP.tab = 'messages'; else RES.tab = 'messages'; render(true); window.scrollTo(0, 0); }
+  else if (route() === 'messages') { render(true); window.scrollTo(0, 0); } else location.hash = 'messages';
+}
+function msgGo(tid){ if (!MSG.me) return; MSG.view = 'thread'; MSG.tid = tid; MSG.stick = true; msgSub(tid); msgShow(); }
+function msgPickRows(){
+  const c = MSG.c, d = msgDir(), q = (c.find || '').trim().toLowerCase(), cur = c.pick === 'cc' ? c.cc : c.to; let grp = '', out = '';
+  d.list.filter(x => !q || (x.name + ' ' + x.sub).toLowerCase().includes(q)).forEach(x => { if (x.grp !== grp) { grp = x.grp; out += `<div class="msg-grp">${esc(grp)}</div>`; } const on = cur.includes(x.key), none = !x.ids.length;
+    out += `<button type="button" class="msg-pk${on ? ' on' : ''}${none ? ' off' : ''}" data-act="msgPickTog" data-k="${esc(x.key)}" ${none ? 'disabled' : ''}><span class="msg-ck">${on ? '✓' : ''}</span><span><b>${esc(x.name)}</b> <span class="small mut">${esc(x.sub)}${none ? ' · no app login or link yet' : ''}</span></span></button>`; });
+  return out || '<p class="mut">Nobody matches.</p>';
+}
+function msgChips(keys, w){ const d = msgDir(); return keys.map(k => d.byKey[k]).filter(Boolean).map(x => `<button type="button" class="msg-chip on" data-act="msgRm" data-k="${esc(x.key)}" data-w="${w}">${esc(x.name)} ✕</button>`).join(''); }
+function msgAudience(c){
+  const d = msgDir(), f = x => c.aud === 'res' ? x.grp === 'Resellers' : c.aud === 'staff' ? x.grp === 'Staff' : c.aud === 'all' ? true : String(c.aud).startsWith('town:') ? x.grp === 'Resellers' && x.town === c.aud.slice(5) : c.to.includes(x.key);
+  const all = d.list.filter(f), label = c.aud === 'res' ? 'all resellers' : c.aud === 'staff' ? 'shops and staff' : c.aud === 'all' ? 'everyone' : String(c.aud).startsWith('town:') ? `resellers in ${tName(c.aud.slice(5))}` : 'selected people';
+  return {people:all.filter(x => x.ids.length), skipped:all.filter(x => !x.ids.length), label};
+}
+function msgComposeHTML(){
+  const me = MSG.me, c = MSG.c, d = msgDir(), full = me.full, towns = [...new Set(d.list.filter(x => x.grp === 'Resellers' && x.town).map(x => x.town))];
+  const modes = full ? `<div class="seg" style="margin-bottom:10px">${[['direct', 'New message'], ['broadcast', 'Announcement'], ['group', 'New group']].map(([k, l]) => `<button type="button" class="${c.mode === k ? 'on' : ''}" data-act="msgMode" data-v="${k}">${l}</button>`).join('')}</div>` : '';
+  const picker = c.pick ? `<div class="msg-pick"><input id="msg-find" type="search" placeholder="Search people" value="${esc(c.find || '')}" autocomplete="off" style="width:100%;box-sizing:border-box"><div id="msg-pick">${msgPickRows()}</div><div class="actions">${btn('Done', 'msgPickDone', {}, 'sm pri')}</div></div>` : '';
+  let who = '';
+  if (c.mode === 'broadcast') { const a = msgAudience(c);
+    who = `<label for="msg-aud">Send to<select id="msg-aud"><option value="res" ${c.aud === 'res' ? 'selected' : ''}>All resellers</option>${towns.map(t => `<option value="town:${esc(t)}" ${c.aud === 'town:' + t ? 'selected' : ''}>Resellers in ${esc(tName(t))}</option>`).join('')}<option value="staff" ${c.aud === 'staff' ? 'selected' : ''}>All shops and staff</option><option value="all" ${c.aud === 'all' ? 'selected' : ''}>Everyone</option><option value="pick" ${c.aud === 'pick' ? 'selected' : ''}>Pick people…</option></select></label>
+      ${c.aud === 'pick' ? `<div class="msg-to"><span class="small mut">People</span> ${msgChips(c.to, 'to')} ${btn('+ Choose', 'msgPickOpen', {w:'to'}, 'sm')}</div>${picker}` : ''}
+      <p class="small ${a.people.length ? 'mut' : 'neg'}" style="margin:4px 0 8px"><b>${a.people.length}</b> ${a.people.length === 1 ? 'person gets' : 'people get'} this in the app or through their link.${a.skipped.length ? ` ${a.skipped.length} with no app login or link will not: ${esc(a.skipped.slice(0, 5).map(x => x.name).join(', '))}${a.skipped.length > 5 ? '…' : ''}. Use WhatsApp broadcast for them.` : ''}</p>
+      <label for="msg-subj">Title<input id="msg-subj" maxlength="100" placeholder="e.g. Settlement day this Friday" value="${esc(c.subj)}"></label>`; }
+  else if (c.mode === 'group') who = `<label for="msg-gname">Group name<input id="msg-gname" maxlength="60" placeholder="e.g. Serenje resellers" value="${esc(c.gname)}"></label><div class="msg-to"><span class="small mut">Members</span> ${msgChips(c.to, 'to')} ${btn('+ Choose', 'msgPickOpen', {w:'to'}, 'sm')}</div>${picker}<p class="small mut" style="margin:4px 0 8px">Members of a group can see each other’s names.</p>`;
+  else who = `<div class="msg-to"><span class="small mut">To</span> ${msgChips(c.to, 'to')} ${btn('+ Add', 'msgPickOpen', {w:'to'}, 'sm')}</div>${c.pick === 'to' ? picker : ''}<div class="msg-to"><span class="small mut">CC</span> ${msgChips(c.cc, 'cc')} ${btn('+ CC', 'msgPickOpen', {w:'cc'}, 'sm ghost')}</div>${c.pick === 'cc' ? picker : ''}<label for="msg-subj">Subject (optional)<input id="msg-subj" maxlength="100" value="${esc(c.subj)}"></label>`;
+  const qr = msgQuick();
+  return `<div class="card"><div class="msg-head">${btn('‹ Messages', 'msgBack', {}, 'sm')}<div class="msg-ht"><b>${c.mode === 'broadcast' ? 'New announcement' : c.mode === 'group' ? 'New group' : 'New message'}</b></div></div>${modes}${who}
+    ${c.mode === 'broadcast' ? `<label class="chk" for="msg-allow" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" id="msg-allow" ${c.allow ? 'checked' : ''}> Let them reply to the office</label>` : ''}
+    <div class="msg-qr">${qr.map((q, i) => `<button type="button" class="msg-chip" data-act="msgQR" data-i="${i}">${esc(q)}</button>`).join('')}</div>
+    ${c.ph ? `<div style="margin:6px 0"><img src="${c.ph}" alt="Photo to send" class="msg-ph" style="max-width:140px">${btn('Remove photo', 'msgPhDel', {}, 'sm ghost')}</div>` : ''}
+    <div class="msg-reply"><textarea id="msg-text" rows="4" maxlength="2000" placeholder="${c.mode === 'group' ? 'First message (optional)' : 'Type your message'}">${esc(c.text)}</textarea><div class="msg-send"><label class="btn sm ghost" for="msg-file">📷<input type="file" id="msg-file" accept="image/*" hidden></label>${btn(c.mode === 'broadcast' ? 'Send announcement' : c.mode === 'group' ? 'Create group' : 'Send', 'msgSend', {}, 'pri')}</div></div>
+    ${full ? '' : '<p class="hint" style="margin:10px 0 0">🔒 Company messages: Admin can read them.</p>'}</div>`;
+}
+const msgUniq = a => [...new Set(a)];
+function msgSendNew(){
+  const me = MSG.me, c = MSG.c; if (!me || !c) return; const d = msgDir(), text = (c.text || '').trim(), ph = c.ph || '';
+  let people;
+  if (c.mode === 'broadcast') { people = msgAudience(c).people; if (!(c.subj || '').trim()) return toast('Give the announcement a title.', true); if (!people.length) return toast('Nobody to send this to yet.', true); if (!text && !ph) return toast('Type the announcement.', true); }
+  else if (c.mode === 'group') { people = c.to.map(k => d.byKey[k]).filter(Boolean); if (!(c.gname || '').trim()) return toast('Give the group a name.', true); if (!people.length) return toast('Choose at least one member.', true); }
+  else { people = c.to.map(k => d.byKey[k]).filter(Boolean); if (!people.length) return toast('Choose who to send this to.', true); if (!text && !ph) return toast('Type a message first.', true); }
+  if (text.length > 2000) return toast('That message is too long.', true);
+  const ccPeople = c.mode === 'direct' ? c.cc.map(k => d.byKey[k]).filter(Boolean) : [], ids = msgUniq(people.flatMap(p => p.ids)), ccIds = msgUniq(ccPeople.flatMap(p => p.ids).filter(i => !ids.includes(i)));
+  const members = msgUniq([me.id, ...ids, ...ccIds]); if (members.length > (me.full ? 400 : 8)) return toast(me.full ? 'That is too many people for one message.' : 'You can write to up to 7 people at once.', true);
+  const kind = c.mode === 'broadcast' ? 'broadcast' : c.mode === 'group' ? 'group' : 'direct', subject = kind === 'broadcast' ? c.subj.trim() : kind === 'group' ? c.gname.trim() : (c.subj || '').trim();
+  const now = nowISO(), mid = uid() + 'm';
+  if (kind === 'direct' && !subject && !ccIds.length) { const key = [...members].sort().join('|'); const ex = MSG.list.find(t => t.kind === 'direct' && !t.subject && [...(t.members || [])].sort().join('|') === key); if (ex) { MSG.c = null; MSG.view = 'thread'; MSG.tid = ex.id; MSG.stick = true; msgSub(ex.id); MSG.rt[ex.id] = ''; msgPost(ex, text, ph); return msgShow(); } }
+  const names = {}; if (kind !== 'broadcast') { names[me.id] = me.full ? bizName() : me.name; [...people, ...ccPeople].forEach(p => p.ids.forEach(i => { names[i] = p.name; })); }
+  const tid = uid() + 't', last = {at:now, from:me.id, by:me.name, off:me.full, text:text.slice(0, 140), ph:!!ph};
+  const t = {kind, subject, members, names, cc:ccIds, by:me.uid, byName:me.name, at:now, upd:now, last, reads:{[me.id]:now}};
+  if (kind === 'broadcast') { t.aud = msgAudience(c).label; t.allowReply = !!c.allow; t.rc = people.length; delete t.names; }
+  if (kind === 'group' && !text && !ph) { t.last = {at:now, from:me.id, by:me.name, off:me.full, text:'Group created', ph:false}; }
+  const tp = 'threads/' + tid, ops = [['set', tp, t]]; if (text || ph) { const msg = {by:me.uid, name:me.name, off:me.full, text, at:now}; if (ph) msg.ph = ph; ops.push(['set', tp + '/msgs/' + mid, msg]); }
+  FB.batch(ops).catch(e => toast('The message was not sent: ' + fbMsg(e), true));
+  const tt = {id:tid, ...t}; MSG.list.unshift(tt); msgNotify(tt, text || (kind === 'group' ? 'You were added to the group ' + subject : ''), ph);
+  if (members.some(i => String(i).startsWith('rl:'))) rlSched();
+  MSG.c = null; MSG.view = 'thread'; MSG.tid = tid; MSG.stick = true; msgSub(tid); toast(kind === 'broadcast' ? `Announcement sent to ${people.length}` : 'Sent'); msgPaint();
+}
+function msgPost(t, text, ph){
+  const me = MSG.me, now = nowISO(), mid = uid() + 'm', tp = 'threads/' + t.id, msg = {by:me.uid, name:me.name, off:me.full, text, at:now}; if (ph) msg.ph = ph;
+  const last = {at:now, from:me.id, by:me.name, off:me.full, text:text.slice(0, 140), ph:!!ph};
+  t.last = last; t.upd = now; t.reads = {...(t.reads || {}), [me.id]: now};
+  FB.batch([['merge', tp, {last, upd:now, reads:{[me.id]:now}}], ['set', tp + '/msgs/' + mid, msg]]).catch(e => toast('The message was not sent: ' + fbMsg(e), true));
+  msgNotify(t, text, ph); if ((t.members || []).some(i => String(i).startsWith('rl:'))) rlSched();
+}
+function msgReply(){
+  const t = msgThread(); if (!t) return; const el = $('#msg-text'), text = (el ? el.value : MSG.rt[t.id] || '').trim(), ph = MSG.ph;
+  if (!text && !ph) return toast('Type a message first.', true); if (text.length > 2000) return toast('That message is too long.', true);
+  MSG.rt[t.id] = ''; MSG.ph = ''; MSG.stick = true; msgPost(t, text, ph); msgPaint();
+}
+function msgNotify(t, text, ph){
+  const me = MSG.me, from = me.full ? bizName() : me.name, body = `${from}: ${ph && !text ? '📷 Photo' : text}`.slice(0, 170);
+  new Set((t.members || []).filter(id => id !== me.id && id !== me.uid && !String(id).startsWith('rl:'))).forEach(id => { try { fbNotify(id === 'office' ? 'owner' : id, body, 'msg:' + t.id); } catch(e) {} });
+}
+
+/* ---- people, unsend, delete, groups ---- */
+function msgPeople(){
+  const t = msgThread(), me = MSG.me; if (!t) return; const rows = msgSeen(t), tc = msgToCc(t);
+  const nudge = r => { const c = r.c; if (!me.full || !c || !c.phone) return ''; const first = String(c.name || '').split(' ')[0], r0 = c.rid && S.resellers[c.rid]; const txt = `Hello ${first}, you have a new message from ${bizName()} in the app.${r0 && r0.linkToken && r0.linkOn !== false ? ` Open your link: ${rlUrl(r0)} (use the last 4 digits of your phone number).` : ' Please open the app to read it.'}`; return `<a class="btn sm" href="${waLink(c.phone, txt)}" target="_blank" rel="noopener">Nudge on WhatsApp</a>`; };
+  const body = me.full ? `<ul class="list">${rows.map(r => `<li><span><b>${esc(r.name)}</b><div class="small mut">${esc(r.c?.sub || '')}</div></span><span class="actions">${r.link ? '<span class="pill">via link</span>' : r.seen ? '<span class="pill good">Read</span>' : `<span class="pill warn">Not read yet</span>${nudge(r)}`}</span></li>`).join('') || '<li class="mut">Only the office is in this conversation.</li>'}</ul><p class="small mut">“via link” people read their messages on their personal link, so I cannot tell when.</p>`
+    : `<ul class="list">${[...tc.to.map(n => [n, 'To']), ...tc.cc.map(n => [n, 'CC'])].map(([n, w]) => `<li><span><b>${esc(n)}</b></span><span class="pill">${w}</span></li>`).join('') || '<li class="mut">Just you.</li>'}</ul>`;
+  modal('People in this conversation', body, null, {nofocus:true});
+}
+function msgUnsend(mid){
+  const t = msgThread(), me = MSG.me, m = MSG.msgs.find(x => x.id === mid); if (!t || !m) return;
+  if (!(me.full || (m.by === me.uid && Date.now() - Date.parse(m.at || 0) < MSG_WIN))) return toast('You can only unsend within 10 minutes.', true);
+  confirmBox('Delete this message for everyone?', async () => {
+    const rest = MSG.msgs.filter(x => x.id !== mid), prev = rest[rest.length - 1], tp = 'threads/' + t.id;
+    try { await FB.del(`${tp}/msgs/${mid}`); } catch(e) { return toast(fbMsg(e), true); }
+    if ((t.last?.at || '') === (m.at || '')) { const last = prev ? {at:prev.at, from:prev.off ? 'office' : prev.by, by:prev.name || '', off:!!prev.off, text:String(prev.text || '').slice(0, 140), ph:!!prev.ph} : {at:t.last.at, from:t.last.from, by:'', off:false, text:'Message deleted', ph:false}; try { await FB.set(tp, {last}, true); } catch(e) {} }
+    if ((t.members || []).some(i => String(i).startsWith('rl:'))) { delete MSG.cache[t.id]; rlSched(); }
+  }, 'Delete');
+}
+function msgDelThread(){
+  const t = msgThread(); if (!t || !MSG.me.full) return;
+  confirmBox(`Delete this conversation for everyone? All its messages are removed and this cannot be undone.`, async () => {
+    try { const l = await FB.list(`threads/${t.id}/msgs`); const ops = l.map(x => ['del', `threads/${t.id}/msgs/${x.id}`]); for (let i = 0; i < ops.length; i += 400) await FB.batch(ops.slice(i, i + 400)); await FB.del('threads/' + t.id); } catch(e) { return toast(fbMsg(e), true); }
+    MSG.list = MSG.list.filter(x => x.id !== t.id); msgBack(); toast('Conversation deleted');
+  }, 'Delete');
+}
+function msgGroupEdit(){
+  const t = msgThread(), me = MSG.me; if (!t || !me.full || t.kind !== 'group') return; const d = msgDir(), cur = new Set(t.members || []);
+  modal(`Edit group: ${t.subject}`, `<label for="g-name">Group name<input id="g-name" name="name" maxlength="60" value="${esc(t.subject || '')}" required></label><p class="small mut">Tick who is in the group.</p><div class="msg-box">${d.list.map((c, i) => `<label class="chk" style="display:flex;gap:8px;align-items:center;padding:4px 0${c.ids.length ? '' : ';opacity:.5'}"><input type="checkbox" name="m${i}" ${c.ids.some(x => cur.has(x)) ? 'checked' : ''} ${c.ids.length ? '' : 'disabled'}> <span>${esc(c.name)} <span class="small mut">${esc(c.sub)}</span></span></label>`).join('')}</div>`,
+    async f => { const chosen = d.list.filter((c, i) => f['m' + i]); if (!chosen.length) throw Error('Keep at least one person in the group.'); const members = msgUniq(['office', ...chosen.flatMap(c => c.ids)]), names = {office:bizName()}; chosen.forEach(c => c.ids.forEach(i => { names[i] = c.name; }));
+      await FB.update('threads/' + t.id, {subject:f.name.trim(), members, names}); Object.assign(t, {subject:f.name.trim(), members, names}); msgPaint(); toast('Group updated'); }, {label:'Save group', wide:true});
+}
+function msgQEdit(){
+  modal('Quick replies', `<p class="small mut">These one-tap messages appear for you when you write. Put one on each line. The standard ones stay.</p><label for="q-t">Your own quick replies<textarea id="q-t" name="t" rows="6" placeholder="e.g. Your parcel leaves tomorrow">${esc((S.settings.msgTpl || []).join('\n'))}</textarea></label>`, async d => { await putSettings({msgTpl:String(d.t || '').split('\n').map(x => x.trim().slice(0, 200)).filter(Boolean).slice(0, 20)}); toast('Saved'); msgPaint(); }, {label:'Save'});
+}
+async function msgCleanup(){
+  if (MSG.cleaned || !MSG.me?.full || !FB) return; MSG.cleaned = true; const cut = new Date(Date.now() - MSG_KEEP).toISOString();
+  for (const t of MSG.list.filter(x => (x.upd || x.at || '') && (x.upd || x.at) < cut).slice(0, 25)) { try { const l = await FB.list(`threads/${t.id}/msgs`); const ops = l.map(x => ['del', `threads/${t.id}/msgs/${x.id}`]); for (let i = 0; i < ops.length; i += 400) await FB.batch(ops.slice(i, i + 400)); await FB.del('threads/' + t.id); } catch(e) {} }
+}
+
+/* ---- reseller links: messages in and out ---- */
+function msgLinkWatch(){
+  const sig = MSG.list.filter(t => (t.members || []).some(i => String(i).startsWith('rl:'))).map(t => t.id + (t.last?.at || '')).join(',');
+  if (sig !== MSG.linkSig) { const first = MSG.linkSig === ''; MSG.linkSig = sig; if (!first || sig) rlSched(); }
+}
+async function msgLinkData(rid){
+  const id = 'rl:' + rid, out = [];
+  for (const t of MSG.list.filter(x => (x.members || []).includes(id)).slice(0, 12)) {
+    let c = MSG.cache[t.id];
+    if (!c || c.at !== (t.last?.at || '')) { try { const l = await FB.list(`threads/${t.id}/msgs`); c = MSG.cache[t.id] = {at:t.last?.at || '', msgs:l.sort((a, b) => (a.at || '').localeCompare(b.at || ''))}; } catch(e) { c = c || {at:'', msgs:[]}; } }
+    out.push({id:t.id, k:t.kind, s:t.kind === 'direct' ? '' : (t.subject || ''), at:t.upd || '', rep:t.kind !== 'broadcast' || !!t.allowReply, m:c.msgs.slice(-15).map(m => ({id:m.id, w:m.by === id ? 'me' : m.off ? 'office' : (m.name || ''), t:String(m.text || (m.ph ? '📷 Photo' : '')).slice(0, 700), at:m.at || '', c:m.cid || ''}))});
+  }
+  return out;
+}
+function msgLinkThread(rid){ const id = 'rl:' + rid; return MSG.list.filter(t => t.kind === 'direct' && !t.subject && (t.members || []).includes(id) && (t.members || []).includes('office') && t.members.length <= 3).sort((a, b) => (b.upd || '').localeCompare(a.upd || ''))[0] || null; }
+async function msgFromLink(r, token, a){
+  if (!MSG.me?.full || !FB) return; MSG.linkSeen = MSG.linkSeen || new Set(); if (MSG.linkSeen.has(a.id)) return; MSG.linkSeen.add(a.id);
+  const lid = 'rl:' + r.id, text = String(a.text || '').trim().slice(0, 700); if (!text) return;
+  let t = a.tid && MSG.list.find(x => x.id === a.tid && x.kind !== 'broadcast' && (x.members || []).includes(lid)); t = t || msgLinkThread(r.id);
+  const when = Date.parse(a.at || 0), now = when && Math.abs(when - Date.now()) < 36e5 * 36 ? new Date(when).toISOString() : nowISO(), mid = 'l' + a.id, last = {at:now, from:lid, by:r.name, off:false, text:text.slice(0, 140), ph:false};
+  const msg = {by:lid, name:r.name, off:false, text, at:now}; if (a.cid) msg.cid = String(a.cid).slice(0, 40);
+  let tid, ops;
+  if (t) { tid = t.id; ops = [['merge', 'threads/' + tid, {last, upd:now, reads:{[lid]:now}}], ['set', `threads/${tid}/msgs/${mid}`, msg]]; }
+  else { tid = 'rl-' + r.id; ops = [['set', 'threads/' + tid, {kind:'direct', subject:'', members:msgUniq(['office', lid, r.portalUid || '']).filter(Boolean), names:{office:bizName(), [lid]:r.name}, cc:[], by:lid, byName:r.name, at:now, upd:now, last, reads:{[lid]:now}}], ['set', `threads/${tid}/msgs/${mid}`, msg]]; }
+  try { await FB.batch(ops); await FB.update(`rlinks/${token}/acts/${a.id}`, {done:true, status:'read'}); } catch(e) { MSG.linkSeen.delete(a.id); return; }
+  inboxAdd('admin', '', `${r.name} (link): ${text.slice(0, 140)}`, 'msg:' + tid); appNotify(r.name, text); toast(`New message from ${r.name}`); rlSched();
+}
+
+/* ---- events ---- */
+Object.assign(ACT, {
+  msgOpen: () => { MSG.view = 'inbox'; msgShow(); },
+  msgBack: () => { MSG.view = 'inbox'; MSG.c = null; try { MSG.mUnsub && MSG.mUnsub(); } catch(e) {} MSG.mUnsub = null; MSG.mTid = ''; MSG.tid = ''; MSG.ph = ''; msgPaint(); },
+  msgOpenT: d => { MSG.view = 'thread'; MSG.tid = d.id; MSG.stick = true; MSG.ph = ''; msgSub(d.id); msgPaint(); },
+  msgNew: d => msgNew(d.m),
+  msgTo: d => msgNew('direct', {to:[d.k]}),
+  msgMode: d => { const c = MSG.c; if (!c) return; c.mode = d.v; c.pick = ''; c.to = []; c.cc = []; msgPaint(); },
+  msgFilter: d => { MSG.filter = d.v; msgPaint(); },
+  msgAll: () => { MSG.list.filter(msgUnread).forEach(msgMark); msgPaint(); },
+  msgPickOpen: d => { MSG.c.pick = MSG.c.pick === d.w ? '' : d.w; MSG.c.find = ''; msgPaint(); },
+  msgPickDone: () => { MSG.c.pick = ''; msgPaint(); },
+  msgPickTog: d => { const c = MSG.c, w = c.pick === 'cc' ? 'cc' : 'to', o = w === 'cc' ? 'to' : 'cc', a = c[w]; const i = a.indexOf(d.k); if (i >= 0) a.splice(i, 1); else { a.push(d.k); const j = c[o].indexOf(d.k); if (j >= 0) c[o].splice(j, 1); } msgPaint(); },
+  msgRm: d => { const c = MSG.c; c[d.w] = c[d.w].filter(k => k !== d.k); msgPaint(); },
+  msgSend: () => msgSendNew(),
+  msgReply: () => msgReply(),
+  msgReplyOffice: () => { const t = msgThread(); msgNew('direct', {to:['office'], subj:'Re: ' + (t?.subject || 'announcement')}); },
+  msgQR: d => { const q = msgQuick()[+d.i]; if (!q) return; const el = $('#msg-text'); const cur = el ? el.value : ''; const v = (cur ? cur.replace(/\s+$/, '') + ' ' : '') + q; if (el) { el.value = v; el.focus(); } if (MSG.view === 'new' && MSG.c) MSG.c.text = v; else MSG.rt[MSG.tid] = v; },
+  msgPhDel: () => { if (MSG.view === 'new' && MSG.c) MSG.c.ph = ''; else MSG.ph = ''; msgPaint(); },
+  msgPh: d => { const m = MSG.msgs.find(x => x.id === d.id); if (m && msgPhOk(m.ph)) proofModal(m.ph, 'Photo'); },
+  msgUnsend: d => msgUnsend(d.id),
+  msgDelThread: () => msgDelThread(),
+  msgPeople: () => msgPeople(),
+  msgGroupEdit: () => msgGroupEdit(),
+  msgQEdit: () => msgQEdit(),
+  msgRetry: () => { msgStop(); msgStart(); if (msgOpenNow()) msgPaint(); }
+});
+document.addEventListener('input', e => {
+  const t = e.target, id = t.id; if (!id || !id.startsWith('msg-')) return;
+  if (id === 'msg-q') { MSG.q = t.value; const l = $('#msg-list'); if (l) { const first = l.firstElementChild; l.innerHTML = ''; if (first) l.appendChild(first); l.insertAdjacentHTML('beforeend', msgRowsHTML()); } }
+  else if (id === 'msg-text') { if (MSG.view === 'new' && MSG.c) MSG.c.text = t.value; else if (MSG.tid) MSG.rt[MSG.tid] = t.value; }
+  else if (!MSG.c) return;
+  else if (id === 'msg-subj') MSG.c.subj = t.value;
+  else if (id === 'msg-gname') MSG.c.gname = t.value;
+  else if (id === 'msg-allow') MSG.c.allow = t.checked;
+  else if (id === 'msg-find') { MSG.c.find = t.value; const l = $('#msg-pick'); if (l) l.innerHTML = msgPickRows(); }
+});
+document.addEventListener('change', async e => {
+  const t = e.target;
+  if (t.id === 'msg-file' && t.files?.[0]) { try { const dd = await shrinkImage(t.files[0], 900, 150000); if (MSG.view === 'new' && MSG.c) MSG.c.ph = dd; else MSG.ph = dd; msgPaint(); } catch(x) { toast(x.message || 'Could not use that photo.', true); } t.value = ''; }
+  else if (t.id === 'msg-aud' && MSG.c) { MSG.c.aud = t.value; MSG.c.pick = ''; msgPaint(); }
+});
+PAGES.messages = () => head('Messages', 'Chat with your team, shops and resellers. Copy people in, send announcements or start a group.') + `<div id="msg-root" class="msg-wrap">${msgBody()}</div>`;
+const msgBanner = () => MSG.me && MSG.n ? `<div class="card" style="border-left:5px solid var(--gold)"><b>You have ${MSG.n} new message${MSG.n === 1 ? '' : 's'}.</b> ${btn('Read', 'msgOpen', {}, 'sm pri')}</div>` : '';
 document.addEventListener('click', e => {
   const sg = e.target.closest('.seg[data-seg] button'), tl = e.target.closest('[data-tool]');
   if (sg && tl) { sg.parentElement.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === sg)); TOOLS[tl.dataset.tool]?.seg(sg.parentElement.dataset.seg, sg.dataset.v); return; }

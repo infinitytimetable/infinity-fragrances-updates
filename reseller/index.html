@@ -77,6 +77,13 @@ td{padding:9px 4px;border-bottom:1px solid var(--line);vertical-align:top}
 .sheet{position:fixed;inset:0;background:rgba(43,21,32,.55);z-index:30;display:flex;align-items:flex-end;justify-content:center}
 .sheet>div{background:#fffafb;border-radius:20px 20px 0 0;width:100%;max-width:720px;max-height:92vh;overflow:auto;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
 @media (min-width:760px){.sheet{align-items:center}.sheet>div{border-radius:20px}}
+.mrow{display:flex;gap:10px;align-items:center;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:transparent;padding:12px 2px;font:inherit;color:var(--ink);cursor:pointer}
+.mrow:last-child{border-bottom:0}.mrow .mt{flex:1;min-width:0}.mrow .mt b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mrow .mt span{display:block;color:var(--muted);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mrow.un b,.mrow.un span{color:var(--ink);font-weight:800}.mdot{width:10px;height:10px;border-radius:50%;background:var(--acc);flex:none}
+.mb{max-width:88%;padding:9px 12px;border-radius:16px;margin:8px 0;background:#fff;border:1px solid var(--line);font-size:15.5px;line-height:1.4;overflow-wrap:anywhere}
+.mb.me{margin-left:auto;background:var(--deep);border-color:var(--deep);color:#fff}.mb.me a{color:#fff}.mb a{color:var(--deep);text-decoration:underline}.mb.me a{color:#fff}
+.mb .mw{font-size:12.5px;font-weight:800;color:var(--deep);margin-bottom:2px}.mb .mm{font-size:12px;opacity:.75;margin-top:3px}
+.mbox{display:flex;gap:8px;align-items:flex-end;margin-top:10px}.mbox textarea{flex:1;min-height:52px}.mbox .btn{flex:none}
 </style>
 </head>
 <body>
@@ -166,9 +173,10 @@ td{padding:9px 4px;border-bottom:1px solid var(--line);vertical-align:top}
     if (doc.on === false) { app.innerHTML = head(doc.biz || 'My account', '') + '<div class="card"><p><b>This link is turned off.</b></p><p class="mut">Ask the office for a new link.</p></div>'; return; }
     if (!doc.ct) { app.innerHTML = head(doc.biz || 'My account', '') + '<div class="card"><p><b>Your account is being set up.</b></p><p class="mut">Please try again in a few minutes.</p></div>'; return; }
     if (!D) { app.innerHTML = lockHTML(); var i = $('#pin'); if (i && !busy) i.focus(); return; }
-    var s = V.screen;
-    app.innerHTML = s === 'settle' ? settleHTML() : s === 'parcels' ? parcelsHTML() : s === 'stock' ? stockHTML() : s === 'hist' ? histHTML() : s === 'done' ? doneHTML() : homeHTML();
-    window.scrollTo(0, y);
+    var s = V.screen, fm = document.activeElement && document.activeElement.id === 'mtext' ? document.activeElement.selectionStart : -1;
+    app.innerHTML = s === 'msgs' ? msgsHTML() : s === 'thread' ? threadHTML() : s === 'mnew' ? mnewHTML() : s === 'settle' ? settleHTML() : s === 'parcels' ? parcelsHTML() : s === 'stock' ? stockHTML() : s === 'hist' ? histHTML() : s === 'done' ? doneHTML() : homeHTML();
+    if (V.stick && s === 'thread') { V.stick = false; window.scrollTo(0, document.body.scrollHeight); } else window.scrollTo(0, y);
+    if (fm >= 0) { var ta = $('#mtext'); if (ta) { ta.focus(); try { ta.setSelectionRange(fm, fm); } catch (e) {} } }
   }
   function lockHTML() {
     return head(doc.biz || 'Infinity Fragrances', 'Your reseller account') + '<div class="card"><h2>Welcome</h2><p class="mut" style="margin-top:0">To keep your account private, type the <b>last 4 digits of your phone number</b>.</p>' +
@@ -178,13 +186,15 @@ td{padding:9px 4px;border-bottom:1px solid var(--line);vertical-align:top}
   function homeHTML() {
     var H = heldLeft(), bottles = H.reduce(function (t, h) { return t + h.qty; }, 0), val = H.reduce(function (t, h) { return t + h.qty * h.price; }, 0), net = r2(num(D.net) + pendEffect()), pc = parcelsToConfirm().length, pend = unresolved();
     var stale = D.at && (Date.now() - new Date(D.at).getTime()) > 3 * 86400000;
-    var h = head('Hello, ' + first(D.name), esc(D.biz) + ' · ' + esc(D.town || ''));
+    var h = head('Hello, ' + first(D.name), esc(D.biz) + ' · ' + esc(D.town || '')), mn = mUnseenN();
+    mThreads().filter(function (t) { return t.k === 'broadcast' && mUnseen(t); }).slice(0, 2).forEach(function (t) { h += '<div class="notice"><b>📢 ' + esc(mTitle(t)) + '</b> <button class="btn sm" data-a="openT" data-id="' + esc(t.id) + '">Read</button></div>'; });
     if (pend.length) h += '<div class="notice warn"><b>' + pend.length + ' of your report' + (pend.length === 1 ? ' is' : 's are') + ' waiting.</b> ' + esc(D.biz) + ' will check and confirm it.</div>';
     (D.reports || []).filter(function (r) { return r.status === 'rejected' && !(local.seen || {})[r.no]; }).forEach(function (r) { h += '<div class="notice bad"><b>Not accepted:</b> your report ' + esc(r.no) + (r.reason ? '. ' + esc(r.reason) : '.') + ' <button class="btn sm" data-a="seen" data-no="' + esc(r.no) + '">OK</button></div>'; });
     h += '<div class="tiles"><div class="tile"><div class="l">Perfume with you</div><div class="v">' + bottles + ' bottles</div><div class="s">worth ' + money(val) + '</div></div>' +
       '<div class="tile"><div class="l">' + (net > 0.009 ? 'You owe' : net < -0.009 ? 'We owe you' : 'Balance') + '</div><div class="v">' + money(Math.abs(net)) + '</div><div class="s">' + (net > 0.009 ? 'for perfume already sold' : net < -0.009 ? 'your commission' : 'all clear') + '</div></div></div>';
     h += '<button class="big" data-a="go" data-s="settle"><span class="ic">💰</span><div><b>Report sales and pay</b><span>Tick what you sold, then tell us how you paid</span></div></button>';
     h += '<button class="big" data-a="go" data-s="parcels"><span class="ic">📦</span><div><b>Confirm stock received</b><span>When a parcel reaches you, tell us what you got</span></div>' + (pc ? '<i class="bdg">' + pc + '</i>' : '') + '</button>';
+    h += '<button class="big" data-a="go" data-s="msgs"><span class="ic">💬</span><div><b>Messages</b><span>News and chats with ' + esc(D.biz) + '</span></div>' + (mn ? '<i class="bdg">' + mn + '</i>' : '') + '</button>';
     h += '<button class="big" data-a="go" data-s="stock"><span class="ic">🧴</span><div><b>My stock</b><span>What you hold now, with prices</span></div></button>';
     h += '<button class="big" data-a="go" data-s="hist"><span class="ic">🧾</span><div><b>My history</b><span>Past months and reports you sent</span></div></button>';
     var sent = Object.keys(local.sent).map(function (n) { return local.sent[n]; }).sort(function (a, b) { return (b.at || '').localeCompare(a.at || ''); }).slice(0, 5);
@@ -262,10 +272,81 @@ td{padding:9px 4px;border-bottom:1px solid var(--line);vertical-align:top}
       '<button class="btn pri block" data-a="pdfSent" data-no="' + esc(x.no) + '" style="margin-bottom:10px">Download my ' + (x.kind === 'received' ? 'received note' : 'report') + ' (PDF)</button>' + (canShare() ? '<button class="btn wa block" data-a="shareSent" data-no="' + esc(x.no) + '" style="margin-bottom:10px">Share the PDF on WhatsApp</button>' : '') + '<button class="btn block ghost" data-a="go" data-s="home">Back to my account</button>';
   }
 
+  /* ---------- messages ---------- */
+  function mThreads() { return ((D && D.msgs) || []).slice().sort(function (a, b) { return (b.at || '').localeCompare(a.at || ''); }); }
+  function mLastAt(t) { var m = t.m || []; return (m.length && m[m.length - 1].at) || t.at || ''; }
+  function mUnseen(t) { var m = t.m || [], l = m[m.length - 1]; if (!l || l.w === 'me') return false; return mLastAt(t) > ((local.ms || {})[t.id] || ''); }
+  function mUnseenN() { return mThreads().filter(mUnseen).length; }
+  function mPending() {
+    var have = {}; ((D && D.msgs) || []).forEach(function (t) { (t.m || []).forEach(function (m) { if (m.c) have[m.c] = 1; }); });
+    var q = (local.mq || []).filter(function (x) { return !have[x.cid] && Date.now() - Date.parse(x.at) < 7 * 86400000; });
+    if (q.length !== (local.mq || []).length) { local.mq = q; keep(); }
+    return q;
+  }
+  function mWho(w) { return w === 'office' ? D.biz : w; }
+  function mTitle(t) {
+    if (t.s) return t.s; if (t.k === 'broadcast') return 'Announcement from ' + D.biz;
+    var o = [], off = false; (t.m || []).forEach(function (m) { if (m.w === 'office') off = true; else if (m.w !== 'me' && o.indexOf(m.w) < 0) o.push(m.w); });
+    return (off || !o.length ? [D.biz] : []).concat(o).join(', ');
+  }
+  function mText(v) { return esc(v).replace(/(https?:\/\/(?:(?!&quot;|&#39;|&lt;|&gt;)[^\s<])+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>').replace(/\n/g, '<br>'); }
+  function mBubble(m) {
+    var me = m.w === 'me';
+    return '<div class="mb' + (me ? ' me' : '') + '">' + (me ? '' : '<div class="mw">' + esc(mWho(m.w)) + '</div>') + '<div>' + mText(m.t) + '</div><div class="mm">' + esc(fmtDT(m.at)) + '</div></div>';
+  }
+  function msgsHTML() {
+    var th = mThreads(), q = mPending().filter(function (x) { return !x.tid; });
+    var h = head('Messages', esc(D.biz)) + backBtn();
+    h += '<button class="big" data-a="mnew"><span class="ic">✏️</span><div><b>Write to ' + esc(D.biz) + '</b><span>Ask a question or send news</span></div></button>';
+    if (err) h += '<div class="notice bad">' + esc(err) + '</div>';
+    q.forEach(function (x) { h += '<div class="mb me" style="margin-left:auto"><div>' + mText(x.text) + '</div><div class="mm">Sending… ' + esc(fmtDT(x.at)) + '</div></div>'; });
+    if (!th.length && !q.length) h += '<div class="card"><p class="mut" style="margin:0">No messages yet. When ' + esc(D.biz) + ' writes to you, it shows here.</p></div>';
+    else if (th.length) h += '<div class="card" style="padding:4px 14px">' + th.map(function (t) {
+      var l = (t.m || [])[(t.m || []).length - 1], un = mUnseen(t);
+      return '<button class="mrow' + (un ? ' un' : '') + '" data-a="openT" data-id="' + esc(t.id) + '"><span style="font-size:22px">' + (t.k === 'broadcast' ? '📢' : '💬') + '</span><span class="mt"><b>' + esc(mTitle(t)) + '</b><span>' + (l ? esc((l.w === 'me' ? 'You: ' : l.w === 'office' || t.k === 'direct' ? '' : mWho(l.w) + ': ') + l.t) : '') + '</span></span>' + (un ? '<i class="mdot"></i>' : '') + '</button>';
+    }).join('') + '</div>';
+    h += '<p class="center small mut">Messages you send go to ' + esc(D.biz) + '. They show here as delivered once the office has them.</p>';
+    return h;
+  }
+  function threadHTML() {
+    var t = ((D && D.msgs) || []).filter(function (x) { return x.id === V.tid; })[0];
+    if (!t) { V.screen = 'msgs'; return msgsHTML(); }
+    local.ms = local.ms || {}; var la = mLastAt(t); if ((local.ms[t.id] || '') < la) { local.ms[t.id] = la; keep(); }
+    var h = head(mTitle(t), t.k === 'broadcast' ? '📢 Announcement' : '') + '<button class="back" data-a="go" data-s="msgs">‹ Messages</button><div class="card" style="padding:10px 14px">';
+    h += (t.m || []).map(mBubble).join('') || '<p class="mut">No messages.</p>';
+    mPending().filter(function (x) { return x.tid === t.id; }).forEach(function (x) { h += '<div class="mb me"><div>' + mText(x.text) + '</div><div class="mm">Sending… ' + esc(fmtDT(x.at)) + '</div></div>'; });
+    h += '</div>';
+    if (err) h += '<div class="notice bad">' + esc(err) + '</div>';
+    if (t.rep) h += '<div class="mbox"><textarea id="mtext" maxlength="700" placeholder="Type a message">' + esc(V.mt || '') + '</textarea><button class="btn pri" data-a="msend" data-id="' + esc(t.id) + '">Send</button></div>';
+    else h += '<p class="small mut">This is an announcement, so replies are switched off here.</p><button class="btn pri block" data-a="mnew">Write to ' + esc(D.biz) + '</button>';
+    return h;
+  }
+  function mnewHTML() {
+    return head('Write to ' + D.biz, '') + '<button class="back" data-a="go" data-s="msgs">‹ Messages</button><div class="card"><label>Your message<textarea id="mtext" maxlength="700" placeholder="Type your message here" style="min-height:120px">' + esc(V.mt || '') + '</textarea></label>' +
+      (err ? '<div class="err">' + esc(err) + '</div>' : '') + '<button class="btn pri block" style="margin-top:12px" data-a="msend" data-id="">Send</button><p class="small mut" style="margin:10px 0 0">Up to 700 letters. ' + esc(D.biz) + ' will reply here.</p></div>';
+  }
+  function sendMsg(tid) {
+    var ta = $('#mtext'), text = String((ta ? ta.value : V.mt) || '').trim().slice(0, 700); if (!text || V.mbusy) return;
+    var t = tid ? ((D.msgs || []).filter(function (x) { return x.id === tid; })[0]) : null; if (t && t.k === 'broadcast') tid = '';
+    var cid = 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), act = {kind: 'msg', text: text, cid: cid}; if (tid) act.tid = tid;
+    V.mbusy = true; err = '';
+    return chkOf(local.pin).then(function (c) {
+      act.chk = c; act.at = new Date().toISOString(); act.done = false;
+      local.mq = (local.mq || []).concat([{cid: cid, tid: tid || '', text: text, at: act.at}]); keep(); V.mt = '';
+      if (!tid) V.screen = 'msgs'; V.stick = true; draw();
+      return db.collection('rlinks/' + k + '/acts').add(act);
+    }).then(function () { V.mbusy = false; }, function () {
+      V.mbusy = false; local.mq = (local.mq || []).filter(function (x) { return x.cid !== cid; }); keep(); V.mt = text; err = 'Could not send. Check your internet and try again. (Nothing was sent.)'; V.screen = tid ? 'thread' : 'mnew'; draw();
+    });
+  }
+
   /* ---------- actions ---------- */
   var A = {
     unlock: function () { var i = $('#pin'); unlock(i ? i.value.trim() : ''); },
     go: function (t) { V.screen = t.getAttribute('data-s'); err = ''; draw(); window.scrollTo(0, 0); },
+    openT: function (t) { V.tid = t.getAttribute('data-id'); V.screen = 'thread'; V.mt = ''; err = ''; V.stick = true; draw(); },
+    mnew: function () { V.screen = 'mnew'; V.mt = ''; err = ''; draw(); window.scrollTo(0, 0); var ta = $('#mtext'); if (ta) ta.focus(); },
+    msend: function (t) { sendMsg(t.getAttribute('data-id')); },
     seen: function (t) { local.seen = local.seen || {}; local.seen[t.getAttribute('data-no')] = 1; keep(); draw(); },
     tick: function (t) { var p = t.getAttribute('data-p'); V.sold[p] = num(V.sold[p]) > 0 ? 0 : 1; draw(); },
     plus: function (t) { var p = t.getAttribute('data-p'), h = heldLeft().filter(function (x) { return x.p === p; })[0]; V.sold[p] = Math.min(h ? h.qty : 0, num(V.sold[p]) + 1); draw(); },
@@ -305,6 +386,7 @@ td{padding:9px 4px;border-bottom:1px solid var(--line);vertical-align:top}
     if (t.id === 'amt') { V.pay.amount = t.value; V.pay.touched = true; drawSum(); }
     else if (t.id === 'ref') V.pay.ref = t.value;
     else if (t.id === 'note') V.pay.note = t.value;
+    else if (t.id === 'mtext') V.mt = t.value;
     else if (t.getAttribute('data-i') === 'rn') V.rn[t.getAttribute('data-id')] = t.value;
     else if (t.id === 'pin') { t.value = t.value.replace(/\D/g, '').slice(0, 4); if (t.value.length === 4) unlock(t.value); }
   });
