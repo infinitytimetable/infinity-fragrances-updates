@@ -1,21 +1,21 @@
 {
- "version": "2.24.0",
+ "version": "2.24.1",
  "date": "2026-11-23",
  "notes": [
-  "Shop screen price list: choose how prices are shown (one line per perfume, grouped by price, or photo cards)",
-  "Photo polish: trims empty space, makes every bottle the same size, cleans a white background and sharpens for crisp 4K. Originals are kept",
-  "HD uploads are kept larger and polished automatically on a white background"
+  "Price list: perfume names are no longer cut short (they shrink to fit, and a very long name wraps to two lines)",
+  "Photo polish uses less memory on big photos, and closing its progress window now stops it",
+  "Photo cards: very long names wrap instead of running out of the card"
  ],
  "android": {
-  "file": "android-2.24.0.html",
-  "sig": "v+VJ6nLKtEvMPRnV7wv9QQiVPEo9qjXsaylasSk8x6DIsBuKqtqJkSn/HdFB20kJdcDvHp9j+1TxSglDlkbjJw==",
-  "size": 2634749,
+  "file": "android-2.24.1.html",
+  "sig": "+B6SOCLEP+Y1j2Tb+IQhoXiiuJsxWorCA5t3yB87Th3GUDXAaETj+KkITxwyUQXEkwUmD+XE/pX626BBGGbxdw==",
+  "size": 2635902,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.24.0.html",
-  "sig": "wNAcm1BuzLqzA8cRbUfY8n4Dj8ObazYP/GsgpWRDnSgJC81KtFq9VmGlxCbml0Htk8IXRL0yi1SKVF8FmYa7Lg==",
-  "size": 2629737,
+  "file": "desktop-2.24.1.html",
+  "sig": "JbZl89Qh3JR7TS3je/o670wkqv4E/SyGOiAWZlcEo2wkxYnwwK5vi2wT3ezWPCZUdBWOnHpwVdxwc+rld01bnQ==",
+  "size": 2630890,
   "minShell": "2.5.0"
  },
  "apk": {
