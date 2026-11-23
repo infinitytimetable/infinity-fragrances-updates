@@ -915,8 +915,13 @@ body.bell-on .head,body.bell-on .res-head,body.bell-on .sec-row{padding-right:52
 .ss-lh .ss-lht{font-family:var(--head);font-weight:var(--hw);font-size:max(40px,calc(58px*var(--ts,1)));text-transform:var(--tt,none)}
 .ss-lh .ss-lhs{font-size:30px;color:var(--mut)}
 .ss-lr{display:flex;align-items:baseline;gap:14px}
-.ss-lr .ss-n{font-size:38px;font-weight:500;white-space:nowrap}
-.ss-lr .ss-d{flex:1;border-bottom:3px dotted var(--rule);transform:translateY(-8px)}
+.ss-lr .ss-n{font-size:38px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.ss-lr .ss-d{flex:1 1 24px;min-width:24px;border-bottom:3px dotted var(--rule);transform:translateY(-8px)}
+.ss-lr .ss-p,.ss-lr .ss-w{flex:none}
+.ss-rn2 .ss-lr .ss-n{font-size:33px}
+.ss-rn3 .ss-lr .ss-n{font-size:29px}
+.ss-rn4 .ss-lr .ss-n{font-size:26px}
+.ss-rn5 .ss-lr .ss-n{font-size:23px}
 .ss-lr .ss-p{font-family:var(--head);font-weight:var(--hw);font-size:46px;color:var(--acc)}
 .ss-lg{display:flex;flex-direction:column;gap:4px}
 .ss-lg .ss-p{font-family:var(--head);font-weight:var(--hw);font-size:60px;line-height:1.1;color:var(--acc)}
@@ -978,6 +983,17 @@ body.ss-projecting > *:not(.ss-proj){display:none!important}
 .ss-hint{position:absolute;top:22px;left:50%;transform:translateX(-50%);max-width:92%;padding:10px 16px;border-radius:10px;background:rgba(20,18,15,.88);color:#f4ecd8;font:600 16px/1.3 system-ui,sans-serif;text-align:center;z-index:3}
 .ss-hint[hidden]{display:none}
 .ss-proj .ss-pv{position:absolute;inset:0;width:100%;height:100%}
+
+/* price list as photo cards */
+.ss-pcards{position:absolute;left:96px;top:218px;width:1728px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:24px}
+.ss-pc{border-radius:var(--cr);overflow:hidden;box-shadow:var(--sh);background:var(--bg2)}
+.ss-pc .ss-cphoto{height:204px}
+.ss-pci{padding:12px 16px 14px;display:flex;flex-direction:column;justify-content:space-between;gap:4px;height:146px;box-sizing:border-box}
+.ss-pcn{font-family:var(--head);font-weight:var(--hw);font-size:28px;line-height:1.12;text-transform:var(--tt,none);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ss-pcs{font-size:22px;color:var(--mut);line-height:1.1}
+.ss-pc .ss-crow{margin-top:2px;gap:12px}
+.ss-pcp{font-family:var(--head);font-weight:var(--hw);font-size:44px;line-height:1;color:var(--acc)}
+.ss-pc .ss-was{font-size:24px;color:var(--mut);text-decoration:line-through}
 /*SS-CSS:END*/
 </style>
 <script>try{var L=JSON.parse(localStorage.getItem('if-look')||'{}'),R=document.documentElement;var F=localStorage.getItem('if-forceskin');R.dataset.skin=F||L.skin||'classic';if(L.mode&&L.mode!=='auto')R.dataset.theme=L.mode;R.dataset.text=L.text||'normal';if(L.motion===false)R.dataset.motion='off';}catch(e){}</script>
@@ -2511,8 +2527,9 @@ function fixNumbers(o){
 }
 
 /* ======================= Version 2.0 ======================= */
-const APP_VERSION = '2.23.1';
+const APP_VERSION = '2.24.0';
 const CHANGELOG = [
+  ['2.24.0', '23 Nov 2026', ['Shop screen price list: choose how prices are shown. One line per perfume (new default, the same for every category), grouped by price, or photo cards', 'Photo polish: trims empty space, makes every bottle the same size, cleans a white background and sharpens, for crisp 4K. One tap on Polish, or Polish all. Your original photos are kept', 'HD uploads are now kept larger (up to 2400 pixels) and polished automatically when on a white background']],
   ['2.23.1', '23 Nov 2026', ['Shop screen: if the PC app is too old for the separate TV window, the page now says so, shows the PC app version, and gives the download link with the update steps']],
   ['2.23.0', '23 Nov 2026', ['Shop screen projector in its own window (Windows app 2.23 and newer): it opens on your TV screen while the hub stays free on your PC monitor for the Point of sale and everything else', 'Choose which screen to use, or a window you place yourself; control it from the hub (previous, pause, next, stop). Changes to your slides, prices and stock reach the TV by themselves', 'Needs the new PC app once (download page). Older apps keep using the projector inside the hub window']],
   ['2.22.2', '23 Nov 2026', ['Shop screen projector fixed: it now fills the whole screen with the slideshow (it showed a black screen before), asks for real full screen, and also works with F11 or a double-click', 'Lighter and quicker: the hub is hidden while the projector plays, it starts at once without waiting for downloads, and it keeps only the slides it needs in memory', 'If your screen is not widescreen, the empty bars take the slide colour instead of black']],
@@ -7849,6 +7866,14 @@ function ssTheme(sc, sl, ci, fest, pref){
   return SS_MIX[ci % SS_MIX.length];
 }
 function ssQR(url){ const s = coQR(url); const m = s && s.match(/viewBox="0 0 (\d+) \d+"[^>]*><path fill="[^"]*" d="([^"]*)"/); return m ? {w:+m[1], p:m[2]} : null; }
+const SS_LIST_STYLES = [['rows', 'One line per perfume', 'Name, then price. Easy to read and the same for every category.'], ['groups', 'Grouped by price', 'Perfumes with the same price share one big price. Fits the most perfumes on a slide.'], ['cards', 'Photo cards', 'A small picture of each bottle with its name and price. Shows fewer perfumes per slide.']];
+const ssListStyle = sl => SS_LIST_STYLES.some(x => x[0] === sl.style) ? sl.style : 'rows';
+function ssCardPages(sc, sl, pool){
+  const catsAll = CATS(), want = (sl.cats && sl.cats.length) ? sl.cats : null, rank = c => { const i = catsAll.indexOf(c || 'Other'); return i < 0 ? 999 : i; };
+  const items = pool.filter(p => !want || want.includes(p.category || 'Other')).sort((a, b) => rank(a.category) - rank(b.category) || (a.name || '').localeCompare(b.name || '')).map(ssItem);
+  const per = 10, np = Math.ceil(items.length / per), pages = []; for (let k = 0; k < np; k++) { const take = Math.ceil((items.length - pages.reduce((a, x) => a + x.length, 0)) / (np - k)); pages.push(items.slice(pages.reduce((a, x) => a + x.length, 0), pages.reduce((a, x) => a + x.length, 0) + take)); }
+  return pages;
+}
 function ssListPages(sc, sl, pool){
   const catsAll = CATS(), want = (sl.cats && sl.cats.length) ? sl.cats : null, byCat = {};
   pool.forEach(p => { const c = p.category || 'Other'; if (!want || want.includes(c)) (byCat[c] = byCat[c] || []).push(p); });
@@ -7856,11 +7881,11 @@ function ssListPages(sc, sl, pool){
   const cmp = (a, b) => num(b.size) - num(a.size) || a.now - b.now;
   const blocks = order.map(c => {
     const ps = byCat[c].map(p => ({n:p.name, size:p.size ? p.size + ' ml' : '', ...ssPrice(p.id)})), sizes = new Set(ps.map(x => x.size)), head = sizes.size === 1 ? ps[0].size : '';
-    if (ps.length <= 6) return {h:c, s:head, u:ps.sort((a, b) => cmp({size:a.size.replace(' ml', ''), now:a.now}, {size:b.size.replace(' ml', ''), now:b.now}) || a.n.localeCompare(b.n)).map(x => ({t:'r', n:x.n + (sizes.size > 1 && x.size ? ' ' + x.size : ''), now:x.now, was:x.was, hgt:1}))};
+    if (ps.length <= 6 || ssListStyle(sl) === 'rows') return {h:c, s:head, u:ps.sort((a, b) => cmp({size:a.size.replace(' ml', ''), now:a.now}, {size:b.size.replace(' ml', ''), now:b.now}) || a.n.localeCompare(b.n)).map(x => ({t:'r', n:x.n + (sizes.size > 1 && x.size ? ' ' + x.size : ''), now:x.now, was:x.was, hgt:1}))};
     const g = {}; ps.forEach(x => { const k = x.size + '|' + x.now + '|' + x.was; (g[k] = g[k] || {size:x.size, now:x.now, was:x.was, names:[]}).names.push(x.n); });
     return {h:c, s:head, u:Object.values(g).sort((a, b) => cmp({size:a.size.replace(' ml', ''), now:a.now}, {size:b.size.replace(' ml', ''), now:b.now})).map(x => { const names = x.names.sort().join(', '); return {t:'g', size:sizes.size > 1 ? x.size : '', now:x.now, was:x.was, names, hgt:1.35 + Math.ceil(names.length / 28) * 0.9}; })};
   });
-  const CAP = 12.4, cols = []; let col = [], used = 0;
+  const CAP = ssListStyle(sl) === 'rows' ? 10.2 : 12.4, cols = []; let col = [], used = 0;
   const push = () => { if (col.length) cols.push(col); col = []; used = 0; };
   blocks.forEach(b => { let cur = null;
     b.u.forEach((u, ui) => {
@@ -7892,7 +7917,8 @@ function ssOne(sc, sl, pool, fest, d, ci, all){
       const cp = SS_FEST_COPY[f]; let ps = (sl.pids && sl.pids.length) ? sl.pids.map(id => all.find(x => x.id === id)).filter(Boolean) : ssBest(sc, pool, 3, true); if (!ps.length) return null;
       return {...base('promo'), theme:th(SS_FEST_THEME[f]), eyebrow:sl.eyebrow == null ? cp[0] : sl.eyebrow, titleHTML:ssRich(sl.title || cp[1]), text:sl.text || cp[2], badge:'', items:ps.slice(0, 3).map(ssItem)};
     }
-    case 'list': { const pages = ssListPages(sc, sl, pool); if (!pages.length) return null; const t = th(); return pages.map((cols, k) => ({...base('list'), id:sl.id + (pages.length > 1 ? '#' + (k + 1) : ''), sec:num(sl.sec) || (num(sc.sec) || 8) + 4, theme:t, page:k + 1, pages:pages.length, cols})); }
+    case 'list': { const st = ssListStyle(sl), t = th(); if (st === 'cards') { const pages = ssCardPages(sc, sl, pool); if (!pages.length) return null; return pages.map((items, k) => ({...base('list'), id:sl.id + (pages.length > 1 ? '#' + (k + 1) : ''), sec:num(sl.sec) || (num(sc.sec) || 8) + 4, theme:t, style:'cards', page:k + 1, pages:pages.length, items})); }
+      const pages = ssListPages(sc, sl, pool); if (!pages.length) return null; return pages.map((cols, k) => ({...base('list'), id:sl.id + (pages.length > 1 ? '#' + (k + 1) : ''), sec:num(sl.sec) || (num(sc.sec) || 8) + 4, theme:t, style:st, page:k + 1, pages:pages.length, cols})); }
     case 'qr': { const q = ssQR(sl.url || STORE_URL); return {...base('qr'), theme:th(), titleHTML:ssRich(sl.title || 'Scan to *shop*'), text:sl.text || 'Browse every fragrance and order from your phone', phone:sl.phone === false ? '' : ssPhone(), cap:sl.cap || 'Point your phone camera at the code', qr:q}; }
     case 'pic': { const im = S.images['ss_' + sl.id]?.data; if (!im) return null; return {...base('pic'), theme:th(), img:im}; }
     case 'txt': { if (!sl.title && !sl.text) return null; return {...base('txt'), theme:th(), eyebrow:sl.eyebrow || '', titleHTML:ssRich(sl.title || ''), text:sl.text || '', qr:sl.url ? ssQR(sl.url) : null, cap:sl.cap || ''}; }
@@ -7909,6 +7935,7 @@ function ssBuild(sc, d, opt){
 
 /* ---------- slide pictures ---------- */
 /*SS-VIEW:BEGIN*/
+const ssRn = s => { const m = Math.max(0, ...s.cols.flatMap(c => c.flatMap(b => b.u.filter(u => u.t === 'r').map(u => u.n.length)))); return m > 27 ? 5 : m > 24 ? 4 : m > 21 ? 3 : m > 17 ? 2 : 1; };
 const ssMoney = n => { n = r2(num(n)); return (S.settings.currency || 'K') + (Number.isInteger(n) ? n.toLocaleString('en-US') : n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})); };
 const ssDots = (i, n) => '<div class="ss-dots">' + Array.from({length:n}, (_, k) => `<span class="${k === i ? 'ss-on' : ''}"></span>`).join('') + '</div>';
 const ssFoot = (s, abs) => `<div class="ss-foot${abs ? ' ss-abs' : ''} ss-in" style="--d:7">${ssDots(s.i, s.n)}<div class="ss-tag">${esc(ssTag())}</div></div>`;
@@ -7922,7 +7949,7 @@ const SS_HTML = {
   promo: s => `<div class="ss-deco"></div><div class="ss-frame"></div><div class="ss-promo-text">${ssBrand(0)}<div class="ss-promo-mid">${ssEye(s.eyebrow, 1)}<div class="ss-ttl ss-in${s.titleHTML.replace(/<[^>]+>/g, '').length > 14 ? ' ss-sm' : ''}" style="--d:2">${s.titleHTML}</div><div class="ss-txt ss-in" style="--d:3">${esc(s.text)}</div></div>${ssFoot(s)}</div>
     <div class="ss-cards" style="--n:${s.items.length}">${s.items.map((it, k) => `<div class="ss-card ss-in" style="--d:${k + 2}"><div class="ss-cphoto"><img src="${it.img || PLACEHOLDER}" alt="${esc(it.name)}">${s.badge && it.was ? `<span class="ss-badge">${esc(s.badge)}</span>` : ''}</div><div class="ss-cinfo"><div class="ss-cname">${esc(it.name)}</div><div class="ss-csize">${esc(it.size)}</div><div class="ss-crow"><span class="ss-cprice">${esc(ssMoney(it.now))}</span>${ssWas(it.was)}</div></div></div>`).join('')}</div>`,
   best: s => `<div class="ss-deco"></div><div class="ss-best-top"><div>${ssEye(s.eyebrow, 0)}<div class="ss-ttl ss-in" style="--d:1">${esc(s.title)}</div></div>${ssBrand(1)}</div><div class="ss-best-grid" style="--n:${s.items.length}">${s.items.map((it, k) => `<div class="ss-bp ss-in" style="--d:${k + 1}"><div class="ss-plate"><img src="${it.img || PLACEHOLDER}" alt="${esc(it.name)}"></div><div class="ss-nm">${esc(it.name)}</div><div class="ss-r"><div class="ss-mt">${esc(it.size)}</div><div class="ss-pr">${esc(ssMoney(it.now))}</div></div></div>`).join('')}</div>${ssFoot(s, true)}`,
-  list: s => `<div class="ss-deco"></div><div class="ss-band"><div class="ss-brand ss-in" style="--d:0"><img src="${LOGO}" alt=""><div class="ss-ttl">Price list${s.pages > 1 ? ` <span class="ss-pn">${s.page}/${s.pages}</span>` : ''}</div></div><div class="ss-brand"><span>${esc(bizName())}</span></div></div><div class="ss-cols" style="width:${Math.min(1728, s.cols.length * 576 + (s.cols.length - 1) * 96)}px;left:${Math.round((1920 - Math.min(1728, s.cols.length * 576 + (s.cols.length - 1) * 96)) / 2)}px;grid-template-columns:repeat(${s.cols.length},minmax(0,1fr))">${s.cols.map((c, ci) => `<div class="ss-col ss-in" style="--d:${ci + 1}">${c.map(b => `<div class="ss-lh"><span class="ss-lht">${esc(b.h)}</span><span class="ss-lhs">${esc(b.s)}</span></div>${b.u.map(u => u.t === 'r' ? `<div class="ss-lr"><span class="ss-n">${esc(u.n)}</span><span class="ss-d"></span>${u.was ? `<span class="ss-w">${esc(ssMoney(u.was))}</span>` : ''}<span class="ss-p">${esc(ssMoney(u.now))}</span></div>` : `<div class="ss-lg"><div class="ss-pg"><div class="ss-p">${esc(ssMoney(u.now))}</div>${u.was ? `<span class="ss-w">${esc(ssMoney(u.was))}</span>` : ''}<span class="ss-lgs">${esc(u.size)}</span></div><div class="ss-nm">${esc(u.names)}</div></div>`).join('')}<div class="ss-sp"></div>`).join('')}</div>`).join('')}</div>${ssFoot(s, true)}`,
+  list: s => s.style === 'cards' ? `<div class="ss-deco"></div><div class="ss-band"><div class="ss-brand ss-in" style="--d:0"><img src="${LOGO}" alt=""><div class="ss-ttl">Price list${s.pages > 1 ? ` <span class="ss-pn">${s.page}/${s.pages}</span>` : ''}</div></div><div class="ss-brand"><span>${esc(bizName())}</span></div></div><div class="ss-pcards">${s.items.map((it, k) => `<div class="ss-pc ss-in" style="--d:${Math.min(k, 9) + 1}"><div class="ss-cphoto"><img src="${it.img || PLACEHOLDER}" alt=""></div><div class="ss-pci"><div class="ss-pcn">${esc(it.name)}</div>${it.size && !new RegExp('(^|[^0-9])' + parseFloat(it.size) + '\\s?ml', 'i').test(it.name) ? `<div class="ss-pcs">${esc(it.size)}</div>` : ''}<div class="ss-crow"><span class="ss-pcp">${esc(ssMoney(it.now))}</span>${it.was ? `<span class="ss-was">${esc(ssMoney(it.was))}</span>` : ''}</div></div></div>`).join('')}</div>${ssFoot(s, true)}` : `<div class="ss-deco"></div><div class="ss-band"><div class="ss-brand ss-in" style="--d:0"><img src="${LOGO}" alt=""><div class="ss-ttl">Price list${s.pages > 1 ? ` <span class="ss-pn">${s.page}/${s.pages}</span>` : ''}</div></div><div class="ss-brand"><span>${esc(bizName())}</span></div></div><div class="ss-deco"></div><div class="ss-band"><div class="ss-brand ss-in" style="--d:0"><img src="${LOGO}" alt=""><div class="ss-ttl">Price list${s.pages > 1 ? ` <span class="ss-pn">${s.page}/${s.pages}</span>` : ''}</div></div><div class="ss-brand"><span>${esc(bizName())}</span></div></div><div class="ss-cols ss-rn${ssRn(s)}" style="width:${Math.min(1728, s.cols.length * 576 + (s.cols.length - 1) * 96)}px;left:${Math.round((1920 - Math.min(1728, s.cols.length * 576 + (s.cols.length - 1) * 96)) / 2)}px;grid-template-columns:repeat(${s.cols.length},minmax(0,1fr))">${s.cols.map((c, ci) => `<div class="ss-col ss-in" style="--d:${ci + 1}">${c.map(b => `<div class="ss-lh"><span class="ss-lht">${esc(b.h)}</span><span class="ss-lhs">${esc(b.s)}</span></div>${b.u.map(u => u.t === 'r' ? `<div class="ss-lr"><span class="ss-n">${esc(u.n)}</span><span class="ss-d"></span>${u.was ? `<span class="ss-w">${esc(ssMoney(u.was))}</span>` : ''}<span class="ss-p">${esc(ssMoney(u.now))}</span></div>` : `<div class="ss-lg"><div class="ss-pg"><div class="ss-p">${esc(ssMoney(u.now))}</div>${u.was ? `<span class="ss-w">${esc(ssMoney(u.was))}</span>` : ''}<span class="ss-lgs">${esc(u.size)}</span></div><div class="ss-nm">${esc(u.names)}</div></div>`).join('')}<div class="ss-sp"></div>`).join('')}</div>`).join('')}</div>${ssFoot(s, true)}`,
   qr: s => `<div class="ss-deco"></div><div class="ss-frame"></div><div class="ss-qr-text">${ssBrand(0)}<div class="ss-qr-mid">${ssEye('Order online', 1)}<div class="ss-ttl ss-in" style="--d:2">${s.titleHTML}</div><div class="ss-txt ss-in" style="--d:3">${esc(s.text)}</div>${s.phone ? `<div class="ss-wa ss-in" style="--d:4"><span class="ss-wal">WhatsApp</span><span class="ss-wan">${esc(s.phone)}</span></div>` : ''}</div>${ssFoot(s)}</div><div class="ss-qr-box ss-in" style="--d:2"><div class="ss-qr-plate">${ssQrSvg(s.qr)}</div><div class="ss-cap">${esc(s.cap)}</div></div>`,
   pic: s => `<div class="ss-pic"><img src="${s.img}" alt=""></div>`,
   txt: s => `<div class="ss-deco"></div><div class="ss-frame"></div><div class="ss-txt-center">${ssBrand(0)}<div class="ss-txt-body">${ssEye(s.eyebrow, 1)}<div class="ss-ttl ss-in" style="--d:2">${s.titleHTML}</div>${s.text ? `<div class="ss-txt ss-in" style="--d:3">${esc(s.text)}</div>` : ''}</div>${ssFoot(s)}</div>${s.qr ? `<div class="ss-qr-box ss-in" style="--d:2;right:120px"><div class="ss-qr-plate">${ssQrSvg(s.qr)}</div>${s.cap ? `<div class="ss-cap">${esc(s.cap)}</div>` : ''}</div>` : ''}`
@@ -8087,18 +8114,109 @@ async function ssVideoGo(id){
   SSV.busy = false;
 }
 
+/* ---------- photo polish: trim, same size for every bottle, clean white background, sharpen ---------- */
+/*SS-POLISH:BEGIN*/
+const SS_POLISH_LIMIT = 800000;
+function ssLoadImg(src){
+  return new Promise((res, rej) => {
+    const go = url => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(Error('That file is not a photo.')); im.src = url; };
+    if (typeof src === 'string') return go(src);
+    const r = new FileReader(); r.onerror = () => rej(Error('Could not read the photo.')); r.onload = () => go(r.result); r.readAsDataURL(src);
+  });
+}
+function ssResize(px, sw, sh, dw, dh){
+  /* Lanczos3, two passes. px is RGBA bytes (sw x sh); returns RGB floats (dw x dh x 3) */
+  const A = 3, lz = x => { if (x === 0) return 1; if (x <= -A || x >= A) return 0; const p = Math.PI * x; return A * Math.sin(p) * Math.sin(p / A) / (p * p); };
+  const taps = (n, m) => { const k = n / m, sc = Math.max(1, k), rad = A * sc, out = new Array(m); for (let i = 0; i < m; i++) { const c = (i + 0.5) * k - 0.5, a = Math.max(0, Math.ceil(c - rad)), b = Math.min(n - 1, Math.floor(c + rad)), w = []; let sum = 0; for (let j = a; j <= b; j++) { const v = lz((j - c) / sc); w.push(v); sum += v; } for (let j = 0; j < w.length; j++) w[j] /= sum || 1; out[i] = {a, w}; } return out; };
+  const tx = taps(sw, dw), ty = taps(sh, dh), mid = new Float32Array(dw * sh * 3);
+  for (let y = 0; y < sh; y++) { const row = y * sw * 4; for (let x = 0; x < dw; x++) { const t = tx[x]; let r = 0, g = 0, b = 0; for (let j = 0; j < t.w.length; j++) { const o = row + (t.a + j) * 4, v = t.w[j]; r += px[o] * v; g += px[o + 1] * v; b += px[o + 2] * v; } const q = (y * dw + x) * 3; mid[q] = r; mid[q + 1] = g; mid[q + 2] = b; } }
+  const out = new Float32Array(dw * dh * 3);
+  for (let y = 0; y < dh; y++) { const t = ty[y]; for (let x = 0; x < dw; x++) { let r = 0, g = 0, b = 0; for (let j = 0; j < t.w.length; j++) { const o = ((t.a + j) * dw + x) * 3, v = t.w[j]; r += mid[o] * v; g += mid[o + 1] * v; b += mid[o + 2] * v; } const q = (y * dw + x) * 3; out[q] = r; out[q + 1] = g; out[q + 2] = b; } }
+  return out;
+}
+function ssSharpen(f, w, h, sigma, amount, thr){
+  const R = Math.max(2, Math.ceil(sigma * 3)), k = [], s2 = 2 * sigma * sigma; let sum = 0; for (let i = -R; i <= R; i++) { const v = Math.exp(-i * i / s2); k.push(v); sum += v; } for (let i = 0; i < k.length; i++) k[i] /= sum;
+  const tmp = new Float32Array(f.length), bl = new Float32Array(f.length);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { for (let c = 0; c < 3; c++) { let a = 0; for (let i = -R; i <= R; i++) { const xx = Math.min(w - 1, Math.max(0, x + i)); a += f[(y * w + xx) * 3 + c] * k[i + R]; } tmp[(y * w + x) * 3 + c] = a; } }
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { for (let c = 0; c < 3; c++) { let a = 0; for (let i = -R; i <= R; i++) { const yy = Math.min(h - 1, Math.max(0, y + i)); a += tmp[(yy * w + x) * 3 + c] * k[i + R]; } bl[(y * w + x) * 3 + c] = a; } }
+  for (let i = 0; i < f.length; i++) { const d = f[i] - bl[i]; if (Math.abs(d) > thr) f[i] = f[i] + amount * d; }
+}
+async function ssPolish(src, o){
+  o = o || {}; const im = await ssLoadImg(src);
+  let sw = im.naturalWidth || im.width, sh = im.naturalHeight || im.height; if (!sw || !sh) throw Error('That file is not a photo.');
+  const cap = o.cap || 2600, k0 = Math.min(1, cap / Math.max(sw, sh)); sw = Math.round(sw * k0); sh = Math.round(sh * k0);
+  const c0 = document.createElement('canvas'); c0.width = sw; c0.height = sh; const x0 = c0.getContext('2d', {willReadFrequently:true}); x0.fillStyle = '#fff'; x0.fillRect(0, 0, sw, sh); x0.imageSmoothingQuality = 'high'; x0.drawImage(im, 0, 0, sw, sh);
+  const id = x0.getImageData(0, 0, sw, sh), px = id.data, N = sw * sh;
+  /* what colour is the backdrop? the middle value of the outer edge */
+  const ring = Math.max(2, Math.round(Math.min(sw, sh) * 0.012)), rs = [[], [], []], step = Math.max(1, Math.floor((sw + sh) / 400));
+  const sample = (x, y) => { const q = (y * sw + x) * 4; rs[0].push(px[q]); rs[1].push(px[q + 1]); rs[2].push(px[q + 2]); };
+  for (let x = 0; x < sw; x += step) for (let r = 0; r < ring; r++) { sample(x, r); sample(x, sh - 1 - r); }
+  for (let y = 0; y < sh; y += step) for (let r = 0; r < ring; r++) { sample(r, y); sample(sw - 1 - r, y); }
+  const bg = rs.map(a => { a.sort((p, q) => p - q); return a[a.length >> 1]; });
+  const dif = q => Math.max(Math.abs(px[q] - bg[0]), Math.abs(px[q + 1] - bg[1]), Math.abs(px[q + 2] - bg[2]));
+  const T0 = 7, T1 = 36, white = Math.min(bg[0], bg[1], bg[2]) >= 205;
+  /* the backdrop = pixels like the edge colour that are connected to the edge */
+  const mask = new Uint8Array(N), stack = new Int32Array(N); let sp = 0;
+  const seed = (x, y) => { const i = y * sw + x; if (!mask[i] && dif(i * 4) < T1) { mask[i] = 1; stack[sp++] = i; } };
+  for (let x = 0; x < sw; x++) { seed(x, 0); seed(x, sh - 1); } for (let y = 0; y < sh; y++) { seed(0, y); seed(sw - 1, y); }
+  while (sp) { const i = stack[--sp], x = i % sw, y = (i - x) / sw; if (x > 0) { const j = i - 1; if (!mask[j] && dif(j * 4) < T1) { mask[j] = 1; stack[sp++] = j; } } if (x < sw - 1) { const j = i + 1; if (!mask[j] && dif(j * 4) < T1) { mask[j] = 1; stack[sp++] = j; } } if (y > 0) { const j = i - sw; if (!mask[j] && dif(j * 4) < T1) { mask[j] = 1; stack[sp++] = j; } } if (y < sh - 1) { const j = i + sw; if (!mask[j] && dif(j * 4) < T1) { mask[j] = 1; stack[sp++] = j; } } }
+  /* where is the bottle */
+  const rc = new Int32Array(sh), cc = new Int32Array(sw); let obj = 0;
+  for (let y = 0; y < sh; y++) for (let x = 0; x < sw; x++) if (!mask[y * sw + x]) { rc[y]++; cc[x]++; obj++; }
+  const tr = Math.max(2, Math.round(sw * 0.004)), tc = Math.max(2, Math.round(sh * 0.004));
+  let bx0 = 0, bx1 = sw - 1, by0 = 0, by1 = sh - 1; while (by0 < sh - 1 && rc[by0] < tr) by0++; while (by1 > by0 && rc[by1] < tr) by1--; while (bx0 < sw - 1 && cc[bx0] < tc) bx0++; while (bx1 > bx0 && cc[bx1] < tc) bx1--;
+  let trimmed = true; if (obj < N * 0.03 || bx1 - bx0 < sw * 0.1 || by1 - by0 < sh * 0.1) { bx0 = 0; bx1 = sw - 1; by0 = 0; by1 = sh - 1; trimmed = false; }
+  /* keep room around the bottle so its soft shadow fades out instead of being cut in a straight line */
+  if (trimmed) { const bw0 = bx1 - bx0 + 1, bh0 = by1 - by0 + 1; bx0 = Math.max(0, bx0 - Math.round(bw0 * 0.07)); bx1 = Math.min(sw - 1, bx1 + Math.round(bw0 * 0.07)); by0 = Math.max(0, by0 - Math.round(bh0 * 0.02)); by1 = Math.min(sh - 1, by1 + Math.round(bh0 * 0.07)); }
+  /* clean the backdrop to pure white (only when it is white or near-white to begin with) */
+  if (white && o.clean !== false) for (let i = 0; i < N; i++) if (mask[i]) { const d = dif(i * 4), t = d <= T0 ? 1 : d >= T1 ? 0 : 1 - (d - T0) / (T1 - T0), w = t * t * (3 - 2 * t), q = i * 4; px[q] += (255 - px[q]) * w; px[q + 1] += (255 - px[q + 1]) * w; px[q + 2] += (255 - px[q + 2]) * w; }
+  /* same frame for every bottle: 2:3 like the standard photos, the bottle fills the same share of it */
+  const bw = bx1 - bx0 + 1, bh = by1 - by0 + 1, big = bh >= 1250 || o.big, PH = big ? 2000 : 1500, PW = Math.round(PH * 2 / 3), mx = Math.round(PW * 0.015), my = Math.round(PH * 0.015);
+  const k = Math.min((PW - 2 * mx) / bw, (PH - 2 * my) / bh), dw = Math.max(1, Math.round(bw * k)), dh = Math.max(1, Math.round(bh * k));
+  const crop = new Uint8ClampedArray(bw * bh * 4); for (let y = 0; y < bh; y++) crop.set(px.subarray(((by0 + y) * sw + bx0) * 4, ((by0 + y) * sw + bx0 + bw) * 4), y * bw * 4);
+  const rs2 = ssResize(crop, bw, bh, dw, dh), fill = white && o.clean !== false ? [255, 255, 255] : bg;
+  const fx = new Float32Array(PW * PH * 3); for (let i = 0; i < PW * PH; i++) { fx[i * 3] = fill[0]; fx[i * 3 + 1] = fill[1]; fx[i * 3 + 2] = fill[2]; }
+  const ox = Math.round((PW - dw) / 2), oy = Math.round((PH - dh) / 2); for (let y = 0; y < dh; y++) for (let x = 0; x < dw; x++) { const a = (y * dw + x) * 3, b = ((oy + y) * PW + ox + x) * 3; fx[b] = rs2[a]; fx[b + 1] = rs2[a + 1]; fx[b + 2] = rs2[a + 2]; }
+  if (o.sharpen !== false) ssSharpen(fx, PW, PH, 1.3 * PH / 1500, k > 1.3 ? 0.9 : 0.55, 2.5);
+  const out = document.createElement('canvas'); out.width = PW; out.height = PH; const ox2 = out.getContext('2d'), od = ox2.createImageData(PW, PH);
+  for (let i = 0, j = 0; i < PW * PH * 3; i += 3, j += 4) { od.data[j] = fx[i]; od.data[j + 1] = fx[i + 1]; od.data[j + 2] = fx[i + 2]; od.data[j + 3] = 255; } ox2.putImageData(od, 0, 0);
+  let q = 0.92, data = out.toDataURL('image/jpeg', q); while (data.length > (o.limit || SS_POLISH_LIMIT) && q > 0.5) { q -= 0.05; data = out.toDataURL('image/jpeg', q); }
+  return {data, w:PW, h:PH, trimmed, cleaned:white && o.clean !== false, scale:k};
+}
+/*SS-POLISH:END*/
+
+const ssPlain = async (src, max, limit) => { const im = await ssLoadImg(src), k = Math.min(1, max / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement('canvas'); c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k); const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.imageSmoothingQuality = 'high'; x.drawImage(im, 0, 0, c.width, c.height); let q = 0.9, d = c.toDataURL('image/jpeg', q); while (d.length > limit && q > 0.4) { q -= 0.06; d = c.toDataURL('image/jpeg', q); } return d; };
+/* a photo you upload: polished when it sits on a white background, otherwise kept as it is (just kept large) */
+async function ssHdFromFile(file){
+  if (ssCfg().polish !== false) { try { const r = await ssPolish(file, {big:true}); if (r.cleaned) return {data:r.data, polished:true}; } catch(e) {} }
+  return {data:await ssPlain(file, 2400, SS_POLISH_LIMIT)};
+}
+const SSP = {run:false, abort:{v:false}};
+async function ssPolishRun(pids){
+  if (SSP.run) return; SSP.run = true; SSP.abort = {v:false}; let ok = 0, skipped = 0, failed = 0;
+  modal('Polishing photos', `<div id="ssp-prog" class="small" style="min-height:44px" aria-live="polite">Starting…</div><p class="small mut">Keep this window open. Your original photos are not changed.</p><div class="m-foot"><button type="button" class="btn ghost" data-act="ssPolishStop">Stop</button></div>`, null, {nofocus:true});
+  for (let i = 0; i < pids.length; i++) {
+    if (SSP.abort.v) break; const pid = pids[i], box = document.getElementById('ssp-prog');
+    if (box) box.innerHTML = `${esc(pName(pid))}<br>Photo ${i + 1} of ${pids.length}<div style="height:8px;border-radius:4px;background:var(--line);margin-top:6px;overflow:hidden"><div style="height:100%;width:${Math.round(i / pids.length * 100)}%;background:var(--gold)"></div></div>`;
+    await new Promise(r => setTimeout(r, 30));
+    try { const r = await ssPolish(imgOf(pid)); if (r.cleaned) { await put('images', {id:'hd_' + pid, data:r.data, polished:true}); ok++; } else skipped++; } catch(e) { failed++; }
+  }
+  SSP.run = false; closeModal(); render(true);
+  toast(`${ok} photo${ok === 1 ? '' : 's'} polished${skipped ? `, ${skipped} left as they are (not on a white background)` : ''}${failed ? `, ${failed} could not be read` : ''}${SSP.abort.v ? ' (stopped)' : ''}.`, !!failed && !ok);
+}
+
 /* ---------- the Shop screen page ---------- */
 const ssSummary = sl => ({
   hero: () => S.products[sl.pid] ? pName(sl.pid) : 'Choose a perfume', best: () => `Top ${num(sl.n) || 4} sellers of the last 30 days`,
   promo: () => sl.promoId ? (S.promos[sl.promoId]?.name || 'That promotion was deleted') : 'Any live promotion at the Point of sale',
   season: () => sl.fest && sl.fest !== 'any' ? SS_FEST_COPY[sl.fest][0] + ' only' : 'Whichever season is on (Christmas, Black Friday…)',
-  list: () => sl.cats && sl.cats.length ? sl.cats.join(', ') : 'All categories', qr: () => 'QR code to ' + (sl.url ? sl.url.replace(/^https?:\/\//, '').slice(0, 40) : 'your online shop'),
+  list: () => SS_LIST_STYLES.find(x => x[0] === ssListStyle(sl))[1] + ' · ' + (sl.cats && sl.cats.length ? sl.cats.join(', ') : 'All categories'), qr: () => 'QR code to ' + (sl.url ? sl.url.replace(/^https?:\/\//, '').slice(0, 40) : 'your online shop'),
   pic: () => S.images['ss_' + sl.id] ? 'Full-screen picture' : 'No picture yet', txt: () => sl.title || sl.text || 'Message'
 }[sl.type] || (() => ''))();
 function ssSched(sl){ const b = []; if (sl.from || sl.to) b.push(`${sl.from ? fmtDate(sl.from) : 'now'} to ${sl.to ? fmtDate(sl.to) : 'no end'}`); if (sl.t1 || sl.t2) b.push(`${sl.t1 || '00:00'}–${sl.t2 || '23:59'}`); if (sl.dows && sl.dows.length) b.push(sl.dows.map(x => SS_DOW[x]).join(' ')); return b.join(' · '); }
 function ssPhotoRows(){
-  return sortedProds().filter(p => (p.status || 'active') !== 'inactive').map(p => { const hd = S.images['hd_' + p.id]?.data, std = imgOf(p.id);
-    return `<tr><td style="width:54px"><img class="p" src="${hd || std || PLACEHOLDER}" alt="" style="width:40px;height:40px;object-fit:contain"></td><td><b>${esc(p.name)}</b> <span class="small mut">${p.size ? p.size + ' ml' : ''}</span></td><td>${hd ? '<span class="pill good">HD photo</span>' : std ? '<span class="pill">Standard photo</span>' : '<span class="pill warn">No photo</span>'}</td><td class="n"><label class="btn sm ${hd ? 'ghost' : ''}" style="cursor:pointer">${hd ? 'Replace' : 'Upload HD photo'}<input type="file" accept="image/*" data-ss-hd="${p.id}" hidden></label>${hd ? ' ' + btn('Remove', 'ssHdDel', {id:p.id}, 'sm ghost') : ''}</td></tr>`; }).join('');
+  return sortedProds().filter(p => (p.status || 'active') !== 'inactive').map(p => { const hdr = S.images['hd_' + p.id], hd = hdr?.data, std = imgOf(p.id);
+    return `<tr><td style="width:54px"><img class="p" src="${hd || std || PLACEHOLDER}" alt="" style="width:40px;height:40px;object-fit:contain"></td><td><b>${esc(p.name)}</b> <span class="small mut">${p.size ? p.size + ' ml' : ''}</span></td><td>${hd ? (hdr.polished ? '<span class="pill good">Polished</span>' : '<span class="pill good">HD photo</span>') : std ? '<span class="pill">Standard photo</span>' : '<span class="pill warn">No photo</span>'}</td><td class="n">${!hd && std ? btn('Polish', 'ssPolishOne', {id:p.id}, 'sm') + ' ' : ''}<label class="btn sm ${hd ? 'ghost' : ''}" style="cursor:pointer">${hd ? 'Replace' : 'Upload HD photo'}<input type="file" accept="image/*" data-ss-hd="${p.id}" hidden></label>${hd ? ' ' + btn('Remove', 'ssHdDel', {id:p.id}, 'sm ghost') : ''}</td></tr>`; }).join('');
 }
 PAGES.shopscreen = () => {
   const scs = ssCfg().screens;
@@ -8106,6 +8224,7 @@ PAGES.shopscreen = () => {
   if (!scs.length) return head('Shop screen', intro) + ssUpdateCard() + `<div class="card" style="text-align:center;padding:32px 20px"><h2 style="margin-top:0">Make your first shop screen</h2><p class="mut" style="max-width:560px;margin:0 auto 16px">We start you with five slides: bestsellers, a promotion, a seasonal gift slide, a price list and a QR code to your online shop. You can change, add, remove and re-time every slide.</p>${btn('Create my shop screen', 'ssNew', {}, 'pri')}</div>`;
   const sc = ssScr(UI.ssSel); UI.ssSel = sc.id; const xon = SSX.on && SSX.on.id === sc.id ? SSX.on : null;
   const built = ssBuild(sc), live = new Set(built.slides.map(s => String(s.id).split('#')[0])), nonSeason = (sc.slides || []).length;
+  const nPol = sortedProds().filter(p => (p.status || 'active') !== 'inactive' && imgOf(p.id) && !S.images['hd_' + p.id]).length;
   const sel = (name, opts, cur) => `<select data-ssf="${name}">${opts.map(([v, l]) => `<option value="${esc(v)}" ${String(cur) === String(v) ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
   return head('Shop screen', intro, btn('Start projector', 'ssProject', {id:sc.id}, 'pri') + btn('Video for USB', 'ssVideo', {id:sc.id}))
   + ssUpdateCard()
@@ -8130,7 +8249,8 @@ PAGES.shopscreen = () => {
         <div class="ssed-btns">${btn('↑', 'ssMove', {id:sl.id, d:-1}, 'sm ghost" aria-label="Move up')}${btn('↓', 'ssMove', {id:sl.id, d:1}, 'sm ghost" aria-label="Move down')}${btn('Edit', 'ssEdit', {id:sl.id}, 'sm')}${btn('Remove', 'ssDelSlide', {id:sl.id}, 'sm ghost')}</div></div>`; }).join('') : '<p class="mut">No slides yet. Add one below.</p>'}
       <h3 style="margin:16px 0 8px">Add a slide</h3><div class="ssed-add">${Object.entries(SS_TYPES).map(([k, v]) => `<button type="button" class="btn sm" data-act="ssAdd" data-t="${k}" title="${esc(SS_TYPE_HELP[k])}">+ ${v}</button>`).join('')}</div></div>
   </div>
-  <div class="card"><h2 style="margin-top:0">Sharper photos for the big screen</h2><p class="small mut">Your standard photos are small, so they look soft on a 4K TV. Add an HD photo of a perfume (a clear picture of the bottle on a plain white background, at least 1200 pixels tall) and the screen uses it instead. HD photos are shared with your other devices, so add the perfumes you show most first.</p>
+  <div class="card"><h2 style="margin-top:0">Sharper photos for the big screen</h2><p class="small mut">Your standard photos are small, so on a 4K TV they look soft and the bottles come in different sizes. <b>Polish</b> makes a clean copy for the TV: it trims the empty space, makes every bottle the same size, cleans a white background and sharpens the edges. Your original photos are kept. A small photo cannot gain detail that was never in it, so for the sharpest 4K picture upload the original large photo of the bottle on a plain white background (at least 1500 pixels tall).</p>
+    <div class="actions" style="margin-bottom:8px">${nPol ? btn(`Polish all standard photos (${nPol})`, 'ssPolishAll', {}, 'pri') : ''}<label class="check" style="margin:0"><input type="checkbox" data-ssg="polish" ${ssCfg().polish !== false ? 'checked' : ''}> Polish photos I upload too</label></div>
     <div class="tw"><table class="t"><thead><tr><th></th><th>Perfume</th><th>Photo</th><th></th></tr></thead><tbody>${ssPhotoRows()}</tbody></table></div></div>`;
 };
 TOOLS.shopscreen = {
@@ -8150,7 +8270,7 @@ function ssSlideForm(sid, type){
   else if (t === 'best') body = `<label>Title<input name="title" value="${esc(sl.title || 'Bestsellers')}"></label><label>Small heading<input name="eyebrow" value="${esc(sl.eyebrow == null ? 'Customer favourites' : sl.eyebrow)}"></label><div class="grid2"><label>How many perfumes<select name="n"><option value="3" ${num(sl.n) === 3 ? 'selected' : ''}>3</option><option value="4" ${num(sl.n) !== 3 ? 'selected' : ''}>4</option></select></label><label class="check" style="align-self:end"><input type="checkbox" name="needImg" ${sl.needImg !== false ? 'checked' : ''}> Only perfumes that have a photo</label></div><p class="small mut">The best sellers of the last 30 days, worked out from your sales.</p>`;
   else if (t === 'promo') body = `<label>Which promotion<select name="promoId"><option value="">Any live promotion at the Point of sale</option>${Object.values(S.promos).sort((a, b) => String(b.start).localeCompare(String(a.start))).map(p => `<option value="${p.id}" ${sl.promoId === p.id ? 'selected' : ''}>${esc(p.name)} (${esc(promoBadge(p))}, ${fmtDate(p.start)} to ${fmtDate(p.end)})</option>`).join('')}</select></label><p class="small mut">Promotions come from <b>Marketing › Promotions</b>. A promotion shows only on the dates and for the perfumes you set there, and only if it applies at the Point of sale.</p><label>Title (leave empty to use the promotion name)<input name="title" value="${esc(sl.title || '')}"></label><label>Line under the title (optional)<input name="text" value="${esc(sl.text || '')}"></label><label>Small heading<input name="eyebrow" value="${esc(sl.eyebrow == null ? 'Special offer' : sl.eyebrow)}"></label><fieldset><legend>Pick the perfumes yourself (up to 3; they show even when out of stock. Leave empty to pick automatically)</legend>${ssChecks('pids', prodOpts, sl.pids)}</fieldset>`;
   else if (t === 'season') body = `<label>Season<select name="fest"><option value="any" ${!sl.fest || sl.fest === 'any' ? 'selected' : ''}>Whichever season is on</option>${Object.entries(SS_FEST_COPY).map(([k, v]) => `<option value="${k}" ${sl.fest === k ? 'selected' : ''}>${v[0]} only</option>`).join('')}</select></label><p class="small mut">This slide appears only during the season (Christmas 1 to 30 Dec, Black Friday weekend, and so on) and uses that season’s design.</p><label>Title (leave empty for the usual words; put *stars* around a word to highlight it)<input name="title" value="${esc(sl.title || '')}"></label><label>Line under the title (optional)<input name="text" value="${esc(sl.text || '')}"></label><fieldset><legend>Pick the perfumes yourself (up to 3; they show even when out of stock. Leave empty to show your best sellers)</legend>${ssChecks('pids', prodOpts, sl.pids)}</fieldset>`;
-  else if (t === 'list') body = `<fieldset><legend>Categories to show (leave all empty for everything)</legend>${ssChecks('cats', CATS().map(c => [c, c]), sl.cats)}</fieldset><p class="small mut">If the list is long it is split across several slides by itself. Prices follow your live promotions.</p>`;
+  else if (t === 'list') body = `<label>How to show the prices<select name="style" id="ss-lst">${SS_LIST_STYLES.map(([k, v]) => `<option value="${k}" ${ssListStyle(sl) === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label><p class="small mut" id="ss-lsth">${esc(SS_LIST_STYLES.find(x => x[0] === ssListStyle(sl))[2])}</p><fieldset><legend>Categories to show (leave all empty for everything)</legend>${ssChecks('cats', CATS().map(c => [c, c]), sl.cats)}</fieldset><p class="small mut">If the list is long it is split across several slides by itself. Prices follow your live promotions.</p>`;
   else if (t === 'qr') body = `<label>Web address the code opens<input name="url" value="${esc(sl.url || STORE_URL)}"></label><label>Title<input name="title" value="${esc(sl.title || 'Scan to *shop*')}"></label><label>Line under the title<input name="text" value="${esc(sl.text || 'Browse every fragrance and order from your phone')}"></label><label class="check"><input type="checkbox" name="phone" ${sl.phone !== false ? 'checked' : ''}> Show my WhatsApp number (${esc(ssPhone() || 'add it in Settings')})</label>`;
   else if (t === 'pic') body = `<label>Picture (a flyer or photo, the wider the better; 1920 × 1080 fits the screen exactly)<input type="file" name="pic" accept="image/*" ${S.images['ss_' + sl.id] ? '' : 'required'}></label>${S.images['ss_' + sl.id] ? `<img src="${S.images['ss_' + sl.id].data}" alt="" style="max-width:260px;border-radius:8px;border:1px solid var(--line)"><p class="small mut">Leave the file empty to keep this picture.</p>` : ''}<p class="small mut">Tip: in <b>Marketing › Flyers &amp; adverts</b> you can design a flyer and download it as a picture to use here.</p>`;
   else if (t === 'txt') body = `<label>Small heading (optional)<input name="eyebrow" value="${esc(sl.eyebrow || '')}"></label><label>Title (put *stars* around a word to highlight it)<input name="title" value="${esc(sl.title || '')}"></label><label>Message<textarea name="text" rows="3">${esc(sl.text || '')}</textarea></label><label>Web address for a QR code (optional)<input name="url" value="${esc(sl.url || '')}" placeholder="https://"></label><label>Words under the QR code (optional)<input name="cap" value="${esc(sl.cap || '')}"></label>`;
@@ -8162,7 +8282,7 @@ function ssSlideForm(sid, type){
     if (t === 'best') Object.assign(o, {title:d.title, eyebrow:d.eyebrow, n:num(d.n) || 4, needImg:!!f.elements.needImg.checked});
     if (t === 'promo') Object.assign(o, {promoId:d.promoId, title:d.title, text:d.text, eyebrow:d.eyebrow, pids:pick('pids').slice(0, 3)});
     if (t === 'season') Object.assign(o, {fest:d.fest, title:d.title, text:d.text, pids:pick('pids').slice(0, 3)});
-    if (t === 'list') Object.assign(o, {cats:pick('cats')});
+    if (t === 'list') Object.assign(o, {cats:pick('cats'), style:SS_LIST_STYLES.some(x => x[0] === d.style) ? d.style : 'rows'});
     if (t === 'qr') Object.assign(o, {url:(d.url || '').trim(), title:d.title, text:d.text, phone:!!f.elements.phone.checked});
     if (t === 'txt') { if (!d.title && !d.text) throw Error('Type a title or a message.'); Object.assign(o, {eyebrow:d.eyebrow, title:d.title, text:d.text, url:(d.url || '').trim(), cap:d.cap}); }
     if (t === 'pic') { const file = f.elements.pic.files[0]; if (file) { const data = await shrinkImage(file, 1920, 600000); await put('images', {id:'ss_' + sl.id, data}); } else if (!S.images['ss_' + sl.id]) throw Error('Choose a picture.'); }
@@ -8185,11 +8305,15 @@ Object.assign(ACT, {
   ssMove: async d => { await ssSave(c => { const s = c.screens.find(x => x.id === UI.ssSel), i = s.slides.findIndex(x => x.id === d.id), j = i + num(d.d); if (i < 0 || j < 0 || j >= s.slides.length) return; [s.slides[i], s.slides[j]] = [s.slides[j], s.slides[i]]; }); render(true); },
   ssPv: (d, b) => { if (!SS.pv) return; if (d.c === 'prev') SS.pv.prev(); else if (d.c === 'next') SS.pv.next(); else { SS.pv.pause(SS.pv.playing); b.textContent = SS.pv.playing ? 'Pause' : 'Play'; } },
   ssProject: d => ssStart(d.id), ssExtStop: () => ssExtStop({shell:true}), ssExtCmd: d => { try { DESK.projSend({type:'cmd', cmd:d.c}); } catch(e) {} }, ssVideo: d => ssVideoForm(d.id), ssVideoGo: d => ssVideoGo(d.id), ssVideoStop: () => { if (SSV.busy) SSV.abort.v = true; else closeModal(); },
+  ssPolishAll: () => { const ids = sortedProds().filter(p => (p.status || 'active') !== 'inactive' && imgOf(p.id) && !S.images['hd_' + p.id]).map(p => p.id); if (ids.length) ssPolishRun(ids); },
+  ssPolishOne: d => ssPolishRun([d.id]), ssPolishStop: () => { SSP.abort.v = true; },
   ssHdDel: d => confirmBox('Remove the HD photo? The standard photo is used again.', async () => { await del('images', 'hd_' + d.id); render(true); }, 'Remove')
 });
 document.addEventListener('change', async e => {
   const t = e.target; if (!t.dataset) return;
-  if (t.dataset.ssHd) { const f = t.files && t.files[0]; if (!f) return; try { const data = await shrinkImage(f, 1800, 450000); await put('images', {id:'hd_' + t.dataset.ssHd, data}); toast('HD photo saved'); render(true); } catch(x) { toast(x.message || 'Could not save the photo', true); } t.value = ''; return; }
+  if (t.dataset.ssg === 'polish') { await ssSave(c => { c.polish = t.checked; }); return; }
+  if (t.id === 'ss-lst') { const h = document.getElementById('ss-lsth'), x = SS_LIST_STYLES.find(y => y[0] === t.value); if (h && x) h.textContent = x[2]; return; }
+  if (t.dataset.ssHd) { const f = t.files && t.files[0]; if (!f) return; try { toast('Preparing the photo…'); const r = await ssHdFromFile(f); await put('images', {id:'hd_' + t.dataset.ssHd, ...r}); toast(r.polished ? 'Photo saved and polished' : 'HD photo saved (kept as it is: it is not on a white background)'); render(true); } catch(x) { toast(x.message || 'Could not save the photo', true); } t.value = ''; return; }
   if (!t.dataset.ssf) return; const k = t.dataset.ssf, sc = ssScr(UI.ssSel); if (!sc) return;
   if (k === 'where') { try { localStorage.setItem('if-ss-where', t.value); } catch(x) {} return; }
   if (k === 'prevFest') { UI.ssFest = t.value; TOOLS.shopscreen.refresh(); return; }
