@@ -18,9 +18,9 @@
   "minShell": "2.5.0"
  },
  "apk": {
-  "version": "2.14.0",
-  "file": "apk/infinity-fragrances-2.14.0.apk",
-  "sha256": "79290388bca6a976dad26d32dd34bd573a0a23ce5a9b86284b2fc9a7432073ec",
-  "size": 4951250
+  "version": "2.18.1",
+  "file": "apk/infinity-fragrances-2.18.1.apk",
+  "sha256": "357a808a5fa05f82b89a9f78768ee45124d7b38a68a2ecf6bafc862b5b11aa1a",
+  "size": 5001350
  }
 }
