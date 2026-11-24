@@ -1,20 +1,20 @@
 {
- "version": "2.26.0",
+ "version": "2.26.1",
  "date": "2026-11-24",
  "notes": [
-  "New in Shop builder: floor plans with ready designs you can drag, and send to materials and storage",
-  "New in Shop builder: branding kit (shop sign, window sticker, A-frame, price tags, poster, bag, name badges) and a PDF plan pack for builders"
+  "Point of sale: shows where it sells from, no more false 'Only 0'",
+  "Perfumes kept in another store stay visible with where they are"
  ],
  "android": {
-  "file": "android-2.26.0.html",
-  "sig": "onEgFmdq8H/85ZCLGw84eUWCZOE3cl7HYzXM+PyiGTkBoskJIN2BhBBjaaHfhdx/eyGAEcmL5TXnDY/46q4LPg==",
-  "size": 2763937,
+  "file": "android-2.26.1.html",
+  "sig": "QdfVzaxbpmIVAf5GWtdCNKJgKP9ynd0t5Kf00U0XiYSE06a2vrBv/0wYsCjIi+L8sAjnGaKbRRkcIjqnMkmAWg==",
+  "size": 2767853,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.26.0.html",
-  "sig": "zZqlwBMfq6kqS4r08hCjJlhexvj98/lkRCvohZT2Dvuv2AwMCVR1dmPC4n93i1XNF3dsb/UphyaqFPPBwcN+Jw==",
-  "size": 2758925,
+  "file": "desktop-2.26.1.html",
+  "sig": "kj8vDaxKQk2TBYG/UgdEBvZKgNQxiQdmNM4QytBweoWBwIhvVNm/AO2W9eRJcq2cB7gVwRz7LbTYHv2L0RgCmA==",
+  "size": 2762841,
   "minShell": "2.5.0"
  },
  "apk": {

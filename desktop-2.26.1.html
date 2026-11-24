@@ -705,6 +705,7 @@ body.nav-on #shop-cart{bottom:calc(80px + env(safe-area-inset-bottom))}
 .scan-cam{position:absolute;right:5px;top:5px;bottom:5px;display:flex;align-items:center;gap:6px;padding:0 12px;border-radius:9px;border:0;background:var(--accent);color:var(--accent-ink);font-weight:700;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 2px 0 color-mix(in srgb,var(--accent) 55%,#000)}
 :root[data-skin]:not([data-skin="classic"]) .scan-cam{background:var(--sk-grad);color:var(--sk-on,#fff)}
 .pos-find{display:flex;gap:10px;align-items:center;margin-bottom:8px}.pos-find input[type=search]{flex:1}
+.pos-locbar{display:flex;gap:8px;align-items:center;margin:0 0 10px;font-weight:600;font-size:13px}.pos-locbar span{white-space:nowrap}.pos-locbar select{flex:1;min-width:0;margin:0}.pos-else{color:#b45309;font-weight:700;font-size:12px}.ptile.out.else{opacity:.9}
 .pos-instock{white-space:nowrap;font-size:13px;display:flex;gap:6px;align-items:center}.pos-instock input{width:auto !important}
 .pos-hid{grid-column:1/-1;margin:6px 2px}
 .ptile{position:relative}.ptile.on{border-color:var(--gold);box-shadow:0 0 0 2px color-mix(in srgb,var(--gold) 45%,transparent)}
@@ -996,6 +997,93 @@ body.ss-projecting > *:not(.ss-proj){display:none!important}
 .ss-pcp{font-family:var(--head);font-weight:var(--hw);font-size:44px;line-height:1;color:var(--acc)}
 .ss-pc .ss-was{font-size:24px;color:var(--mut);text-decoration:line-through}
 /*SS-CSS:END*/
+/*SB-CSS:BEGIN*/
+/* Shop builder */
+.tile .big{font-size:24px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums;line-height:1.2}
+.sbm{position:relative;height:380px;border-radius:12px;overflow:hidden;background:#e8e2d4 repeating-linear-gradient(0deg,rgba(0,0,0,.05) 0 1px,transparent 1px 48px),repeating-linear-gradient(90deg,rgba(0,0,0,.05) 0 1px,transparent 1px 48px);touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;border:1px solid var(--line)}
+.sbm:active{cursor:grabbing}
+.sbm-sm{height:220px}
+.sbm-t,.sbm-p{position:absolute;inset:0}
+.sbm-p{pointer-events:none}
+.sbm-tile{position:absolute;left:0;top:0;width:256px;height:256px;max-width:none;opacity:0;transition:opacity .25s;-webkit-user-drag:none}
+.sbm-tile.ok{opacity:1}
+.sbm-c{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:6px;z-index:3}
+.sbm-c button{width:36px;height:36px;border-radius:8px;border:1px solid rgba(0,0,0,.18);background:#fff;color:#222;font-size:18px;font-weight:700;cursor:pointer;line-height:1;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.sbm-n{position:absolute;left:8px;bottom:8px;max-width:70%;font-size:12px;background:rgba(255,255,255,.92);color:#444;padding:4px 8px;border-radius:6px;display:none;z-index:2}
+.sbm.sbm-off .sbm-n{display:block}
+.sbm-a{position:absolute;right:6px;bottom:4px;font-size:10px;background:rgba(255,255,255,.8);color:#333;padding:1px 5px;border-radius:4px;z-index:2}
+.sbm-a a{color:#225}
+.sbm-pin{position:absolute;left:0;top:0;pointer-events:auto;background:none;border:0;padding:0;cursor:pointer;width:30px;height:40px;margin:-38px 0 0 -15px;z-index:2}
+.sbm-pin i{position:absolute;left:4px;top:8px}
+.sbm-mk i{position:absolute;left:-11px;top:-30px}
+.sbm-pin i,.sbm-mk i{width:22px;height:22px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--c,#d0507e);border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.45)}
+.sbm-pin i::after,.sbm-mk i::after{content:"";position:absolute;left:5px;top:5px;width:6px;height:6px;border-radius:50%;background:#fff}
+.sbm-pin span{position:absolute;left:30px;top:6px;white-space:nowrap;font-size:12px;font-weight:700;background:rgba(255,255,255,.92);color:#222;padding:1px 6px;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,.25);max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.sbm-mk{position:absolute;left:0;top:0;width:0;height:0;z-index:2;--c:#d0507e}
+.sbm-me{position:absolute;left:-8px;top:-8px;width:16px;height:16px;border-radius:50%;background:#2b6cdf;border:3px solid #fff;box-shadow:0 0 0 6px rgba(43,108,223,.25)}
+.sb-maphead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.sb-legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--muted)}
+.sb-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.sb-info:not(:empty){margin-top:10px}
+.sb-pop{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;background:var(--soft);border-radius:10px;padding:10px 12px}
+.sb-gh{margin:16px 0 8px;font-size:15px;display:flex;gap:8px;align-items:center}
+.sb-card{margin-bottom:12px}
+.sb-top{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:2px;font-size:16px}
+.sb-pick{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.sb-pick select{max-width:260px}
+.sb-rate{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px 12px}
+.sb-rate label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600}
+.sb-rate select{width:100%}
+.sb-photos{display:flex;flex-wrap:wrap;gap:10px}
+.sb-ph{position:relative;width:110px;height:110px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--soft)}
+.sb-ph img{width:100%;height:100%;object-fit:cover;cursor:zoom-in;display:block}
+.sb-ph .x{position:absolute;right:2px;top:2px;background:rgba(0,0,0,.55);color:#fff;border-radius:50%;width:24px;height:24px;padding:0;font-size:16px}
+.sb-add{display:flex;align-items:center;justify-content:center;border-style:dashed;cursor:pointer;color:var(--muted);font-size:13px;font-weight:600;text-align:center}
+.sb-bar{height:10px;border-radius:99px;background:var(--soft);overflow:hidden;margin:0 0 16px}
+.sb-bar i{display:block;height:100%;background:var(--good);border-radius:99px}
+.sb-bar i.over{background:var(--bad)}
+.sb-matbar{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.sb-mats li{align-items:center}
+.sb-mats li.sb-done{opacity:.75}
+.sb-mact{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.sb-mact select{width:auto;min-width:0;padding:5px 8px;font-size:13px}
+.sb-bud{width:100%;max-width:150px;font-size:18px;font-weight:700;padding:4px 8px}
+.sb-chk{padding:6px 0;border-bottom:1px solid var(--line);margin:0}
+.sb-chk .x{margin-left:auto}
+.sb-sw{border-top:4px solid var(--line)}
+.sb-sw-good{border-top-color:var(--good)}.sb-sw-bad{border-top-color:var(--bad)}.sb-sw-acc{border-top-color:var(--accent)}.sb-sw-warn{border-top-color:var(--warn)}
+.sb-ideas{display:flex;flex-direction:column;gap:6px;margin-top:8px;align-items:flex-start}
+.sb-ideas .pill{cursor:pointer;border:1px solid var(--line);white-space:normal;text-align:left;font-weight:600}
+@media (max-width:700px){.sbm{height:320px}.tile .big{font-size:clamp(16px,5.2vw,21px);overflow-wrap:anywhere}.sb-mact{justify-content:flex-start}.sb-mats li{flex-direction:column;align-items:stretch}}
+.sb-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.sb-grid label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;min-width:0}
+.sb-grid input,.sb-grid select{width:100%;min-width:0;box-sizing:border-box}
+/* Shop builder part 2: floor plan, branding, plan pack */
+.sbp-room{display:flex;gap:10px;flex-wrap:wrap}
+.sbp-room label{display:flex;flex-direction:column;gap:2px;font-size:12px;font-weight:600;color:var(--muted)}
+.sbp-room input{width:92px;padding:6px 8px;font-size:15px}
+.sbp-des{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:12px}
+.sbp-dc{border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:6px;background:var(--surface)}
+.sbp-dc.on{border-color:var(--good);box-shadow:0 0 0 2px color-mix(in srgb,var(--good) 25%,transparent)}
+.sbp-th{background:#fbf9f3;border-radius:8px;padding:6px;height:170px;display:flex;align-items:center;justify-content:center}
+.sbp-th svg{max-width:100%;max-height:100%}
+.sbp-grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:14px;align-items:start;margin-top:14px}
+.sbp-host{background:#fbf9f3;border-radius:10px;padding:4px}
+.sbp-svg{width:100%;height:auto;max-height:72vh;display:block;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.sbp-it{cursor:grab;touch-action:none}
+.sbp-it:active{cursor:grabbing}
+.sbp-pal{display:flex;flex-wrap:wrap;gap:6px}
+.sbp-nudge{display:flex;gap:6px;margin-top:10px}
+.sbp-nudge .btn{min-width:42px}
+.sbp-lg{display:flex;flex-wrap:wrap;gap:6px}
+.sb-themes{display:flex;flex-wrap:wrap;gap:8px}
+.sb-th{display:flex;align-items:center;gap:8px;border:2px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer;font-size:13px;font-weight:700}
+.sb-th i{width:16px;height:16px;border-radius:50%;display:inline-block}
+.sb-th.on{box-shadow:0 0 0 2px var(--surface),0 0 0 4px currentColor}
+.sb-bgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:14px}
+.sb-pv{margin-top:8px}
+@media (max-width:900px){.sbp-grid{grid-template-columns:1fr}.sbp-th{height:150px}}
+/*SB-CSS:END*/
 </style>
 <script>try{var L=JSON.parse(localStorage.getItem('if-look')||'{}'),R=document.documentElement;var F=localStorage.getItem('if-forceskin');R.dataset.skin=F||L.skin||'classic';if(L.mode&&L.mode!=='auto')R.dataset.theme=L.mode;R.dataset.text=L.text||'normal';if(L.motion===false)R.dataset.motion='off';}catch(e){}</script>
 </head>
@@ -1085,7 +1173,7 @@ const PROVINCES = ['Central','Copperbelt','Eastern','Luapula','Lusaka','Muchinga
 const CH = {cash:'Cash', momo:'Mobile money', bank:'Bank'};
 const IN_CATS = ['Reseller remittance','Customer payment','Capital introduced','Loan received','Other income'];
 const OUT_CATS = ['Expense','Supplier payment','Commission payout','Drawings','Loan repayment'];
-const EXP_TYPES = ['Courier charges','Transport & fuel','Delivery & courier','Packaging & bottles','Advertising & printing','Airtime & data','Rent','Wages','Bank & mobile money charges','Office & supplies','Other'];
+const EXP_TYPES = ['Courier charges','Transport & fuel','Delivery & courier','Packaging & bottles','Advertising & printing','Airtime & data','Rent','Wages','Bank & mobile money charges','Office & supplies','Shop set-up','Other'];
 const CATEGORIES_DEF = ['Women','Men','Unisex','Body sprays','Oils','Gift sets','Other'];
 const CATS = () => (S.settings.categories && S.settings.categories.length ? S.settings.categories : CATEGORIES_DEF);
 
@@ -1455,14 +1543,14 @@ function monthStats(m){
 
 /* ---------- render ---------- */
 const PAGES = {};
-const ROUTES = ['dashboard','messages','approvals','contacts','feedback','hiring','staff','ratings','riders','links','shopsales','shopstock','shopstaff','shopcust','ideas','resapps','empagree','payroll','logins','access','updates','help','pos','orders','customers','portal','invoices','suppliers','broadcast','activity','settlement','leaderboard','team','planner','profit','reminders','agreements','resellers','commissions','payslips','debtors','products','stocktake','shops','stock','purchases','dispatch','sales','cashbook','expenses','promos','catalogue','adverts','shopscreen','studio','prospects','monthreport','reports','setup','company'];
+const ROUTES = ['dashboard','messages','approvals','contacts','feedback','hiring','staff','ratings','riders','links','shopsales','shopstock','shopstaff','shopcust','shopbuild','ideas','resapps','empagree','payroll','logins','access','updates','help','pos','orders','customers','portal','invoices','suppliers','broadcast','activity','settlement','leaderboard','team','planner','profit','reminders','agreements','resellers','commissions','payslips','debtors','products','stocktake','shops','stock','purchases','dispatch','sales','cashbook','expenses','promos','catalogue','adverts','shopscreen','studio','prospects','monthreport','reports','setup','company'];
 function route(){ const h = location.hash.slice(1); return ROUTES.includes(h) ? h : 'dashboard'; }
 const GROUPS = [
   {label:'Dashboard', tabs:[['dashboard','Dashboard'],['approvals','Approvals'],['feedback','Suggestions'],['contacts','Contacts']]},
   {label:'Messages', tabs:[['messages','Messages']]},
   {label:'Sales', tabs:[['pos','Point of sale'],['sales','Sales book'],['customers','Customers & loyalty']]},
   {label:'Online Business', tabs:[['orders','Online shop orders'],['ratings','Customer ratings'],['riders','Deliveries & riders'],['catalogue','Online catalogue'],['links','Online pages & links']]},
-  {label:'Shops', tabs:[['shops','Shops'],['shopsales','Sales & cash-ups'],['shopstock','Stock in shops'],['shopstaff','Shop staff'],['shopcust','Shop customers'],['ideas','Business ideas']]},
+  {label:'Shops', tabs:[['shops','Shops'],['shopbuild','Shop builder'],['shopsales','Sales & cash-ups'],['shopstock','Stock in shops'],['shopstaff','Shop staff'],['shopcust','Shop customers'],['ideas','Business ideas']]},
   {label:'Stock', tabs:[['products','Products'],['stock','Stock register']]},
   {label:'Operations', tabs:[['dispatch','Dispatch & delivery'],['stocktake','Stock-take'],['planner','Reorder planner'],['purchases','Purchases'],['suppliers','Suppliers']]},
   {label:'Resellers', tabs:[['resellers','Towns & resellers'],['portal','Requests & logins'],['resapps','Applications'],['settlement','Settlement day'],['reminders','Reminders'],['team','Recruits & bonuses'],['leaderboard','Leaderboard'],['agreements','Reseller agreements']]},
@@ -1490,7 +1578,7 @@ function tabsHTML(r){
   if (tabs.length < 2) return gear ? `<div class="sec-row">${gear}</div>` : '';
   return `<div class="sec-row"><nav class="tabs" aria-label="${esc(g.label)}">${tabs.map(([id, l]) => `<a href="#${id}" class="${id === r ? 'on' : ''}">${esc(l)}</a>`).join('')}</nav>${gear}</div>`;
 }
-const TOOL_PAGES = new Set(['catalogue','adverts','studio','pos','prospects','reminders','shopscreen']);
+const TOOL_PAGES = new Set(['catalogue','adverts','studio','pos','prospects','reminders','shopscreen','shopbuild']);
 function render(force){
   try { const fk = applyFestive(); if (fk && !UI.festPreview) setTimeout(() => festGreet(fk), 600); } catch(e) {}
   if (DESK && MODE === 'desktop' && APP_ROLE !== 'reseller') { const g = gateHTML(); if (g) { document.body.classList.remove('res-mode'); navOff(); $('#main').dataset.page = ''; $('#main').innerHTML = g; return; } }
@@ -2298,14 +2386,15 @@ function saleResForm(rid){
 function saleDirectForm(){
   if (!needProducts()) return;
   modal('Record a direct sale (sold by you)', `<div class="grid2">${fDate()}<label for="f-cust">Customer<input id="f-cust" name="customer"></label></div>${linesBlock('sale')}
+    ${locSelect(S.settings.posLoc || 'main', 'loc', 'Sell from')}
     <label for="f-paid">Paid by<select id="f-paid" name="paidVia">${chOptions('cash', 'Not paid yet (credit)')}</select></label>`,
   async (d, f) => {
     const lines = readLines(f); if (!lines.length) throw Error('Add at least one perfume.');
     if (d.paidVia === 'credit' && !d.customer.trim()) throw Error('Enter the customer’s name for a credit sale.');
-    const st = compute().store, need = {}; lines.forEach(l => need[l.productId] = (need[l.productId] || 0) + l.qty);
-    for (const p in need) if (need[p] > (st[p] || 0)) throw Error(`Only ${st[p] || 0} × ${pName(p)} in store.`);
+    const CC = compute(), st = multiLoc() ? (CC.storeLoc[d.loc || 'main'] || {}) : CC.store, need = {}; lines.forEach(l => need[l.productId] = (need[l.productId] || 0) + l.qty);
+    for (const p in need) if (need[p] > (st[p] || 0)) { const el = multiLoc() ? Object.entries(CC.storeLoc).filter(([id, o]) => id !== (d.loc || 'main') && (o[p] || 0) > 0).map(([id, o]) => `${o[p]} ${id.startsWith('transit:') ? 'on its way to ' + locName(id.slice(8)) : 'at ' + locName(id)}`) : []; throw Error(`Only ${st[p] || 0} × ${pName(p)} ${multiLoc() ? 'at ' + locName(d.loc) : 'in store'}.${el.length ? ' ' + el.join(', ') + '. Change “Sell from”.' : ''}`); }
     for (const l of lines) {
-      const mv = {id:uid(), kind:'sale', date:d.date, resellerId:'', productId:l.productId, qty:l.qty, unitPrice:l.price, unitCost:num(S.products[l.productId]?.costPrice), customer:d.customer.trim(), paidVia:d.paidVia, comm:[]};
+      const mv = {id:uid(), kind:'sale', date:d.date, resellerId:'', ...(multiLoc() ? {loc:d.loc || 'main'} : {}), productId:l.productId, qty:l.qty, unitPrice:l.price, unitCost:num(S.products[l.productId]?.costPrice), customer:d.customer.trim(), paidVia:d.paidVia, comm:[]};
       if (d.paidVia !== 'credit') { const c = await put('cash', {kind:'in', date:d.date, channel:d.paidVia, amount:r2(l.qty * l.price), category:'Direct sale', customer:mv.customer, description:`${l.qty} × ${pName(l.productId)}`, moveId:mv.id}); mv.cashId = c.id; }
       await put('moves', mv);
     }
@@ -2485,8 +2574,11 @@ function fixNumbers(o){
 }
 
 /* ======================= Version 2.0 ======================= */
-const APP_VERSION = '2.24.1';
+const APP_VERSION = '2.26.1';
 const CHANGELOG = [
+  ['2.26.1', '24 Nov 2026', ['Fixed: the Point of sale said "Only 0" for bottles you really had. When you keep stock in more than one place, the till only counts the place it sells from, so bottles in another store looked sold out', 'The Point of sale now shows "Selling from" at the top, so you can see and change the place. Perfumes that are somewhere else stay on screen with where they are, e.g. "none here · 3 at Main store", and tapping one offers to sell from there', 'A perfume is no longer added to the sale when there are not enough bottles. The message says how many are where', 'Record a direct sale now has a "Sell from" place too and checks that place, so it cannot take bottles from the wrong store', 'Each sale and receipt now remembers the place it sold from, so shop takings and stock counts agree']],
+  ['2.26.0', '24 Nov 2026', ['Shop builder: floor plan. Ready designs for every shop type (3 for a kiosk, small shop and boutique, 2 for a home corner), drawn to scale from the room size. Tap to select, drag to move, turn, copy, rename and resize, with arrows for small steps', 'Send the plan to your materials list and to Storage. You see what will change first, and things you already bought are never touched', 'Shop builder: branding kit. Pick a colour theme and your words once, then get a shop sign at the real size, window sticker, A-frame sign, shelf price tags with your real prices (24 to a page), poster with your perfume photos, shopping bag and staff name badges. Save as picture or PDF, or print', 'Shop builder: plan pack for builders. One PDF with a cover, the floor plan with measurements, what to build and buy, shelves and storage, and colours and signs. Prices, rent and landlord details are left out unless you switch them on']],
+  ['2.25.0', '24 Nov 2026', ['New: Shop builder, under Shops. Plan and manage kiosks, market stalls, small shops, boutiques and home display corners', 'Map of your shops and the sites you are looking at, with coloured pins, directions and your own location. Works with OpenStreetMap pictures; pins stay in place without the internet', 'A file for every site: rented or owned, rent, deposit and lease, landlord or owner contacts (call, WhatsApp, email), photos, a site score out of 25, good things and worries', 'Materials and budget: a ready list for each type of shop with rough estimated prices you can change, a budget bar, status (to buy, quote asked, ordered, bought) and Log as expense into Expenses under Shop set-up', 'Storage planner: how many bottles your shelves, cabinets and stock room will hold, compared with the bottles you plan to keep', 'Will it pay?: monthly costs, bottles needed to break even and how soon the set-up pays back', 'Opening checklist, and a SWOT with ideas to start from. Shop file details are private to the owner and managers']],
   ['2.24.1', '23 Nov 2026', ['Shop screen price list: perfume names are no longer cut short. The names shrink until every one fits, and a very long name wraps onto two lines', 'Photo polish: uses less memory on big photos, and closing the progress window now stops it', 'Photo cards: very long names wrap instead of running out of the card']],
   ['2.24.0', '23 Nov 2026', ['Shop screen price list: choose how prices are shown. One line per perfume (new default, the same for every category), grouped by price, or photo cards', 'Photo polish: trims empty space, makes every bottle the same size, cleans a white background and sharpens, for crisp 4K. One tap on Polish, or Polish all. Your original photos are kept', 'HD uploads are now kept larger (up to 2400 pixels) and polished automatically when on a white background']],
   ['2.23.1', '23 Nov 2026', ['Shop screen: if the PC app is too old for the separate TV window, the page now says so, shows the PC app version, and gives the download link with the update steps']],
@@ -2613,7 +2705,7 @@ function docSummary(col, d){
   if (col === 'receipts') return `${d.no} · ${money(d.total)}`;
   if (col === 'dispatches') return `${d.no} to ${dnTo(d)}`;
   if (col === 'invoices') return `${d.no} · ${d.customer || ''}`;
-  if (col === 'images') return /^ss_/.test(d.id) ? 'Shop screen picture' : `${/^hd_/.test(d.id) ? 'HD photo' : 'Photo'} for ${pName(String(d.id).replace(/^hd_/, ''))}`;
+  if (col === 'images') return /^sb_/.test(d.id) ? 'Shop builder site photo' : /^ss_/.test(d.id) ? 'Shop screen picture' : `${/^hd_/.test(d.id) ? 'HD photo' : 'Photo'} for ${pName(String(d.id).replace(/^hd_/, ''))}`;
   return d.name || d.no || d.id || '';
 }
 function logWrite(action, col, before, after){
@@ -5421,7 +5513,7 @@ PAGES.shopcust = () => {
     + `<div class="filters"><input type="search" id="sc-q" placeholder="Search name or phone" value="${esc(UI.scQ || '')}"><select id="f-scshop"><option value="">All shops</option>${ls.map(l => `<option value="${l.id}" ${sh === l.id ? 'selected' : ''}>${esc(l.name)}</option>`).join('')}</select><div class="seg">${[['all', 'Everyone'], ['regular', 'Came back'], ['away', 'Not seen 30+ days']].map(([k, l]) => btn(l, 'scF', {v:k}, f === k ? 'on' : '')).join('')}</div></div>`
     + (list.length ? `<div class="card"><div class="tw"><table class="t"><thead><tr><th>Customer</th><th>Shop</th><th class="n">Visits</th><th class="n">Bottles</th><th class="n">Spent</th><th>Last visit</th><th>Favourite</th><th></th></tr></thead><tbody>${list.slice(0, 400).map(c => `<tr><td><b>${esc(c.name || 'Customer')}</b><div class="small mut">${esc(c.phone || '')}</div></td><td class="small">${[...c.shops].map(id => esc(shopOf(id)?.name || '')).join(', ')}</td><td class="n">${c.visits}</td><td class="n">${int(c.bottles)}</td><td class="n">${money(c.spent)}</td><td class="small">${fmtDate(c.last)}${c.last < cut30 ? ' <span class="pill warn">away</span>' : ''}</td><td class="small">${esc(fav(c))}</td><td>${c.phone ? `<a class="btn sm" target="_blank" rel="noopener" href="${waLink(c.phone, `Hello ${String(c.name || '').split(' ')[0] || 'there'}, thank you for shopping at ${bizName()}! ${fav(c) ? `We have your favourite ${fav(c)} in stock.` : 'We have new perfumes in stock.'} Come and see us soon.`)}">WhatsApp</a>` : ''}</td></tr>`).join('')}</tbody></table></div></div>` : empty('No shop customers yet. Ask for the customer\'s name and phone on each sale in the shop app.'));
 };
-const MENU_HELP = {'Messages':'Chat with your team, shops and resellers inside the app. Copy people in, send announcements and start groups.', 'Dashboard':'Today at a glance, approvals waiting for you, suggestions from your team and everyone\'s contacts.', 'Sales':'Sell at the counter, see every sale and look after your customers and loyalty points.', 'Online Business':'Online shop orders, customer ratings, riders and deliveries, the online catalogue and all your public links.', 'Shops':'Each shop\'s details, sales and cash-ups, stock, staff, customers and ideas for selling more.', 'Stock':'Your perfumes and every stock movement.', 'Operations':'Sending parcels, counting stock, planning reorders, buying stock and your suppliers.', 'Resellers':'Resellers by town, their requests and logins, applications, settlement day, reminders, recruits, the leaderboard and agreements.', 'Human Resources':'Positions and job applications, your staff and their employment agreements.', 'Finance':'Money in and out, invoices, money owed, pay for staff and resellers, reports and your company and tax details.', 'Marketing':'Promotions, flyers, the Shop screen for your TV, WhatsApp broadcasts, product photos and prospects.', 'Users & Access':'Every login, what each position can open and the record of who did what.', 'Settings':'Business settings, backups, app updates and this help.'};
+const MENU_HELP = {'Messages':'Chat with your team, shops and resellers inside the app. Copy people in, send announcements and start groups.', 'Dashboard':'Today at a glance, approvals waiting for you, suggestions from your team and everyone\'s contacts.', 'Sales':'Sell at the counter, see every sale and look after your customers and loyalty points.', 'Online Business':'Online shop orders, customer ratings, riders and deliveries, the online catalogue and all your public links.', 'Shops':'Each shop\'s details, the Shop builder (map, rent, floor plans, materials, branding and a plan pack for new shops), sales and cash-ups, stock, staff, customers and ideas for selling more.', 'Stock':'Your perfumes and every stock movement.', 'Operations':'Sending parcels, counting stock, planning reorders, buying stock and your suppliers.', 'Resellers':'Resellers by town, their requests and logins, applications, settlement day, reminders, recruits, the leaderboard and agreements.', 'Human Resources':'Positions and job applications, your staff and their employment agreements.', 'Finance':'Money in and out, invoices, money owed, pay for staff and resellers, reports and your company and tax details.', 'Marketing':'Promotions, flyers, the Shop screen for your TV, WhatsApp broadcasts, product photos and prospects.', 'Users & Access':'Every login, what each position can open and the record of who did what.', 'Settings':'Business settings, backups, app updates and this help.'};
 PAGES.help = () => head('Help', 'What is in each menu. Tap a menu name to go there.')
   + GROUPS.filter(g => g.tabs.some(t => allowed(t[0]))).map(g => `<div class="card"><h2><a href="#${g.tabs.find(t => allowed(t[0]))[0]}">${esc(g.label)}</a></h2><p style="margin:0 0 8px">${esc(MENU_HELP[g.label] || '')}</p><div class="small">${g.tabs.filter(t => allowed(t[0])).map(([k, l]) => `<a class="pill" href="#${k}">${esc(l)}</a>`).join(' ')}</div></div>`).join('')
   + `<div class="card"><h2>Good to know</h2><ul class="list small"><li>The ⚙ Settings button on a page changes settings for that part of the hub.</li><li>The bell at the top shows notifications. Tap one to go to it.</li><li>Back up your records regularly from Settings & backup.</li></ul></div>`;
@@ -6794,12 +6886,18 @@ function posTilePrice(p){ const b = bestPromo(p.id, num(p.sellPrice), posChan())
   return b ? `<span class="gold-t"><s>${money(p.sellPrice)}</s> ${money(b.price)}</span><span class="promo-tag">${esc(promoBadge(b.pr))}</span>` : `<span class="gold-t">${money(p.sellPrice)}</span>${g ? `<span class="promo-tag">${esc(promoBadge(g))}</span>` : ''}`; }
 function posReprice(){ POS.cart.forEach(l => { const p = S.products[l.pid]; if (!p || l.manual) return; const b = bestPromo(l.pid, num(p.sellPrice), posChan()); l.price = b ? b.price : num(p.sellPrice); l.promo = b ? b.pr.name : ''; }); }
 const POS = {cart:[], seller:'', pay:'cash', disc:'', tendered:'', customer:'', q:'', cat:''};
-const posAvail = pid => { const C = compute(); return POS.seller ? Math.max(0, (C.held[POS.seller] || {})[pid] || 0) : (multiLoc() ? (C.storeLoc[S.settings.posLoc || 'main']?.[pid] || 0) : (C.store[pid] || 0)); };
+const posLoc = () => (POS.loc && locs().some(l => l.id === POS.loc)) ? POS.loc : (locs().some(l => l.id === S.settings.posLoc) ? S.settings.posLoc : 'main');
+const posPlace = id => String(id).startsWith('transit:') ? 'on its way to ' + locName(String(id).slice(8)) : locName(id);
+const posAvail = pid => { const C = compute(); return POS.seller ? Math.max(0, (C.held[POS.seller] || {})[pid] || 0) : (multiLoc() ? Math.max(0, C.storeLoc[posLoc()]?.[pid] || 0) : (C.store[pid] || 0)); };
+/* where else the bottles are, when the till's own place has none: [[place name, count, location id], ...] */
+const posElsewhere = pid => { if (POS.seller || !multiLoc()) return []; const C = compute(), here = posLoc(); return Object.entries(C.storeLoc).filter(([id, o]) => id !== here && (o[pid] || 0) > 0).map(([id, o]) => [posPlace(id), o[pid], id]); };
+const posOnlyMsg = pid => { const a = posAvail(pid), el = posElsewhere(pid), where = POS.seller ? 'with ' + rName(POS.seller) : (multiLoc() ? 'at ' + locName(posLoc()) : 'in store'); return `Only ${a} × ${pName(pid)} ${where}.` + (el.length ? ` ${el.map(x => x[1] + ' ' + (x[2].startsWith('transit:') ? x[0] : 'at ' + x[0])).join(', ')}. Change “Selling from” to sell them.` : ''); };
 PAGES.pos = () => `<div class="head pos-head"><div><h1>Point of sale</h1><p>Scan a barcode, or tap a perfume, then take payment. Every sale goes into the Sales book, Cash book and stock.</p></div>
     ${watchHTML()}</div>
   <div class="posl" data-tool="pos">
     <section>
       <div class="card">
+        <div id="pos-locbar"></div>
         <div class="scanbox"><input id="pos-scan" class="scan-input" placeholder="Scan or type a barcode" autocomplete="off" inputmode="numeric" aria-label="Barcode"><button type="button" class="scan-cam" data-act="camScan" aria-label="Scan with camera"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M7 12h10"/></svg><span>Camera</span></button></div>
         <div class="pos-find"><input id="pos-search" type="search" placeholder="Search perfumes" value="${esc(POS.q)}" aria-label="Search perfumes"><label class="chk pos-instock" for="pos-instock"><input type="checkbox" id="pos-instock" ${POS.inStock !== false ? 'checked' : ''}> In stock only</label></div>
         <div class="seg pos-cats" data-seg="cat"><button type="button" class="${POS.cat ? '' : 'on'}" data-v="">All</button>${CATS().filter(c => Object.values(S.products).some(p => p.category === c)).map(c => `<button type="button" class="${POS.cat === c ? 'on' : ''}" data-v="${esc(c)}">${esc(c)}</button>`).join('')}</div>
@@ -6812,12 +6910,18 @@ PAGES.pos = () => `<div class="head pos-head"><div><h1>Point of sale</h1><p>Scan
       <div class="card" id="pos-cart"></div>
     </section>
   </div><div class="pos-float" id="pos-float" hidden></div>`;
+POS.locBar = function(){
+  const el = $('#pos-locbar'); if (!el) return;
+  if (!multiLoc() || POS.seller) { el.innerHTML = ''; return; }
+  const C = compute(), here = posLoc(), tot = id => Object.values(C.storeLoc[id] || {}).reduce((t, q) => t + Math.max(0, q), 0);
+  el.innerHTML = `<label class="pos-locbar" for="pos-loc"><span>Selling from</span><select id="pos-loc">${locs().map(l => `<option value="${l.id}" ${here === l.id ? 'selected' : ''}>${esc(l.name)} · ${tot(l.id)} bottle${tot(l.id) === 1 ? '' : 's'}</option>`).join('')}</select></label>`;
+};
 POS.grid = function(){
   const el = $('#pos-grid'); if (!el) return; const q = POS.q.trim().toLowerCase();
   const all = sortedProds().filter(p => (!POS.cat || p.category === POS.cat) && (!q || (p.name + ' ' + (p.barcode || '') + ' ' + (p.code || '')).toLowerCase().includes(q)));
-  const ps = POS.inStock === false || q ? all : all.filter(p => posAvail(p.id) > 0 || POS.cart.some(l => l.pid === p.id)), hid = all.length - ps.length;
-  el.innerHTML = ps.map(p => { const a = posAvail(p.id), inCart = POS.cart.find(l => l.pid === p.id)?.qty || 0;
-    return `<div role="button" tabindex="0" class="ptile ${a <= 0 ? 'out' : ''}${inCart ? ' on' : ''}" id="pt-${p.id}" data-act="posAdd" data-id="${p.id}"><img src="${imgOrPh(p.id)}" alt=""><div class="pt-info"><b>${esc(p.name)}</b><span class="small mut">${p.size ? esc(p.size) + 'ml · ' : ''}${a <= 0 ? 'sold out' : a + ' left'}</span><span class="pt-price2">${posTilePrice(p)}</span></div><div class="pt-price">${posTilePrice(p)}</div><div class="pt-step"><button type="button" class="pt-minus" data-act="posDec" data-id="${p.id}" aria-label="One less" ${inCart ? '' : 'hidden'}>−</button><span class="pt-q" ${inCart ? '' : 'hidden'}>${inCart}</span><span class="pt-plus" aria-hidden="true">+</span></div></div>`; }).join('')
+  const ps = POS.inStock === false || q ? all : all.filter(p => posAvail(p.id) > 0 || posElsewhere(p.id).length || POS.cart.some(l => l.pid === p.id)), hid = all.length - ps.length;
+  el.innerHTML = ps.map(p => { const a = posAvail(p.id), inCart = POS.cart.find(l => l.pid === p.id)?.qty || 0, el2 = a <= 0 ? posElsewhere(p.id) : [];
+    return `<div role="button" tabindex="0" class="ptile ${a <= 0 ? 'out' : ''}${el2.length ? ' else' : ''}${inCart ? ' on' : ''}" id="pt-${p.id}" data-act="posAdd" data-id="${p.id}"><img src="${imgOrPh(p.id)}" alt=""><div class="pt-info"><b>${esc(p.name)}</b><span class="small mut">${p.size ? esc(p.size) + 'ml · ' : ''}${a <= 0 ? (el2.length ? `<b class="pos-else">none here · ${el2.map(x => x[1] + (x[2].startsWith('transit:') ? ' ' + esc(x[0]) : ' at ' + esc(x[0]))).join(', ')}</b>` : 'sold out') : a + ' left'}</span><span class="pt-price2">${posTilePrice(p)}</span></div><div class="pt-price">${posTilePrice(p)}</div><div class="pt-step"><button type="button" class="pt-minus" data-act="posDec" data-id="${p.id}" aria-label="One less" ${inCart ? '' : 'hidden'}>−</button><span class="pt-q" ${inCart ? '' : 'hidden'}>${inCart}</span><span class="pt-plus" aria-hidden="true">+</span></div></div>`; }).join('')
     + (hid ? `<p class="small mut pos-hid">${hid} sold-out perfume${hid === 1 ? ' is' : 's are'} hidden. <button type="button" class="link" data-act="posAllStock">Show them</button></p>` : '') || '<p class="mut">No perfumes match.</p>';
 };
 POS.sums = function(){
@@ -6864,7 +6968,11 @@ POS.totals = function(){
 POS.add = function(pid){
   const p = S.products[pid]; if (!p) return;
   const l = POS.cart.find(x => x.pid === pid), want = (l ? l.qty : 0) + 1;
-  if (want > posAvail(pid)) toast(`Only ${posAvail(pid)} × ${pName(pid)} ${POS.seller ? 'with ' + rName(POS.seller) : 'in store'}.`, true);
+  if (want > posAvail(pid)) {
+    const el = posElsewhere(pid).filter(x => !x[2].startsWith('transit:'));
+    if (posAvail(pid) <= 0 && el.length === 1) return confirmBox(`${esc(pName(pid))}: none at ${esc(locName(posLoc()))}, but ${el[0][1]} at ${esc(el[0][0])}. Sell from ${esc(el[0][0])} instead?`, () => { POS.loc = el[0][2]; POS.locBar(); POS.renderCart(); POS.grid(); POS.add(pid); }, 'Sell from there');
+    toast(posOnlyMsg(pid), true); return;
+  }
   const b = bestPromo(pid, num(p.sellPrice), posChan());
   if (l) l.qty++; else POS.cart.push({pid, qty:1, price:b ? b.price : num(p.sellPrice), promo:b ? b.pr.name : ''});
   POS.renderCart(); $('#pos-scan')?.focus();
@@ -6882,18 +6990,18 @@ async function posDone(){
   if (!POS.cart.length) return toast('The sale is empty. Scan or tap a perfume first.', true);
   const s = POS.sums(); if (s.total <= 0) return toast('The total must be more than zero.', true);
   const need = {}; POS.cart.forEach(l => need[l.pid] = (need[l.pid] || 0) + l.qty);
-  for (const pid in need) if (need[pid] > posAvail(pid)) return toast(`Only ${posAvail(pid)} × ${pName(pid)} ${POS.seller ? 'with ' + rName(POS.seller) : 'in store'}. Remove some or receive stock first.`, true);
+  for (const pid in need) if (need[pid] > posAvail(pid)) return toast(posOnlyMsg(pid) + ' Remove some or receive stock first.', true);
   if (POS.pay === 'credit' && !POS.customer.trim()) return toast('Enter the customer’s name for a credit sale.', true);
   if (POS.pay === 'cash' && POS.tendered !== '' && num(POS.tendered) < s.total) return toast('Cash received is less than the total.', true);
   const b = document.querySelector('[data-act=posDone]'); if (b) b.disabled = true;
   try {
     const n = Object.values(S.receipts).reduce((m, r) => Math.max(m, parseInt(String(r.no).replace(/\D/g, '')) || 0), 0);
-    const now = new Date(), rc = {id:uid(), no:'R-' + String(n + 1).padStart(5, '0'), date:today(), time:now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}), seller:POS.seller, pay:POS.pay, customer:POS.customer.trim(), phone:(POS.phone || '').trim(),
+    const now = new Date(), rc = {id:uid(), no:'R-' + String(n + 1).padStart(5, '0'), date:today(), time:now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}), seller:POS.seller, ...(POS.seller || !multiLoc() ? {} : {loc:posLoc()}), pay:POS.pay, customer:POS.customer.trim(), phone:(POS.phone || '').trim(),
       lines:POS.cart.map(l => ({productId:l.pid, qty:l.qty, price:num(l.price)})), subtotal:s.sub, discount:r2(s.auto + s.disc), promo:[...new Set(POS.cart.map(l => l.promo).filter(Boolean)), ...s.notes].join('; '), saved:s.saved, total:s.total, tendered:POS.pay === 'cash' && POS.tendered !== '' ? num(POS.tendered) : null, change:POS.pay === 'cash' && POS.tendered !== '' ? s.change : null, moveIds:[]};
     const f = s.sub ? s.total / s.sub : 1;
     for (const l of POS.cart) {
       const price = r2(num(l.price) * f);
-      const mv = await put('moves', {kind:'sale', date:rc.date, loc:POS.seller ? undefined : (S.settings.posLoc || 'main'), resellerId:POS.seller, productId:l.pid, qty:l.qty, unitPrice:price, unitCost:num(S.products[l.pid]?.costPrice), customer:rc.customer, paidVia:POS.seller ? 'account' : POS.pay, comm:POS.seller ? commFor(POS.seller, l.qty, price, compute().hr?.[POS.seller]?.[l.pid]) : [], receiptId:rc.id});
+      const mv = await put('moves', {kind:'sale', date:rc.date, loc:POS.seller ? undefined : posLoc(), resellerId:POS.seller, productId:l.pid, qty:l.qty, unitPrice:price, unitCost:num(S.products[l.pid]?.costPrice), customer:rc.customer, paidVia:POS.seller ? 'account' : POS.pay, comm:POS.seller ? commFor(POS.seller, l.qty, price, compute().hr?.[POS.seller]?.[l.pid]) : [], receiptId:rc.id});
       rc.moveIds.push(mv.id);
     }
     if (!POS.seller && POS.pay !== 'credit') { const c = await put('cash', {kind:'in', date:rc.date, channel:POS.pay, amount:s.total, category:'Direct sale', customer:rc.customer, description:`Receipt ${rc.no}`, receiptId:rc.id}); rc.cashId = c.id; }
@@ -6930,11 +7038,12 @@ function showReceipt(id){
   rcptModal(p, {doc:receiptDoc(r), token:r.token, phone:r.phone || '', onToken:t => put('receipts', {...S.receipts[id], token:t}), onSent:(k, ph) => { if (ph && ph !== r.phone) put('receipts', {...S.receipts[id], phone:ph}); }});
 }
 TOOLS.pos = {
-  mount(){ posSheet(false); POS.grid(); POS.renderCart(); POS.today(); if (innerWidth > 640) setTimeout(() => $('#pos-scan')?.focus(), 50); },
-  refresh(){ POS.grid(); POS.today(); },
+  mount(){ posSheet(false); POS.locBar(); POS.grid(); POS.renderCart(); POS.today(); if (innerWidth > 640) setTimeout(() => $('#pos-scan')?.focus(), 50); },
+  refresh(){ POS.locBar(); POS.grid(); POS.today(); },
   input(t){
     if (t.id === 'pos-search') { POS.q = t.value; POS.grid(); }
-    else if (t.id === 'pos-seller') { POS.seller = t.value; posReprice(); POS.renderCart(); POS.grid(); }
+    else if (t.id === 'pos-loc') { POS.loc = t.value; POS.locBar(); POS.renderCart(); POS.grid(); }
+    else if (t.id === 'pos-seller') { POS.seller = t.value; posReprice(); POS.locBar(); POS.renderCart(); POS.grid(); }
     else if (t.id === 'pos-instock') { POS.inStock = t.checked; POS.grid(); }
     else if (t.dataset.pi != null) { const l = POS.cart[+t.dataset.pi]; l.price = t.value; l.manual = true; POS.totals(); }
     else if (t.id === 'pos-disc') { POS.disc = t.value; POS.totals(); }
@@ -7672,7 +7781,7 @@ const ACT = {
   userDel: d => { const u = users().find(x => x.id === d.id); if (!u) return; if (u.loginUid && FB) FB.del(`users/${u.loginUid}`).catch(() => {}); if (u.role === 'owner' && users().filter(x => x.role === 'owner').length < 2 && users().length > 1) return toast('Remove the other users first, or make someone else Admin.', true); confirmBox(`Remove ${esc(u.name)}?${users().length === 1 ? ' This turns the PIN lock off.' : ''}`, async () => { const list = users().filter(x => x.id !== u.id); await putSettings({users:list, ...(list.length ? {} : {recoveryHash:''})}); if (SESSION?.id === u.id) { SESSION = null; sessionStorage.removeItem('if-session'); } toast('User removed'); }, 'Remove'); },
   locNew: () => modal('Add stock location', `<label for="f-ln">Name<input id="f-ln" name="name" required placeholder="e.g. Kitwe depot"></label>`, async d => { await putSettings({locations:[...locs(), {id:uid(), name:d.name.trim()}]}); toast('Location added'); }, {label:'Add'}),
   locEdit: d => { const l = locs().find(x => x.id === d.id); modal('Rename location', `<label for="f-ln">Name<input id="f-ln" name="name" required value="${esc(l.name)}"></label>`, async x => { await putSettings({locations:locs().map(y => y.id === l.id ? {...y, name:x.name.trim()} : y)}); toast('Saved'); }, {label:'Save'}); },
-  locPos: d => { putSettings({posLoc:d.id}); toast(`Point of sale now sells from ${locName(d.id)}`); },
+  locPos: d => { POS.loc = ''; putSettings({posLoc:d.id}); toast(`Point of sale now sells from ${locName(d.id)}`); },
   stockMove: () => modal('Move stock between locations', `<div class="grid2">${fDate()}<span></span>${locSelect('main', 'from', 'From')}${locSelect(locs()[1]?.id, 'to', 'To')}</div>${linesBlock('qty')}<label for="f-tn">Note<input id="f-tn" name="note"></label>`, async (d, f) => { if (d.from === d.to) throw Error('Choose two different locations.'); const lines = readLines(f); if (!lines.length) throw Error('Add at least one perfume.'); const have = compute().storeLoc[d.from] || {}; for (const l of lines) if (l.qty > (have[l.productId] || 0)) throw Error(`Only ${have[l.productId] || 0} × ${pName(l.productId)} at ${locName(d.from)}.`); for (const l of lines) await put('moves', {kind:'transfer', date:d.date, productId:l.productId, qty:l.qty, from:d.from, to:d.to, note:`${locName(d.from)} → ${locName(d.to)}${d.note ? ' · ' + d.note : ''}`}); toast('Stock moved'); }, {label:'Move stock', wide:true}),
   labels: () => labelsForm(), labelsAssign: () => assignBarcodes(),
   invNew: d => invForm(d.type), invEdit: d => invForm(null, S.invoices[d.id]), invView: d => invView(d.id), invPay: d => invPayForm(d.id), invDeliver: d => invDeliver(d.id),
@@ -8285,6 +8394,611 @@ document.addEventListener('change', async e => {
   render(true);
 });
 /*SS-JS:END*/
+/*SB-JS:BEGIN*/
+/* ======================= 2.25: Shop builder (plan, fit out and manage shops, kiosks and sites) ======================= */
+const SB_KINDS = {kiosk:['Market stall or kiosk', 'about 6–10 m²'], small:['Small shop', 'about 15–25 m²'], boutique:['Boutique or mall unit', '30 m² and up'], home:['Reseller home display corner', 'a shelf, table or car boot']};
+const SB_STATUS = [['prospect', 'Prospect (looking)', 'warn', '#e08a00'], ['negotiating', 'Negotiating', 'acc', '#2b6cdf'], ['secured', 'Secured', 'good', '#12896b'], ['fitting', 'Fitting out', 'acc', '#8a4fc7'], ['open', 'Open', 'good', '#1b7f4c'], ['dropped', 'Dropped', '', '#8a8a8a']];
+const SB_TENURE = {unknown:'Not decided', rent:'Rented', own:'Owned', free:'Free or lent'};
+const SB_MATST = [['plan', 'To buy'], ['quote', 'Quote asked'], ['ordered', 'Ordered'], ['bought', 'Bought']];
+const SB_CATS = ['Structure & furniture', 'Display & shelving', 'Lighting & power', 'Signage & branding', 'Equipment & tech', 'Storage', 'Packaging & supplies', 'Licences & fees', 'Other'];
+const sbSt = k => SB_STATUS.find(x => x[0] === k) || SB_STATUS[0];
+const sbK = n => 'K' + Math.round(num(n)).toLocaleString('en-US');
+const sbCfg = () => { const c = S.settings.sb; return c && Array.isArray(c.sites) ? c : {sites:[], swot:{}}; };
+async function sbSave(mut){ const cfg = clean(sbCfg()); if (!Array.isArray(cfg.sites)) cfg.sites = []; if (!cfg.swot) cfg.swot = {}; mut(cfg); await putSettings({sb:cfg}); SB.sig = JSON.stringify(sbCfg()); }
+const sbGet = id => sbCfg().sites.find(x => x.id === id) || null;
+const sbEdit = (id, mut) => sbSave(c => { const s = c.sites.find(x => x.id === id); if (s) mut(s); });
+const sbHasLoc = s => s && isFinite(parseFloat(s.lat)) && isFinite(parseFloat(s.lng)) && String(s.lat) !== '' && String(s.lng) !== '';
+const sbScore = s => { const q = s.sc || {}; const v = ['f', 'v', 's', 'a', 'p'].map(k => num(q[k])); return v.some(x => x > 0) ? v.reduce((t, x) => t + x, 0) : 0; };
+const sbMatTotal = s => (s.mat || []).reduce((t, m) => t + num(m.qty) * num(m.cost), 0);
+const sbMatPaid = s => (s.mat || []).filter(m => m.st === 'bought').reduce((t, m) => t + (m.paid !== '' && m.paid != null ? num(m.paid) : num(m.qty) * num(m.cost)), 0);
+const sbDirUrl = s => `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(s.lat + ',' + s.lng)}`;
+const sbViewUrl = s => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.lat + ',' + s.lng)}`;
+
+/* ---------- ready lists: [category, item, how many, estimated price in Kwacha each]. Only starting estimates; the owner replaces them with real quotes ---------- */
+const SB_MAT = {
+  kiosk: [['Structure & furniture', 'Kiosk or stall (steel or timber)', 1, 6000], ['Structure & furniture', 'Counter or table with glass top', 1, 2500], ['Structure & furniture', 'Stool or chair', 1, 250],
+    ['Display & shelving', 'Wall shelf units', 3, 450], ['Display & shelving', 'Tabletop display stands', 2, 300], ['Display & shelving', 'Mirror', 1, 250],
+    ['Lighting & power', 'LED strip lights', 1, 450], ['Lighting & power', 'Extension lead or power board', 1, 250], ['Lighting & power', 'Solar light or power bank (backup)', 1, 600],
+    ['Signage & branding', 'Signboard', 1, 1200], ['Signage & branding', 'Vinyl banner', 1, 500], ['Signage & branding', 'Price tags and stands', 1, 200],
+    ['Equipment & tech', 'Phone or tablet for sales (POS)', 1, 2500], ['Equipment & tech', 'Receipt printer (optional)', 1, 800],
+    ['Storage', 'Lockable storage chest', 1, 1500], ['Storage', 'Padlock and chain', 2, 150],
+    ['Packaging & supplies', 'Carrier bags', 200, 2.5], ['Packaging & supplies', 'Perfume testers and blotter strips', 1, 300], ['Packaging & supplies', 'Cleaning cloth and glass cleaner', 1, 100],
+    ['Licences & fees', 'Market or council trading fee (check the amount)', 1, 500], ['Licences & fees', 'Fire extinguisher', 1, 700]],
+  small: [['Structure & furniture', 'Shop counter', 1, 4500], ['Structure & furniture', 'Painting and repairs', 1, 5000], ['Structure & furniture', 'Door lock and security gate (if needed)', 1, 3500], ['Structure & furniture', 'Chairs', 2, 350],
+    ['Display & shelving', 'Wall shelves', 8, 450], ['Display & shelving', 'Glass display cabinets', 2, 4500], ['Display & shelving', 'Display island or table', 1, 3500], ['Display & shelving', 'Mirrors', 2, 300], ['Display & shelving', 'Testing bar with tray', 1, 1200],
+    ['Lighting & power', 'LED spotlights and strips', 1, 2500], ['Lighting & power', 'Wiring and sockets', 1, 1500], ['Lighting & power', 'Backup power (inverter or solar)', 1, 6000],
+    ['Signage & branding', 'Fascia sign (lit)', 1, 4000], ['Signage & branding', 'Window vinyl', 1, 1200], ['Signage & branding', 'Wall posters', 4, 150], ['Signage & branding', 'Price tags and shelf labels', 1, 400], ['Signage & branding', 'A-frame sign', 1, 600],
+    ['Equipment & tech', 'Phone, tablet or PC for sales (POS)', 1, 3500], ['Equipment & tech', 'Receipt printer', 1, 1000], ['Equipment & tech', 'TV for the shop screen (43 inch)', 1, 5500], ['Equipment & tech', 'CCTV (2 cameras)', 1, 4500], ['Equipment & tech', 'Wi-Fi router and data', 1, 800],
+    ['Storage', 'Stock room shelving', 2, 1200], ['Storage', 'Lockable cabinet', 1, 2500], ['Storage', 'Storage boxes', 10, 90],
+    ['Packaging & supplies', 'Carrier bags', 500, 2], ['Packaging & supplies', 'Gift boxes and ribbon', 50, 15], ['Packaging & supplies', 'Testers and blotter strips', 1, 600], ['Packaging & supplies', 'Cleaning supplies', 1, 200],
+    ['Licences & fees', 'Council trading licence (check the amount)', 1, 1500], ['Licences & fees', 'Fire extinguisher', 1, 700], ['Licences & fees', 'Signage permit (if needed)', 1, 500],
+    ['Other', 'Uniforms or aprons', 2, 250]],
+  boutique: [['Structure & furniture', 'Counter (premium finish)', 1, 9000], ['Structure & furniture', 'Shopfitting: partition, paint, ceiling', 1, 20000], ['Structure & furniture', 'Flooring', 1, 8000], ['Structure & furniture', 'Security door or gate', 1, 4500], ['Structure & furniture', 'Seating', 2, 900],
+    ['Display & shelving', 'Wall shelves with lighting', 10, 900], ['Display & shelving', 'Lit glass cabinets', 4, 6500], ['Display & shelving', 'Display island', 1, 6000], ['Display & shelving', 'Testing bar', 1, 3000], ['Display & shelving', 'Mirrors', 3, 400],
+    ['Lighting & power', 'Lighting (spots or track)', 1, 6000], ['Lighting & power', 'Wiring and sockets', 1, 3500], ['Lighting & power', 'Backup power', 1, 9000], ['Lighting & power', 'Air conditioner or fans', 1, 6000],
+    ['Signage & branding', 'Lit fascia sign', 1, 7000], ['Signage & branding', 'Window vinyl', 1, 2000], ['Signage & branding', 'Wall graphics', 1, 3500], ['Signage & branding', 'Price cards and shelf labels', 1, 800], ['Signage & branding', 'Branded shopping bags', 300, 8],
+    ['Equipment & tech', 'POS computer or tablet', 1, 5000], ['Equipment & tech', 'Receipt printer', 1, 1200], ['Equipment & tech', 'TV for the shop screen (50 inch)', 1, 7500], ['Equipment & tech', 'CCTV (4 cameras)', 1, 7500], ['Equipment & tech', 'Router and data', 1, 1000], ['Equipment & tech', 'Mobile money QR stands', 1, 300],
+    ['Storage', 'Stock room racks', 3, 1500], ['Storage', 'Lockable cabinet', 1, 3000], ['Storage', 'Storage boxes', 20, 90],
+    ['Packaging & supplies', 'Gift boxes and ribbon', 100, 15], ['Packaging & supplies', 'Testers and blotter strips', 1, 900], ['Packaging & supplies', 'Cleaning supplies', 1, 300],
+    ['Licences & fees', 'Trading licence (check the amount)', 1, 2500], ['Licences & fees', 'Fire extinguishers', 2, 700], ['Licences & fees', 'Shop insurance (first premium)', 1, 3000],
+    ['Other', 'Uniforms', 3, 300], ['Other', 'Opening event or launch offer', 1, 3000]],
+  home: [['Display & shelving', 'Display shelf or table', 1, 600], ['Display & shelving', 'Tabletop stand', 1, 250], ['Display & shelving', 'Mirror', 1, 200], ['Lighting & power', 'Lights', 1, 250],
+    ['Storage', 'Lockable storage box', 1, 400], ['Signage & branding', 'Price tags and stands', 1, 150], ['Signage & branding', 'Poster (make it in Flyers & adverts)', 1, 80],
+    ['Packaging & supplies', 'Carrier bags', 100, 2.5], ['Packaging & supplies', 'Testers and blotter strips', 1, 200], ['Equipment & tech', 'Phone stand for photos', 1, 100]]
+};
+const SB_CHECK = [['The site', [['s1', 'Viewed the place and took photos'], ['s2', 'Checked power, water, security and toilets'], ['s3', 'Agreed the rent and deposit'], ['s4', 'Lease or agreement signed'], ['s5', 'Landlord’s contacts saved in this file']]],
+  ['Papers and licences', [['l1', 'Business registered (PACRA)'], ['l2', 'TPIN from ZRA'], ['l3', 'Trading licence from the council (ask what they need)'], ['l4', 'Other permits checked with the council or the market office'], ['l5', 'Insurance decided']]],
+  ['Fitting out', [['f1', 'Shop design chosen'], ['f2', 'Materials priced and ordered'], ['f3', 'Shelves and furniture in place'], ['f4', 'Lighting and power done'], ['f5', 'Signs and posters up'], ['f6', 'Locks, gate or CCTV done']]],
+  ['Stock and systems', [['k1', 'Opening stock sent to the shop'], ['k2', 'Shop added in Shops, with a shopkeeper login and PIN'], ['k3', 'A test sale done on the shop phone'], ['k4', 'Prices and photos on the shop screen'], ['k5', 'Mobile money number set']]],
+  ['People', [['p1', 'Shopkeeper chosen'], ['p2', 'Shopkeeper trained'], ['p3', 'Uniform or name badge']]],
+  ['Opening', [['o1', 'Opening offer planned'], ['o2', 'Flyers and WhatsApp status posted'], ['o3', 'Opening day done']]]];
+const SB_UNITS = [['Wall shelf', 'shelf', 80, 20, 4], ['Glass display cabinet', 'cabinet', 90, 35, 4], ['Counter display', 'counter', 100, 40, 2], ['Stock room rack', 'rack', 120, 45, 4], ['Storage box', 'box', 60, 40, 3], ['Drawer', 'drawer', 50, 40, 2]];
+const SB_FOOT = {'30': [4.5, 4], '50': [5.5, 4.5], '100': [6.5, 5]};   // space one boxed bottle takes on a shelf (cm), width x depth
+const sbUnitCap = u => { if (num(u.cap) > 0) return Math.round(num(u.cap)); const f = SB_FOOT[String(u.size || '100')] || SB_FOOT['100']; return Math.max(0, Math.floor(num(u.w) / f[0]) * Math.floor(num(u.d) / f[1]) * Math.max(1, Math.round(num(u.lv) || 1))); };
+
+const SB = {m:null, pm:null, sig:'', view:null};
+
+/* ---------- a small map (OpenStreetMap pictures; the pins still work without the internet) ---------- */
+const sbProj = (lat, lng, z) => { const s = 256 * 2 ** z, la = Math.max(-85, Math.min(85, lat)) * Math.PI / 180; return {x:(lng + 180) / 360 * s, y:(1 - Math.log(Math.tan(la) + 1 / Math.cos(la)) / Math.PI) / 2 * s}; };
+const sbUnproj = (x, y, z) => { const s = 256 * 2 ** z, n = Math.PI - 2 * Math.PI * y / s; return {lat:180 / Math.PI * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n))), lng:x / s * 360 - 180}; };
+function sbMap(host, o = {}){
+  const v0 = o.view || SB.view || {lat:-13.3, lng:27.9, z:6}, st = {lat:v0.lat, lng:v0.lng, z:v0.z, W:0, H:0, tiles:new Map(), pins:[], pe:[], mk:null, me:null};
+  host.innerHTML = '<div class="sbm-t"></div><div class="sbm-p"></div><div class="sbm-c"><button type="button" data-z="1" aria-label="Zoom in">+</button><button type="button" data-z="-1" aria-label="Zoom out">−</button><button type="button" data-fit="1" aria-label="Show all pins" title="Show all pins">⤢</button><button type="button" data-me="1" aria-label="My location" title="My location">◎</button></div><div class="sbm-n">The map pictures need the internet. Your pins are still in the right place.</div><div class="sbm-a">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></div>';
+  const T = host.querySelector('.sbm-t'), P = host.querySelector('.sbm-p'), ac = new AbortController(), sg = {signal:ac.signal};
+  const wrap = l => ((l + 180) % 360 + 360) % 360 - 180;
+  const place = (el, lat, lng, ox, oy, z) => { const p = sbProj(lat, lng, z), n = 256 * 2 ** z; let x = p.x - ox; if (x < -n / 2 + st.W / 2 - 1) x += n; else if (x > n / 2 + st.W / 2 + 1) x -= n; el.style.transform = `translate(${x}px,${p.y - oy}px)`; };
+  const draw = () => {
+    const r = host.getBoundingClientRect(); st.W = r.width || 300; st.H = r.height || 300;
+    const z = st.z, n = 2 ** z, c = sbProj(st.lat, st.lng, z), ox = c.x - st.W / 2, oy = c.y - st.H / 2;
+    const x0 = Math.floor(ox / 256), x1 = Math.floor((ox + st.W) / 256), y0 = Math.max(0, Math.floor(oy / 256)), y1 = Math.min(n - 1, Math.floor((oy + st.H) / 256)), want = new Set();
+    for (let tx = x0; tx <= x1; tx++) for (let ty = y0; ty <= y1; ty++) { const wx = ((tx % n) + n) % n, key = `${z}/${wx}/${ty}@${tx}`; want.add(key); let im = st.tiles.get(key);
+      if (!im) { im = new Image(); im.alt = ''; im.draggable = false; im.className = 'sbm-tile'; im.onload = () => { im.classList.add('ok'); host.classList.remove('sbm-off'); }; im.onerror = () => host.classList.add('sbm-off'); im.src = `https://tile.openstreetmap.org/${z}/${wx}/${ty}.png`; T.appendChild(im); st.tiles.set(key, im); }
+      im.style.transform = `translate(${tx * 256 - ox}px,${ty * 256 - oy}px)`; }
+    for (const [k, im] of st.tiles) if (!want.has(k)) { im.remove(); st.tiles.delete(k); }
+    st.pins.forEach((p, i) => place(st.pe[i], p.lat, p.lng, ox, oy, z)); if (st.mk) place(st.mk.el, st.mk.lat, st.mk.lng, ox, oy, z); if (st.me) place(st.me.el, st.me.lat, st.me.lng, ox, oy, z);
+    if (o.persist) SB.view = {lat:st.lat, lng:st.lng, z:st.z};
+  };
+  const at = (px, py) => { const c = sbProj(st.lat, st.lng, st.z); return sbUnproj(c.x - st.W / 2 + px, c.y - st.H / 2 + py, st.z); };
+  const zoom = (dz, px, py) => { const nz = Math.max(3, Math.min(19, st.z + dz)); if (nz === st.z) return; px = px ?? st.W / 2; py = py ?? st.H / 2; const ll = at(px, py), p = sbProj(ll.lat, ll.lng, nz), c = sbUnproj(p.x - (px - st.W / 2), p.y - (py - st.H / 2), nz); st.z = nz; st.lat = Math.max(-84, Math.min(84, c.lat)); st.lng = wrap(c.lng); draw(); };
+  const center = (lat, lng, z) => { st.lat = lat; st.lng = lng; if (z) st.z = z; draw(); };
+  const fit = () => {
+    const ps = st.pins; if (!ps.length) { center(-13.3, 27.9, 6); return; }
+    if (ps.length === 1) { center(ps[0].lat, ps[0].lng, 14); return; }
+    const la = ps.map(p => p.lat), ln = ps.map(p => p.lng), cl = (Math.min(...la) + Math.max(...la)) / 2, cn = (Math.min(...ln) + Math.max(...ln)) / 2; st.W = host.clientWidth || 300; st.H = host.clientHeight || 300;
+    let z = 17; for (; z > 3; z--) { const a = sbProj(Math.max(...la), Math.min(...ln), z), b = sbProj(Math.min(...la), Math.max(...ln), z); if (Math.abs(b.x - a.x) < st.W * 0.7 && Math.abs(b.y - a.y) < st.H * 0.65) break; }
+    center(cl, cn, z);
+  };
+  const ptr = new Map(); let moved = 0, pinch = null, lastWheel = 0;
+  host.addEventListener('pointerdown', e => { if (e.target.closest('.sbm-c,.sbm-a')) return; const onPin = !!e.target.closest('.sbm-pin'); if (!onPin) { try { host.setPointerCapture(e.pointerId); } catch(x) {} } ptr.set(e.pointerId, {x:e.clientX, y:e.clientY, pin:onPin, cap:!onPin}); if (ptr.size === 1) moved = 0; if (ptr.size === 2) { const [a, b] = [...ptr.values()]; pinch = Math.hypot(a.x - b.x, a.y - b.y); } }, sg);
+  host.addEventListener('pointermove', e => { const p = ptr.get(e.pointerId); if (!p) return; const dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY; moved += Math.abs(dx) + Math.abs(dy);
+    if (ptr.size === 2 && pinch) { const [a, b] = [...ptr.values()], d = Math.hypot(a.x - b.x, a.y - b.y), r = host.getBoundingClientRect(); if (d / pinch > 1.5) { zoom(1, (a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top); pinch = d; } else if (d / pinch < 0.66) { zoom(-1, (a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top); pinch = d; } return; }
+    if (ptr.size === 1) { if (p.pin && !p.cap) { if (moved < 7) return; try { host.setPointerCapture(e.pointerId); } catch(x) {} p.cap = true; } const c = sbProj(st.lat, st.lng, st.z), n = sbUnproj(c.x - dx, c.y - dy, st.z); st.lat = Math.max(-84, Math.min(84, n.lat)); st.lng = wrap(n.lng); draw(); } }, sg);
+  const up = e => { const pp = ptr.get(e.pointerId), had = !!pp, only = ptr.size === 1; ptr.delete(e.pointerId); if (ptr.size < 2) pinch = null; if (had && only && moved < 7 && o.onTap && !pp.pin) { const r = host.getBoundingClientRect(); o.onTap(at(e.clientX - r.left, e.clientY - r.top)); } };
+  host.addEventListener('pointerup', up, sg); host.addEventListener('pointercancel', e => { ptr.delete(e.pointerId); pinch = null; }, sg);
+  host.addEventListener('wheel', e => { e.preventDefault(); const t = Date.now(); if (t - lastWheel < 220) return; lastWheel = t; const r = host.getBoundingClientRect(); zoom(e.deltaY < 0 ? 1 : -1, e.clientX - r.left, e.clientY - r.top); }, {signal:ac.signal, passive:false});
+  host.addEventListener('dblclick', e => { if (e.target.closest('.sbm-c,.sbm-pin')) return; const r = host.getBoundingClientRect(); zoom(1, e.clientX - r.left, e.clientY - r.top); }, sg);
+  host.addEventListener('click', e => { const b = e.target.closest('button'); if (!b || !host.contains(b)) return;
+    if (b.dataset.z) zoom(+b.dataset.z); else if (b.dataset.fit) fit();
+    else if (b.dataset.me) locate();
+    else if (b.classList.contains('sbm-pin') && o.onPin) o.onPin(b.dataset.id); }, sg);
+  function locate(){ if (!navigator.geolocation) return toast('This device cannot find your location.', true); toast('Finding your location…'); navigator.geolocation.getCurrentPosition(p => { setMe(p.coords.latitude, p.coords.longitude); center(p.coords.latitude, p.coords.longitude, Math.max(st.z, 15)); if (o.onMe) o.onMe({lat:p.coords.latitude, lng:p.coords.longitude}); }, () => toast('Could not get your location. Allow location for this app and try again.', true), {enableHighAccuracy:true, timeout:15000}); }
+  function setMe(lat, lng){ if (!st.me) { const el = document.createElement('div'); el.className = 'sbm-me'; P.appendChild(el); st.me = {el}; } st.me.lat = lat; st.me.lng = lng; draw(); }
+  const api = {
+    setPins(list){ P.querySelectorAll('.sbm-pin').forEach(x => x.remove()); st.pins = list.filter(x => isFinite(x.lat) && isFinite(x.lng)); st.pe = st.pins.map(p => { const b = document.createElement('button'); b.type = 'button'; b.className = 'sbm-pin'; b.dataset.id = p.id; b.style.setProperty('--c', p.color || '#d0507e'); b.innerHTML = `<i></i><span>${esc(p.label || '')}</span>`; b.setAttribute('aria-label', p.label || 'Shop'); P.appendChild(b); return b; }); draw(); },
+    setMarker(lat, lng){ if (!isFinite(lat) || !isFinite(lng)) { if (st.mk) { st.mk.el.remove(); st.mk = null; } return; } if (!st.mk) { const el = document.createElement('div'); el.className = 'sbm-mk'; el.innerHTML = '<i></i>'; P.appendChild(el); st.mk = {el}; } st.mk.lat = lat; st.mk.lng = lng; draw(); },
+    center, fit, locate, setMe, redraw:draw, destroy(){ ac.abort(); st.tiles.clear(); }
+  };
+  if (o.pins) api.setPins(o.pins); if (o.marker) api.setMarker(o.marker.lat, o.marker.lng);
+  if (o.fit) fit(); else draw();
+  if (window.ResizeObserver) { const ro = new ResizeObserver(() => draw()); ro.observe(host); ac.signal.addEventListener('abort', () => ro.disconnect()); }
+  return api;
+}
+/* pull a position out of "-15.41, 28.28", a Google Maps link, or "geo:" text */
+function sbParseLoc(t){
+  t = decodeURIComponent(String(t || '').trim()); if (!t) return null;
+  const ok = (a, b) => { a = parseFloat(a); b = parseFloat(b); return isFinite(a) && isFinite(b) && Math.abs(a) <= 90 && Math.abs(b) <= 180 ? {lat:a, lng:b} : null; };
+  let m = t.match(/!3d(-?\d+\.?\d*)!4d(-?\d+\.?\d*)/) || t.match(/@(-?\d+\.?\d*),\s*(-?\d+\.?\d*)/) || t.match(/[?&](?:q|ll|query|destination|center)=(-?\d+\.?\d*)[,+ ]+\s*(-?\d+\.?\d*)/) || t.match(/geo:(-?\d+\.?\d*),(-?\d+\.?\d*)/) || t.match(/^\(?\s*(-?\d+\.?\d*)\s*[,; ]\s*(-?\d+\.?\d*)\s*\)?$/);
+  return m ? ok(m[1], m[2]) : null;
+}
+
+/* ---------- the page ---------- */
+const sbPins = () => sbCfg().sites.filter(sbHasLoc).map(s => ({id:s.id, lat:parseFloat(s.lat), lng:parseFloat(s.lng), label:s.name, color:sbSt(s.status)[3]}));
+const sbTown = s => [s.town, s.address].filter(Boolean).join(', ');
+const sbRent = s => num(s.rent) > 0 ? `${SB_TENURE[s.tenure] || 'Rented'} · ${sbK(s.rent)} a month` : (SB_TENURE[s.tenure] || '');
+function sbSiteCard(s){
+  const st = sbSt(s.status), tot = sbMatTotal(s), paid = sbMatPaid(s), sc = sbScore(s);
+  return `<div class="card sb-card"><div class="sb-top"><b>${esc(s.name)}</b> <span class="pill ${st[2]}">${st[1]}</span></div>
+    <div class="small mut">${esc((SB_KINDS[s.kind] || SB_KINDS.small)[0])}${sbTown(s) ? ' · ' + esc(sbTown(s)) : ''}${sbRent(s) ? ' · ' + esc(sbRent(s)) : ''}</div>
+    <div class="small" style="margin-top:4px">${sc ? `Site score ${sc}/25 · ` : ''}${tot ? `Set-up ${sbK(tot)} planned${paid ? `, ${sbK(paid)} spent` : ''}` : 'No materials list yet'}${sbHasLoc(s) ? '' : ' · <span class="mut">not on the map yet</span>'}</div>
+    <div class="actions" style="margin-top:8px">${btn('Open file', 'sbOpen', {id:s.id}, 'sm pri')}${sbHasLoc(s) ? `<a class="btn sm" target="_blank" rel="noopener" href="${sbDirUrl(s)}">Directions</a>` : btn('Put on map', 'sbLoc', {id:s.id}, 'sm')}${s.lphone ? `<a class="btn sm ghost" href="tel:${esc(String(s.lphone).replace(/[^\d+]/g, ''))}">Call ${esc(s.tenure === 'own' ? 'contact' : 'landlord')}</a>` : ''}</div></div>`;
+}
+function sbOverview(C){
+  const cf = sbCfg(), sites = cf.sites, linked = new Set(sites.map(s => s.shopId).filter(Boolean)), shops = (S.settings.locations || []).filter(l => !linked.has(l.id));
+  const live = sites.filter(s => s.status !== 'dropped'), pipe = sites.filter(s => ['prospect', 'negotiating', 'secured', 'fitting'].includes(s.status)), setup = live.filter(s => s.status !== 'open');
+  const planned = setup.reduce((t, s) => t + sbMatTotal(s), 0), spent = live.reduce((t, s) => t + sbMatPaid(s), 0);
+  const groups = SB_STATUS.map(([k, l, c]) => [k, l, sites.filter(s => s.status === k).sort((a, b) => String(a.name).localeCompare(b.name))]).filter(g => g[2].length);
+  return `<div class="tiles"><div class="tile"><div class="small mut">Shops open</div><div class="big">${sites.filter(s => s.status === 'open').length + shops.length}</div></div>
+    <div class="tile"><div class="small mut">In the pipeline</div><div class="big">${pipe.length}</div></div>
+    <div class="tile"><div class="small mut">Set-up planned</div><div class="big">${sbK(planned)}</div></div>
+    <div class="tile"><div class="small mut">Spent so far</div><div class="big">${sbK(spent)}</div></div></div>
+  <div class="card"><div class="sb-maphead"><h2 style="margin:0">Map of shops and sites</h2><div class="sb-legend">${SB_STATUS.map(x => `<span><i style="background:${x[3]}"></i>${x[1].replace(' (looking)', '')}</span>`).join('')}</div></div>
+    <div class="sbm" id="sbm-main"></div><div id="sbm-info" class="sb-info"></div>
+    <p class="hint" style="margin:8px 0 0">${sbPins().length ? 'Tap a pin to see the site. Drag the map to move and pinch or use + and − to zoom.' : 'No site has a place on the map yet. Open a site file and tap <b>Put on map</b>.'}</p></div>
+  ${shops.length ? `<div class="card"><h2 style="margin-top:0">Your shops that have no file yet</h2><p class="hint">Make a file to keep the rent, landlord, materials, storage and map pin for a shop you already have.</p><ul class="list">${shops.map(l => `<li><span><b>${esc(l.name)}</b></span>${btn('Make a file', 'sbFromShop', {id:l.id}, 'sm')}</li>`).join('')}</ul></div>` : ''}
+  ${sites.length ? groups.map(([k, l, list]) => k === 'dropped' ? `<details class="card"><summary><b>Dropped sites</b> <span class="pill">${list.length}</span></summary><div style="margin-top:10px">${list.map(sbSiteCard).join('')}</div></details>` : `<h3 class="sb-gh">${l} <span class="pill">${list.length}</span></h3>${list.map(sbSiteCard).join('')}`).join('') : empty('No sites yet. Tap <b>+ New site or shop</b> to add a prospect shop you could rent, a place you plan to open, or a shop you already run.')}`;
+}
+const sbTabs = (cf, cur) => `<div class="seg"><button type="button" data-act="sbTab" data-t="map" class="${cur === 'map' ? 'on' : ''}">Map and sites</button><button type="button" data-act="sbTab" data-t="file" class="${cur === 'file' ? 'on' : ''}">Shop file</button><button type="button" data-act="sbTab" data-t="swot" class="${cur === 'swot' ? 'on' : ''}">SWOT</button></div>`;
+PAGES.shopbuild = C => {
+  const cf = sbCfg(); let tab = UI.sbTab || 'map'; if (tab === 'file' && !sbGet(UI.sbSite)) { UI.sbSite = (cf.sites[0] || {}).id; if (!UI.sbSite) tab = 'map'; }
+  const body = tab === 'file' ? sbFile(C, sbGet(UI.sbSite)) : tab === 'swot' ? sbSwot(C) : sbOverview(C);
+  return head('Shop builder', 'Plan, fit out and manage shops, kiosks and sites: where they are, what they cost, what to buy, where the stock goes, and how the business is placed.', btn('+ New site or shop', 'sbNew', {}, 'pri')) + sbTabs(cf, tab) + body;
+};
+TOOLS.shopbuild = {
+  mount(){ SB.sig = JSON.stringify(sbCfg()); SB.m = null; const h = $('#sbm-main'); if (h) { const pins = sbPins(); SB.m = sbMap(h, {pins, persist:true, fit:!SB.view && pins.length > 0, onPin: sbPinShow}); }
+    if (typeof sbMount2 === 'function') sbMount2();
+    const one = $('#sbm-one'), cur = sbGet(UI.sbSite); if (one && cur && sbHasLoc(cur)) sbMap(one, {view:{lat:parseFloat(cur.lat), lng:parseFloat(cur.lng), z:16}, pins:[{id:cur.id, lat:parseFloat(cur.lat), lng:parseFloat(cur.lng), label:cur.name, color:sbSt(cur.status)[3]}]}); },
+  refresh(){ const m = $('#modal'); if (m && !m.hidden) return; const a = document.activeElement; if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return; if (JSON.stringify(sbCfg()) !== SB.sig) render(true); }
+};
+function sbPinShow(id){ const s = sbGet(id), box = $('#sbm-info'); if (!s || !box) return; const st = sbSt(s.status); box.innerHTML = `<div class="sb-pop"><div><b>${esc(s.name)}</b> <span class="pill ${st[2]}">${st[1]}</span><div class="small mut">${esc((SB_KINDS[s.kind] || SB_KINDS.small)[0])}${sbTown(s) ? ' · ' + esc(sbTown(s)) : ''}${sbRent(s) ? ' · ' + esc(sbRent(s)) : ''}</div></div><div class="actions">${btn('Open file', 'sbOpen', {id:s.id}, 'sm pri')}<a class="btn sm" target="_blank" rel="noopener" href="${sbDirUrl(s)}">Directions</a></div></div>`; }
+
+/* ---------- one shop's file ---------- */
+const SB_SUBS = [['site', 'Site and rent'], ['plan', 'Floor plan'], ['mat', 'Materials and budget'], ['store', 'Storage'], ['brand', 'Branding'], ['pay', 'Will it pay?'], ['check', 'Opening checklist'], ['pack', 'Plan pack']];
+function sbFile(C, s){
+  if (!s) return empty('Pick or add a site first.');
+  const cf = sbCfg(), sub = SB_SUBS.some(x => x[0] === UI.sbSub) ? UI.sbSub : 'site', st = sbSt(s.status);
+  const pick = `<div class="sb-pick"><select data-sbf="pick" aria-label="Choose a shop file">${cf.sites.map(x => `<option value="${x.id}" ${x.id === s.id ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select><span class="pill ${st[2]}">${st[1]}</span>${btn('Edit details', 'sbEditSite', {id:s.id}, 'sm')}${btn('Delete', 'sbDelSite', {id:s.id}, 'sm ghost')}</div>`;
+  const subs = `<div class="seg">${SB_SUBS.map(([k, l]) => `<button type="button" data-act="sbSub" data-t="${k}" class="${k === sub ? 'on' : ''}">${l}</button>`).join('')}</div>`;
+  return pick + subs + (sub === 'plan' ? sbPlanTab(s) : sub === 'brand' ? sbBrandTab(s) : sub === 'pack' ? sbPackTab(s) : sub === 'mat' ? sbMat(s) : sub === 'store' ? sbStore(C, s) : sub === 'pay' ? sbPay(C, s) : sub === 'check' ? sbCheck(s) : sbSiteTab(s));
+}
+function sbSiteTab(s){
+  const sc = s.sc || {}, rate = [['f', 'People passing (footfall)'], ['v', 'Easy to see from the road'], ['s', 'Safe and secure'], ['a', 'Easy to reach and park'], ['p', 'Good value for the rent']];
+  const area = num(s.w) > 0 && num(s.l) > 0 ? Math.round(num(s.w) * num(s.l) * 10) / 10 : 0;
+  return `<div class="tiles"><div class="tile"><div class="small mut">Type</div><div><b>${esc((SB_KINDS[s.kind] || SB_KINDS.small)[0])}</b></div></div>
+      <div class="tile"><div class="small mut">${esc(SB_TENURE[s.tenure] || 'Not decided')}</div><div class="big">${num(s.rent) > 0 ? sbK(s.rent) : '—'}</div><div class="small mut">a month${num(s.deposit) > 0 ? ` · deposit ${sbK(s.deposit)}` : ''}</div></div>
+      <div class="tile"><div class="small mut">Size</div><div class="big">${area ? area + ' m²' : '—'}</div><div class="small mut">${num(s.w) > 0 && num(s.l) > 0 ? `${num(s.w)} m × ${num(s.l)} m` : 'Add width and length'}</div></div>
+      <div class="tile"><div class="small mut">Site score</div><div class="big">${sbScore(s) ? sbScore(s) + '/25' : '—'}</div></div></div>
+  <div class="cols"><div class="card"><h2 style="margin-top:0">${s.tenure === 'own' ? 'Owner / contact' : 'Landlord or owner'}</h2>${s.lname || s.lphone || s.lmail ? `<p style="margin:0 0 6px"><b>${esc(s.lname || 'No name saved')}</b></p><div class="small">${s.lphone ? `Phone: ${esc(s.lphone)}<br>` : ''}${s.lmail ? `Email: ${esc(s.lmail)}<br>` : ''}</div><div class="actions" style="margin-top:8px">${s.lphone ? `<a class="btn sm pri" href="tel:${esc(String(s.lphone).replace(/[^\d+]/g, ''))}">Call</a><a class="btn sm" target="_blank" rel="noopener" href="${waLink(s.lphone, `Hello ${s.lname || ''}, about the shop space${s.address ? ' at ' + s.address : ''}.`)}">WhatsApp</a>` : ''}${s.lmail ? `<a class="btn sm" href="mailto:${esc(s.lmail)}">Email</a>` : ''}</div>` : `<p class="mut" style="margin:0">No contact saved. Tap <b>Edit details</b> to add it.</p>`}
+      ${s.view ? `<p class="small" style="margin:10px 0 0">Viewing: <b>${fmtDate(s.view)}</b></p>` : ''}${num(s.lease) > 0 ? `<p class="small" style="margin:4px 0 0">Lease: ${num(s.lease)} months${s.utils ? ' · utilities included' : ''}</p>` : (s.utils ? '<p class="small" style="margin:4px 0 0">Utilities included</p>' : '')}</div>
+    <div class="card"><h2 style="margin-top:0">Where it is</h2>${sbTown(s) ? `<p style="margin:0 0 6px">${esc(sbTown(s))}</p>` : ''}${sbHasLoc(s) ? `<p class="small mut" style="margin:0 0 8px">Pin at ${(+s.lat).toFixed(5)}, ${(+s.lng).toFixed(5)}</p><div class="sbm sbm-sm" id="sbm-one"></div><div class="actions" style="margin-top:8px"><a class="btn sm pri" target="_blank" rel="noopener" href="${sbDirUrl(s)}">Directions</a><a class="btn sm" target="_blank" rel="noopener" href="${sbViewUrl(s)}">Open in Google Maps</a>${btn('Move pin', 'sbLoc', {id:s.id}, 'sm ghost')}</div>` : `<p class="mut" style="margin:0 0 8px">Not on the map yet.</p>${btn('Put on map', 'sbLoc', {id:s.id}, 'sm pri')}`}</div></div>
+  <div class="card"><h2 style="margin-top:0">Is it a good site?</h2><div class="sb-rate">${rate.map(([k, l]) => `<label>${l}<select data-sbf="score" data-k="${k}">${[0, 1, 2, 3, 4, 5].map(n => `<option value="${n}" ${num(sc[k]) === n ? 'selected' : ''}>${n ? n + ' of 5' : 'Not rated'}</option>`).join('')}</select></label>`).join('')}</div>
+    ${s.pros || s.cons ? `<div class="grid2" style="margin-top:8px"><div><b class="good">Good things</b><p class="small" style="white-space:pre-wrap;margin:4px 0">${esc(s.pros || '—')}</p></div><div><b class="neg">Worries</b><p class="small" style="white-space:pre-wrap;margin:4px 0">${esc(s.cons || '—')}</p></div></div>` : ''}${s.notes ? `<p class="small" style="white-space:pre-wrap;margin:8px 0 0"><b>Notes:</b> ${esc(s.notes)}</p>` : ''}
+    <div class="sb-grid" style="margin-top:10px"><label>Status<select data-sbf="status">${SB_STATUS.map(([k, l]) => `<option value="${k}" ${s.status === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>${S.settings.locations && S.settings.locations.length ? `<label>Same as this shop in Shops<select data-sbf="shop"><option value="">None</option>${S.settings.locations.map(l => `<option value="${l.id}" ${s.shopId === l.id ? 'selected' : ''}>${esc(l.name)}</option>`).join('')}</select></label>` : ''}</div></div>
+  <div class="card"><h2 style="margin-top:0">Photos</h2><div class="sb-photos">${(s.photos || []).filter(id => S.images[id]).map(id => `<div class="sb-ph"><img src="${S.images[id].data}" alt="" data-act="sbPhotoView" data-pid="${id}"><button type="button" class="x" data-act="sbPhotoDel" data-pid="${id}" aria-label="Remove photo">×</button></div>`).join('')}${(s.photos || []).length < 8 ? `<label class="sb-ph sb-add"><span>+ Add photo</span><input type="file" accept="image/*" hidden data-sbphoto="${s.id}"></label>` : ''}</div><p class="hint" style="margin:8px 0 0">Take photos of the front, inside, the power points, and the street. Up to 8.</p></div>`;
+}
+function sbSiteForm(id){
+  const s = id ? sbGet(id) : {kind:'small', status:'prospect', tenure:'unknown', sc:{}}; if (id && !s) return; const sc = s.sc || {};
+  modal(id ? 'Edit shop details' : 'New site or shop', `<label>Name<input name="name" value="${esc(s.name || '')}" required placeholder="e.g. Cairo Road kiosk, Kabwe market stall"></label>
+    <div class="grid2"><label>Type<select name="kind">${Object.entries(SB_KINDS).map(([k, v]) => `<option value="${k}" ${s.kind === k ? 'selected' : ''}>${v[0]} (${v[1]})</option>`).join('')}</select></label>
+    <label>Where are you with it?<select name="status">${SB_STATUS.map(([k, l]) => `<option value="${k}" ${s.status === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+    <label>Rented or owned?<select name="tenure">${Object.entries(SB_TENURE).map(([k, v]) => `<option value="${k}" ${s.tenure === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
+    <label>Town<input name="town" value="${esc(s.town || '')}" placeholder="e.g. Lusaka"></label></div>
+    <label>Address or landmark<input name="address" value="${esc(s.address || '')}" placeholder="e.g. Next to the bus station, Stall 14"></label>
+    <div class="grid2"><label>Rent a month (K)<input name="rent" type="number" min="0" step="any" value="${esc(s.rent ?? '')}"></label><label>Deposit (K)<input name="deposit" type="number" min="0" step="any" value="${esc(s.deposit ?? '')}"></label>
+    <label>Lease length (months)<input name="lease" type="number" min="0" step="1" value="${esc(s.lease ?? '')}"></label><label class="check" style="align-self:end"><input type="checkbox" name="utils" ${s.utils ? 'checked' : ''}> Water and power are included in the rent</label>
+    <label>Width (metres)<input name="w" type="number" min="0" step="any" value="${esc(s.w ?? '')}"></label><label>Length (metres)<input name="l" type="number" min="0" step="any" value="${esc(s.l ?? '')}"></label></div>
+    <fieldset><legend>Landlord or owner</legend><div class="grid2"><label>Name<input name="lname" value="${esc(s.lname || '')}"></label><label>Phone or WhatsApp<input name="lphone" type="tel" value="${esc(s.lphone || '')}"></label><label>Email<input name="lmail" type="email" value="${esc(s.lmail || '')}"></label><label>Viewing date<input name="view" type="date" value="${esc(s.view || '')}"></label></div></fieldset>
+    <label>Good things about it<textarea name="pros" rows="2">${esc(s.pros || '')}</textarea></label><label>Worries<textarea name="cons" rows="2">${esc(s.cons || '')}</textarea></label><label>Notes<textarea name="notes" rows="2">${esc(s.notes || '')}</textarea></label>`,
+  async d => {
+    const name = String(d.name || '').trim(); if (!name) throw Error('Give the shop a name.');
+    const f = {name, kind:d.kind, status:d.status, tenure:d.tenure, town:String(d.town || '').trim(), address:String(d.address || '').trim(), rent:d.rent === '' ? '' : num(d.rent), deposit:d.deposit === '' ? '' : num(d.deposit), lease:d.lease === '' ? '' : num(d.lease), utils:d.utils === 'on', w:d.w === '' ? '' : num(d.w), l:d.l === '' ? '' : num(d.l), lname:String(d.lname || '').trim(), lphone:String(d.lphone || '').trim(), lmail:String(d.lmail || '').trim(), view:d.view || '', pros:String(d.pros || '').trim(), cons:String(d.cons || '').trim(), notes:String(d.notes || '').trim()};
+    let nid = id;
+    await sbSave(c => { if (id) { const t = c.sites.find(x => x.id === id); if (t) Object.assign(t, f); } else { nid = uid(); c.sites.push({id:nid, createdAt:nowISO(), sc:{}, mat:[], store:[], photos:[], chk:{}, ...f}); } });
+    if (!id) { UI.sbSite = nid; UI.sbTab = 'file'; UI.sbSub = 'site'; }
+    render(true); toast(id ? 'Saved' : 'Site added. You can now put it on the map and plan the materials.');
+  }, {wide:true});
+}
+function sbLocForm(id){
+  const s = sbGet(id); if (!s) return; const has = sbHasLoc(s);
+  modal('Put it on the map', `<div class="sbm" id="sbp-map" style="height:320px"></div>
+    <div class="grid2" style="margin-top:10px"><label>Latitude<input name="lat" id="sbp-lat" value="${has ? esc(s.lat) : ''}" inputmode="decimal"></label><label>Longitude<input name="lng" id="sbp-lng" value="${has ? esc(s.lng) : ''}" inputmode="decimal"></label></div>
+    <label>Paste a Google Maps link or the numbers<input id="sbp-paste" placeholder="e.g. -15.4167, 28.2833"></label>
+    <div class="actions"><button type="button" class="btn sm" data-act="sbMe">Use my location now</button>${has ? '<button type="button" class="btn sm ghost" data-act="sbClearLoc">Take it off the map</button>' : ''}</div>
+    <p class="hint" style="margin-top:8px">Tap the map where the shop is. Standing at the shop is the easiest: tap <b>Use my location now</b>. In Google Maps you can also press and hold a spot, copy the numbers and paste them above.</p>`,
+  async d => { const la = String(d.lat || '').trim(), ln = String(d.lng || '').trim(); const ok = la !== '' && ln !== '' && Math.abs(parseFloat(la)) <= 90 && Math.abs(parseFloat(ln)) <= 180 && isFinite(parseFloat(la)) && isFinite(parseFloat(ln)); if (!ok && (la || ln)) throw Error('Those numbers are not a place. Tap the map or paste a link.'); await sbEdit(id, t => { t.lat = ok ? +parseFloat(la).toFixed(6) : ''; t.lng = ok ? +parseFloat(ln).toFixed(6) : ''; }); if (ok) { SB.view = {lat:parseFloat(la), lng:parseFloat(ln), z:15}; } render(true); toast(ok ? 'Pin saved' : 'Taken off the map'); }, {wide:true, nofocus:true});
+  const h = $('#sbp-map'); if (!h) return;
+  const set = (la, ln, move) => { $('#sbp-lat').value = (+la).toFixed(6); $('#sbp-lng').value = (+ln).toFixed(6); SB.pm.setMarker(+la, +ln); if (move) SB.pm.center(+la, +ln, Math.max(14, 15)); };
+  SB.pm = sbMap(h, {view:has ? {lat:+s.lat, lng:+s.lng, z:16} : (SB.view || undefined), marker:has ? {lat:+s.lat, lng:+s.lng} : null, onTap: ll => set(ll.lat, ll.lng, false), onMe: ll => set(ll.lat, ll.lng, true)});
+}
+/* ---------- materials and budget ---------- */
+function sbMat(s){
+  const items = s.mat || [], tot = sbMatTotal(s), paid = sbMatPaid(s), left = Math.max(0, tot - paid), bud = num(s.budget), over = bud > 0 && tot > bud;
+  const sup = [...new Set(Object.values(S.suppliers || {}).map(x => x.name).filter(Boolean))];
+  const cats = SB_CATS.filter(c => items.some(m => (m.cat || 'Other') === c)).concat([...new Set(items.map(m => m.cat || 'Other'))].filter(c => !SB_CATS.includes(c)));
+  const tpl = SB_MAT[s.kind] || SB_MAT.small, have = new Set(items.map(m => String(m.name).toLowerCase())), more = tpl.filter(t => !have.has(t[1].toLowerCase())).length;
+  return `<div class="tiles"><div class="tile"><div class="small mut">Planned total</div><div class="big">${sbK(tot)}</div></div><div class="tile"><div class="small mut">Bought so far</div><div class="big">${sbK(paid)}</div></div><div class="tile"><div class="small mut">Still to buy</div><div class="big">${sbK(left)}</div></div>
+    <div class="tile"><div class="small mut">Your budget</div><div><input class="sb-bud" data-sbf="budget" type="number" min="0" step="any" value="${bud || ''}" placeholder="Set a budget" aria-label="Set-up budget in Kwacha"></div><div class="small ${over ? 'neg' : 'mut'}">${bud ? (over ? `Over by ${sbK(tot - bud)}` : `${sbK(bud - tot)} to spare`) : 'Optional'}</div></div></div>
+  ${bud > 0 ? `<div class="sb-bar" title="Planned against budget"><i style="width:${Math.min(100, tot / bud * 100)}%" class="${over ? 'over' : ''}"></i></div>` : ''}
+  <div class="card"><div class="sb-matbar"><h2 style="margin:0">What you need for the ${esc((SB_KINDS[s.kind] || SB_KINDS.small)[0].toLowerCase())}</h2><div class="actions">${btn('+ Add item', 'sbMatAdd', {id:s.id}, 'sm pri')}${more ? btn(items.length ? `Add ${more} more from the ready list` : 'Fill from the ready list', 'sbMatTpl', {id:s.id}, 'sm') : ''}${items.some(m => m.st === 'bought' && !m.exp) ? btn('Log bought items as expenses', 'sbMatLogAll', {id:s.id}, 'sm') : ''}</div></div>
+    <p class="hint"><b>The ready list prices are only rough estimates.</b> Replace them with real quotes from your suppliers. Mark an item <b>Bought</b> when you have paid, and log it as an expense so your books stay right.</p>
+    ${items.length ? cats.map(c => { const rows = items.filter(m => (m.cat || 'Other') === c); return `<h3 class="sb-gh">${esc(c)} <span class="small mut">${sbK(rows.reduce((t, m) => t + num(m.qty) * num(m.cost), 0))}</span></h3><ul class="list sb-mats">${rows.map(m => `<li class="${m.st === 'bought' ? 'sb-done' : ''}"><span><b>${esc(m.name)}</b><div class="small mut">${num(m.qty)} × ${sbK(m.cost)} = <b>${sbK(num(m.qty) * num(m.cost))}</b>${m.sup ? ' · ' + esc(m.sup) : ''}${m.exp ? ' · <span class="good">in expenses</span>' : ''}${m.note ? '<br>' + esc(m.note) : ''}</div></span><span class="sb-mact"><select data-sbf="matst" data-i="${m.id}" aria-label="Status of ${esc(m.name)}">${SB_MATST.map(([k, l]) => `<option value="${k}" ${(m.st || 'plan') === k ? 'selected' : ''}>${l}</option>`).join('')}</select>${btn('Edit', 'sbMatEdit', {id:s.id, i:m.id}, 'sm')}${m.st === 'bought' && !m.exp ? btn('Log expense', 'sbMatLog', {id:s.id, i:m.id}, 'sm') : ''}${btn('×', 'sbMatDel', {id:s.id, i:m.id}, 'sm ghost" aria-label="Remove')}</span></li>`).join('')}</ul>`; }).join('') : empty('Nothing on the list yet. Tap <b>Fill from the ready list</b> to start with the usual things for this type of shop, or add your own.')}
+  </div><datalist id="sb-sup">${sup.map(x => `<option value="${esc(x)}">`).join('')}</datalist>`;
+}
+function sbMatForm(sid, mid){
+  const s = sbGet(sid); if (!s) return; const m = mid ? (s.mat || []).find(x => x.id === mid) : {cat:'Other', qty:1, st:'plan'}; if (!m) return;
+  const sup = [...new Set(Object.values(S.suppliers || {}).map(x => x.name).filter(Boolean))];
+  modal(mid ? 'Edit item' : 'Add an item', `<label>What is it?<input name="name" value="${esc(m.name || '')}" required placeholder="e.g. Glass display cabinet"></label>
+    <div class="grid2"><label>Group<select name="cat">${SB_CATS.map(c => `<option ${(m.cat || 'Other') === c ? 'selected' : ''}>${c}</option>`).join('')}</select></label><label>Status<select name="st">${SB_MATST.map(([k, l]) => `<option value="${k}" ${(m.st || 'plan') === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+    <label>How many<input name="qty" type="number" min="0" step="any" value="${esc(m.qty ?? 1)}" required></label><label>Price each (K)<input name="cost" type="number" min="0" step="any" value="${esc(m.cost ?? '')}" required></label>
+    <label>Supplier<input name="sup" list="sb-sup2" value="${esc(m.sup || '')}"><datalist id="sb-sup2">${sup.map(x => `<option value="${esc(x)}">`).join('')}</datalist></label><label>Actually paid (K, when bought)<input name="paid" type="number" min="0" step="any" value="${esc(m.paid ?? '')}"></label></div>
+    <label>Note<input name="note" value="${esc(m.note || '')}" placeholder="e.g. quote from Mr Banda, valid till Friday"></label>`,
+  async d => { const name = String(d.name || '').trim(); if (!name) throw Error('Say what the item is.'); const f = {name, cat:d.cat, st:d.st, qty:num(d.qty), cost:num(d.cost), sup:String(d.sup || '').trim(), paid:d.paid === '' ? '' : num(d.paid), note:String(d.note || '').trim()}; await sbEdit(sid, t => { t.mat = t.mat || []; if (mid) { const x = t.mat.find(y => y.id === mid); if (x) Object.assign(x, f); } else t.mat.push({id:uid(), ...f}); }); render(true); });
+}
+function sbLogForm(sid, ids){
+  const s = sbGet(sid); if (!s) return; const rows = (s.mat || []).filter(m => ids.includes(m.id) && !m.exp); if (!rows.length) return toast('Nothing to log.');
+  const total = rows.reduce((t, m) => t + (m.paid !== '' && m.paid != null ? num(m.paid) : num(m.qty) * num(m.cost)), 0);
+  modal('Log as expense', `<p style="margin-top:0">${rows.length === 1 ? `<b>${esc(rows[0].name)}</b>` : `<b>${rows.length} items</b> bought for ${esc(s.name)}`}: <b>${sbK(total)}</b></p><div class="grid2">${fDate()}<label for="f-ch">Paid from<select id="f-ch" name="channel">${chOptions('cash')}</select></label></div>
+    <p class="hint">${rows.length === 1 ? 'One' : 'One'} entry is added to Expenses under <b>Shop set-up</b> for each item, so you can see them in the cash book and the reports.</p>`,
+  async d => { for (const m of rows) { const amt = m.paid !== '' && m.paid != null ? num(m.paid) : num(m.qty) * num(m.cost); if (amt <= 0) continue; const c = await put('cash', {kind:'out', date:d.date, channel:d.channel, amount:amt, category:'Expense', expType:'Shop set-up', resellerId:'', supplier:m.sup || '', description:`Shop set-up (${s.name}): ${m.name}${num(m.qty) !== 1 ? ' × ' + num(m.qty) : ''}`}); await sbEdit(sid, t => { const x = (t.mat || []).find(y => y.id === m.id); if (x) { x.exp = c.id; x.paid = amt; x.st = 'bought'; } }); } render(true); toast('Logged in Expenses'); }, {label:'Log it'});
+}
+/* ---------- storage and stock room ---------- */
+function sbStore(C, s){
+  const units = s.store || [], cap = units.reduce((t, u) => t + sbUnitCap(u), 0), loc = s.shopId ? (C.storeLoc[s.shopId] || {}) : null, onHand = loc ? Object.values(loc).reduce((t, q) => t + Math.max(0, q), 0) : 0, keep = num(s.keep) || onHand;
+  const fits = cap - keep;
+  return `<div class="tiles"><div class="tile"><div class="small mut">Room for</div><div class="big">${cap} bottles</div><div class="small mut">${units.length} place${units.length === 1 ? '' : 's'} to keep stock</div></div>
+    <div class="tile"><div class="small mut">Bottles you plan to keep</div><div><input class="sb-bud" data-sbf="keep" type="number" min="0" step="1" value="${num(s.keep) || ''}" placeholder="${onHand || 'How many?'}" aria-label="Bottles to keep"></div><div class="small mut">${loc ? `${onHand} in this shop now` : 'Type a number'}</div></div>
+    <div class="tile"><div class="small mut">${fits >= 0 ? 'Spare room' : 'Short of room'}</div><div class="big ${fits < 0 ? 'neg' : ''}">${keep ? Math.abs(fits) + ' bottles' : '—'}</div></div></div>
+  ${keep && cap ? `<div class="sb-bar"><i style="width:${Math.min(100, keep / cap * 100)}%" class="${keep > cap ? 'over' : ''}"></i></div>` : ''}
+  <div class="card"><div class="sb-matbar"><h2 style="margin:0">Shelves, cabinets and stock room</h2><div class="actions">${btn('+ Add a place', 'sbUnitAdd', {id:s.id}, 'sm pri')}</div></div>
+    <p class="hint">Room is worked out from the size of the shelf and a boxed bottle. 100 ml takes about 6.5 × 5 cm of shelf, 50 ml about 5.5 × 4.5 cm, 30 ml about 4.5 × 4 cm. If you know better, type the room yourself.</p>
+    ${units.length ? `<ul class="list">${units.map(u => `<li><span><b>${esc(u.name)}</b><div class="small mut">${num(u.w)} × ${num(u.d)} cm · ${num(u.lv) || 1} level${(num(u.lv) || 1) === 1 ? '' : 's'} · ${esc(u.size || '100')} ml bottles${u.note ? ' · ' + esc(u.note) : ''}</div></span><span class="sb-mact"><b>${sbUnitCap(u)} bottles</b>${btn('Edit', 'sbUnitEdit', {id:s.id, i:u.id}, 'sm')}${btn('×', 'sbUnitDel', {id:s.id, i:u.id}, 'sm ghost" aria-label="Remove')}</span></li>`).join('')}</ul>` : empty('No storage places yet. Add the shelves, cabinets and boxes you plan to have.')}
+    <h3 class="sb-gh">Quick add</h3><div class="actions">${SB_UNITS.map((u, i) => btn('+ ' + u[0], 'sbUnitAdd', {id:s.id, p:i}, 'sm')).join('')}</div></div>`;
+}
+function sbUnitForm(sid, uid_, preset){
+  const s = sbGet(sid); if (!s) return; const p = SB_UNITS[preset]; const u = uid_ ? (s.store || []).find(x => x.id === uid_) : (p ? {name:p[0], w:p[2], d:p[3], lv:p[4], size:'100'} : {name:'', w:80, d:30, lv:3, size:'100'}); if (!u) return;
+  modal(uid_ ? 'Edit this place' : 'Add a place to keep stock', `<label>Name<input name="name" value="${esc(u.name || '')}" required placeholder="e.g. Wall shelf behind the counter"></label>
+    <div class="grid2"><label>Width (cm)<input name="w" type="number" min="1" step="any" value="${esc(u.w ?? '')}" required></label><label>Depth (cm)<input name="d" type="number" min="1" step="any" value="${esc(u.d ?? '')}" required></label>
+    <label>Shelves or layers<input name="lv" type="number" min="1" step="1" value="${esc(u.lv ?? 1)}" required></label><label>Bottle size kept here<select name="size">${['100', '50', '30'].map(x => `<option value="${x}" ${String(u.size || '100') === x ? 'selected' : ''}>${x} ml</option>`).join('')}</select></label></div>
+    <label>Room (bottles), only if you want to type it yourself<input name="cap" type="number" min="0" step="1" value="${esc(u.cap ?? '')}" placeholder="Leave empty to work it out"></label><label>Note<input name="note" value="${esc(u.note || '')}" placeholder="e.g. women’s perfumes"></label>`,
+  async d => { const f = {name:String(d.name || '').trim(), w:num(d.w), d:num(d.d), lv:Math.max(1, Math.round(num(d.lv))), size:d.size, cap:d.cap === '' ? '' : num(d.cap), note:String(d.note || '').trim()}; if (!f.name) throw Error('Give it a name.'); await sbEdit(sid, t => { t.store = t.store || []; if (uid_) { const x = t.store.find(y => y.id === uid_); if (x) Object.assign(x, f); } else t.store.push({id:uid(), ...f}); }); render(true); });
+}
+/* ---------- will it pay? ---------- */
+function sbAvgProfit(){ const ps = sortedProds().filter(p => (p.status || 'active') !== 'inactive' && num(p.sellPrice) > 0 && num(p.costPrice) > 0); return ps.length ? Math.round(ps.reduce((t, p) => t + num(p.sellPrice) - num(p.costPrice), 0) / ps.length) : 0; }
+function sbPay(C, s){
+  const b = s.biz || {}, fld = (k, l, ph) => `<label>${l}<input data-sbf="biz" data-k="${k}" type="number" min="0" step="any" value="${b[k] !== undefined && b[k] !== '' ? esc(b[k]) : ''}" placeholder="${esc(ph ?? '')}"></label>`;
+  const rent = b.rent !== undefined && b.rent !== '' ? num(b.rent) : num(s.rent), avg = sbAvgProfit(), profit = b.profit !== undefined && b.profit !== '' ? num(b.profit) : avg, bottles = num(b.bottles);
+  const monthly = rent + num(b.staff) + num(b.power) + num(b.transport) + num(b.other), setup = Math.max(sbMatTotal(s), 0), be = profit > 0 ? Math.ceil(monthly / profit) : 0;
+  const sc = [[0.5, 'Slow month'], [1, 'Expected month'], [1.5, 'Busy month']].map(([f, l]) => { const q = Math.round(bottles * f), net = q * profit - monthly; return [l, q, net, net > 0 && setup > 0 ? Math.ceil(setup / net) : 0]; });
+  return `<div class="cols"><div class="card"><h2 style="margin-top:0">Costs each month</h2><div class="sb-grid">${fld('rent', 'Rent (K)', num(s.rent) || '')}${fld('staff', 'Shopkeeper pay (K)')}${fld('power', 'Power, water, data (K)')}${fld('transport', 'Transport and delivery (K)')}${fld('other', 'Other (K)')}</div><p style="margin:6px 0 0"><b>Total: ${sbK(monthly)} a month</b></p></div>
+    <div class="card"><h2 style="margin-top:0">What a bottle earns</h2><div class="sb-grid">${fld('profit', 'Profit on an average bottle (K)', avg || '')}${fld('bottles', 'Bottles you hope to sell a month')}</div><p class="hint" style="margin:6px 0 0">${avg ? `Your perfumes make about <b>${sbK(avg)}</b> a bottle on average (selling price minus cost). Change it if your shop sells mostly cheaper or dearer perfumes.` : 'Add cost and selling prices to your perfumes and this fills in by itself.'}</p></div></div>
+  <div class="card"><h2 style="margin-top:0">The answer</h2>${monthly > 0 && profit > 0 ? `<p style="margin:0 0 8px">To cover its costs this shop must sell <b>${be} bottles a month</b>${be ? ` (about ${Math.max(1, Math.ceil(be / 26))} a day)` : ''}.</p>` : '<p class="mut" style="margin:0 0 8px">Fill in the costs and the profit on a bottle to see how many bottles the shop must sell.</p>'}
+    ${bottles > 0 && profit > 0 ? `<div class="tw"><table class="t"><thead><tr><th></th><th class="n">Bottles</th><th class="n">Left after costs</th><th class="n">Set-up paid back in</th></tr></thead><tbody>${sc.map(([l, q, net, pb]) => `<tr><td>${l}</td><td class="n">${q}</td><td class="n ${net < 0 ? 'neg' : 'good'}">${net < 0 ? '−' : ''}${sbK(Math.abs(net))}</td><td class="n">${net <= 0 ? 'Not paid back' : setup > 0 ? pb + ' month' + (pb === 1 ? '' : 's') : '—'}</td></tr>`).join('')}</tbody></table></div><p class="hint" style="margin:8px 0 0">Set-up cost used: ${sbK(setup)} (your planned materials total). Rough guide only: it does not include tax, losses or the cost of stock.</p>` : ''}</div>`;
+}
+/* ---------- opening checklist ---------- */
+function sbCheck(s){
+  const chk = s.chk || {}, extra = s.custom || [], all = SB_CHECK.flatMap(g => g[1]).concat(extra.map(x => [x.id, x.t])), done = all.filter(([k]) => chk[k]).length;
+  return `<div class="card"><div class="sb-matbar"><h2 style="margin:0">Getting ${esc(s.name)} ready to open</h2><b>${done} of ${all.length} done</b></div><div class="sb-bar"><i style="width:${all.length ? done / all.length * 100 : 0}%"></i></div>
+    <p class="hint" style="margin-top:8px">A simple list to keep you on track. Ask the council and the market office which papers a shop of this kind needs, because rules can differ by town.</p>
+    ${SB_CHECK.map(([g, items], gi) => `<h3 class="sb-gh">${g}</h3>${items.map(([k, t]) => `<label class="check sb-chk"><input type="checkbox" data-sbf="chk" data-k="${k}" ${chk[k] ? 'checked' : ''}> ${esc(t)}</label>`).join('')}${gi === SB_CHECK.length - 1 ? extra.map(x => `<label class="check sb-chk"><input type="checkbox" data-sbf="chk" data-k="${x.id}" ${chk[x.id] ? 'checked' : ''}> ${esc(x.t)} <button type="button" class="x" data-act="sbChkDel" data-id="${s.id}" data-k="${x.id}" aria-label="Remove">×</button></label>`).join('') : ''}`).join('')}
+    <div class="actions" style="margin-top:10px">${btn('+ Add my own step', 'sbChkAdd', {id:s.id}, 'sm')}</div></div>`;
+}
+/* ---------- SWOT ---------- */
+const SB_SWOT = [['s', 'Strengths', 'What we do well and what we have', 'good'], ['w', 'Weaknesses', 'What holds us back', 'bad'], ['o', 'Opportunities', 'Chances outside the business we can use', 'acc'], ['t', 'Threats', 'Things outside the business that could hurt us', 'warn']];
+function sbSwotIdeas(q){
+  const nr = Object.keys(S.resellers || {}).length, nt = Object.keys(S.towns || {}).length, np = sortedProds().filter(p => (p.status || 'active') !== 'inactive').length, shops = (S.settings.locations || []).length;
+  const base = {
+    s:[nr ? `${nr} resellers in ${nt || 'several'} town${nt === 1 ? '' : 's'}, selling for us` : 'Resellers in different towns selling for us', np ? `${np} perfumes at different prices` : 'A wide choice of perfumes at different prices', 'Our own app for stock, sales, receipts and reports', 'Resellers can start without paying first (consignment)', 'Professional look: shop screen, flyers, catalogues'],
+    w:[shops < 2 ? 'Few shops of our own, so we depend on resellers' : 'Each new shop adds rent and wages', 'Stock is tied up with resellers until they settle', 'Perfumes come from a few suppliers', 'Small marketing budget', 'Many jobs depend on the owner'],
+    o:['Kiosks in busy markets, bus stations and malls', 'Gift seasons: Valentine’s Day, Mother’s Day, Christmas', 'Online shop with delivery and mobile money', 'Selling in bulk to salons and boutiques', 'Towns where we have no reseller yet'],
+    t:['Fake or cheap copies of popular perfumes', 'Kwacha exchange rate making stock dearer', 'Competitors selling cheaper', 'Late payments or lost stock from resellers', 'Rent going up, or losing a good site'],
+    a:['Open one kiosk as a pilot and measure sales for 3 months', 'Get written prices from two suppliers', 'Finish business registration before signing a lease', 'Choose the best two prospect sites and visit them', 'Train a shopkeeper on the shop app before opening']
+  };
+  const have = new Set(((sbCfg().swot || {})[q] || []).map(x => x.t.toLowerCase())); return base[q].filter(t => !have.has(t.toLowerCase()));
+}
+function sbSwot(C){
+  const sw = sbCfg().swot || {}, box = ([k, t, h, c]) => `<div class="card sb-sw sb-sw-${c}"><h2 style="margin-top:0">${t}</h2><p class="hint">${h}</p>${(sw[k] || []).length ? `<ul class="list">${sw[k].map(x => `<li><span>${esc(x.t)}</span><span class="sb-mact">${btn('Edit', 'sbSwotEdit', {q:k, id:x.id}, 'sm ghost')}${btn('×', 'sbSwotDel', {q:k, id:x.id}, 'sm ghost" aria-label="Remove')}</span></li>`).join('')}</ul>` : '<p class="mut small">Nothing yet.</p>'}
+    <div class="actions">${btn('+ Add', 'sbSwotAdd', {q:k}, 'sm pri')}</div>${sbSwotIdeas(k).length ? `<details style="margin-top:8px"><summary class="small">Ideas to start with</summary><div class="sb-ideas">${sbSwotIdeas(k).map(t => `<button type="button" class="pill" data-act="sbSwotIdea" data-q="${k}" data-t="${esc(t)}">+ ${esc(t)}</button>`).join('')}</div></details>` : ''}</div>`;
+  const act = ['a', 'What we will do about it', 'Steps that use the strengths, fix the weaknesses, grab the chances and guard against the threats', 'acc'];
+  return `<p class="hint" style="margin-top:0">A SWOT is a simple picture of where the business stands. Look at it before you pick a site or sign a lease. The ideas below are only starting points: keep what is true for you and change the rest.</p><div class="cols">${SB_SWOT.map(box).join('')}</div><div style="margin-top:18px">${box(act)}</div>`;
+}
+function sbSwotForm(q, id){
+  const items = (sbCfg().swot || {})[q] || [], it = id ? items.find(x => x.id === id) : null, name = q === 'a' ? 'What we will do about it' : (SB_SWOT.find(x => x[0] === q) || [])[1];
+  modal((id ? 'Edit' : 'Add to') + ': ' + name, `<label>What is it?<textarea name="t" rows="3" required>${esc(it ? it.t : '')}</textarea></label>`, async d => { const t = String(d.t || '').trim(); if (!t) throw Error('Write something.'); await sbSave(c => { c.swot[q] = c.swot[q] || []; if (id) { const x = c.swot[q].find(y => y.id === id); if (x) x.t = t; } else c.swot[q].push({id:uid(), t}); }); render(true); });
+}
+/* ---------- actions ---------- */
+Object.assign(ACT, {
+  sbTab: d => { UI.sbTab = d.t; render(true); }, sbSub: d => { UI.sbSub = d.t; render(true); },
+  sbOpen: d => { UI.sbSite = d.id; UI.sbTab = 'file'; UI.sbSub = 'site'; render(true); window.scrollTo(0, 0); },
+  sbNew: () => sbSiteForm(), sbEditSite: d => sbSiteForm(d.id), sbLoc: d => sbLocForm(d.id),
+  sbFromShop: async d => { const l = (S.settings.locations || []).find(x => x.id === d.id); if (!l) return; let nid; await sbSave(c => { nid = uid(); c.sites.push({id:nid, createdAt:nowISO(), name:l.name, kind:'small', status:'open', tenure:'unknown', shopId:l.id, sc:{}, mat:[], store:[], photos:[], chk:{}}); }); UI.sbSite = nid; UI.sbTab = 'file'; UI.sbSub = 'site'; render(true); toast('File made. Add the rent, landlord and map pin.'); },
+  sbDelSite: d => { const s = sbGet(d.id); if (!s) return; confirmBox(`Delete the file for <b>${esc(s.name)}</b>, with its materials list, storage plan and photos? This cannot be undone. Expenses you already logged stay in the cash book.`, async () => { for (const p of (s.photos || [])) if (S.images[p]) await del('images', p); await sbSave(c => { c.sites = c.sites.filter(x => x.id !== d.id); }); UI.sbSite = ''; render(true); toast('Deleted'); }); },
+  sbMe: () => { if (SB.pm) SB.pm.locate(); }, sbClearLoc: () => { $('#sbp-lat').value = ''; $('#sbp-lng').value = ''; SB.pm && SB.pm.setMarker(NaN, NaN); toast('Press Save to take it off the map.'); },
+  sbPhotoView: d => { const im = S.images[d.pid]; if (im) modal('Photo', `<img src="${im.data}" alt="" style="width:100%;border-radius:8px">`, null, {wide:true}); },
+  sbPhotoDel: d => confirmBox('Remove this photo?', async () => { const sid = (sbCfg().sites.find(x => (x.photos || []).includes(d.pid)) || {}).id; if (S.images[d.pid]) await del('images', d.pid); if (sid) await sbEdit(sid, s => { s.photos = (s.photos || []).filter(p => p !== d.pid); }); render(true); }),
+  sbMatAdd: d => sbMatForm(d.id), sbMatEdit: d => sbMatForm(d.id, d.i),
+  sbMatDel: d => { const s = sbGet(d.id), m = s && (s.mat || []).find(x => x.id === d.i); if (!m) return; confirmBox(`Remove <b>${esc(m.name)}</b> from the list?${m.exp ? ' Its expense in the cash book stays.' : ''}`, async () => { await sbEdit(d.id, t => { t.mat = (t.mat || []).filter(x => x.id !== d.i); }); render(true); }); },
+  sbMatTpl: async d => { const s = sbGet(d.id); if (!s) return; const have = new Set((s.mat || []).map(m => String(m.name).toLowerCase())); const add = (SB_MAT[s.kind] || SB_MAT.small).filter(t => !have.has(t[1].toLowerCase())); await sbEdit(d.id, t => { t.mat = (t.mat || []).concat(add.map(([cat, name, qty, cost]) => ({id:uid(), cat, name, qty, cost, st:'plan', est:true}))); }); render(true); toast(`${add.length} items added. The prices are only estimates. Change them to your real quotes.`); },
+  sbMatLog: d => sbLogForm(d.id, [d.i]), sbMatLogAll: d => { const s = sbGet(d.id); if (s) sbLogForm(d.id, (s.mat || []).filter(m => m.st === 'bought' && !m.exp).map(m => m.id)); },
+  sbUnitAdd: d => sbUnitForm(d.id, '', d.p === undefined ? undefined : +d.p), sbUnitEdit: d => sbUnitForm(d.id, d.i),
+  sbUnitDel: d => confirmBox('Remove this place?', async () => { await sbEdit(d.id, t => { t.store = (t.store || []).filter(x => x.id !== d.i); }); render(true); }),
+  sbChkAdd: d => modal('Add your own step', '<label>What needs doing?<input name="t" required></label>', async f => { const t = String(f.t || '').trim(); if (!t) throw Error('Write the step.'); await sbEdit(d.id, s => { s.custom = (s.custom || []).concat([{id:'c' + uid(), t}]); }); render(true); }),
+  sbChkDel: d => sbEdit(d.id, s => { s.custom = (s.custom || []).filter(x => x.id !== d.k); if (s.chk) delete s.chk[d.k]; }).then(() => render(true)),
+  sbSwotAdd: d => sbSwotForm(d.q), sbSwotEdit: d => sbSwotForm(d.q, d.id),
+  sbSwotDel: async d => { await sbSave(c => { c.swot[d.q] = (c.swot[d.q] || []).filter(x => x.id !== d.id); }); render(true); },
+  sbSwotIdea: async d => { await sbSave(c => { c.swot[d.q] = c.swot[d.q] || []; c.swot[d.q].push({id:uid(), t:d.t}); }); render(true); }
+});
+document.addEventListener('change', async e => {
+  const t = e.target; if (!t || !t.dataset) return;
+  if (t.dataset.sbphoto) { const f = t.files && t.files[0], sid = t.dataset.sbphoto; t.value = ''; if (!f) return; try { toast('Adding the photo…'); const data = await shrinkImage(f, 1280, 220000), pid = 'sb_' + sid + '_' + uid(); await put('images', {id:pid, data, sbPhoto:true}); await sbEdit(sid, s => { s.photos = (s.photos || []).concat([pid]); }); render(true); toast('Photo added'); } catch(x) { toast(x.message || 'Could not add the photo.', true); } return; }
+  const k = t.dataset.sbf; if (!k) return; const sid = UI.sbSite;
+  if (k === 'pick') { UI.sbSite = t.value; render(true); return; }
+  if (k === 'status') await sbEdit(sid, s => { s.status = t.value; });
+  else if (k === 'shop') await sbEdit(sid, s => { s.shopId = t.value; });
+  else if (k === 'score') await sbEdit(sid, s => { s.sc = s.sc || {}; s.sc[t.dataset.k] = num(t.value); });
+  else if (k === 'budget') await sbEdit(sid, s => { s.budget = t.value === '' ? '' : num(t.value); });
+  else if (k === 'keep') await sbEdit(sid, s => { s.keep = t.value === '' ? '' : num(t.value); });
+  else if (k === 'biz') await sbEdit(sid, s => { s.biz = s.biz || {}; s.biz[t.dataset.k] = t.value === '' ? '' : num(t.value); });
+  else if (k === 'chk') await sbEdit(sid, s => { s.chk = s.chk || {}; s.chk[t.dataset.k] = t.checked; });
+  else if (k === 'matst') await sbEdit(sid, s => { const m = (s.mat || []).find(x => x.id === t.dataset.i); if (m) m.st = t.value; });
+  else return;
+  render(true);
+}, true);
+document.addEventListener('input', e => { const t = e.target; if (t && t.id === 'sbp-paste') { const ll = sbParseLoc(t.value); if (ll && SB.pm) { $('#sbp-lat').value = ll.lat.toFixed(6); $('#sbp-lng').value = ll.lng.toFixed(6); SB.pm.setMarker(ll.lat, ll.lng); SB.pm.center(ll.lat, ll.lng, 16); } } else if (t && (t.id === 'sbp-lat' || t.id === 'sbp-lng') && SB.pm) { const la = parseFloat($('#sbp-lat').value), ln = parseFloat($('#sbp-lng').value); if (isFinite(la) && isFinite(ln) && Math.abs(la) <= 90 && Math.abs(ln) <= 180) { SB.pm.setMarker(la, ln); SB.pm.center(la, ln); } } });
+/* ======================= 2.26: Shop builder part 2 (floor plans, branding kit, plan pack for builders) ======================= */
+const SB_IT = {   // name, width m, depth m, colour, short label
+  counter:['Counter', 1.6, .6, '#e3c27e', 'Counter'], till:['Till or POS point', .5, .4, '#33302b', 'Till'], shelf:['Wall shelf', 1, .25, '#d6a3c4', 'Shelf'],
+  cabinet:['Glass cabinet', .9, .4, '#a9d8e6', 'Cabinet'], island:['Display table', 1.2, .8, '#efbfae', 'Display table'], bar:['Testing bar', 1.5, .5, '#f2d082', 'Testing bar'],
+  stool:['Stool', .4, .4, '#b5b5b5', ''], seat:['Seat', .5, .5, '#c4b3e0', 'Seat'], mirror:['Mirror', .6, .08, '#c9e8f1', 'Mirror'],
+  tv:['Shop screen (TV)', 1, .1, '#3c3c3c', 'TV'], rack:['Stock rack', 1, .45, '#aab98a', 'Rack'], locker:['Lockable cabinet', .8, .5, '#9cb0c6', 'Lockable'],
+  sign:['Sign or poster', 1, .06, '#e58a8a', 'Sign'], plant:['Plant or decor', .4, .4, '#8fc98f', ''],
+  door:['Door', .9, .15, '#c79a62', 'Door'], window:['Window', 1.2, .12, '#9ed0ec', 'Window'], wall:['Partition wall', 2, .12, '#7a7a7a', '']
+};
+const SB_ITORD = ['counter', 'till', 'shelf', 'cabinet', 'island', 'bar', 'stool', 'seat', 'mirror', 'tv', 'rack', 'locker', 'sign', 'plant', 'door', 'window', 'wall'];
+const SB_ROUND = {stool:1, plant:1}, SB_LIGHT = {till:1, tv:1, wall:1};
+const SB_FLOORT = ['counter', 'shelf', 'cabinet', 'island', 'bar', 'stool', 'seat', 'rack', 'locker', 'plant'];
+const SB_ROOM = {kiosk:[2.5, 3], small:[4, 5], boutique:[6, 6.5], home:[2, 2.2]};
+const sbR2 = n => Math.round(n * 100) / 100;
+const sbSnap = n => Math.round(n / .05) * .05;
+const sbRow = (t, n, x0, x1, y, w, h) => { const o = [], len = x1 - x0; n = Math.max(1, Math.min(n, Math.floor(len / w + 1e-6))); const gap = (len - n * w) / (n + 1); for (let i = 0; i < n; i++) o.push([t, x0 + gap + i * (w + gap), y, w, h]); return o; };
+const sbCol = (t, n, y0, y1, x, w, h) => { const o = [], len = y1 - y0; if (len < h * .9) return o; n = Math.max(1, Math.min(n, Math.floor(len / h + 1e-6))); const gap = (len - n * h) / (n + 1); for (let i = 0; i < n; i++) o.push([t, x, y0 + gap + i * (h + gap), w, h]); return o; };
+/* ready designs: every one is worked out from the room size, so it fits whatever size you give it */
+const SB_DES = {
+  kiosk:[
+    ['k1', 'Counter at the front', 'A serving counter across the front, shelves on the back wall and one side.', (W, L) => [['window', .3, L - .12, W - .6, .12, 'Serving window'], ['counter', .15, L - .8, W - .3, .6], ['till', W - .8, L - .74, .5, .4], ...sbRow('shelf', 3, .1, W - .1, .02, Math.min(1, (W - .2) / 3), .25), ...sbCol('shelf', 2, .4, L - 1.0, .02, .25, Math.min(.9, Math.max(.5, (L - 1.5) / 2))), ['locker', W - .95, .35, .8, .5], ['stool', W / 2 - .2, L - 1.5, .4, .4], ['door', W - .15, L - 1.95, .15, .9]]],
+    ['k2', 'L-shaped counter', 'The counter turns the corner so two people can serve at once.', (W, L) => [['window', .3, L - .12, W - .9, .12, 'Serving window'], ['counter', .15, L - .8, W - .3, .6], ['counter', W - .75, .35, .6, Math.max(.8, L - 1.3)], ['till', .25, L - .74, .5, .4], ...sbRow('shelf', 2, .1, W - .9, .02, Math.min(1, (W - 1.1) / 2), .25), ...sbCol('shelf', 1, .4, L - 2.0, .02, .25, .5), ['stool', W / 2 - .2, L / 2, .4, .4], ['door', 0, L - 1.95, .15, .9]]],
+    ['k3', 'Display table out front', 'A display table at the front draws people in. Stock is kept behind the counter.', (W, L) => [['window', .3, L - .12, W - .6, .12, 'Serving window'], ['island', W / 2 - Math.min(.6, (W - .5) / 2), L - 1.5, Math.min(1.2, W - .5), .7], ['counter', .15, .35, Math.max(1, W - 1.2), .6], ['till', Math.max(1, W - 1.2) - .3, .5, .4, .3], ['locker', W - .95, .35, .8, .5], ...sbCol('shelf', 2, 1.05, L - .4, .02, .25, .8), ['door', W - .15, L - 1.95, .15, .9]]]
+  ],
+  small:[
+    ['s1', 'Counter at the back', 'Customers walk in past the shelves and the display table to the counter at the back.', (W, L) => [['door', W - 1.2, L - .15, .9, .15], ['window', .4, L - .12, Math.max(.8, W - 2.1), .12, 'Window'], ...sbCol('shelf', 4, 1.2, L - 1.0, .02, .25, 1), ...sbCol('shelf', 4, 1.2, L - 1.0, W - .27, .25, 1), ['counter', W / 2 - .8, .35, 1.6, .6], ['till', W / 2 + .35, .5, .4, .3], ['tv', W / 2 - .5, 0, 1, .1], ['locker', .1, .1, .8, .5], ['rack', W - 1.1, .1, 1, .45], ['island', W / 2 - .6, L / 2 + .1, 1.2, .8], ['bar', .5, L - 1.5, 1.5, .5]]],
+    ['s2', 'Display cabinets in the middle', 'Glass cabinets in the middle, counter next to the door so every customer is greeted.', (W, L) => [['door', .3, L - .15, .9, .15], ['window', 1.5, L - .12, Math.max(.8, W - 1.9), .12, 'Window'], ...sbRow('shelf', 3, .3, W - .3, .02, Math.min(1, (W - .8) / 3), .25), ...sbCol('shelf', 3, 1.0, L - 2.2, .02, .25, 1), ['counter', W - .75, L - 2.5, .6, 1.6], ['till', W - .7, L - 2.4, .5, .4], ['cabinet', W / 2 - 1.0, L / 2 - .5, .9, .4], ['cabinet', W / 2 + .1, L / 2 - .5, .9, .4], ['island', W / 2 - .6, L / 2 + .4, 1.2, .8], ['tv', W - .12, 1, .1, 1], ['rack', .1, L - 2.0, .45, 1], ['locker', .6, .35, .8, .5]]],
+    ['s3', 'Gallery walls', 'Shelves on three walls show every bottle. A testing bar and seats in the middle.', (W, L) => [['door', W / 2 - .45, L - .15, .9, .15], ['window', .3, L - .12, Math.max(.6, W / 2 - .9), .12, 'Window'], ...sbRow('shelf', 1, .3, W / 2 - .6, .02, 1, .25), ...sbRow('shelf', 1, W / 2 + .6, W - .3, .02, 1, .25), ...sbCol('shelf', 3, .5, L - 1.0, .02, .25, 1), ...sbCol('shelf', 3, .5, L - 1.0, W - .27, .25, 1), ['counter', .35, L - 1.9, .6, 1.2], ['till', .4, L - 1.75, .5, .4], ['bar', W / 2 - .75, L / 2 - .3, 1.5, .5], ['seat', W / 2 - 1.0, L / 2 + .4, .5, .5], ['seat', W / 2 + .5, L / 2 + .4, .5, .5], ['tv', W / 2 - .5, 0, 1, .1], ['locker', W - 1.2, .35, .8, .5]]]
+  ],
+  boutique:[
+    ['b1', 'Boutique with testing bar', 'A welcoming front, cabinets and a testing bar in the middle, counter and stock at the back.', (W, L) => [['door', W / 2 - .6, L - .15, 1.2, .15], ['window', .3, L - .12, Math.max(.8, W / 2 - 1.2), .12, 'Window'], ['window', W / 2 + .9, L - .12, Math.max(.8, W / 2 - 1.2), .12, 'Window'], ...sbRow('shelf', 2, .3, W / 2 - .7, .02, .95, .25), ...sbRow('shelf', 2, W / 2 + .7, W - .3, .02, .95, .25), ...sbCol('shelf', 4, 1.0, L - 1.2, .02, .25, 1), ...sbCol('shelf', 4, 1.0, L - 1.2, W - .27, .25, 1), ['cabinet', W / 2 - 1.9, L / 2 - .2, .9, .4], ['cabinet', W / 2 - .95, L / 2 - .2, .9, .4], ['cabinet', W / 2 + .05, L / 2 - .2, .9, .4], ['bar', W / 2 - .75, L / 2 + .8, 1.5, .5], ['seat', W / 2 - 1.1, L / 2 + 1.5, .5, .5], ['seat', W / 2 + .6, L / 2 + 1.5, .5, .5], ['counter', W - 2.6, .35, 1.8, .6], ['till', W - 1.25, .45, .4, .3], ['tv', W / 2 - .6, 0, 1.2, .1], ['rack', .5, .35, 1, .45], ['locker', 1.6, .35, .8, .5], ['plant', .45, L - 1.0, .4, .4]]],
+    ['b2', 'Open plan', 'A big display table in the middle with space to walk around it. Shelves on three walls.', (W, L) => [['door', W / 2 - .6, L - .15, 1.2, .15], ['window', .3, L - .12, Math.max(.8, W / 2 - 1.2), .12, 'Window'], ['window', W / 2 + .9, L - .12, Math.max(.8, W / 2 - 1.2), .12, 'Window'], ...sbRow('shelf', 2, .3, W / 2 - .7, .02, .95, .25), ...sbRow('shelf', 2, W / 2 + .7, W - .3, .02, .95, .25), ...sbCol('shelf', 4, 1.0, L - 1.2, .02, .25, 1), ...sbCol('shelf', 4, 1.0, L - 1.2, W - .27, .25, 1), ['island', W / 2 - 1.1, L / 2 - .6, 2.2, 1.2], ['cabinet', W / 2 - 2.0, L / 2 + 1.0, .9, .4], ['cabinet', W / 2 + 1.1, L / 2 + 1.0, .9, .4], ['counter', W - 2.0, L - 1.9, .6, 1.5], ['till', W - 1.95, L - 1.8, .5, .4], ['bar', .5, L / 2 - .25, .5, 1.5], ['seat', .6, L - 1.6, .5, .5], ['tv', W / 2 - .6, 0, 1.2, .1], ['locker', W - 1.5, .35, .8, .5]]],
+    ['b3', 'Two zones', 'A front zone for browsing and testing. A wall splits it from the stock and till area at the back.', (W, L) => [['door', W / 2 - .6, L - .15, 1.2, .15], ['window', .3, L - .12, Math.max(.8, W / 2 - 1.2), .12, 'Window'], ['window', W / 2 + .9, L - .12, Math.max(.8, W / 2 - 1.2), .12, 'Window'], ['wall', 0, L * .32, W / 2 - .6, .12], ['wall', W / 2 + .6, L * .32, W / 2 - .6, .12], ...sbRow('shelf', 2, .3, W / 2 - .7, L * .32 + .2, .95, .25), ...sbRow('shelf', 2, W / 2 + .7, W - .3, L * .32 + .2, .95, .25), ...sbCol('shelf', 3, L * .32 + 1.0, L - 1.2, .02, .25, 1), ...sbCol('shelf', 3, L * .32 + 1.0, L - 1.2, W - .27, .25, 1), ['island', W / 2 - .7, L * .55, 1.4, .9], ['bar', W / 2 - .75, L - 2.0, 1.5, .5], ['seat', W / 2 - 1.2, L - 1.4, .5, .5], ['seat', W / 2 + .7, L - 1.4, .5, .5], ['counter', W / 2 - 1.0, .4, 2, .6], ['till', W / 2 + .55, .45, .4, .3], ['rack', .3, .35, 1.2, .45], ['rack', W - 1.5, .35, 1.2, .45], ['locker', .3, 1.1, .8, .5], ['tv', W / 2 - .5, L * .32 + .14, 1, .1]]]
+  ],
+  home:[
+    ['h1', 'Wall shelf corner', 'Two shelves on the wall, a small table in front and a mirror to try on.', (W, L) => [...sbRow('shelf', 2, .1, W - .1, .02, Math.min(1, (W - .3) / 2), .25), ['mirror', W - .1, L / 2 - .3, .08, .6], ['island', W / 2 - .5, L / 2 - .1, 1, .6], ['stool', .3, L - .8, .4, .4], ['locker', W - .9, L - .7, .6, .45]]],
+    ['h2', 'Table display', 'One table in the middle of the room that you can show perfumes on.', (W, L) => [['island', W / 2 - .6, L / 2 - .4, 1.2, .7], ['stool', W / 2 - .2, L / 2 + .5, .4, .4], ['mirror', W / 2 - .3, 0, .6, .08], ['sign', W / 2 - .5, .15, 1, .06, 'Poster'], ['locker', W - .9, .3, .6, .45]]]
+  ]
+};
+const sbRoomOf = s => { const r = SB_ROOM[s.kind] || SB_ROOM.small, p = s.plan || {}, own = num(s.w) > 0 && num(s.l) > 0; return {rw:num(p.rw) || (own ? num(s.w) : r[0]), rl:num(p.rl) || (own ? num(s.l) : r[1])}; };
+const sbPlan = s => { const r = sbRoomOf(s), p = s.plan || {}; return {rw:r.rw, rl:r.rl, design:p.design || '', items:p.items || []}; };
+const sbMakeItems = (kind, id, W, L) => { const d = (SB_DES[kind] || SB_DES.small).find(x => x[0] === id); if (!d) return []; return d[3](W, L).map(a => { const w = sbR2(Math.max(.05, Math.min(a[3], W))), h = sbR2(Math.max(.05, Math.min(a[4], L))); const o = {id:uid(), t:a[0], x:sbR2(Math.max(0, Math.min(a[1], W - w))), y:sbR2(Math.max(0, Math.min(a[2], L - h))), w, h}; if (a[5]) o.n = a[5]; return o; }); };
+const sbItLabel = it => it.n != null && it.n !== '' ? it.n : (SB_IT[it.t] || SB_IT.sign)[4];
+const sbCount = items => { const c = {}; items.forEach(i => { c[i.t] = (c[i.t] || 0) + 1; }); return c; };
+function sbItemSvg(it, o){
+  const d = SB_IT[it.t] || SB_IT.sign, w = it.w, h = it.h, sel = o.sel === it.id, lab = sbItLabel(it);
+  let body = SB_ROUND[it.t] ? `<ellipse cx="${w / 2}" cy="${h / 2}" rx="${w / 2}" ry="${h / 2}" fill="${d[3]}" stroke="#3a3a3a" stroke-width=".02"/>` : `<rect width="${w}" height="${h}" rx=".025" fill="${d[3]}" stroke="#3a3a3a" stroke-width=".02"/>`;
+  if (it.t === 'cabinet') body += `<line x1="0" y1="0" x2="${w}" y2="${h}" stroke="#3a3a3a" stroke-width=".01" opacity=".4"/><line x1="${w}" y1="0" x2="0" y2="${h}" stroke="#3a3a3a" stroke-width=".01" opacity=".4"/>`;
+  let tx = '';
+  if (lab && !o.thumb) { const long = Math.max(w, h), vert = h > w * 1.5, short = Math.min(w, h), fs = Math.min(.17, long / (String(lab).length * .58 + .3), short / 1.15); if (fs >= .07) tx = `<text transform="translate(${w / 2},${h / 2})${vert ? ' rotate(-90)' : ''}" font-size="${fs}" font-weight="700" text-anchor="middle" dominant-baseline="central" fill="${SB_LIGHT[it.t] ? '#fff' : '#1d1d1d'}" pointer-events="none">${esc(lab)}</text>`; }
+  const ring = sel ? `<rect x="-.06" y="-.06" width="${w + .12}" height="${h + .12}" rx=".05" fill="none" stroke="#d0307e" stroke-width=".05" stroke-dasharray=".12 .08" pointer-events="none"/>` : '';
+  const hit = `<rect x="-.08" y="-.08" width="${w + .16}" height="${h + .16}" fill="transparent"/>`;
+  return `<g class="sbp-it" data-id="${it.id}" transform="translate(${it.x},${it.y})">${hit}${body}${tx}${ring}</g>`;
+}
+function sbPlanSvg(P, o = {}){
+  const W = P.rw, L = P.rl, m = o.thumb ? .12 : .65, vw = W + 2 * m, vh = L + 2 * m;
+  let g = '';
+  if (!o.thumb) { for (let x = .5; x < W - .001; x += .5) g += `<line x1="${x}" y1="0" x2="${x}" y2="${L}"/>`; for (let y = .5; y < L - .001; y += .5) g += `<line x1="0" y1="${y}" x2="${W}" y2="${y}"/>`; g = `<g stroke="${o.print ? '#e3e3e3' : '#ece6d8'}" stroke-width=".01">${g}</g>`; }
+  const items = P.items.slice().sort((a, b) => ['wall', 'window', 'door'].includes(a.t) - ['wall', 'window', 'door'].includes(b.t) || 0);
+  const dims = o.thumb ? '' : `<g stroke="#555" stroke-width=".015" fill="#444" font-size=".2" text-anchor="middle"><line x1="0" y1="-.3" x2="${W}" y2="-.3"/><line x1="0" y1="-.38" x2="0" y2="-.22"/><line x1="${W}" y1="-.38" x2="${W}" y2="-.22"/><text x="${W / 2}" y="-.4" stroke="none">${sbR2(W)} m</text><line x1="-.3" y1="0" x2="-.3" y2="${L}"/><line x1="-.38" y1="0" x2="-.22" y2="0"/><line x1="-.38" y1="${L}" x2="-.22" y2="${L}"/><text transform="translate(-.42,${L / 2}) rotate(-90)" stroke="none">${sbR2(L)} m</text></g>`;
+  const front = o.thumb ? '' : `<text x="${W / 2}" y="${L + .5}" font-size=".16" fill="#888" text-anchor="middle">Front of the shop</text>`;
+  return `<svg ${o.id ? `id="${o.id}"` : ''} class="sbp-svg" viewBox="${-m} ${-m} ${vw} ${vh}" xmlns="http://www.w3.org/2000/svg" ${o.w ? `width="${o.w}" height="${Math.round(o.w * vh / vw)}"` : ''} role="img" aria-label="Floor plan"><rect x="${-m}" y="${-m}" width="${vw}" height="${vh}" fill="${o.print ? '#fff' : 'transparent'}"/><rect x="0" y="0" width="${W}" height="${L}" fill="#fff"/>${g}${items.map(i => sbItemSvg(i, o)).join('')}<rect x="0" y="0" width="${W}" height="${L}" fill="none" stroke="#2c2c2c" stroke-width=".09" pointer-events="none"/>${dims}${front}</svg>`;
+}
+const sbFloorUse = P => { const a = P.rw * P.rl; if (!a) return 0; const u = P.items.filter(i => SB_FLOORT.includes(i.t)).reduce((t, i) => t + i.w * i.h, 0); return Math.min(100, Math.round(u / a * 100)); };
+/* ---------- floor plan tab ---------- */
+function sbPlanTab(s){
+  const P = sbPlan(s), designs = SB_DES[s.kind] || SB_DES.small;
+  return `<div class="card"><div class="sb-matbar"><h2 style="margin:0">Floor plan</h2><div class="sbp-room"><label>Width (m)<input data-sbf="room" data-k="rw" type="number" min="1" max="40" step="0.1" value="${P.rw}"></label><label>Length (m)<input data-sbf="room" data-k="rl" type="number" min="1" max="40" step="0.1" value="${P.rl}"></label></div></div>
+    <p class="hint">${num(s.w) > 0 && num(s.l) > 0 ? 'The room size comes from the site details.' : 'Type the room size, or add the width and length in the site details. The plan is drawn to scale.'} Pick a ready design to start, then drag things to where you want them.</p>
+    <details ${P.items.length ? '' : 'open'}><summary><b>Ready designs for a ${esc((SB_KINDS[s.kind] || SB_KINDS.small)[0].toLowerCase())}</b></summary><div class="sbp-des">${designs.map(d => { const it = sbMakeItems(s.kind, d[0], P.rw, P.rl); return `<div class="sbp-dc ${P.design === d[0] ? 'on' : ''}"><div class="sbp-th">${sbPlanSvg({rw:P.rw, rl:P.rl, items:it}, {thumb:true})}</div><b>${esc(d[1])}</b>${P.design === d[0] ? ' <span class="pill good">In use</span>' : ''}<div class="small mut">${esc(d[2])}</div>${btn(P.design === d[0] ? 'Start this design again' : 'Use this design', 'sbPlanDesign', {id:d[0]}, 'sm pri')}</div>`; }).join('')}</div></details></div>
+  <div id="sbp-area">${sbPlanArea(s)}</div>`;
+}
+function sbPlanArea(s){
+  const P = sbPlan(s), sel = P.items.find(i => i.id === UI.sbSel);
+  return `<div class="sbp-grid"><div class="card"><div class="sbp-host" id="sbp-host">${sbPlanSvg(P, {id:'sbp-svg', sel:UI.sbSel})}</div>
+    <p class="hint" style="margin:8px 0 0">${P.items.length ? 'Tap a thing to select it. Drag to move it. Use the arrows for small steps.' : 'Nothing in the room yet. Pick a ready design above, or add things below.'}</p></div>
+    <div><div class="card" id="sbp-edit">${sbPlanEdit(P, sel)}</div><div class="card"><h3 style="margin:0 0 8px">Add to the room</h3><div class="sbp-pal">${SB_ITORD.map(t => btn('+ ' + SB_IT[t][0], 'sbPlanAdd', {t}, 'sm')).join('')}</div></div></div></div>
+  <div class="card" id="sbp-leg">${sbPlanLegend(s, P)}</div>`;
+}
+function sbPlanEdit(P, it){
+  if (!it) return '<h3 style="margin:0 0 6px">Selected</h3><p class="mut" style="margin:0">Nothing selected. Tap something in the plan to change its size, name or place.</p>';
+  const f = (k, l, v, st = '0.05') => `<label>${l}<input data-sbf="pi" data-k="${k}" ${k === 'n' ? 'type="text"' : `type="number" step="${st}" min="0"`} value="${esc(v)}"></label>`;
+  return `<h3 style="margin:0 0 8px">${esc((SB_IT[it.t] || SB_IT.sign)[0])}</h3><div class="sb-grid">${f('n', 'Name on the plan', it.n != null ? it.n : (SB_IT[it.t] || SB_IT.sign)[4])}${f('w', 'Width (m)', sbR2(it.w))}${f('h', 'Depth (m)', sbR2(it.h))}${f('x', 'From left wall (m)', sbR2(it.x))}${f('y', 'From back wall (m)', sbR2(it.y))}</div>
+    <div class="sbp-nudge"><button type="button" class="btn sm" data-act="sbPlanNudge" data-dx="-1" data-dy="0" aria-label="Move left">◀</button><button type="button" class="btn sm" data-act="sbPlanNudge" data-dx="0" data-dy="-1" aria-label="Move up">▲</button><button type="button" class="btn sm" data-act="sbPlanNudge" data-dx="0" data-dy="1" aria-label="Move down">▼</button><button type="button" class="btn sm" data-act="sbPlanNudge" data-dx="1" data-dy="0" aria-label="Move right">▶</button></div>
+    <div class="actions" style="margin-top:8px">${btn('Turn 90°', 'sbPlanRot', {}, 'sm')}${btn('Copy', 'sbPlanDup', {}, 'sm')}${btn('Remove', 'sbPlanDel', {}, 'sm ghost')}</div>`;
+}
+function sbPlanLegend(s, P){
+  const c = sbCount(P.items), ks = SB_ITORD.filter(t => c[t]), use = sbFloorUse(P), area = sbR2(P.rw * P.rl);
+  return `<div class="sb-matbar"><h3 style="margin:0">What is in this plan</h3><div class="small mut">Room ${sbR2(P.rw)} × ${sbR2(P.rl)} m = ${area} m² · furniture covers about ${use}% of the floor</div></div>
+    ${ks.length ? `<div class="sbp-lg">${ks.map(t => `<span class="pill">${c[t]} × ${esc(SB_IT[t][0])}</span>`).join('')}</div>` : '<p class="mut small" style="margin:0">Nothing yet.</p>'}
+    <div class="actions" style="margin-top:10px">${btn('Send to the materials list', 'sbPlanToMat', {}, 'sm pri')}${btn('Send shelves and cabinets to Storage', 'sbPlanToStore', {}, 'sm')}${btn('Clear the room', 'sbPlanClear', {}, 'sm ghost')}</div>
+    <p class="hint" style="margin:8px 0 0">Sending only changes the numbers of things you have not bought yet. You see what will change before it happens.</p>`;
+}
+function sbPlanRedraw(keepEdit){
+  const s = sbGet(UI.sbSite); if (!s) return; const P = sbPlan(s), h = $('#sbp-host'); if (!h) return;
+  h.innerHTML = sbPlanSvg(P, {id:'sbp-svg', sel:UI.sbSel});
+  const sel = P.items.find(i => i.id === UI.sbSel); const e = $('#sbp-edit');
+  if (e && !keepEdit) e.innerHTML = sbPlanEdit(P, sel);
+  else if (e && sel) e.querySelectorAll('[data-sbf=pi]').forEach(inp => { if (inp !== document.activeElement) inp.value = inp.dataset.k === 'n' ? sbItLabel(sel) : sbR2(sel[inp.dataset.k]); });
+  const l = $('#sbp-leg'); if (l) l.innerHTML = sbPlanLegend(s, P); sbPlanBind();
+}
+const sbPlanSet = async mut => { await sbEdit(UI.sbSite, s => { const r = sbRoomOf(s); s.plan = s.plan || {}; s.plan.rw = s.plan.rw || r.rw; s.plan.rl = s.plan.rl || r.rl; s.plan.items = s.plan.items || []; mut(s.plan, s); }); };
+function sbPlanBind(){
+  const svg = $('#sbp-svg'), s = sbGet(UI.sbSite); if (!svg || !s) return; const P = sbPlan(s), vb = svg.viewBox.baseVal; let drag = null;
+  const pt = e => { const r = svg.getBoundingClientRect(); return {x:vb.x + (e.clientX - r.left) / r.width * vb.width, y:vb.y + (e.clientY - r.top) / r.height * vb.height}; };
+  svg.addEventListener('pointerdown', e => {
+    const g = e.target.closest('.sbp-it');
+    if (!g) { if (UI.sbSel) { UI.sbSel = ''; sbPlanRedraw(); } return; }
+    const it = P.items.find(x => x.id === g.dataset.id); if (!it) return; const p = pt(e);
+    drag = {id:it.id, w:it.w, h:it.h, ox:p.x - it.x, oy:p.y - it.y, x:it.x, y:it.y, g, moved:false, pid:e.pointerId};
+    try { svg.setPointerCapture(e.pointerId); } catch(x) {} e.preventDefault();
+  });
+  svg.addEventListener('pointermove', e => {
+    if (!drag || e.pointerId !== drag.pid) return; const p = pt(e);
+    const x = sbR2(Math.max(0, Math.min(P.rw - drag.w, sbSnap(p.x - drag.ox)))), y = sbR2(Math.max(0, Math.min(P.rl - drag.h, sbSnap(p.y - drag.oy))));
+    if (!drag.moved && Math.abs(x - drag.x) < .02 && Math.abs(y - drag.y) < .02) return;
+    drag.moved = true; drag.x = x; drag.y = y; drag.g.setAttribute('transform', `translate(${x},${y})`);
+  });
+  const end = async e => {
+    if (!drag || (e && e.pointerId !== drag.pid)) return; const d = drag; drag = null;
+    if (d.moved) await sbPlanSet(pl => { const it = pl.items.find(x => x.id === d.id); if (it) { it.x = d.x; it.y = d.y; } });
+    UI.sbSel = d.id; sbPlanRedraw();
+  };
+  svg.addEventListener('pointerup', end); svg.addEventListener('pointercancel', e => { if (drag && e.pointerId === drag.pid) { drag.g.setAttribute('transform', `translate(${P.items.find(x => x.id === drag.id).x},${P.items.find(x => x.id === drag.id).y})`); drag = null; } });
+}
+function sbPlanSelItem(){ const s = sbGet(UI.sbSite); return s ? sbPlan(s).items.find(i => i.id === UI.sbSel) : null; }
+/* what the plan means for the shopping list: [type, [categories], name to use, price each, how to spot an item already on the list] */
+const SB_PM = [['counter', 'Structure & furniture', 'Counter', 4500, m => /counter/i.test(m.name) && m.cat === 'Structure & furniture'], ['shelf', 'Display & shelving', 'Wall shelves', 450, m => m.cat === 'Display & shelving' && /shel/i.test(m.name)], ['cabinet', 'Display & shelving', 'Glass display cabinets', 4500, m => m.cat === 'Display & shelving' && /cabinet/i.test(m.name)], ['island', 'Display & shelving', 'Display table', 3500, m => m.cat === 'Display & shelving' && /(island|table|stand)/i.test(m.name)], ['bar', 'Display & shelving', 'Testing bar', 1200, m => /testing bar/i.test(m.name)], ['stool+seat', 'Structure & furniture', 'Stools or seats', 350, m => m.cat === 'Structure & furniture' && /(stool|chair|seat)/i.test(m.name)], ['mirror', 'Display & shelving', 'Mirrors', 300, m => /mirror/i.test(m.name)], ['tv', 'Equipment & tech', 'TV for the shop screen', 5500, m => /\btv\b/i.test(m.name)], ['rack', 'Storage', 'Stock room rack', 1500, m => m.cat === 'Storage' && /(rack|shelving)/i.test(m.name)], ['locker', 'Storage', 'Lockable cabinet', 2500, m => m.cat === 'Storage' && /(lockable|cabinet|chest)/i.test(m.name)]];
+function sbPlanMatChanges(s){
+  const c = sbCount(sbPlan(s).items), out = [];
+  for (const [k, cat, name, cost, test] of SB_PM) { const n = k.split('+').reduce((t, x) => t + (c[x] || 0), 0); if (!n) continue; const ex = (s.mat || []).find(test);
+    if (ex) { if (ex.st === 'bought') out.push({k, name:ex.name, skip:'already bought', from:num(ex.qty), to:n}); else if (num(ex.qty) !== n) out.push({k, name:ex.name, id:ex.id, from:num(ex.qty), to:n}); }
+    else out.push({k, name, cat, cost, add:true, to:n}); }
+  return out;
+}
+function sbStoreFromPlan(s){
+  const lv = {shelf:4, cabinet:4, rack:4, locker:3}, cn = {}; return sbPlan(s).items.filter(i => lv[i.t]).map(i => { cn[i.t] = (cn[i.t] || 0) + 1; const [w, d] = i.w >= i.h ? [i.w, i.h] : [i.h, i.w]; return {t:i.t, name:(i.n != null && i.n !== '' ? i.n : SB_IT[i.t][0]) + (i.n ? '' : ' ' + cn[i.t]), w:Math.round(w * 100), d:Math.round(d * 100), lv:lv[i.t]}; });
+}
+/* ---------- branding kit ---------- */
+const SB_TH = {black:['Black and gold', '#14110d', '#f3ead6', '#d6a847'], gold:['Cream and gold', '#fbf6ea', '#2a2116', '#a8791f'], blush:['Blush', '#f6e7e3', '#3b2522', '#b8405f'], green:['Deep green', '#10382d', '#f4efe2', '#d9b25a'], white:['Clean white', '#ffffff', '#16130f', '#8a6a1f']};
+const SB_BR = [['fascia', 'Shop sign above the door'], ['vinyl', 'Window sticker'], ['aframe', 'A-frame sign for the pavement'], ['tags', 'Shelf price tags'], ['poster', 'Poster (A4)'], ['bag', 'Shopping bag'], ['badge', 'Name badges for staff']];
+const sbBr = s => { const b = s.brand || {}, pick = (k, d) => b[k] !== undefined && b[k] !== '' ? b[k] : d; return {theme:SB_TH[b.theme] ? b.theme : 'black', shop:pick('shop', bizName()), place:b.place || '', tag:b.tag !== undefined ? b.tag : 'Perfumes for every story', phone:pick('phone', bizPhone()), addr:pick('addr', [s.address, s.town].filter(Boolean).join(', ')), offer:b.offer || '', hours:b.hours || '', cat:b.cat || ''}; };
+const sbP = n => 'K' + (Number.isInteger(+n) ? (+n).toLocaleString('en-US') : (+n).toFixed(2));
+const sbWrap = (w, h, T, inner) => `<div class="doc" data-w="${w}" data-h="${h}" style="width:${w}px;height:${h}px;background:${T[1]};color:${T[2]};position:relative">${inner}</div>`;
+function sbTagPages(B){
+  const ps = sortedProds().filter(p => (p.status || 'active') !== 'inactive' && num(p.sellPrice) > 0 && (!B.cat || p.category === B.cat)), per = 24, pages = [], T = SB_TH[B.theme];
+  for (let i = 0; i < Math.max(ps.length, 1); i += per) {
+    const cells = ps.slice(i, i + per).map(p => { const sz = String(p.size || '').trim(); return `<div style="width:238px;height:130px;border:1px solid #d9d9d9;border-top:7px solid ${T[3]};padding:7px 10px;display:flex;flex-direction:column;justify-content:space-between;background:#fff;color:#16130f"><div style="font-size:14px;font-weight:800;line-height:1.15;max-height:33px;overflow:hidden;overflow-wrap:anywhere">${esc(p.name)}</div><div style="display:flex;justify-content:space-between;align-items:flex-end"><span style="font-size:12px;color:#6a6458">${esc(/^\d+$/.test(sz) ? sz + ' ml' : sz)}</span><span class="serif" style="font-size:31px;line-height:1;font-weight:700">${sbP(p.sellPrice)}</span></div></div>`; }).join('');
+    pages.push(`<div class="doc" data-w="794" data-h="1123" style="width:794px;height:1123px;background:#fff;position:relative"><div style="position:absolute;left:40px;top:40px;display:grid;grid-template-columns:repeat(3,238px);grid-auto-rows:130px;gap:0">${cells || '<div style="grid-column:1/4;padding:40px;font-size:15px;color:#6a6458">No perfumes with a selling price yet.</div>'}</div></div>`);
+  }
+  return pages;
+}
+function sbBrandDocs(s){
+  const B = sbBr(s), T = SB_TH[B.theme], ac = T[3], nm = esc(B.shop), tg = esc(B.tag), ph = esc(B.phone), ad = esc(B.addr), of = esc(B.offer), pl = esc(B.place), hr = esc(B.hours);
+  const logo = h => `<img src="${LOGO}" alt="" style="height:${h}px;width:${h}px;object-fit:contain">`, out = [];
+  const wm = Math.min(6, Math.max(1.2, num(s.w) || 2.5)), hm = s.kind === 'kiosk' || s.kind === 'home' ? .5 : .7, FW = Math.round(wm * 400), FH = Math.round(hm * 400), lg = Math.round(FH * .68), pad = Math.round(FH * .2);
+  const nfs = Math.round(Math.min(FH * .34, (FW - lg - pad * 2 - (ph ? FH * 1.3 : 0)) / (Math.max(6, B.shop.length) * .5)));
+  out.push({id:'fascia', name:SB_BR[0][1], real:`${sbR2(wm)} m × ${hm} m`, max:640, nodes:[sbWrap(FW, FH, T, `<div style="position:absolute;inset:0;border:${Math.round(FH * .035)}px solid ${ac};display:flex;align-items:center;gap:${Math.round(FH * .1)}px;padding:0 ${pad}px">${logo(lg)}<div style="flex:1;min-width:0"><div class="serif" style="font-size:${nfs}px;line-height:1;white-space:nowrap">${nm}</div><div style="font-size:${Math.round(FH * .12)}px;margin-top:${Math.round(FH * .07)}px;letter-spacing:.14em;text-transform:uppercase;color:${ac};white-space:nowrap;overflow:hidden">${pl || tg}</div></div>${ph ? `<div style="font-size:${Math.round(FH * .17)}px;font-weight:800;white-space:nowrap">${ph}</div>` : ''}</div>`)]});
+  out.push({id:'vinyl', name:SB_BR[1][1], real:'90 cm × 120 cm', max:300, nodes:[sbWrap(900, 1200, T, `<div style="position:absolute;inset:36px;border:6px solid ${ac};display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:50px;gap:22px">${logo(260)}<div class="serif" style="font-size:112px;line-height:1">${nm}</div>${pl ? `<div style="font-size:34px;letter-spacing:.18em;text-transform:uppercase;color:${ac}">${pl}</div>` : ''}<div style="width:140px;height:5px;background:${ac}"></div><div style="font-size:44px;line-height:1.25">${tg}</div>${hr ? `<div style="font-size:30px;opacity:.85">${hr}</div>` : ''}<div style="font-size:42px;font-weight:800;margin-top:10px">${ph}</div>${ad ? `<div style="font-size:28px;opacity:.85">${ad}</div>` : ''}</div>`)]});
+  out.push({id:'aframe', name:SB_BR[2][1], real:'60 cm × 90 cm', max:260, nodes:[sbWrap(600, 900, T, `<div style="position:absolute;left:0;right:0;top:0;height:150px;background:${ac};color:${T[1]};display:flex;align-items:center;justify-content:center;gap:18px">${logo(100)}<div class="serif" style="font-size:54px;line-height:1">${nm}</div></div><div style="position:absolute;left:40px;right:40px;top:200px;bottom:170px;display:flex;align-items:center;justify-content:center;text-align:center"><div class="serif" style="font-size:${B.offer.length > 40 ? 62 : 82}px;line-height:1.1">${of || 'Come in and try our perfumes'}</div></div><div style="position:absolute;left:40px;right:40px;bottom:36px;text-align:center"><div style="font-size:44px;font-weight:800">${ph}</div>${ad ? `<div style="font-size:24px;opacity:.85;margin-top:6px">${ad}</div>` : ''}</div>`)]});
+  const tp = sbTagPages(B); out.push({id:'tags', name:SB_BR[3][1], real:'6.3 cm × 3.4 cm each, 24 on an A4 page · ' + tp.length + (tp.length === 1 ? ' page' : ' pages'), max:300, nodes:tp});
+  const feat = sortedProds().filter(p => imgOf(p.id) && num(p.sellPrice) > 0).slice(0, 3);
+  out.push({id:'poster', name:SB_BR[4][1], real:'A4', max:300, nodes:[sbWrap(794, 1123, T, `<div style="position:absolute;inset:30px;border:5px solid ${ac};display:flex;flex-direction:column;align-items:center;padding:46px 40px 40px;text-align:center"><div style="display:flex;align-items:center;gap:16px">${logo(84)}<div class="serif" style="font-size:50px;line-height:1">${nm}</div></div><div style="width:110px;height:4px;background:${ac};margin:28px 0 24px"></div><div class="serif" style="font-size:${B.offer.length > 40 ? 64 : 84}px;line-height:1.08;margin:6px 0 12px">${of || 'Find your signature scent'}</div><div style="font-size:26px;opacity:.9;margin-bottom:26px">${tg}</div>${feat.length ? `<div style="display:flex;gap:22px;justify-content:center;margin:auto 0 10px">${feat.map(p => `<div style="width:190px"><div style="height:250px;display:flex;align-items:flex-end;justify-content:center"><img src="${imgOf(p.id)}" alt="" style="max-width:100%;max-height:250px;object-fit:contain"></div><div style="font-size:15px;font-weight:800;margin-top:10px;line-height:1.15">${esc(p.name)}</div><div class="serif" style="font-size:26px;color:${ac};font-weight:700">${sbP(p.sellPrice)}</div></div>`).join('')}</div>` : '<div style="flex:1"></div>'}<div style="margin-top:auto;padding-top:20px;font-size:28px;font-weight:800">${ph}</div>${ad ? `<div style="font-size:19px;opacity:.85;margin-top:4px">${ad}</div>` : ''}${hr ? `<div style="font-size:17px;opacity:.85;margin-top:2px">${hr}</div>` : ''}</div>`)]});
+  out.push({id:'bag', name:SB_BR[5][1], real:'front panel 25 cm × 31 cm', max:280, nodes:[sbWrap(900, 1116, T, `<div style="position:absolute;inset:44px;border:5px solid ${ac};display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:26px;padding:40px">${logo(380)}<div class="serif" style="font-size:120px;line-height:1">${nm}</div><div style="width:150px;height:5px;background:${ac}"></div><div style="font-size:42px;letter-spacing:.06em">${tg}</div>${ph ? `<div style="font-size:30px;margin-top:40px;opacity:.9">${ph}</div>` : ''}</div>`)]});
+  const bd = `<div style="width:340px;height:208px;border:1px dashed #bbb;display:flex;background:#fff;color:#16130f"><div style="width:14px;background:${ac}"></div><div style="flex:1;padding:14px 16px;display:flex;flex-direction:column;justify-content:space-between"><div style="display:flex;align-items:center;gap:10px">${logo(46)}<div class="serif" style="font-size:25px;line-height:1">${nm}</div></div><div><div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:${ac};font-weight:800">Shop assistant</div><div style="margin-top:18px;border-bottom:1px solid #16130f;height:22px;font-size:11px;color:#8a8170">Name</div></div></div></div>`;
+  out.push({id:'badge', name:SB_BR[6][1], real:'9 cm × 5.5 cm, 10 on an A4 page', max:300, nodes:[`<div class="doc" data-w="794" data-h="1123" style="width:794px;height:1123px;background:#fff;position:relative"><div style="position:absolute;left:57px;top:60px;display:grid;grid-template-columns:repeat(2,340px);grid-auto-rows:208px;gap:0">${Array(10).fill(bd).join('')}</div></div>`]});
+  return out;
+}
+function sbBrandTab(s){
+  const B = sbBr(s), docs = sbBrandDocs(s), f = (k, l, v, ph = '') => `<label>${l}<input data-sbf="brand" data-k="${k}" value="${esc(v)}" placeholder="${esc(ph)}"></label>`, cats = [...new Set(sortedProds().map(p => p.category).filter(Boolean))];
+  return `<div class="card"><h2 style="margin-top:0">Look and words</h2><p class="hint">Choose the colours and words once. Every sign, tag and poster below uses them. The photos and prices come from your perfumes.</p>
+    <div class="sb-themes">${Object.entries(SB_TH).map(([k, v]) => `<button type="button" class="sb-th ${B.theme === k ? 'on' : ''}" data-act="sbTheme" data-k="${k}" style="background:${v[1]};color:${v[2]};border-color:${B.theme === k ? v[3] : 'var(--line)'}"><i style="background:${v[3]}"></i>${v[0]}</button>`).join('')}</div>
+    <div class="sb-grid" style="margin-top:12px">${f('shop', 'Name on the signs', B.shop)}${f('place', 'Place or branch (optional)', B.place, 'e.g. Cairo Road')}${f('tag', 'Short line under the name', B.tag)}${f('phone', 'Phone', B.phone)}${f('addr', 'Address', B.addr)}${f('hours', 'Opening hours (optional)', B.hours, 'e.g. Mon–Sat 8:00–18:00')}${f('offer', 'Offer or headline (optional)', B.offer, 'e.g. Buy 2 and get a free tester')}<label>Price tags for<select data-sbf="brand" data-k="cat"><option value="">All perfumes</option>${cats.map(c => `<option ${B.cat === c ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select></label></div></div>
+  <div class="sb-bgrid">${docs.map(d => `<div class="card" id="sbd-${d.id}"><div class="sb-matbar"><div><b>${esc(d.name)}</b><div class="small mut">${esc(d.real)}</div></div><div class="actions">${btn('Picture', 'sbBrandPng', {k:d.id}, 'sm')}${btn('PDF', 'sbBrandPdf', {k:d.id}, 'sm pri')}${btn('Print', 'sbBrandPrint', {k:d.id}, 'sm ghost')}</div></div><div class="preview sb-pv">${d.nodes.map(n => `<div class="docwrap" data-maxw="${d.max}">${n}</div>`).join('')}</div></div>`).join('')}</div>
+  <p class="hint">Take the picture or PDF to your sign-maker. They can print it at the real size shown above.</p>`;
+}
+/* ---------- plan pack for builders ---------- */
+function sbPackTab(s){
+  const pk = s.pk || {}, P = sbPlan(s), ck = (k, l, on) => `<label class="check sb-chk"><input type="checkbox" data-sbf="pk" data-k="${k}" ${on ? 'checked' : ''}> ${l}</label>`;
+  return `<div class="card"><h2 style="margin-top:0">Plan pack for your builder</h2><p class="hint">One PDF to give a builder, carpenter or sign-maker: the floor plan with measurements, what to build and buy, the storage, and the colours and words for the signs. Choose what goes in.</p>
+    ${ck('prices', 'Show prices in the materials list (leave this off if the builder should only see what to buy)', pk.prices)}${ck('storage', 'Include shelves and storage', pk.storage !== false)}${ck('brand', 'Include signs and colours', pk.brand !== false)}${ck('site', 'Include rent, landlord and lease details (private. Leave this off for builders)', pk.site)}
+    <div class="sb-grid" style="margin-top:10px"><label>Who should the builder call?<input data-sbf="pk" data-k="contact" value="${esc(pk.contact || '')}" placeholder="${esc(bizPhone() || 'Name and phone')}"></label></div>
+    <label style="margin-top:10px;display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600">Notes for the builder<textarea data-sbf="pk" data-k="notes" rows="3" placeholder="e.g. Power points at the back wall. Shelves must be lockable. Paint the walls cream.">${esc(pk.notes || '')}</textarea></label>
+    <div class="actions" style="margin-top:12px">${btn('Preview and download', 'sbPackOpen', {}, 'pri')}</div>
+    <p class="hint" style="margin:10px 0 0">${P.items.length ? `${P.items.length} things on the floor plan` : '<b>The floor plan is empty.</b> Add things in the Floor plan tab first'} · ${(s.mat || []).length} items on the materials list${num(s.budget) ? '' : ''}.</p></div>`;
+}
+function sbPackPages(s){
+  const pk = s.pk || {}, P = sbPlan(s), B = sbBr(s), T = SB_TH[B.theme], k = (SB_KINDS[s.kind] || SB_KINDS.small)[0], area = sbR2(P.rw * P.rl), bodies = [];
+  const sec = (t, inner) => `<div style="padding:26px 44px 0"><div class="serif" style="font-size:30px;line-height:1.1">${t}</div><div style="width:60px;height:3px;background:${T[3]};margin:8px 0 14px"></div>${inner}</div>`;
+  const row = (l, v) => v ? `<tr><td style="padding:6px 10px 6px 0;color:#6e675c;white-space:nowrap;vertical-align:top;width:150px">${l}</td><td style="padding:6px 0;font-weight:700">${v}</td></tr>` : '';
+  const contents = ['The floor plan', 'What to build and buy'].concat(pk.storage !== false ? ['Shelves and storage'] : [], pk.brand !== false ? ['Signs and colours'] : [], pk.site ? ['Site details'] : []);
+  bodies.push(`<div style="padding:70px 44px 0"><div style="font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:${T[3]};font-weight:800">Plan pack</div><div class="serif" style="font-size:64px;line-height:1.05;margin:10px 0 6px">${esc(s.name)}</div><div style="font-size:19px;color:#4a4439">${esc(k)}</div><div style="width:90px;height:4px;background:${T[3]};margin:26px 0"></div>
+    <table style="font-size:16px;border-collapse:collapse">${row('Room size', `${sbR2(P.rw)} m × ${sbR2(P.rl)} m (${area} m²)`)}${row('Where', esc([s.address, s.town].filter(Boolean).join(', ')))}${row('Prepared for', 'builders and sign-makers')}${row('Date', fmtDate(today()))}${row('Questions', esc(pk.contact || bizPhone()))}</table>
+    <div style="margin-top:44px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#6e675c;font-weight:800">Inside</div><ol style="font-size:17px;line-height:1.9;margin:8px 0 0 18px;padding:0">${contents.map(c => `<li>${c}</li>`).join('')}</ol>
+    ${pk.notes ? `<div style="margin-top:34px;padding:14px 18px;border:1px solid #e6e1d6;border-radius:10px;background:#faf7ef"><div style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#6e675c;font-weight:800">Notes from the owner</div><div style="font-size:15px;line-height:1.5;margin-top:6px;white-space:pre-wrap">${esc(pk.notes)}</div></div>` : ''}</div>`);
+  const c = sbCount(P.items), ks = SB_ITORD.filter(t => c[t]), pw = 706, ph = Math.round(pw * (P.rl + 1.3) / (P.rw + 1.3)), cap = Math.min(1, 560 / ph), svgw = Math.round(pw * cap);
+  bodies.push(sec('The floor plan', `<div style="display:flex;justify-content:center">${sbPlanSvg(P, {print:true, w:svgw})}</div><div style="margin-top:12px;font-size:12px;color:#6e675c">All measurements are in metres. Room ${sbR2(P.rw)} × ${sbR2(P.rl)} m. The front of the shop is at the bottom.</div>
+    ${ks.length ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 28px;margin-top:12px;font-size:12px">${ks.map(t => { const it = P.items.filter(i => i.t === t), sz = it.map(i => `${sbR2(Math.max(i.w, i.h))} × ${sbR2(Math.min(i.w, i.h))} m`).filter((v, j, a) => a.indexOf(v) === j), shown = sz.slice(0, 3).join(', ') + (sz.length > 3 ? ' …' : ''); return `<div style="display:flex;gap:8px;padding:5px 0;border-top:1px solid #ece6d8"><b style="width:28px">${c[t]} ×</b><span style="flex:1"><b>${esc(SB_IT[t][0])}</b><div style="color:#4a4439">${shown}</div></span></div>`; }).join('')}</div>`: '<p style="font-size:14px;color:#6e675c">The floor plan has no items yet.</p>'}`));
+  const mats = s.mat || [], cats = SB_CATS.filter(x => mats.some(m => (m.cat || 'Other') === x)).concat([...new Set(mats.map(m => m.cat || 'Other'))].filter(x => !SB_CATS.includes(x))), items = [];
+  const th = `<tr style="background:#f3eee2"><th style="text-align:left;padding:7px 8px">Item</th><th style="text-align:right;padding:7px 8px;width:60px">How many</th>${pk.prices ? '<th style="text-align:right;padding:7px 8px;width:96px">Price each</th><th style="text-align:right;padding:7px 8px;width:100px">Total</th>' : ''}<th style="text-align:left;padding:7px 8px;width:${pk.prices ? 120 : 190}px">Note</th></tr>`;
+  cats.forEach(cat => { items.push(`<tr><td colspan="${pk.prices ? 5 : 3}" style="padding:10px 8px 4px;font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:${T[3]}">${esc(cat)}</td></tr>`); mats.filter(m => (m.cat || 'Other') === cat).forEach(m => items.push(`<tr style="border-top:1px solid #ece6d8"><td style="padding:6px 8px;font-weight:600">${esc(m.name)}</td><td style="padding:6px 8px;text-align:right">${num(m.qty)}</td>${pk.prices ? `<td style="padding:6px 8px;text-align:right">${sbK(m.cost)}</td><td style="padding:6px 8px;text-align:right;font-weight:700">${sbK(num(m.qty) * num(m.cost))}</td>` : ''}<td style="padding:6px 8px;color:#6e675c;font-size:11px;max-width:${pk.prices ? 120 : 190}px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.note || '')}</td></tr>`)); });
+  const FIRST = 22, NEXT = 22, chunks = []; let i = 0; while (i < items.length || !chunks.length) { const n = chunks.length ? NEXT : FIRST; chunks.push(items.slice(i, i + n)); i += n; }
+  chunks.forEach((ch, j) => bodies.push(sec(j ? 'What to build and buy (continued)' : 'What to build and buy', mats.length ? `<table style="width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed"><thead>${th}</thead><tbody>${ch.join('')}</tbody>${pk.prices && j === chunks.length - 1 ? `<tfoot><tr style="border-top:2px solid #16130f"><td colspan="3" style="padding:8px;font-weight:800;text-align:right">Total</td><td style="padding:8px;text-align:right;font-weight:800">${sbK(sbMatTotal(s))}</td><td></td></tr></tfoot>` : ''}</table>${j === 0 && !pk.prices ? '<div style="margin-top:10px;font-size:12px;color:#6e675c">Prices are left out of this copy.</div>' : ''}` : '<p style="font-size:14px;color:#6e675c">The materials list is empty.</p>')));
+  if (pk.storage !== false) { const u = s.store || [], cp = u.reduce((t, x) => t + sbUnitCap(x), 0); bodies.push(sec('Shelves and storage', u.length ? `<table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr style="background:#f3eee2"><th style="text-align:left;padding:7px 8px">Place</th><th style="text-align:left;padding:7px 8px">Size (cm)</th><th style="text-align:right;padding:7px 8px">Shelves</th><th style="text-align:right;padding:7px 8px">Holds</th></tr></thead><tbody>${u.map(x => `<tr style="border-top:1px solid #ece6d8"><td style="padding:6px 8px;font-weight:600">${esc(x.name)}${x.note ? `<div style="font-weight:400;font-size:11px;color:#6e675c">${esc(x.note)}</div>` : ''}</td><td style="padding:6px 8px">${num(x.w)} wide × ${num(x.d)} deep</td><td style="padding:6px 8px;text-align:right">${num(x.lv) || 1}</td><td style="padding:6px 8px;text-align:right;font-weight:700">${sbUnitCap(x)} bottles</td></tr>`).join('')}</tbody><tfoot><tr style="border-top:2px solid #16130f"><td colspan="3" style="padding:8px;font-weight:800;text-align:right">Room for</td><td style="padding:8px;text-align:right;font-weight:800">${cp} bottles</td></tr></tfoot></table><div style="margin-top:10px;font-size:12px;color:#6e675c;line-height:1.5">Shelf depth should suit a boxed 100 ml bottle (about 6.5 × 5 cm). Each shelf level holds the bottles standing in rows.</div>` : '<p style="font-size:14px;color:#6e675c">No storage places added yet.</p>')); }
+  if (pk.brand !== false) { const ds = sbBrandDocs(s).filter(d => d.id !== 'tags' && d.id !== 'badge'); bodies.push(sec('Signs and colours', `<div style="display:flex;gap:10px;margin-bottom:16px">${[['Background', T[1]], ['Text', T[2]], ['Accent', T[3]]].map(([l, c]) => `<div style="flex:1;border:1px solid #e6e1d6;border-radius:10px;overflow:hidden"><div style="height:46px;background:${c}"></div><div style="padding:7px 10px;font-size:12px"><b>${l}</b><div style="color:#6e675c">${c.toUpperCase()}</div></div></div>`).join('')}</div>
+    <table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr style="background:#f3eee2"><th style="text-align:left;padding:7px 8px">Sign</th><th style="text-align:left;padding:7px 8px">Size</th></tr></thead><tbody>${ds.map(d => `<tr style="border-top:1px solid #ece6d8"><td style="padding:6px 8px;font-weight:600">${esc(d.name)}</td><td style="padding:6px 8px">${esc(d.real)}</td></tr>`).join('')}</tbody></table>
+    <div style="margin-top:14px;font-size:14px;line-height:1.7"><b>Name:</b> ${esc(B.shop)}${B.place ? ' · ' + esc(B.place) : ''}<br><b>Line under the name:</b> ${esc(B.tag)}<br><b>Phone:</b> ${esc(B.phone)}${B.addr ? `<br><b>Address:</b> ${esc(B.addr)}` : ''}${B.hours ? `<br><b>Hours:</b> ${esc(B.hours)}` : ''}${B.offer ? `<br><b>Headline:</b> ${esc(B.offer)}` : ''}</div><div style="margin-top:12px;font-size:12px;color:#6e675c">Print-ready artwork for each sign comes with the pack as separate files.</div>`)); }
+  if (pk.site) bodies.push(sec('Site details', `<table style="font-size:15px;border-collapse:collapse">${row('Rented or owned', esc(SB_TENURE[s.tenure] || ''))}${row('Rent a month', num(s.rent) > 0 ? sbK(s.rent) : '')}${row('Deposit', num(s.deposit) > 0 ? sbK(s.deposit) : '')}${row('Lease', num(s.lease) > 0 ? num(s.lease) + ' months' : '')}${row('Landlord or owner', esc(s.lname || ''))}${row('Phone', esc(s.lphone || ''))}${row('Email', esc(s.lmail || ''))}${row('Address', esc([s.address, s.town].filter(Boolean).join(', ')))}</table>`));
+  const n = bodies.length, foot = j => `<div style="position:absolute;left:44px;right:44px;bottom:26px;display:flex;justify-content:space-between;font-size:11px;color:#8a8170"><span>${esc(bizName())} · ${esc(s.name)} · Plan pack</span><span>Page ${j + 1} of ${n}</span></div>`;
+  return bodies.map((b, j) => `<div class="doc" data-w="794" data-h="1123" style="width:794px;height:1123px;position:relative;background:#fff;color:#16130f">${j ? '' : `<div style="padding:0">${docHeader('Shop plan pack', esc(bizPhone()))}</div>`}${b}${foot(j)}</div>`);
+}
+/* ---------- actions ---------- */
+const sbSlug = (s, x) => (bizName() + '-' + s.name + '-' + x).replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '');
+Object.assign(ACT, {
+  sbPlanDesign: d => { const s = sbGet(UI.sbSite); if (!s) return; const go = async () => { const P = sbPlan(s); await sbPlanSet(pl => { pl.design = d.id; pl.items = sbMakeItems(s.kind, d.id, P.rw, P.rl); pl.rw = P.rw; pl.rl = P.rl; }); UI.sbSel = ''; render(true); toast('Design ready. Drag things to change it.'); }; (sbPlan(s).items.length ? confirmBox('Replace the plan in the room with this design? Anything you moved or added will be lost.', go) : go()); },
+  sbPlanAdd: async d => { const s = sbGet(UI.sbSite); if (!s) return; const P = sbPlan(s), t = SB_IT[d.t]; if (!t) return; const w = Math.min(t[1], P.rw), h = Math.min(t[2], P.rl), id = uid(); await sbPlanSet(pl => { pl.items.push({id, t:d.t, x:sbR2(Math.max(0, (P.rw - w) / 2)), y:sbR2(Math.max(0, (P.rl - h) / 2)), w:sbR2(w), h:sbR2(h)}); }); UI.sbSel = id; sbPlanRedraw(); },
+  sbPlanNudge: async d => { const it = sbPlanSelItem(), s = sbGet(UI.sbSite); if (!it) return; const P = sbPlan(s), id = it.id; await sbPlanSet(pl => { const x = pl.items.find(i => i.id === id); if (x) { x.x = sbR2(Math.max(0, Math.min(P.rw - x.w, x.x + .1 * +d.dx))); x.y = sbR2(Math.max(0, Math.min(P.rl - x.h, x.y + .1 * +d.dy))); } }); sbPlanRedraw(); },
+  sbPlanRot: async () => { const it = sbPlanSelItem(), s = sbGet(UI.sbSite); if (!it) return; const P = sbPlan(s), id = it.id; await sbPlanSet(pl => { const x = pl.items.find(i => i.id === id); if (!x) return; const cx = x.x + x.w / 2, cy = x.y + x.h / 2, w = x.h, h = x.w; x.w = w; x.h = h; x.x = sbR2(Math.max(0, Math.min(P.rw - w, cx - w / 2))); x.y = sbR2(Math.max(0, Math.min(P.rl - h, cy - h / 2))); }); sbPlanRedraw(); },
+  sbPlanDup: async () => { const it = sbPlanSelItem(), s = sbGet(UI.sbSite); if (!it) return; const P = sbPlan(s), id = it.id, nid = uid(); await sbPlanSet(pl => { const x = pl.items.find(i => i.id === id); if (!x) return; pl.items.push({...x, id:nid, x:sbR2(Math.max(0, Math.min(P.rw - x.w, x.x + .2))), y:sbR2(Math.max(0, Math.min(P.rl - x.h, x.y + .2)))}); }); UI.sbSel = nid; sbPlanRedraw(); },
+  sbPlanDel: async () => { const it = sbPlanSelItem(); if (!it) return; const id = it.id; await sbPlanSet(pl => { pl.items = pl.items.filter(i => i.id !== id); }); UI.sbSel = ''; sbPlanRedraw(); },
+  sbPlanClear: () => { const s = sbGet(UI.sbSite); if (!s || !sbPlan(s).items.length) return; confirmBox('Take everything out of the room?', async () => { await sbPlanSet(pl => { pl.items = []; pl.design = ''; }); UI.sbSel = ''; render(true); }); },
+  sbPlanToMat: () => { const s = sbGet(UI.sbSite); if (!s) return; const ch = sbPlanMatChanges(s); if (!ch.length) return toast('The materials list already matches the plan.');
+    modal('Update the materials list', `<p style="margin-top:0">This is what will change on the list for <b>${esc(s.name)}</b>:</p><ul class="list">${ch.map(c => `<li><span>${c.skip ? `<b>${esc(c.name)}</b><div class="small mut">Left as it is (${c.skip}). The plan has ${c.to}.</div>` : c.add ? `<b>${esc(c.name)}</b><div class="small mut">New item · ${c.to} × ${sbK(c.cost)} (an estimate)</div>` : `<b>${esc(c.name)}</b><div class="small mut">${c.from} → ${c.to}</div>`}</span></li>`).join('')}</ul>`,
+      async () => { await sbEdit(s.id, t => { t.mat = t.mat || []; for (const c of ch) { if (c.skip) continue; if (c.add) t.mat.push({id:uid(), cat:c.cat, name:c.name, qty:c.to, cost:c.cost, st:'plan', est:true}); else { const m = t.mat.find(x => x.id === c.id); if (m) m.qty = c.to; } } }); UI.sbSub = 'mat'; render(true); toast('Materials list updated. Check the prices.'); }, {label:'Update the list'}); },
+  sbPlanToStore: () => { const s = sbGet(UI.sbSite); if (!s) return; const u = sbStoreFromPlan(s); if (!u.length) return toast('Add shelves, cabinets, racks or a lockable cabinet to the plan first.');
+    modal('Update storage', `<p style="margin-top:0">These will be set as the storage places for <b>${esc(s.name)}</b>. Places you added by hand stay.</p><ul class="list">${u.map(x => `<li><span><b>${esc(x.name)}</b><div class="small mut">${x.w} × ${x.d} cm · ${x.lv} shelves · holds ${sbUnitCap({w:x.w, d:x.d, lv:x.lv, size:'100'})} bottles of 100 ml</div></span></li>`).join('')}</ul>`,
+      async () => { await sbEdit(s.id, t => { t.store = (t.store || []).filter(x => !x.fp).concat(u.map(x => ({id:uid(), name:x.name, w:x.w, d:x.d, lv:x.lv, size:'100', cap:'', note:'', fp:true}))); }); UI.sbSub = 'store'; render(true); toast('Storage updated'); }, {label:'Update storage'}); },
+  sbTheme: async d => { await sbEdit(UI.sbSite, s => { s.brand = s.brand || {}; s.brand.theme = d.k; }); render(true); },
+  sbBrandPng: d => { const s = sbGet(UI.sbSite), n = [...document.querySelectorAll(`#sbd-${d.k} .doc`)]; if (s && n.length) exportPNG(n, sbSlug(s, d.k)); },
+  sbBrandPdf: d => { const s = sbGet(UI.sbSite), n = [...document.querySelectorAll(`#sbd-${d.k} .doc`)]; if (s && n.length) exportPDF(n, sbSlug(s, d.k) + '.pdf'); },
+  sbBrandPrint: d => { const n = [...document.querySelectorAll(`#sbd-${d.k} .doc`)]; if (n.length) printDocs(n); },
+  sbPackOpen: () => { const s = sbGet(UI.sbSite); if (!s) return; const nm = sbSlug(s, 'plan-pack'), pages = sbPackPages(s);
+    modal('Plan pack', `<div class="actions" style="margin-bottom:12px">${btn('Download PDF', 'expDoc', {fmt:'pdf', name:nm}, 'pri sm')}${btn('Print', 'printDoc', {}, 'sm')}${btn('Download images', 'expDoc', {fmt:'png', name:nm}, 'sm ghost')}</div><div class="preview" id="doc-prev">${pages.map(pg => `<div class="docwrap">${pg}</div>`).join('')}</div>`, null, {wide:true, nofocus:true});
+    requestAnimationFrame(() => fitDocs($('#doc-prev'))); }
+});
+document.addEventListener('change', async e => {
+  const t = e.target; if (!t || !t.dataset || !t.dataset.sbf) return; const k = t.dataset.sbf, sid = UI.sbSite; if (!sid) return;
+  if (k === 'room') { const v = Math.max(1, Math.min(40, num(t.value))); if (!(v > 0)) return; await sbPlanSet(pl => { pl[t.dataset.k] = sbR2(v); }); render(true); }
+  else if (k === 'pi') { const it = sbPlanSelItem(), s = sbGet(sid); if (!it) return; const P = sbPlan(s), id = it.id, f = t.dataset.k, v = f === 'n' ? t.value.trim() : num(t.value);
+    await sbPlanSet(pl => { const x = pl.items.find(i => i.id === id); if (!x) return; if (f === 'n') x.n = v; else if (f === 'w' || f === 'h') { x[f] = sbR2(Math.max(.05, Math.min(f === 'w' ? P.rw : P.rl, v))); x.x = sbR2(Math.max(0, Math.min(P.rw - x.w, x.x))); x.y = sbR2(Math.max(0, Math.min(P.rl - x.h, x.y))); } else if (f === 'x') x.x = sbR2(Math.max(0, Math.min(P.rw - x.w, v))); else if (f === 'y') x.y = sbR2(Math.max(0, Math.min(P.rl - x.h, v))); });
+    sbPlanRedraw(true); }
+  else if (k === 'brand') { await sbEdit(sid, s => { s.brand = s.brand || {}; s.brand[t.dataset.k] = t.value.trim(); }); render(true); }
+  else if (k === 'pk') { await sbEdit(sid, s => { s.pk = s.pk || {}; s.pk[t.dataset.k] = t.type === 'checkbox' ? t.checked : t.value; }); if (t.type === 'checkbox') render(true); }
+}, true);
+function sbMount2(){ document.querySelectorAll('.sb-pv').forEach(fitDocs); sbPlanBind(); }
+/*SB-JS:END*/
 /* ======================= 2.21: messages (inbox, chats, groups, announcements, CC) ======================= */
 const MSG = {me:null, key:'', list:[], unsub:null, mUnsub:null, mTid:'', msgs:[], mLoad:false, primed:false, err:'', view:'inbox', tid:'', filter:'all', q:'', c:null, rt:{}, ph:'', cache:{}, n:0, linkSig:'', stick:false, mt:0, cleaned:false};
 const MSG_WIN = 600000, MSG_KEEP = 365 * 86400000;

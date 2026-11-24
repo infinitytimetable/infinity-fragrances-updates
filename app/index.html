@@ -705,6 +705,7 @@ body.nav-on #shop-cart{bottom:calc(80px + env(safe-area-inset-bottom))}
 .scan-cam{position:absolute;right:5px;top:5px;bottom:5px;display:flex;align-items:center;gap:6px;padding:0 12px;border-radius:9px;border:0;background:var(--accent);color:var(--accent-ink);font-weight:700;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 2px 0 color-mix(in srgb,var(--accent) 55%,#000)}
 :root[data-skin]:not([data-skin="classic"]) .scan-cam{background:var(--sk-grad);color:var(--sk-on,#fff)}
 .pos-find{display:flex;gap:10px;align-items:center;margin-bottom:8px}.pos-find input[type=search]{flex:1}
+.pos-locbar{display:flex;gap:8px;align-items:center;margin:0 0 10px;font-weight:600;font-size:13px}.pos-locbar span{white-space:nowrap}.pos-locbar select{flex:1;min-width:0;margin:0}.pos-else{color:#b45309;font-weight:700;font-size:12px}.ptile.out.else{opacity:.9}
 .pos-instock{white-space:nowrap;font-size:13px;display:flex;gap:6px;align-items:center}.pos-instock input{width:auto !important}
 .pos-hid{grid-column:1/-1;margin:6px 2px}
 .ptile{position:relative}.ptile.on{border-color:var(--gold);box-shadow:0 0 0 2px color-mix(in srgb,var(--gold) 45%,transparent)}
@@ -2428,14 +2429,15 @@ function saleResForm(rid){
 function saleDirectForm(){
   if (!needProducts()) return;
   modal('Record a direct sale (sold by you)', `<div class="grid2">${fDate()}<label for="f-cust">Customer<input id="f-cust" name="customer"></label></div>${linesBlock('sale')}
+    ${locSelect(S.settings.posLoc || 'main', 'loc', 'Sell from')}
     <label for="f-paid">Paid by<select id="f-paid" name="paidVia">${chOptions('cash', 'Not paid yet (credit)')}</select></label>`,
   async (d, f) => {
     const lines = readLines(f); if (!lines.length) throw Error('Add at least one perfume.');
     if (d.paidVia === 'credit' && !d.customer.trim()) throw Error('Enter the customer’s name for a credit sale.');
-    const st = compute().store, need = {}; lines.forEach(l => need[l.productId] = (need[l.productId] || 0) + l.qty);
-    for (const p in need) if (need[p] > (st[p] || 0)) throw Error(`Only ${st[p] || 0} × ${pName(p)} in store.`);
+    const CC = compute(), st = multiLoc() ? (CC.storeLoc[d.loc || 'main'] || {}) : CC.store, need = {}; lines.forEach(l => need[l.productId] = (need[l.productId] || 0) + l.qty);
+    for (const p in need) if (need[p] > (st[p] || 0)) { const el = multiLoc() ? Object.entries(CC.storeLoc).filter(([id, o]) => id !== (d.loc || 'main') && (o[p] || 0) > 0).map(([id, o]) => `${o[p]} ${id.startsWith('transit:') ? 'on its way to ' + locName(id.slice(8)) : 'at ' + locName(id)}`) : []; throw Error(`Only ${st[p] || 0} × ${pName(p)} ${multiLoc() ? 'at ' + locName(d.loc) : 'in store'}.${el.length ? ' ' + el.join(', ') + '. Change “Sell from”.' : ''}`); }
     for (const l of lines) {
-      const mv = {id:uid(), kind:'sale', date:d.date, resellerId:'', productId:l.productId, qty:l.qty, unitPrice:l.price, unitCost:num(S.products[l.productId]?.costPrice), customer:d.customer.trim(), paidVia:d.paidVia, comm:[]};
+      const mv = {id:uid(), kind:'sale', date:d.date, resellerId:'', ...(multiLoc() ? {loc:d.loc || 'main'} : {}), productId:l.productId, qty:l.qty, unitPrice:l.price, unitCost:num(S.products[l.productId]?.costPrice), customer:d.customer.trim(), paidVia:d.paidVia, comm:[]};
       if (d.paidVia !== 'credit') { const c = await put('cash', {kind:'in', date:d.date, channel:d.paidVia, amount:r2(l.qty * l.price), category:'Direct sale', customer:mv.customer, description:`${l.qty} × ${pName(l.productId)}`, moveId:mv.id}); mv.cashId = c.id; }
       await put('moves', mv);
     }
@@ -2615,8 +2617,9 @@ function fixNumbers(o){
 }
 
 /* ======================= Version 2.0 ======================= */
-const APP_VERSION = '2.26.0';
+const APP_VERSION = '2.26.1';
 const CHANGELOG = [
+  ['2.26.1', '24 Nov 2026', ['Fixed: the Point of sale said "Only 0" for bottles you really had. When you keep stock in more than one place, the till only counts the place it sells from, so bottles in another store looked sold out', 'The Point of sale now shows "Selling from" at the top, so you can see and change the place. Perfumes that are somewhere else stay on screen with where they are, e.g. "none here · 3 at Main store", and tapping one offers to sell from there', 'A perfume is no longer added to the sale when there are not enough bottles. The message says how many are where', 'Record a direct sale now has a "Sell from" place too and checks that place, so it cannot take bottles from the wrong store', 'Each sale and receipt now remembers the place it sold from, so shop takings and stock counts agree']],
   ['2.26.0', '24 Nov 2026', ['Shop builder: floor plan. Ready designs for every shop type (3 for a kiosk, small shop and boutique, 2 for a home corner), drawn to scale from the room size. Tap to select, drag to move, turn, copy, rename and resize, with arrows for small steps', 'Send the plan to your materials list and to Storage. You see what will change first, and things you already bought are never touched', 'Shop builder: branding kit. Pick a colour theme and your words once, then get a shop sign at the real size, window sticker, A-frame sign, shelf price tags with your real prices (24 to a page), poster with your perfume photos, shopping bag and staff name badges. Save as picture or PDF, or print', 'Shop builder: plan pack for builders. One PDF with a cover, the floor plan with measurements, what to build and buy, shelves and storage, and colours and signs. Prices, rent and landlord details are left out unless you switch them on']],
   ['2.25.0', '24 Nov 2026', ['New: Shop builder, under Shops. Plan and manage kiosks, market stalls, small shops, boutiques and home display corners', 'Map of your shops and the sites you are looking at, with coloured pins, directions and your own location. Works with OpenStreetMap pictures; pins stay in place without the internet', 'A file for every site: rented or owned, rent, deposit and lease, landlord or owner contacts (call, WhatsApp, email), photos, a site score out of 25, good things and worries', 'Materials and budget: a ready list for each type of shop with rough estimated prices you can change, a budget bar, status (to buy, quote asked, ordered, bought) and Log as expense into Expenses under Shop set-up', 'Storage planner: how many bottles your shelves, cabinets and stock room will hold, compared with the bottles you plan to keep', 'Will it pay?: monthly costs, bottles needed to break even and how soon the set-up pays back', 'Opening checklist, and a SWOT with ideas to start from. Shop file details are private to the owner and managers']],
   ['2.24.1', '23 Nov 2026', ['Shop screen price list: perfume names are no longer cut short. The names shrink until every one fits, and a very long name wraps onto two lines', 'Photo polish: uses less memory on big photos, and closing the progress window now stops it', 'Photo cards: very long names wrap instead of running out of the card']],
@@ -6926,12 +6929,18 @@ function posTilePrice(p){ const b = bestPromo(p.id, num(p.sellPrice), posChan())
   return b ? `<span class="gold-t"><s>${money(p.sellPrice)}</s> ${money(b.price)}</span><span class="promo-tag">${esc(promoBadge(b.pr))}</span>` : `<span class="gold-t">${money(p.sellPrice)}</span>${g ? `<span class="promo-tag">${esc(promoBadge(g))}</span>` : ''}`; }
 function posReprice(){ POS.cart.forEach(l => { const p = S.products[l.pid]; if (!p || l.manual) return; const b = bestPromo(l.pid, num(p.sellPrice), posChan()); l.price = b ? b.price : num(p.sellPrice); l.promo = b ? b.pr.name : ''; }); }
 const POS = {cart:[], seller:'', pay:'cash', disc:'', tendered:'', customer:'', q:'', cat:''};
-const posAvail = pid => { const C = compute(); return POS.seller ? Math.max(0, (C.held[POS.seller] || {})[pid] || 0) : (multiLoc() ? (C.storeLoc[S.settings.posLoc || 'main']?.[pid] || 0) : (C.store[pid] || 0)); };
+const posLoc = () => (POS.loc && locs().some(l => l.id === POS.loc)) ? POS.loc : (locs().some(l => l.id === S.settings.posLoc) ? S.settings.posLoc : 'main');
+const posPlace = id => String(id).startsWith('transit:') ? 'on its way to ' + locName(String(id).slice(8)) : locName(id);
+const posAvail = pid => { const C = compute(); return POS.seller ? Math.max(0, (C.held[POS.seller] || {})[pid] || 0) : (multiLoc() ? Math.max(0, C.storeLoc[posLoc()]?.[pid] || 0) : (C.store[pid] || 0)); };
+/* where else the bottles are, when the till's own place has none: [[place name, count, location id], ...] */
+const posElsewhere = pid => { if (POS.seller || !multiLoc()) return []; const C = compute(), here = posLoc(); return Object.entries(C.storeLoc).filter(([id, o]) => id !== here && (o[pid] || 0) > 0).map(([id, o]) => [posPlace(id), o[pid], id]); };
+const posOnlyMsg = pid => { const a = posAvail(pid), el = posElsewhere(pid), where = POS.seller ? 'with ' + rName(POS.seller) : (multiLoc() ? 'at ' + locName(posLoc()) : 'in store'); return `Only ${a} × ${pName(pid)} ${where}.` + (el.length ? ` ${el.map(x => x[1] + ' ' + (x[2].startsWith('transit:') ? x[0] : 'at ' + x[0])).join(', ')}. Change “Selling from” to sell them.` : ''); };
 PAGES.pos = () => `<div class="head pos-head"><div><h1>Point of sale</h1><p>Scan a barcode, or tap a perfume, then take payment. Every sale goes into the Sales book, Cash book and stock.</p></div>
     ${watchHTML()}</div>
   <div class="posl" data-tool="pos">
     <section>
       <div class="card">
+        <div id="pos-locbar"></div>
         <div class="scanbox"><input id="pos-scan" class="scan-input" placeholder="Scan or type a barcode" autocomplete="off" inputmode="numeric" aria-label="Barcode"><button type="button" class="scan-cam" data-act="camScan" aria-label="Scan with camera"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M7 12h10"/></svg><span>Camera</span></button></div>
         <div class="pos-find"><input id="pos-search" type="search" placeholder="Search perfumes" value="${esc(POS.q)}" aria-label="Search perfumes"><label class="chk pos-instock" for="pos-instock"><input type="checkbox" id="pos-instock" ${POS.inStock !== false ? 'checked' : ''}> In stock only</label></div>
         <div class="seg pos-cats" data-seg="cat"><button type="button" class="${POS.cat ? '' : 'on'}" data-v="">All</button>${CATS().filter(c => Object.values(S.products).some(p => p.category === c)).map(c => `<button type="button" class="${POS.cat === c ? 'on' : ''}" data-v="${esc(c)}">${esc(c)}</button>`).join('')}</div>
@@ -6944,12 +6953,18 @@ PAGES.pos = () => `<div class="head pos-head"><div><h1>Point of sale</h1><p>Scan
       <div class="card" id="pos-cart"></div>
     </section>
   </div><div class="pos-float" id="pos-float" hidden></div>`;
+POS.locBar = function(){
+  const el = $('#pos-locbar'); if (!el) return;
+  if (!multiLoc() || POS.seller) { el.innerHTML = ''; return; }
+  const C = compute(), here = posLoc(), tot = id => Object.values(C.storeLoc[id] || {}).reduce((t, q) => t + Math.max(0, q), 0);
+  el.innerHTML = `<label class="pos-locbar" for="pos-loc"><span>Selling from</span><select id="pos-loc">${locs().map(l => `<option value="${l.id}" ${here === l.id ? 'selected' : ''}>${esc(l.name)} · ${tot(l.id)} bottle${tot(l.id) === 1 ? '' : 's'}</option>`).join('')}</select></label>`;
+};
 POS.grid = function(){
   const el = $('#pos-grid'); if (!el) return; const q = POS.q.trim().toLowerCase();
   const all = sortedProds().filter(p => (!POS.cat || p.category === POS.cat) && (!q || (p.name + ' ' + (p.barcode || '') + ' ' + (p.code || '')).toLowerCase().includes(q)));
-  const ps = POS.inStock === false || q ? all : all.filter(p => posAvail(p.id) > 0 || POS.cart.some(l => l.pid === p.id)), hid = all.length - ps.length;
-  el.innerHTML = ps.map(p => { const a = posAvail(p.id), inCart = POS.cart.find(l => l.pid === p.id)?.qty || 0;
-    return `<div role="button" tabindex="0" class="ptile ${a <= 0 ? 'out' : ''}${inCart ? ' on' : ''}" id="pt-${p.id}" data-act="posAdd" data-id="${p.id}"><img src="${imgOrPh(p.id)}" alt=""><div class="pt-info"><b>${esc(p.name)}</b><span class="small mut">${p.size ? esc(p.size) + 'ml · ' : ''}${a <= 0 ? 'sold out' : a + ' left'}</span><span class="pt-price2">${posTilePrice(p)}</span></div><div class="pt-price">${posTilePrice(p)}</div><div class="pt-step"><button type="button" class="pt-minus" data-act="posDec" data-id="${p.id}" aria-label="One less" ${inCart ? '' : 'hidden'}>−</button><span class="pt-q" ${inCart ? '' : 'hidden'}>${inCart}</span><span class="pt-plus" aria-hidden="true">+</span></div></div>`; }).join('')
+  const ps = POS.inStock === false || q ? all : all.filter(p => posAvail(p.id) > 0 || posElsewhere(p.id).length || POS.cart.some(l => l.pid === p.id)), hid = all.length - ps.length;
+  el.innerHTML = ps.map(p => { const a = posAvail(p.id), inCart = POS.cart.find(l => l.pid === p.id)?.qty || 0, el2 = a <= 0 ? posElsewhere(p.id) : [];
+    return `<div role="button" tabindex="0" class="ptile ${a <= 0 ? 'out' : ''}${el2.length ? ' else' : ''}${inCart ? ' on' : ''}" id="pt-${p.id}" data-act="posAdd" data-id="${p.id}"><img src="${imgOrPh(p.id)}" alt=""><div class="pt-info"><b>${esc(p.name)}</b><span class="small mut">${p.size ? esc(p.size) + 'ml · ' : ''}${a <= 0 ? (el2.length ? `<b class="pos-else">none here · ${el2.map(x => x[1] + (x[2].startsWith('transit:') ? ' ' + esc(x[0]) : ' at ' + esc(x[0]))).join(', ')}</b>` : 'sold out') : a + ' left'}</span><span class="pt-price2">${posTilePrice(p)}</span></div><div class="pt-price">${posTilePrice(p)}</div><div class="pt-step"><button type="button" class="pt-minus" data-act="posDec" data-id="${p.id}" aria-label="One less" ${inCart ? '' : 'hidden'}>−</button><span class="pt-q" ${inCart ? '' : 'hidden'}>${inCart}</span><span class="pt-plus" aria-hidden="true">+</span></div></div>`; }).join('')
     + (hid ? `<p class="small mut pos-hid">${hid} sold-out perfume${hid === 1 ? ' is' : 's are'} hidden. <button type="button" class="link" data-act="posAllStock">Show them</button></p>` : '') || '<p class="mut">No perfumes match.</p>';
 };
 POS.sums = function(){
@@ -6996,7 +7011,11 @@ POS.totals = function(){
 POS.add = function(pid){
   const p = S.products[pid]; if (!p) return;
   const l = POS.cart.find(x => x.pid === pid), want = (l ? l.qty : 0) + 1;
-  if (want > posAvail(pid)) toast(`Only ${posAvail(pid)} × ${pName(pid)} ${POS.seller ? 'with ' + rName(POS.seller) : 'in store'}.`, true);
+  if (want > posAvail(pid)) {
+    const el = posElsewhere(pid).filter(x => !x[2].startsWith('transit:'));
+    if (posAvail(pid) <= 0 && el.length === 1) return confirmBox(`${esc(pName(pid))}: none at ${esc(locName(posLoc()))}, but ${el[0][1]} at ${esc(el[0][0])}. Sell from ${esc(el[0][0])} instead?`, () => { POS.loc = el[0][2]; POS.locBar(); POS.renderCart(); POS.grid(); POS.add(pid); }, 'Sell from there');
+    toast(posOnlyMsg(pid), true); return;
+  }
   const b = bestPromo(pid, num(p.sellPrice), posChan());
   if (l) l.qty++; else POS.cart.push({pid, qty:1, price:b ? b.price : num(p.sellPrice), promo:b ? b.pr.name : ''});
   POS.renderCart(); $('#pos-scan')?.focus();
@@ -7014,18 +7033,18 @@ async function posDone(){
   if (!POS.cart.length) return toast('The sale is empty. Scan or tap a perfume first.', true);
   const s = POS.sums(); if (s.total <= 0) return toast('The total must be more than zero.', true);
   const need = {}; POS.cart.forEach(l => need[l.pid] = (need[l.pid] || 0) + l.qty);
-  for (const pid in need) if (need[pid] > posAvail(pid)) return toast(`Only ${posAvail(pid)} × ${pName(pid)} ${POS.seller ? 'with ' + rName(POS.seller) : 'in store'}. Remove some or receive stock first.`, true);
+  for (const pid in need) if (need[pid] > posAvail(pid)) return toast(posOnlyMsg(pid) + ' Remove some or receive stock first.', true);
   if (POS.pay === 'credit' && !POS.customer.trim()) return toast('Enter the customer’s name for a credit sale.', true);
   if (POS.pay === 'cash' && POS.tendered !== '' && num(POS.tendered) < s.total) return toast('Cash received is less than the total.', true);
   const b = document.querySelector('[data-act=posDone]'); if (b) b.disabled = true;
   try {
     const n = Object.values(S.receipts).reduce((m, r) => Math.max(m, parseInt(String(r.no).replace(/\D/g, '')) || 0), 0);
-    const now = new Date(), rc = {id:uid(), no:'R-' + String(n + 1).padStart(5, '0'), date:today(), time:now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}), seller:POS.seller, pay:POS.pay, customer:POS.customer.trim(), phone:(POS.phone || '').trim(),
+    const now = new Date(), rc = {id:uid(), no:'R-' + String(n + 1).padStart(5, '0'), date:today(), time:now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}), seller:POS.seller, ...(POS.seller || !multiLoc() ? {} : {loc:posLoc()}), pay:POS.pay, customer:POS.customer.trim(), phone:(POS.phone || '').trim(),
       lines:POS.cart.map(l => ({productId:l.pid, qty:l.qty, price:num(l.price)})), subtotal:s.sub, discount:r2(s.auto + s.disc), promo:[...new Set(POS.cart.map(l => l.promo).filter(Boolean)), ...s.notes].join('; '), saved:s.saved, total:s.total, tendered:POS.pay === 'cash' && POS.tendered !== '' ? num(POS.tendered) : null, change:POS.pay === 'cash' && POS.tendered !== '' ? s.change : null, moveIds:[]};
     const f = s.sub ? s.total / s.sub : 1;
     for (const l of POS.cart) {
       const price = r2(num(l.price) * f);
-      const mv = await put('moves', {kind:'sale', date:rc.date, loc:POS.seller ? undefined : (S.settings.posLoc || 'main'), resellerId:POS.seller, productId:l.pid, qty:l.qty, unitPrice:price, unitCost:num(S.products[l.pid]?.costPrice), customer:rc.customer, paidVia:POS.seller ? 'account' : POS.pay, comm:POS.seller ? commFor(POS.seller, l.qty, price, compute().hr?.[POS.seller]?.[l.pid]) : [], receiptId:rc.id});
+      const mv = await put('moves', {kind:'sale', date:rc.date, loc:POS.seller ? undefined : posLoc(), resellerId:POS.seller, productId:l.pid, qty:l.qty, unitPrice:price, unitCost:num(S.products[l.pid]?.costPrice), customer:rc.customer, paidVia:POS.seller ? 'account' : POS.pay, comm:POS.seller ? commFor(POS.seller, l.qty, price, compute().hr?.[POS.seller]?.[l.pid]) : [], receiptId:rc.id});
       rc.moveIds.push(mv.id);
     }
     if (!POS.seller && POS.pay !== 'credit') { const c = await put('cash', {kind:'in', date:rc.date, channel:POS.pay, amount:s.total, category:'Direct sale', customer:rc.customer, description:`Receipt ${rc.no}`, receiptId:rc.id}); rc.cashId = c.id; }
@@ -7062,11 +7081,12 @@ function showReceipt(id){
   rcptModal(p, {doc:receiptDoc(r), token:r.token, phone:r.phone || '', onToken:t => put('receipts', {...S.receipts[id], token:t}), onSent:(k, ph) => { if (ph && ph !== r.phone) put('receipts', {...S.receipts[id], phone:ph}); }});
 }
 TOOLS.pos = {
-  mount(){ posSheet(false); POS.grid(); POS.renderCart(); POS.today(); if (innerWidth > 640) setTimeout(() => $('#pos-scan')?.focus(), 50); },
-  refresh(){ POS.grid(); POS.today(); },
+  mount(){ posSheet(false); POS.locBar(); POS.grid(); POS.renderCart(); POS.today(); if (innerWidth > 640) setTimeout(() => $('#pos-scan')?.focus(), 50); },
+  refresh(){ POS.locBar(); POS.grid(); POS.today(); },
   input(t){
     if (t.id === 'pos-search') { POS.q = t.value; POS.grid(); }
-    else if (t.id === 'pos-seller') { POS.seller = t.value; posReprice(); POS.renderCart(); POS.grid(); }
+    else if (t.id === 'pos-loc') { POS.loc = t.value; POS.locBar(); POS.renderCart(); POS.grid(); }
+    else if (t.id === 'pos-seller') { POS.seller = t.value; posReprice(); POS.locBar(); POS.renderCart(); POS.grid(); }
     else if (t.id === 'pos-instock') { POS.inStock = t.checked; POS.grid(); }
     else if (t.dataset.pi != null) { const l = POS.cart[+t.dataset.pi]; l.price = t.value; l.manual = true; POS.totals(); }
     else if (t.id === 'pos-disc') { POS.disc = t.value; POS.totals(); }
@@ -7804,7 +7824,7 @@ const ACT = {
   userDel: d => { const u = users().find(x => x.id === d.id); if (!u) return; if (u.loginUid && FB) FB.del(`users/${u.loginUid}`).catch(() => {}); if (u.role === 'owner' && users().filter(x => x.role === 'owner').length < 2 && users().length > 1) return toast('Remove the other users first, or make someone else Admin.', true); confirmBox(`Remove ${esc(u.name)}?${users().length === 1 ? ' This turns the PIN lock off.' : ''}`, async () => { const list = users().filter(x => x.id !== u.id); await putSettings({users:list, ...(list.length ? {} : {recoveryHash:''})}); if (SESSION?.id === u.id) { SESSION = null; sessionStorage.removeItem('if-session'); } toast('User removed'); }, 'Remove'); },
   locNew: () => modal('Add stock location', `<label for="f-ln">Name<input id="f-ln" name="name" required placeholder="e.g. Kitwe depot"></label>`, async d => { await putSettings({locations:[...locs(), {id:uid(), name:d.name.trim()}]}); toast('Location added'); }, {label:'Add'}),
   locEdit: d => { const l = locs().find(x => x.id === d.id); modal('Rename location', `<label for="f-ln">Name<input id="f-ln" name="name" required value="${esc(l.name)}"></label>`, async x => { await putSettings({locations:locs().map(y => y.id === l.id ? {...y, name:x.name.trim()} : y)}); toast('Saved'); }, {label:'Save'}); },
-  locPos: d => { putSettings({posLoc:d.id}); toast(`Point of sale now sells from ${locName(d.id)}`); },
+  locPos: d => { POS.loc = ''; putSettings({posLoc:d.id}); toast(`Point of sale now sells from ${locName(d.id)}`); },
   stockMove: () => modal('Move stock between locations', `<div class="grid2">${fDate()}<span></span>${locSelect('main', 'from', 'From')}${locSelect(locs()[1]?.id, 'to', 'To')}</div>${linesBlock('qty')}<label for="f-tn">Note<input id="f-tn" name="note"></label>`, async (d, f) => { if (d.from === d.to) throw Error('Choose two different locations.'); const lines = readLines(f); if (!lines.length) throw Error('Add at least one perfume.'); const have = compute().storeLoc[d.from] || {}; for (const l of lines) if (l.qty > (have[l.productId] || 0)) throw Error(`Only ${have[l.productId] || 0} × ${pName(l.productId)} at ${locName(d.from)}.`); for (const l of lines) await put('moves', {kind:'transfer', date:d.date, productId:l.productId, qty:l.qty, from:d.from, to:d.to, note:`${locName(d.from)} → ${locName(d.to)}${d.note ? ' · ' + d.note : ''}`}); toast('Stock moved'); }, {label:'Move stock', wide:true}),
   labels: () => labelsForm(), labelsAssign: () => assignBarcodes(),
   invNew: d => invForm(d.type), invEdit: d => invForm(null, S.invoices[d.id]), invView: d => invView(d.id), invPay: d => invPayForm(d.id), invDeliver: d => invDeliver(d.id),
