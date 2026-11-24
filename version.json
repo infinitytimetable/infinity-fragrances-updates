@@ -1,21 +1,20 @@
 {
- "version": "2.24.1",
- "date": "2026-11-23",
+ "version": "2.25.0",
+ "date": "2026-11-24",
  "notes": [
-  "Price list: perfume names are no longer cut short (they shrink to fit, and a very long name wraps to two lines)",
-  "Photo polish uses less memory on big photos, and closing its progress window now stops it",
-  "Photo cards: very long names wrap instead of running out of the card"
+  "New: Shop builder under Shops. Map of shops and sites, a file for each site (rented or owned, rent, landlord contacts, photos, score)",
+  "Materials and budget with ready lists and estimated prices you can change, log purchases as expenses, storage planner, will it pay, opening checklist and SWOT"
  ],
  "android": {
-  "file": "android-2.24.1.html",
-  "sig": "+B6SOCLEP+Y1j2Tb+IQhoXiiuJsxWorCA5t3yB87Th3GUDXAaETj+KkITxwyUQXEkwUmD+XE/pX626BBGGbxdw==",
-  "size": 2635902,
+  "file": "android-2.25.0.html",
+  "sig": "MAcEAE3MH8olCaoVj7Ceh9WGzaGUrs/V11LSoWWhftxZIEFBJqCLZKmcPBbODtRzIH2bNNbGfmLK5p1QcTGjsg==",
+  "size": 2707191,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.24.1.html",
-  "sig": "JbZl89Qh3JR7TS3je/o670wkqv4E/SyGOiAWZlcEo2wkxYnwwK5vi2wT3ezWPCZUdBWOnHpwVdxwc+rld01bnQ==",
-  "size": 2630890,
+  "file": "desktop-2.25.0.html",
+  "sig": "jhKyUGS9XOGbOyN835ZwMC5y5eTOV+z6MHKXj8Af799bpnFiK/7ej0AQGgMOHd9LmM7ZGHX4kw+Q5G1jRXualg==",
+  "size": 2702179,
   "minShell": "2.5.0"
  },
  "apk": {

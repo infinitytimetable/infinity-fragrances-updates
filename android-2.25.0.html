@@ -915,8 +915,14 @@ body.bell-on .head,body.bell-on .res-head,body.bell-on .sec-row{padding-right:52
 .ss-lh .ss-lht{font-family:var(--head);font-weight:var(--hw);font-size:max(40px,calc(58px*var(--ts,1)));text-transform:var(--tt,none)}
 .ss-lh .ss-lhs{font-size:30px;color:var(--mut)}
 .ss-lr{display:flex;align-items:baseline;gap:14px}
-.ss-lr .ss-n{font-size:38px;font-weight:500;white-space:nowrap}
-.ss-lr .ss-d{flex:1;border-bottom:3px dotted var(--rule);transform:translateY(-8px)}
+.ss-lr .ss-n{font-size:38px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.ss-lr .ss-d{flex:1 1 24px;min-width:24px;border-bottom:3px dotted var(--rule);transform:translateY(-8px)}
+.ss-lr .ss-p,.ss-lr .ss-w{flex:none}
+.ss-rn2 .ss-lr .ss-n{font-size:33px}
+.ss-rn3 .ss-lr .ss-n{font-size:29px}
+.ss-rn4 .ss-lr .ss-n{font-size:26px}
+.ss-rn5 .ss-lr .ss-n{font-size:23px}
+.ss-rn6 .ss-lr .ss-n{font-size:23px;white-space:normal;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;text-overflow:clip}
 .ss-lr .ss-p{font-family:var(--head);font-weight:var(--hw);font-size:46px;color:var(--acc)}
 .ss-lg{display:flex;flex-direction:column;gap:4px}
 .ss-lg .ss-p{font-family:var(--head);font-weight:var(--hw);font-size:60px;line-height:1.1;color:var(--acc)}
@@ -978,7 +984,80 @@ body.ss-projecting > *:not(.ss-proj){display:none!important}
 .ss-hint{position:absolute;top:22px;left:50%;transform:translateX(-50%);max-width:92%;padding:10px 16px;border-radius:10px;background:rgba(20,18,15,.88);color:#f4ecd8;font:600 16px/1.3 system-ui,sans-serif;text-align:center;z-index:3}
 .ss-hint[hidden]{display:none}
 .ss-proj .ss-pv{position:absolute;inset:0;width:100%;height:100%}
+
+/* price list as photo cards */
+.ss-pcards{position:absolute;left:96px;top:218px;width:1728px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:24px}
+.ss-pc{border-radius:var(--cr);overflow:hidden;box-shadow:var(--sh);background:var(--bg2)}
+.ss-pc .ss-cphoto{height:204px}
+.ss-pci{padding:12px 16px 14px;display:flex;flex-direction:column;justify-content:space-between;gap:4px;height:146px;box-sizing:border-box}
+.ss-pcn{overflow-wrap:anywhere;font-family:var(--head);font-weight:var(--hw);font-size:28px;line-height:1.12;text-transform:var(--tt,none);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ss-pcs{font-size:22px;color:var(--mut);line-height:1.1}
+.ss-pc .ss-crow{margin-top:2px;gap:12px}
+.ss-pcp{font-family:var(--head);font-weight:var(--hw);font-size:44px;line-height:1;color:var(--acc)}
+.ss-pc .ss-was{font-size:24px;color:var(--mut);text-decoration:line-through}
 /*SS-CSS:END*/
+/*SB-CSS:BEGIN*/
+/* Shop builder */
+.tile .big{font-size:24px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums;line-height:1.2}
+.sbm{position:relative;height:380px;border-radius:12px;overflow:hidden;background:#e8e2d4 repeating-linear-gradient(0deg,rgba(0,0,0,.05) 0 1px,transparent 1px 48px),repeating-linear-gradient(90deg,rgba(0,0,0,.05) 0 1px,transparent 1px 48px);touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;border:1px solid var(--line)}
+.sbm:active{cursor:grabbing}
+.sbm-sm{height:220px}
+.sbm-t,.sbm-p{position:absolute;inset:0}
+.sbm-p{pointer-events:none}
+.sbm-tile{position:absolute;left:0;top:0;width:256px;height:256px;max-width:none;opacity:0;transition:opacity .25s;-webkit-user-drag:none}
+.sbm-tile.ok{opacity:1}
+.sbm-c{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:6px;z-index:3}
+.sbm-c button{width:36px;height:36px;border-radius:8px;border:1px solid rgba(0,0,0,.18);background:#fff;color:#222;font-size:18px;font-weight:700;cursor:pointer;line-height:1;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.sbm-n{position:absolute;left:8px;bottom:8px;max-width:70%;font-size:12px;background:rgba(255,255,255,.92);color:#444;padding:4px 8px;border-radius:6px;display:none;z-index:2}
+.sbm.sbm-off .sbm-n{display:block}
+.sbm-a{position:absolute;right:6px;bottom:4px;font-size:10px;background:rgba(255,255,255,.8);color:#333;padding:1px 5px;border-radius:4px;z-index:2}
+.sbm-a a{color:#225}
+.sbm-pin{position:absolute;left:0;top:0;pointer-events:auto;background:none;border:0;padding:0;cursor:pointer;width:30px;height:40px;margin:-38px 0 0 -15px;z-index:2}
+.sbm-pin i{position:absolute;left:4px;top:8px}
+.sbm-mk i{position:absolute;left:-11px;top:-30px}
+.sbm-pin i,.sbm-mk i{width:22px;height:22px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--c,#d0507e);border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.45)}
+.sbm-pin i::after,.sbm-mk i::after{content:"";position:absolute;left:5px;top:5px;width:6px;height:6px;border-radius:50%;background:#fff}
+.sbm-pin span{position:absolute;left:30px;top:6px;white-space:nowrap;font-size:12px;font-weight:700;background:rgba(255,255,255,.92);color:#222;padding:1px 6px;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,.25);max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.sbm-mk{position:absolute;left:0;top:0;width:0;height:0;z-index:2;--c:#d0507e}
+.sbm-me{position:absolute;left:-8px;top:-8px;width:16px;height:16px;border-radius:50%;background:#2b6cdf;border:3px solid #fff;box-shadow:0 0 0 6px rgba(43,108,223,.25)}
+.sb-maphead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.sb-legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--muted)}
+.sb-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.sb-info:not(:empty){margin-top:10px}
+.sb-pop{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;background:var(--soft);border-radius:10px;padding:10px 12px}
+.sb-gh{margin:16px 0 8px;font-size:15px;display:flex;gap:8px;align-items:center}
+.sb-card{margin-bottom:12px}
+.sb-top{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:2px;font-size:16px}
+.sb-pick{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.sb-pick select{max-width:260px}
+.sb-rate{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px 12px}
+.sb-rate label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600}
+.sb-rate select{width:100%}
+.sb-photos{display:flex;flex-wrap:wrap;gap:10px}
+.sb-ph{position:relative;width:110px;height:110px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--soft)}
+.sb-ph img{width:100%;height:100%;object-fit:cover;cursor:zoom-in;display:block}
+.sb-ph .x{position:absolute;right:2px;top:2px;background:rgba(0,0,0,.55);color:#fff;border-radius:50%;width:24px;height:24px;padding:0;font-size:16px}
+.sb-add{display:flex;align-items:center;justify-content:center;border-style:dashed;cursor:pointer;color:var(--muted);font-size:13px;font-weight:600;text-align:center}
+.sb-bar{height:10px;border-radius:99px;background:var(--soft);overflow:hidden;margin:0 0 16px}
+.sb-bar i{display:block;height:100%;background:var(--good);border-radius:99px}
+.sb-bar i.over{background:var(--bad)}
+.sb-matbar{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.sb-mats li{align-items:center}
+.sb-mats li.sb-done{opacity:.75}
+.sb-mact{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.sb-mact select{width:auto;min-width:0;padding:5px 8px;font-size:13px}
+.sb-bud{width:100%;max-width:150px;font-size:18px;font-weight:700;padding:4px 8px}
+.sb-chk{padding:6px 0;border-bottom:1px solid var(--line);margin:0}
+.sb-chk .x{margin-left:auto}
+.sb-sw{border-top:4px solid var(--line)}
+.sb-sw-good{border-top-color:var(--good)}.sb-sw-bad{border-top-color:var(--bad)}.sb-sw-acc{border-top-color:var(--accent)}.sb-sw-warn{border-top-color:var(--warn)}
+.sb-ideas{display:flex;flex-direction:column;gap:6px;margin-top:8px;align-items:flex-start}
+.sb-ideas .pill{cursor:pointer;border:1px solid var(--line);white-space:normal;text-align:left;font-weight:600}
+@media (max-width:700px){.sbm{height:320px}.tile .big{font-size:clamp(16px,5.2vw,21px);overflow-wrap:anywhere}.sb-mact{justify-content:flex-start}.sb-mats li{flex-direction:column;align-items:stretch}}
+.sb-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.sb-grid label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;min-width:0}
+.sb-grid input,.sb-grid select{width:100%;min-width:0;box-sizing:border-box}
+/*SB-CSS:END*/
 </style>
 <script>try{var L=JSON.parse(localStorage.getItem('if-look')||'{}'),R=document.documentElement;var F=localStorage.getItem('if-forceskin');R.dataset.skin=F||L.skin||'classic';if(L.mode&&L.mode!=='auto')R.dataset.theme=L.mode;R.dataset.text=L.text||'normal';if(L.motion===false)R.dataset.motion='off';}catch(e){}</script>
 </head>
@@ -1126,7 +1205,7 @@ const PROVINCES = ['Central','Copperbelt','Eastern','Luapula','Lusaka','Muchinga
 const CH = {cash:'Cash', momo:'Mobile money', bank:'Bank'};
 const IN_CATS = ['Reseller remittance','Customer payment','Capital introduced','Loan received','Other income'];
 const OUT_CATS = ['Expense','Supplier payment','Commission payout','Drawings','Loan repayment'];
-const EXP_TYPES = ['Courier charges','Transport & fuel','Delivery & courier','Packaging & bottles','Advertising & printing','Airtime & data','Rent','Wages','Bank & mobile money charges','Office & supplies','Other'];
+const EXP_TYPES = ['Courier charges','Transport & fuel','Delivery & courier','Packaging & bottles','Advertising & printing','Airtime & data','Rent','Wages','Bank & mobile money charges','Office & supplies','Shop set-up','Other'];
 const CATEGORIES_DEF = ['Women','Men','Unisex','Body sprays','Oils','Gift sets','Other'];
 const CATS = () => (S.settings.categories && S.settings.categories.length ? S.settings.categories : CATEGORIES_DEF);
 
@@ -1496,14 +1575,14 @@ function monthStats(m){
 
 /* ---------- render ---------- */
 const PAGES = {};
-const ROUTES = ['dashboard','messages','approvals','contacts','feedback','hiring','staff','ratings','riders','links','shopsales','shopstock','shopstaff','shopcust','ideas','resapps','empagree','payroll','logins','access','updates','help','pos','orders','customers','portal','invoices','suppliers','broadcast','activity','settlement','leaderboard','team','planner','profit','reminders','agreements','resellers','commissions','payslips','debtors','products','stocktake','shops','stock','purchases','dispatch','sales','cashbook','expenses','promos','catalogue','adverts','shopscreen','studio','prospects','monthreport','reports','setup','company'];
+const ROUTES = ['dashboard','messages','approvals','contacts','feedback','hiring','staff','ratings','riders','links','shopsales','shopstock','shopstaff','shopcust','shopbuild','ideas','resapps','empagree','payroll','logins','access','updates','help','pos','orders','customers','portal','invoices','suppliers','broadcast','activity','settlement','leaderboard','team','planner','profit','reminders','agreements','resellers','commissions','payslips','debtors','products','stocktake','shops','stock','purchases','dispatch','sales','cashbook','expenses','promos','catalogue','adverts','shopscreen','studio','prospects','monthreport','reports','setup','company'];
 function route(){ const h = location.hash.slice(1); return ROUTES.includes(h) ? h : 'dashboard'; }
 const GROUPS = [
   {label:'Dashboard', tabs:[['dashboard','Dashboard'],['approvals','Approvals'],['feedback','Suggestions'],['contacts','Contacts']]},
   {label:'Messages', tabs:[['messages','Messages']]},
   {label:'Sales', tabs:[['pos','Point of sale'],['sales','Sales book'],['customers','Customers & loyalty']]},
   {label:'Online Business', tabs:[['orders','Online shop orders'],['ratings','Customer ratings'],['riders','Deliveries & riders'],['catalogue','Online catalogue'],['links','Online pages & links']]},
-  {label:'Shops', tabs:[['shops','Shops'],['shopsales','Sales & cash-ups'],['shopstock','Stock in shops'],['shopstaff','Shop staff'],['shopcust','Shop customers'],['ideas','Business ideas']]},
+  {label:'Shops', tabs:[['shops','Shops'],['shopbuild','Shop builder'],['shopsales','Sales & cash-ups'],['shopstock','Stock in shops'],['shopstaff','Shop staff'],['shopcust','Shop customers'],['ideas','Business ideas']]},
   {label:'Stock', tabs:[['products','Products'],['stock','Stock register']]},
   {label:'Operations', tabs:[['dispatch','Dispatch & delivery'],['stocktake','Stock-take'],['planner','Reorder planner'],['purchases','Purchases'],['suppliers','Suppliers']]},
   {label:'Resellers', tabs:[['resellers','Towns & resellers'],['portal','Requests & logins'],['resapps','Applications'],['settlement','Settlement day'],['reminders','Reminders'],['team','Recruits & bonuses'],['leaderboard','Leaderboard'],['agreements','Reseller agreements']]},
@@ -1531,7 +1610,7 @@ function tabsHTML(r){
   if (tabs.length < 2) return gear ? `<div class="sec-row">${gear}</div>` : '';
   return `<div class="sec-row"><nav class="tabs" aria-label="${esc(g.label)}">${tabs.map(([id, l]) => `<a href="#${id}" class="${id === r ? 'on' : ''}">${esc(l)}</a>`).join('')}</nav>${gear}</div>`;
 }
-const TOOL_PAGES = new Set(['catalogue','adverts','studio','pos','prospects','reminders','shopscreen']);
+const TOOL_PAGES = new Set(['catalogue','adverts','studio','pos','prospects','reminders','shopscreen','shopbuild']);
 function render(force){
   try { const fk = applyFestive(); if (fk && !UI.festPreview) setTimeout(() => festGreet(fk), 600); } catch(e) {}
   if (DESK && MODE === 'desktop' && APP_ROLE !== 'reseller') { const g = gateHTML(); if (g) { document.body.classList.remove('res-mode'); navOff(); $('#main').dataset.page = ''; $('#main').innerHTML = g; return; } }
@@ -2526,8 +2605,11 @@ function fixNumbers(o){
 }
 
 /* ======================= Version 2.0 ======================= */
-const APP_VERSION = '2.23.1';
+const APP_VERSION = '2.25.0';
 const CHANGELOG = [
+  ['2.25.0', '24 Nov 2026', ['New: Shop builder, under Shops. Plan and manage kiosks, market stalls, small shops, boutiques and home display corners', 'Map of your shops and the sites you are looking at, with coloured pins, directions and your own location. Works with OpenStreetMap pictures; pins stay in place without the internet', 'A file for every site: rented or owned, rent, deposit and lease, landlord or owner contacts (call, WhatsApp, email), photos, a site score out of 25, good things and worries', 'Materials and budget: a ready list for each type of shop with rough estimated prices you can change, a budget bar, status (to buy, quote asked, ordered, bought) and Log as expense into Expenses under Shop set-up', 'Storage planner: how many bottles your shelves, cabinets and stock room will hold, compared with the bottles you plan to keep', 'Will it pay?: monthly costs, bottles needed to break even and how soon the set-up pays back', 'Opening checklist, and a SWOT with ideas to start from. Shop file details are private to the owner and managers']],
+  ['2.24.1', '23 Nov 2026', ['Shop screen price list: perfume names are no longer cut short. The names shrink until every one fits, and a very long name wraps onto two lines', 'Photo polish: uses less memory on big photos, and closing the progress window now stops it', 'Photo cards: very long names wrap instead of running out of the card']],
+  ['2.24.0', '23 Nov 2026', ['Shop screen price list: choose how prices are shown. One line per perfume (new default, the same for every category), grouped by price, or photo cards', 'Photo polish: trims empty space, makes every bottle the same size, cleans a white background and sharpens, for crisp 4K. One tap on Polish, or Polish all. Your original photos are kept', 'HD uploads are now kept larger (up to 2400 pixels) and polished automatically when on a white background']],
   ['2.23.1', '23 Nov 2026', ['Shop screen: if the PC app is too old for the separate TV window, the page now says so, shows the PC app version, and gives the download link with the update steps']],
   ['2.23.0', '23 Nov 2026', ['Shop screen projector in its own window (Windows app 2.23 and newer): it opens on your TV screen while the hub stays free on your PC monitor for the Point of sale and everything else', 'Choose which screen to use, or a window you place yourself; control it from the hub (previous, pause, next, stop). Changes to your slides, prices and stock reach the TV by themselves', 'Needs the new PC app once (download page). Older apps keep using the projector inside the hub window']],
   ['2.22.2', '23 Nov 2026', ['Shop screen projector fixed: it now fills the whole screen with the slideshow (it showed a black screen before), asks for real full screen, and also works with F11 or a double-click', 'Lighter and quicker: the hub is hidden while the projector plays, it starts at once without waiting for downloads, and it keeps only the slides it needs in memory', 'If your screen is not widescreen, the empty bars take the slide colour instead of black']],
@@ -2652,7 +2734,7 @@ function docSummary(col, d){
   if (col === 'receipts') return `${d.no} · ${money(d.total)}`;
   if (col === 'dispatches') return `${d.no} to ${dnTo(d)}`;
   if (col === 'invoices') return `${d.no} · ${d.customer || ''}`;
-  if (col === 'images') return /^ss_/.test(d.id) ? 'Shop screen picture' : `${/^hd_/.test(d.id) ? 'HD photo' : 'Photo'} for ${pName(String(d.id).replace(/^hd_/, ''))}`;
+  if (col === 'images') return /^sb_/.test(d.id) ? 'Shop builder site photo' : /^ss_/.test(d.id) ? 'Shop screen picture' : `${/^hd_/.test(d.id) ? 'HD photo' : 'Photo'} for ${pName(String(d.id).replace(/^hd_/, ''))}`;
   return d.name || d.no || d.id || '';
 }
 function logWrite(action, col, before, after){
@@ -5460,7 +5542,7 @@ PAGES.shopcust = () => {
     + `<div class="filters"><input type="search" id="sc-q" placeholder="Search name or phone" value="${esc(UI.scQ || '')}"><select id="f-scshop"><option value="">All shops</option>${ls.map(l => `<option value="${l.id}" ${sh === l.id ? 'selected' : ''}>${esc(l.name)}</option>`).join('')}</select><div class="seg">${[['all', 'Everyone'], ['regular', 'Came back'], ['away', 'Not seen 30+ days']].map(([k, l]) => btn(l, 'scF', {v:k}, f === k ? 'on' : '')).join('')}</div></div>`
     + (list.length ? `<div class="card"><div class="tw"><table class="t"><thead><tr><th>Customer</th><th>Shop</th><th class="n">Visits</th><th class="n">Bottles</th><th class="n">Spent</th><th>Last visit</th><th>Favourite</th><th></th></tr></thead><tbody>${list.slice(0, 400).map(c => `<tr><td><b>${esc(c.name || 'Customer')}</b><div class="small mut">${esc(c.phone || '')}</div></td><td class="small">${[...c.shops].map(id => esc(shopOf(id)?.name || '')).join(', ')}</td><td class="n">${c.visits}</td><td class="n">${int(c.bottles)}</td><td class="n">${money(c.spent)}</td><td class="small">${fmtDate(c.last)}${c.last < cut30 ? ' <span class="pill warn">away</span>' : ''}</td><td class="small">${esc(fav(c))}</td><td>${c.phone ? `<a class="btn sm" target="_blank" rel="noopener" href="${waLink(c.phone, `Hello ${String(c.name || '').split(' ')[0] || 'there'}, thank you for shopping at ${bizName()}! ${fav(c) ? `We have your favourite ${fav(c)} in stock.` : 'We have new perfumes in stock.'} Come and see us soon.`)}">WhatsApp</a>` : ''}</td></tr>`).join('')}</tbody></table></div></div>` : empty('No shop customers yet. Ask for the customer\'s name and phone on each sale in the shop app.'));
 };
-const MENU_HELP = {'Messages':'Chat with your team, shops and resellers inside the app. Copy people in, send announcements and start groups.', 'Dashboard':'Today at a glance, approvals waiting for you, suggestions from your team and everyone\'s contacts.', 'Sales':'Sell at the counter, see every sale and look after your customers and loyalty points.', 'Online Business':'Online shop orders, customer ratings, riders and deliveries, the online catalogue and all your public links.', 'Shops':'Each shop\'s details, sales and cash-ups, stock, staff, customers and ideas for selling more.', 'Stock':'Your perfumes and every stock movement.', 'Operations':'Sending parcels, counting stock, planning reorders, buying stock and your suppliers.', 'Resellers':'Resellers by town, their requests and logins, applications, settlement day, reminders, recruits, the leaderboard and agreements.', 'Human Resources':'Positions and job applications, your staff and their employment agreements.', 'Finance':'Money in and out, invoices, money owed, pay for staff and resellers, reports and your company and tax details.', 'Marketing':'Promotions, flyers, the Shop screen for your TV, WhatsApp broadcasts, product photos and prospects.', 'Users & Access':'Every login, what each position can open and the record of who did what.', 'Settings':'Business settings, backups, app updates and this help.'};
+const MENU_HELP = {'Messages':'Chat with your team, shops and resellers inside the app. Copy people in, send announcements and start groups.', 'Dashboard':'Today at a glance, approvals waiting for you, suggestions from your team and everyone\'s contacts.', 'Sales':'Sell at the counter, see every sale and look after your customers and loyalty points.', 'Online Business':'Online shop orders, customer ratings, riders and deliveries, the online catalogue and all your public links.', 'Shops':'Each shop\'s details, the Shop builder (map, rent, materials and budget for new shops), sales and cash-ups, stock, staff, customers and ideas for selling more.', 'Stock':'Your perfumes and every stock movement.', 'Operations':'Sending parcels, counting stock, planning reorders, buying stock and your suppliers.', 'Resellers':'Resellers by town, their requests and logins, applications, settlement day, reminders, recruits, the leaderboard and agreements.', 'Human Resources':'Positions and job applications, your staff and their employment agreements.', 'Finance':'Money in and out, invoices, money owed, pay for staff and resellers, reports and your company and tax details.', 'Marketing':'Promotions, flyers, the Shop screen for your TV, WhatsApp broadcasts, product photos and prospects.', 'Users & Access':'Every login, what each position can open and the record of who did what.', 'Settings':'Business settings, backups, app updates and this help.'};
 PAGES.help = () => head('Help', 'What is in each menu. Tap a menu name to go there.')
   + GROUPS.filter(g => g.tabs.some(t => allowed(t[0]))).map(g => `<div class="card"><h2><a href="#${g.tabs.find(t => allowed(t[0]))[0]}">${esc(g.label)}</a></h2><p style="margin:0 0 8px">${esc(MENU_HELP[g.label] || '')}</p><div class="small">${g.tabs.filter(t => allowed(t[0])).map(([k, l]) => `<a class="pill" href="#${k}">${esc(l)}</a>`).join(' ')}</div></div>`).join('')
   + `<div class="card"><h2>Good to know</h2><ul class="list small"><li>The ⚙ Settings button on a page changes settings for that part of the hub.</li><li>The bell at the top shows notifications. Tap one to go to it.</li><li>Back up your records regularly from Settings & backup.</li></ul></div>`;
@@ -7864,6 +7946,14 @@ function ssTheme(sc, sl, ci, fest, pref){
   return SS_MIX[ci % SS_MIX.length];
 }
 function ssQR(url){ const s = coQR(url); const m = s && s.match(/viewBox="0 0 (\d+) \d+"[^>]*><path fill="[^"]*" d="([^"]*)"/); return m ? {w:+m[1], p:m[2]} : null; }
+const SS_LIST_STYLES = [['rows', 'One line per perfume', 'Name, then price. Easy to read and the same for every category.'], ['groups', 'Grouped by price', 'Perfumes with the same price share one big price. Fits the most perfumes on a slide.'], ['cards', 'Photo cards', 'A small picture of each bottle with its name and price. Shows fewer perfumes per slide.']];
+const ssListStyle = sl => SS_LIST_STYLES.some(x => x[0] === sl.style) ? sl.style : 'rows';
+function ssCardPages(sc, sl, pool){
+  const catsAll = CATS(), want = (sl.cats && sl.cats.length) ? sl.cats : null, rank = c => { const i = catsAll.indexOf(c || 'Other'); return i < 0 ? 999 : i; };
+  const items = pool.filter(p => !want || want.includes(p.category || 'Other')).sort((a, b) => rank(a.category) - rank(b.category) || (a.name || '').localeCompare(b.name || '')).map(ssItem);
+  const per = 10, np = Math.ceil(items.length / per), pages = []; for (let k = 0; k < np; k++) { const take = Math.ceil((items.length - pages.reduce((a, x) => a + x.length, 0)) / (np - k)); pages.push(items.slice(pages.reduce((a, x) => a + x.length, 0), pages.reduce((a, x) => a + x.length, 0) + take)); }
+  return pages;
+}
 function ssListPages(sc, sl, pool){
   const catsAll = CATS(), want = (sl.cats && sl.cats.length) ? sl.cats : null, byCat = {};
   pool.forEach(p => { const c = p.category || 'Other'; if (!want || want.includes(c)) (byCat[c] = byCat[c] || []).push(p); });
@@ -7871,11 +7961,11 @@ function ssListPages(sc, sl, pool){
   const cmp = (a, b) => num(b.size) - num(a.size) || a.now - b.now;
   const blocks = order.map(c => {
     const ps = byCat[c].map(p => ({n:p.name, size:p.size ? p.size + ' ml' : '', ...ssPrice(p.id)})), sizes = new Set(ps.map(x => x.size)), head = sizes.size === 1 ? ps[0].size : '';
-    if (ps.length <= 6) return {h:c, s:head, u:ps.sort((a, b) => cmp({size:a.size.replace(' ml', ''), now:a.now}, {size:b.size.replace(' ml', ''), now:b.now}) || a.n.localeCompare(b.n)).map(x => ({t:'r', n:x.n + (sizes.size > 1 && x.size ? ' ' + x.size : ''), now:x.now, was:x.was, hgt:1}))};
+    if (ps.length <= 6 || ssListStyle(sl) === 'rows') return {h:c, s:head, u:ps.sort((a, b) => cmp({size:a.size.replace(' ml', ''), now:a.now}, {size:b.size.replace(' ml', ''), now:b.now}) || a.n.localeCompare(b.n)).map(x => ({t:'r', n:x.n + (sizes.size > 1 && x.size ? ' ' + x.size : ''), now:x.now, was:x.was, hgt:1}))};
     const g = {}; ps.forEach(x => { const k = x.size + '|' + x.now + '|' + x.was; (g[k] = g[k] || {size:x.size, now:x.now, was:x.was, names:[]}).names.push(x.n); });
     return {h:c, s:head, u:Object.values(g).sort((a, b) => cmp({size:a.size.replace(' ml', ''), now:a.now}, {size:b.size.replace(' ml', ''), now:b.now})).map(x => { const names = x.names.sort().join(', '); return {t:'g', size:sizes.size > 1 ? x.size : '', now:x.now, was:x.was, names, hgt:1.35 + Math.ceil(names.length / 28) * 0.9}; })};
   });
-  const CAP = 12.4, cols = []; let col = [], used = 0;
+  const CAP = ssListStyle(sl) === 'rows' ? 10.2 : 12.4, cols = []; let col = [], used = 0;
   const push = () => { if (col.length) cols.push(col); col = []; used = 0; };
   blocks.forEach(b => { let cur = null;
     b.u.forEach((u, ui) => {
@@ -7907,7 +7997,8 @@ function ssOne(sc, sl, pool, fest, d, ci, all){
       const cp = SS_FEST_COPY[f]; let ps = (sl.pids && sl.pids.length) ? sl.pids.map(id => all.find(x => x.id === id)).filter(Boolean) : ssBest(sc, pool, 3, true); if (!ps.length) return null;
       return {...base('promo'), theme:th(SS_FEST_THEME[f]), eyebrow:sl.eyebrow == null ? cp[0] : sl.eyebrow, titleHTML:ssRich(sl.title || cp[1]), text:sl.text || cp[2], badge:'', items:ps.slice(0, 3).map(ssItem)};
     }
-    case 'list': { const pages = ssListPages(sc, sl, pool); if (!pages.length) return null; const t = th(); return pages.map((cols, k) => ({...base('list'), id:sl.id + (pages.length > 1 ? '#' + (k + 1) : ''), sec:num(sl.sec) || (num(sc.sec) || 8) + 4, theme:t, page:k + 1, pages:pages.length, cols})); }
+    case 'list': { const st = ssListStyle(sl), t = th(); if (st === 'cards') { const pages = ssCardPages(sc, sl, pool); if (!pages.length) return null; return pages.map((items, k) => ({...base('list'), id:sl.id + (pages.length > 1 ? '#' + (k + 1) : ''), sec:num(sl.sec) || (num(sc.sec) || 8) + 4, theme:t, style:'cards', page:k + 1, pages:pages.length, items})); }
+      const pages = ssListPages(sc, sl, pool); if (!pages.length) return null; return pages.map((cols, k) => ({...base('list'), id:sl.id + (pages.length > 1 ? '#' + (k + 1) : ''), sec:num(sl.sec) || (num(sc.sec) || 8) + 4, theme:t, style:st, page:k + 1, pages:pages.length, cols})); }
     case 'qr': { const q = ssQR(sl.url || STORE_URL); return {...base('qr'), theme:th(), titleHTML:ssRich(sl.title || 'Scan to *shop*'), text:sl.text || 'Browse every fragrance and order from your phone', phone:sl.phone === false ? '' : ssPhone(), cap:sl.cap || 'Point your phone camera at the code', qr:q}; }
     case 'pic': { const im = S.images['ss_' + sl.id]?.data; if (!im) return null; return {...base('pic'), theme:th(), img:im}; }
     case 'txt': { if (!sl.title && !sl.text) return null; return {...base('txt'), theme:th(), eyebrow:sl.eyebrow || '', titleHTML:ssRich(sl.title || ''), text:sl.text || '', qr:sl.url ? ssQR(sl.url) : null, cap:sl.cap || ''}; }
@@ -7924,6 +8015,9 @@ function ssBuild(sc, d, opt){
 
 /* ---------- slide pictures ---------- */
 /*SS-VIEW:BEGIN*/
+/* shrink the names on a price list slide until none is cut short (measured on the real screen, so it holds for any font and any name); the last step lets a very long name use two lines */
+const ssFitRows = e => { const c = e.querySelector('.ss-cols'); if (!c) return; const ns = [...c.querySelectorAll('.ss-lr .ss-n')]; if (!ns.length) return; for (let t = 1; t <= 6; t++) { c.className = c.className.replace(/ss-rn\d/, 'ss-rn' + t); if (!ns.some(n => n.scrollWidth > n.clientWidth + 1)) break; } };
+const ssRn = s => { const m = Math.max(0, ...s.cols.flatMap(c => c.flatMap(b => b.u.filter(u => u.t === 'r').map(u => u.n.length)))); return m > 27 ? 5 : m > 24 ? 4 : m > 21 ? 3 : m > 17 ? 2 : 1; };
 const ssMoney = n => { n = r2(num(n)); return (S.settings.currency || 'K') + (Number.isInteger(n) ? n.toLocaleString('en-US') : n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})); };
 const ssDots = (i, n) => '<div class="ss-dots">' + Array.from({length:n}, (_, k) => `<span class="${k === i ? 'ss-on' : ''}"></span>`).join('') + '</div>';
 const ssFoot = (s, abs) => `<div class="ss-foot${abs ? ' ss-abs' : ''} ss-in" style="--d:7">${ssDots(s.i, s.n)}<div class="ss-tag">${esc(ssTag())}</div></div>`;
@@ -7937,7 +8031,7 @@ const SS_HTML = {
   promo: s => `<div class="ss-deco"></div><div class="ss-frame"></div><div class="ss-promo-text">${ssBrand(0)}<div class="ss-promo-mid">${ssEye(s.eyebrow, 1)}<div class="ss-ttl ss-in${s.titleHTML.replace(/<[^>]+>/g, '').length > 14 ? ' ss-sm' : ''}" style="--d:2">${s.titleHTML}</div><div class="ss-txt ss-in" style="--d:3">${esc(s.text)}</div></div>${ssFoot(s)}</div>
     <div class="ss-cards" style="--n:${s.items.length}">${s.items.map((it, k) => `<div class="ss-card ss-in" style="--d:${k + 2}"><div class="ss-cphoto"><img src="${it.img || PLACEHOLDER}" alt="${esc(it.name)}">${s.badge && it.was ? `<span class="ss-badge">${esc(s.badge)}</span>` : ''}</div><div class="ss-cinfo"><div class="ss-cname">${esc(it.name)}</div><div class="ss-csize">${esc(it.size)}</div><div class="ss-crow"><span class="ss-cprice">${esc(ssMoney(it.now))}</span>${ssWas(it.was)}</div></div></div>`).join('')}</div>`,
   best: s => `<div class="ss-deco"></div><div class="ss-best-top"><div>${ssEye(s.eyebrow, 0)}<div class="ss-ttl ss-in" style="--d:1">${esc(s.title)}</div></div>${ssBrand(1)}</div><div class="ss-best-grid" style="--n:${s.items.length}">${s.items.map((it, k) => `<div class="ss-bp ss-in" style="--d:${k + 1}"><div class="ss-plate"><img src="${it.img || PLACEHOLDER}" alt="${esc(it.name)}"></div><div class="ss-nm">${esc(it.name)}</div><div class="ss-r"><div class="ss-mt">${esc(it.size)}</div><div class="ss-pr">${esc(ssMoney(it.now))}</div></div></div>`).join('')}</div>${ssFoot(s, true)}`,
-  list: s => `<div class="ss-deco"></div><div class="ss-band"><div class="ss-brand ss-in" style="--d:0"><img src="${LOGO}" alt=""><div class="ss-ttl">Price list${s.pages > 1 ? ` <span class="ss-pn">${s.page}/${s.pages}</span>` : ''}</div></div><div class="ss-brand"><span>${esc(bizName())}</span></div></div><div class="ss-cols" style="width:${Math.min(1728, s.cols.length * 576 + (s.cols.length - 1) * 96)}px;left:${Math.round((1920 - Math.min(1728, s.cols.length * 576 + (s.cols.length - 1) * 96)) / 2)}px;grid-template-columns:repeat(${s.cols.length},minmax(0,1fr))">${s.cols.map((c, ci) => `<div class="ss-col ss-in" style="--d:${ci + 1}">${c.map(b => `<div class="ss-lh"><span class="ss-lht">${esc(b.h)}</span><span class="ss-lhs">${esc(b.s)}</span></div>${b.u.map(u => u.t === 'r' ? `<div class="ss-lr"><span class="ss-n">${esc(u.n)}</span><span class="ss-d"></span>${u.was ? `<span class="ss-w">${esc(ssMoney(u.was))}</span>` : ''}<span class="ss-p">${esc(ssMoney(u.now))}</span></div>` : `<div class="ss-lg"><div class="ss-pg"><div class="ss-p">${esc(ssMoney(u.now))}</div>${u.was ? `<span class="ss-w">${esc(ssMoney(u.was))}</span>` : ''}<span class="ss-lgs">${esc(u.size)}</span></div><div class="ss-nm">${esc(u.names)}</div></div>`).join('')}<div class="ss-sp"></div>`).join('')}</div>`).join('')}</div>${ssFoot(s, true)}`,
+  list: s => s.style === 'cards' ? `<div class="ss-deco"></div><div class="ss-band"><div class="ss-brand ss-in" style="--d:0"><img src="${LOGO}" alt=""><div class="ss-ttl">Price list${s.pages > 1 ? ` <span class="ss-pn">${s.page}/${s.pages}</span>` : ''}</div></div><div class="ss-brand"><span>${esc(bizName())}</span></div></div><div class="ss-pcards">${s.items.map((it, k) => `<div class="ss-pc ss-in" style="--d:${Math.min(k, 9) + 1}"><div class="ss-cphoto"><img src="${it.img || PLACEHOLDER}" alt=""></div><div class="ss-pci"><div class="ss-pcn">${esc(it.name)}</div>${it.size && !new RegExp('(^|[^0-9])' + parseFloat(it.size) + '\\s?ml', 'i').test(it.name) ? `<div class="ss-pcs">${esc(it.size)}</div>` : ''}<div class="ss-crow"><span class="ss-pcp">${esc(ssMoney(it.now))}</span>${it.was ? `<span class="ss-was">${esc(ssMoney(it.was))}</span>` : ''}</div></div></div>`).join('')}</div>${ssFoot(s, true)}` : `<div class="ss-deco"></div><div class="ss-band"><div class="ss-brand ss-in" style="--d:0"><img src="${LOGO}" alt=""><div class="ss-ttl">Price list${s.pages > 1 ? ` <span class="ss-pn">${s.page}/${s.pages}</span>` : ''}</div></div><div class="ss-brand"><span>${esc(bizName())}</span></div></div><div class="ss-deco"></div><div class="ss-band"><div class="ss-brand ss-in" style="--d:0"><img src="${LOGO}" alt=""><div class="ss-ttl">Price list${s.pages > 1 ? ` <span class="ss-pn">${s.page}/${s.pages}</span>` : ''}</div></div><div class="ss-brand"><span>${esc(bizName())}</span></div></div><div class="ss-cols ss-rn${ssRn(s)}" style="width:${Math.min(1728, s.cols.length * 576 + (s.cols.length - 1) * 96)}px;left:${Math.round((1920 - Math.min(1728, s.cols.length * 576 + (s.cols.length - 1) * 96)) / 2)}px;grid-template-columns:repeat(${s.cols.length},minmax(0,1fr))">${s.cols.map((c, ci) => `<div class="ss-col ss-in" style="--d:${ci + 1}">${c.map(b => `<div class="ss-lh"><span class="ss-lht">${esc(b.h)}</span><span class="ss-lhs">${esc(b.s)}</span></div>${b.u.map(u => u.t === 'r' ? `<div class="ss-lr"><span class="ss-n">${esc(u.n)}</span><span class="ss-d"></span>${u.was ? `<span class="ss-w">${esc(ssMoney(u.was))}</span>` : ''}<span class="ss-p">${esc(ssMoney(u.now))}</span></div>` : `<div class="ss-lg"><div class="ss-pg"><div class="ss-p">${esc(ssMoney(u.now))}</div>${u.was ? `<span class="ss-w">${esc(ssMoney(u.was))}</span>` : ''}<span class="ss-lgs">${esc(u.size)}</span></div><div class="ss-nm">${esc(u.names)}</div></div>`).join('')}<div class="ss-sp"></div>`).join('')}</div>`).join('')}</div>${ssFoot(s, true)}`,
   qr: s => `<div class="ss-deco"></div><div class="ss-frame"></div><div class="ss-qr-text">${ssBrand(0)}<div class="ss-qr-mid">${ssEye('Order online', 1)}<div class="ss-ttl ss-in" style="--d:2">${s.titleHTML}</div><div class="ss-txt ss-in" style="--d:3">${esc(s.text)}</div>${s.phone ? `<div class="ss-wa ss-in" style="--d:4"><span class="ss-wal">WhatsApp</span><span class="ss-wan">${esc(s.phone)}</span></div>` : ''}</div>${ssFoot(s)}</div><div class="ss-qr-box ss-in" style="--d:2"><div class="ss-qr-plate">${ssQrSvg(s.qr)}</div><div class="ss-cap">${esc(s.cap)}</div></div>`,
   pic: s => `<div class="ss-pic"><img src="${s.img}" alt=""></div>`,
   txt: s => `<div class="ss-deco"></div><div class="ss-frame"></div><div class="ss-txt-center">${ssBrand(0)}<div class="ss-txt-body">${ssEye(s.eyebrow, 1)}<div class="ss-ttl ss-in" style="--d:2">${s.titleHTML}</div>${s.text ? `<div class="ss-txt ss-in" style="--d:3">${esc(s.text)}</div>` : ''}</div>${ssFoot(s)}</div>${s.qr ? `<div class="ss-qr-box ss-in" style="--d:2;right:120px"><div class="ss-qr-plate">${ssQrSvg(s.qr)}</div>${s.cap ? `<div class="ss-cap">${esc(s.cap)}</div>` : ''}</div>` : ''}`
@@ -7955,7 +8049,7 @@ class SSPlayer {
   mk(i){
     const N = this.els.length; i = ((i % N) + N) % N; if (this.els[i]) return this.els[i];
     const s = this.data.slides[i], e = document.createElement('section'); e.className = 'ss-slide'; e.dataset.ssth = s.theme; e.dataset.sid = s.id; e.innerHTML = SS_HTML[s.k](s);
-    this.stage.insertBefore(e, this.bar); void e.offsetWidth; this.els[i] = e; return e;
+    this.stage.insertBefore(e, this.bar); void e.offsetWidth; ssFitRows(e); if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => ssFitRows(e)); this.els[i] = e; return e;
   }
   set(data){
     if (data.sig === this.sig) return; this.sig = data.sig;
@@ -8102,18 +8196,108 @@ async function ssVideoGo(id){
   SSV.busy = false;
 }
 
+/* ---------- photo polish: trim, same size for every bottle, clean white background, sharpen ---------- */
+/*SS-POLISH:BEGIN*/
+const SS_POLISH_LIMIT = 800000;
+function ssLoadImg(src){
+  return new Promise((res, rej) => {
+    const go = url => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(Error('That file is not a photo.')); im.src = url; };
+    if (typeof src === 'string') return go(src);
+    const r = new FileReader(); r.onerror = () => rej(Error('Could not read the photo.')); r.onload = () => go(r.result); r.readAsDataURL(src);
+  });
+}
+function ssResize(px, sw, sh, dw, dh){
+  /* Lanczos3, two passes. px is RGBA bytes (sw x sh); returns RGB floats (dw x dh x 3) */
+  const A = 3, lz = x => { if (x === 0) return 1; if (x <= -A || x >= A) return 0; const p = Math.PI * x; return A * Math.sin(p) * Math.sin(p / A) / (p * p); };
+  const taps = (n, m) => { const k = n / m, sc = Math.max(1, k), rad = A * sc, out = new Array(m); for (let i = 0; i < m; i++) { const c = (i + 0.5) * k - 0.5, a = Math.max(0, Math.ceil(c - rad)), b = Math.min(n - 1, Math.floor(c + rad)), w = []; let sum = 0; for (let j = a; j <= b; j++) { const v = lz((j - c) / sc); w.push(v); sum += v; } for (let j = 0; j < w.length; j++) w[j] /= sum || 1; out[i] = {a, w}; } return out; };
+  const tx = taps(sw, dw), ty = taps(sh, dh), mid = new Float32Array(dw * sh * 3);
+  for (let y = 0; y < sh; y++) { const row = y * sw * 4; for (let x = 0; x < dw; x++) { const t = tx[x]; let r = 0, g = 0, b = 0; for (let j = 0; j < t.w.length; j++) { const o = row + (t.a + j) * 4, v = t.w[j]; r += px[o] * v; g += px[o + 1] * v; b += px[o + 2] * v; } const q = (y * dw + x) * 3; mid[q] = r; mid[q + 1] = g; mid[q + 2] = b; } }
+  const out = new Float32Array(dw * dh * 3);
+  for (let y = 0; y < dh; y++) { const t = ty[y]; for (let x = 0; x < dw; x++) { let r = 0, g = 0, b = 0; for (let j = 0; j < t.w.length; j++) { const o = ((t.a + j) * dw + x) * 3, v = t.w[j]; r += mid[o] * v; g += mid[o + 1] * v; b += mid[o + 2] * v; } const q = (y * dw + x) * 3; out[q] = r; out[q + 1] = g; out[q + 2] = b; } }
+  return out;
+}
+function ssSharpen(f, w, h, sigma, amount, thr){
+  const R = Math.max(2, Math.ceil(sigma * 3)), k = [], s2 = 2 * sigma * sigma; let sum = 0; for (let i = -R; i <= R; i++) { const v = Math.exp(-i * i / s2); k.push(v); sum += v; } for (let i = 0; i < k.length; i++) k[i] /= sum;
+  const tmp = new Float32Array(f.length);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { for (let c = 0; c < 3; c++) { let a = 0; for (let i = -R; i <= R; i++) { const xx = Math.min(w - 1, Math.max(0, x + i)); a += f[(y * w + xx) * 3 + c] * k[i + R]; } tmp[(y * w + x) * 3 + c] = a; } }
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { for (let c = 0; c < 3; c++) { let a = 0; for (let i = -R; i <= R; i++) { const yy = Math.min(h - 1, Math.max(0, y + i)); a += tmp[(yy * w + x) * 3 + c] * k[i + R]; } const q = (y * w + x) * 3 + c, d = f[q] - a; if (Math.abs(d) > thr) f[q] += amount * d; } }
+}
+async function ssPolish(src, o){
+  o = o || {}; const im = await ssLoadImg(src);
+  let sw = im.naturalWidth || im.width, sh = im.naturalHeight || im.height; if (!sw || !sh) throw Error('That file is not a photo.');
+  const cap = o.cap || 2600, k0 = Math.min(1, cap / Math.max(sw, sh)); sw = Math.round(sw * k0); sh = Math.round(sh * k0);
+  const c0 = document.createElement('canvas'); c0.width = sw; c0.height = sh; const x0 = c0.getContext('2d', {willReadFrequently:true}); x0.fillStyle = '#fff'; x0.fillRect(0, 0, sw, sh); x0.imageSmoothingQuality = 'high'; x0.drawImage(im, 0, 0, sw, sh);
+  const id = x0.getImageData(0, 0, sw, sh), px = id.data, N = sw * sh;
+  /* what colour is the backdrop? the middle value of the outer edge */
+  const ring = Math.max(2, Math.round(Math.min(sw, sh) * 0.012)), rs = [[], [], []], step = Math.max(1, Math.floor((sw + sh) / 400));
+  const sample = (x, y) => { const q = (y * sw + x) * 4; rs[0].push(px[q]); rs[1].push(px[q + 1]); rs[2].push(px[q + 2]); };
+  for (let x = 0; x < sw; x += step) for (let r = 0; r < ring; r++) { sample(x, r); sample(x, sh - 1 - r); }
+  for (let y = 0; y < sh; y += step) for (let r = 0; r < ring; r++) { sample(r, y); sample(sw - 1 - r, y); }
+  const bg = rs.map(a => { a.sort((p, q) => p - q); return a[a.length >> 1]; });
+  const dif = q => Math.max(Math.abs(px[q] - bg[0]), Math.abs(px[q + 1] - bg[1]), Math.abs(px[q + 2] - bg[2]));
+  const T0 = 7, T1 = 36, white = Math.min(bg[0], bg[1], bg[2]) >= 205;
+  /* the backdrop = pixels like the edge colour that are connected to the edge */
+  const mask = new Uint8Array(N), stack = new Int32Array(N); let sp = 0;
+  const seed = (x, y) => { const i = y * sw + x; if (!mask[i] && dif(i * 4) < T1) { mask[i] = 1; stack[sp++] = i; } };
+  for (let x = 0; x < sw; x++) { seed(x, 0); seed(x, sh - 1); } for (let y = 0; y < sh; y++) { seed(0, y); seed(sw - 1, y); }
+  while (sp) { const i = stack[--sp], x = i % sw, y = (i - x) / sw; if (x > 0) { const j = i - 1; if (!mask[j] && dif(j * 4) < T1) { mask[j] = 1; stack[sp++] = j; } } if (x < sw - 1) { const j = i + 1; if (!mask[j] && dif(j * 4) < T1) { mask[j] = 1; stack[sp++] = j; } } if (y > 0) { const j = i - sw; if (!mask[j] && dif(j * 4) < T1) { mask[j] = 1; stack[sp++] = j; } } if (y < sh - 1) { const j = i + sw; if (!mask[j] && dif(j * 4) < T1) { mask[j] = 1; stack[sp++] = j; } } }
+  /* where is the bottle */
+  const rc = new Int32Array(sh), cc = new Int32Array(sw); let obj = 0;
+  for (let y = 0; y < sh; y++) for (let x = 0; x < sw; x++) if (!mask[y * sw + x]) { rc[y]++; cc[x]++; obj++; }
+  const tr = Math.max(2, Math.round(sw * 0.004)), tc = Math.max(2, Math.round(sh * 0.004));
+  let bx0 = 0, bx1 = sw - 1, by0 = 0, by1 = sh - 1; while (by0 < sh - 1 && rc[by0] < tr) by0++; while (by1 > by0 && rc[by1] < tr) by1--; while (bx0 < sw - 1 && cc[bx0] < tc) bx0++; while (bx1 > bx0 && cc[bx1] < tc) bx1--;
+  let trimmed = true; if (obj < N * 0.03 || bx1 - bx0 < sw * 0.1 || by1 - by0 < sh * 0.1) { bx0 = 0; bx1 = sw - 1; by0 = 0; by1 = sh - 1; trimmed = false; }
+  /* keep room around the bottle so its soft shadow fades out instead of being cut in a straight line */
+  if (trimmed) { const bw0 = bx1 - bx0 + 1, bh0 = by1 - by0 + 1; bx0 = Math.max(0, bx0 - Math.round(bw0 * 0.07)); bx1 = Math.min(sw - 1, bx1 + Math.round(bw0 * 0.07)); by0 = Math.max(0, by0 - Math.round(bh0 * 0.02)); by1 = Math.min(sh - 1, by1 + Math.round(bh0 * 0.07)); }
+  /* clean the backdrop to pure white (only when it is white or near-white to begin with) */
+  if (white && o.clean !== false) for (let i = 0; i < N; i++) if (mask[i]) { const d = dif(i * 4), t = d <= T0 ? 1 : d >= T1 ? 0 : 1 - (d - T0) / (T1 - T0), w = t * t * (3 - 2 * t), q = i * 4; px[q] += (255 - px[q]) * w; px[q + 1] += (255 - px[q + 1]) * w; px[q + 2] += (255 - px[q + 2]) * w; }
+  /* same frame for every bottle: 2:3 like the standard photos, the bottle fills the same share of it */
+  const bw = bx1 - bx0 + 1, bh = by1 - by0 + 1, big = bh >= 1250 || o.big, PH = big ? 2000 : 1500, PW = Math.round(PH * 2 / 3), mx = Math.round(PW * 0.015), my = Math.round(PH * 0.015);
+  const k = Math.min((PW - 2 * mx) / bw, (PH - 2 * my) / bh), dw = Math.max(1, Math.round(bw * k)), dh = Math.max(1, Math.round(bh * k));
+  const crop = new Uint8ClampedArray(bw * bh * 4); for (let y = 0; y < bh; y++) crop.set(px.subarray(((by0 + y) * sw + bx0) * 4, ((by0 + y) * sw + bx0 + bw) * 4), y * bw * 4);
+  const rs2 = ssResize(crop, bw, bh, dw, dh), fill = white && o.clean !== false ? [255, 255, 255] : bg;
+  const fx = new Float32Array(PW * PH * 3); for (let i = 0; i < PW * PH; i++) { fx[i * 3] = fill[0]; fx[i * 3 + 1] = fill[1]; fx[i * 3 + 2] = fill[2]; }
+  const ox = Math.round((PW - dw) / 2), oy = Math.round((PH - dh) / 2); for (let y = 0; y < dh; y++) for (let x = 0; x < dw; x++) { const a = (y * dw + x) * 3, b = ((oy + y) * PW + ox + x) * 3; fx[b] = rs2[a]; fx[b + 1] = rs2[a + 1]; fx[b + 2] = rs2[a + 2]; }
+  if (o.sharpen !== false) ssSharpen(fx, PW, PH, 1.3 * PH / 1500, k > 1.3 ? 0.9 : 0.55, 2.5);
+  const out = document.createElement('canvas'); out.width = PW; out.height = PH; const ox2 = out.getContext('2d'), od = ox2.createImageData(PW, PH);
+  for (let i = 0, j = 0; i < PW * PH * 3; i += 3, j += 4) { od.data[j] = fx[i]; od.data[j + 1] = fx[i + 1]; od.data[j + 2] = fx[i + 2]; od.data[j + 3] = 255; } ox2.putImageData(od, 0, 0);
+  let q = 0.92, data = out.toDataURL('image/jpeg', q); while (data.length > (o.limit || SS_POLISH_LIMIT) && q > 0.5) { q -= 0.05; data = out.toDataURL('image/jpeg', q); }
+  return {data, w:PW, h:PH, trimmed, cleaned:white && o.clean !== false, scale:k};
+}
+/*SS-POLISH:END*/
+
+const ssPlain = async (src, max, limit) => { const im = await ssLoadImg(src), k = Math.min(1, max / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement('canvas'); c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k); const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.imageSmoothingQuality = 'high'; x.drawImage(im, 0, 0, c.width, c.height); let q = 0.9, d = c.toDataURL('image/jpeg', q); while (d.length > limit && q > 0.4) { q -= 0.06; d = c.toDataURL('image/jpeg', q); } return d; };
+/* a photo you upload: polished when it sits on a white background, otherwise kept as it is (just kept large) */
+async function ssHdFromFile(file){
+  if (ssCfg().polish !== false) { try { const r = await ssPolish(file, {big:true}); if (r.cleaned) return {data:r.data, polished:true}; } catch(e) {} }
+  return {data:await ssPlain(file, 2400, SS_POLISH_LIMIT)};
+}
+const SSP = {run:false, abort:{v:false}};
+async function ssPolishRun(pids){
+  if (SSP.run) return; SSP.run = true; SSP.abort = {v:false}; let ok = 0, skipped = 0, failed = 0;
+  modal('Polishing photos', `<div id="ssp-prog" class="small" style="min-height:44px" aria-live="polite">Starting…</div><p class="small mut">Keep this window open. Your original photos are not changed.</p><div class="m-foot"><button type="button" class="btn ghost" data-act="ssPolishStop">Stop</button></div>`, null, {nofocus:true});
+  for (let i = 0; i < pids.length; i++) {
+    const pid = pids[i], box = document.getElementById('ssp-prog'); if (!box) SSP.abort.v = true; /* the window was closed: that means stop */ if (SSP.abort.v) break;
+    box.innerHTML = `${esc(pName(pid))}<br>Photo ${i + 1} of ${pids.length}<div style="height:8px;border-radius:4px;background:var(--line);margin-top:6px;overflow:hidden"><div style="height:100%;width:${Math.round(i / pids.length * 100)}%;background:var(--gold)"></div></div>`;
+    await new Promise(r => setTimeout(r, 30));
+    try { const r = await ssPolish(imgOf(pid)); if (r.cleaned) { await put('images', {id:'hd_' + pid, data:r.data, polished:true}); ok++; } else skipped++; } catch(e) { failed++; }
+  }
+  SSP.run = false; if (document.getElementById('ssp-prog')) closeModal(); render(true);
+  toast(`${ok} photo${ok === 1 ? '' : 's'} polished${skipped ? `, ${skipped} left as they are (not on a white background)` : ''}${failed ? `, ${failed} could not be read` : ''}${SSP.abort.v ? ' (stopped)' : ''}.`, !!failed && !ok);
+}
+
 /* ---------- the Shop screen page ---------- */
 const ssSummary = sl => ({
   hero: () => S.products[sl.pid] ? pName(sl.pid) : 'Choose a perfume', best: () => `Top ${num(sl.n) || 4} sellers of the last 30 days`,
   promo: () => sl.promoId ? (S.promos[sl.promoId]?.name || 'That promotion was deleted') : 'Any live promotion at the Point of sale',
   season: () => sl.fest && sl.fest !== 'any' ? SS_FEST_COPY[sl.fest][0] + ' only' : 'Whichever season is on (Christmas, Black Friday…)',
-  list: () => sl.cats && sl.cats.length ? sl.cats.join(', ') : 'All categories', qr: () => 'QR code to ' + (sl.url ? sl.url.replace(/^https?:\/\//, '').slice(0, 40) : 'your online shop'),
+  list: () => SS_LIST_STYLES.find(x => x[0] === ssListStyle(sl))[1] + ' · ' + (sl.cats && sl.cats.length ? sl.cats.join(', ') : 'All categories'), qr: () => 'QR code to ' + (sl.url ? sl.url.replace(/^https?:\/\//, '').slice(0, 40) : 'your online shop'),
   pic: () => S.images['ss_' + sl.id] ? 'Full-screen picture' : 'No picture yet', txt: () => sl.title || sl.text || 'Message'
 }[sl.type] || (() => ''))();
 function ssSched(sl){ const b = []; if (sl.from || sl.to) b.push(`${sl.from ? fmtDate(sl.from) : 'now'} to ${sl.to ? fmtDate(sl.to) : 'no end'}`); if (sl.t1 || sl.t2) b.push(`${sl.t1 || '00:00'}–${sl.t2 || '23:59'}`); if (sl.dows && sl.dows.length) b.push(sl.dows.map(x => SS_DOW[x]).join(' ')); return b.join(' · '); }
 function ssPhotoRows(){
-  return sortedProds().filter(p => (p.status || 'active') !== 'inactive').map(p => { const hd = S.images['hd_' + p.id]?.data, std = imgOf(p.id);
-    return `<tr><td style="width:54px"><img class="p" src="${hd || std || PLACEHOLDER}" alt="" style="width:40px;height:40px;object-fit:contain"></td><td><b>${esc(p.name)}</b> <span class="small mut">${p.size ? p.size + ' ml' : ''}</span></td><td>${hd ? '<span class="pill good">HD photo</span>' : std ? '<span class="pill">Standard photo</span>' : '<span class="pill warn">No photo</span>'}</td><td class="n"><label class="btn sm ${hd ? 'ghost' : ''}" style="cursor:pointer">${hd ? 'Replace' : 'Upload HD photo'}<input type="file" accept="image/*" data-ss-hd="${p.id}" hidden></label>${hd ? ' ' + btn('Remove', 'ssHdDel', {id:p.id}, 'sm ghost') : ''}</td></tr>`; }).join('');
+  return sortedProds().filter(p => (p.status || 'active') !== 'inactive').map(p => { const hdr = S.images['hd_' + p.id], hd = hdr?.data, std = imgOf(p.id);
+    return `<tr><td style="width:54px"><img class="p" src="${hd || std || PLACEHOLDER}" alt="" style="width:40px;height:40px;object-fit:contain"></td><td><b>${esc(p.name)}</b> <span class="small mut">${p.size ? p.size + ' ml' : ''}</span></td><td>${hd ? (hdr.polished ? '<span class="pill good">Polished</span>' : '<span class="pill good">HD photo</span>') : std ? '<span class="pill">Standard photo</span>' : '<span class="pill warn">No photo</span>'}</td><td class="n">${!hd && std ? btn('Polish', 'ssPolishOne', {id:p.id}, 'sm') + ' ' : ''}<label class="btn sm ${hd ? 'ghost' : ''}" style="cursor:pointer">${hd ? 'Replace' : 'Upload HD photo'}<input type="file" accept="image/*" data-ss-hd="${p.id}" hidden></label>${hd ? ' ' + btn('Remove', 'ssHdDel', {id:p.id}, 'sm ghost') : ''}</td></tr>`; }).join('');
 }
 PAGES.shopscreen = () => {
   const scs = ssCfg().screens;
@@ -8121,6 +8305,7 @@ PAGES.shopscreen = () => {
   if (!scs.length) return head('Shop screen', intro) + ssUpdateCard() + `<div class="card" style="text-align:center;padding:32px 20px"><h2 style="margin-top:0">Make your first shop screen</h2><p class="mut" style="max-width:560px;margin:0 auto 16px">We start you with five slides: bestsellers, a promotion, a seasonal gift slide, a price list and a QR code to your online shop. You can change, add, remove and re-time every slide.</p>${btn('Create my shop screen', 'ssNew', {}, 'pri')}</div>`;
   const sc = ssScr(UI.ssSel); UI.ssSel = sc.id; const xon = SSX.on && SSX.on.id === sc.id ? SSX.on : null;
   const built = ssBuild(sc), live = new Set(built.slides.map(s => String(s.id).split('#')[0])), nonSeason = (sc.slides || []).length;
+  const nPol = sortedProds().filter(p => (p.status || 'active') !== 'inactive' && imgOf(p.id) && !S.images['hd_' + p.id]).length;
   const sel = (name, opts, cur) => `<select data-ssf="${name}">${opts.map(([v, l]) => `<option value="${esc(v)}" ${String(cur) === String(v) ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
   return head('Shop screen', intro, btn('Start projector', 'ssProject', {id:sc.id}, 'pri') + btn('Video for USB', 'ssVideo', {id:sc.id}))
   + ssUpdateCard()
@@ -8145,7 +8330,8 @@ PAGES.shopscreen = () => {
         <div class="ssed-btns">${btn('↑', 'ssMove', {id:sl.id, d:-1}, 'sm ghost" aria-label="Move up')}${btn('↓', 'ssMove', {id:sl.id, d:1}, 'sm ghost" aria-label="Move down')}${btn('Edit', 'ssEdit', {id:sl.id}, 'sm')}${btn('Remove', 'ssDelSlide', {id:sl.id}, 'sm ghost')}</div></div>`; }).join('') : '<p class="mut">No slides yet. Add one below.</p>'}
       <h3 style="margin:16px 0 8px">Add a slide</h3><div class="ssed-add">${Object.entries(SS_TYPES).map(([k, v]) => `<button type="button" class="btn sm" data-act="ssAdd" data-t="${k}" title="${esc(SS_TYPE_HELP[k])}">+ ${v}</button>`).join('')}</div></div>
   </div>
-  <div class="card"><h2 style="margin-top:0">Sharper photos for the big screen</h2><p class="small mut">Your standard photos are small, so they look soft on a 4K TV. Add an HD photo of a perfume (a clear picture of the bottle on a plain white background, at least 1200 pixels tall) and the screen uses it instead. HD photos are shared with your other devices, so add the perfumes you show most first.</p>
+  <div class="card"><h2 style="margin-top:0">Sharper photos for the big screen</h2><p class="small mut">Your standard photos are small, so on a 4K TV they look soft and the bottles come in different sizes. <b>Polish</b> makes a clean copy for the TV: it trims the empty space, makes every bottle the same size, cleans a white background and sharpens the edges. Your original photos are kept. A small photo cannot gain detail that was never in it, so for the sharpest 4K picture upload the original large photo of the bottle on a plain white background (at least 1500 pixels tall).</p>
+    <div class="actions" style="margin-bottom:8px">${nPol ? btn(`Polish all standard photos (${nPol})`, 'ssPolishAll', {}, 'pri') : ''}<label class="check" style="margin:0"><input type="checkbox" data-ssg="polish" ${ssCfg().polish !== false ? 'checked' : ''}> Polish photos I upload too</label></div>
     <div class="tw"><table class="t"><thead><tr><th></th><th>Perfume</th><th>Photo</th><th></th></tr></thead><tbody>${ssPhotoRows()}</tbody></table></div></div>`;
 };
 TOOLS.shopscreen = {
@@ -8165,7 +8351,7 @@ function ssSlideForm(sid, type){
   else if (t === 'best') body = `<label>Title<input name="title" value="${esc(sl.title || 'Bestsellers')}"></label><label>Small heading<input name="eyebrow" value="${esc(sl.eyebrow == null ? 'Customer favourites' : sl.eyebrow)}"></label><div class="grid2"><label>How many perfumes<select name="n"><option value="3" ${num(sl.n) === 3 ? 'selected' : ''}>3</option><option value="4" ${num(sl.n) !== 3 ? 'selected' : ''}>4</option></select></label><label class="check" style="align-self:end"><input type="checkbox" name="needImg" ${sl.needImg !== false ? 'checked' : ''}> Only perfumes that have a photo</label></div><p class="small mut">The best sellers of the last 30 days, worked out from your sales.</p>`;
   else if (t === 'promo') body = `<label>Which promotion<select name="promoId"><option value="">Any live promotion at the Point of sale</option>${Object.values(S.promos).sort((a, b) => String(b.start).localeCompare(String(a.start))).map(p => `<option value="${p.id}" ${sl.promoId === p.id ? 'selected' : ''}>${esc(p.name)} (${esc(promoBadge(p))}, ${fmtDate(p.start)} to ${fmtDate(p.end)})</option>`).join('')}</select></label><p class="small mut">Promotions come from <b>Marketing › Promotions</b>. A promotion shows only on the dates and for the perfumes you set there, and only if it applies at the Point of sale.</p><label>Title (leave empty to use the promotion name)<input name="title" value="${esc(sl.title || '')}"></label><label>Line under the title (optional)<input name="text" value="${esc(sl.text || '')}"></label><label>Small heading<input name="eyebrow" value="${esc(sl.eyebrow == null ? 'Special offer' : sl.eyebrow)}"></label><fieldset><legend>Pick the perfumes yourself (up to 3; they show even when out of stock. Leave empty to pick automatically)</legend>${ssChecks('pids', prodOpts, sl.pids)}</fieldset>`;
   else if (t === 'season') body = `<label>Season<select name="fest"><option value="any" ${!sl.fest || sl.fest === 'any' ? 'selected' : ''}>Whichever season is on</option>${Object.entries(SS_FEST_COPY).map(([k, v]) => `<option value="${k}" ${sl.fest === k ? 'selected' : ''}>${v[0]} only</option>`).join('')}</select></label><p class="small mut">This slide appears only during the season (Christmas 1 to 30 Dec, Black Friday weekend, and so on) and uses that season’s design.</p><label>Title (leave empty for the usual words; put *stars* around a word to highlight it)<input name="title" value="${esc(sl.title || '')}"></label><label>Line under the title (optional)<input name="text" value="${esc(sl.text || '')}"></label><fieldset><legend>Pick the perfumes yourself (up to 3; they show even when out of stock. Leave empty to show your best sellers)</legend>${ssChecks('pids', prodOpts, sl.pids)}</fieldset>`;
-  else if (t === 'list') body = `<fieldset><legend>Categories to show (leave all empty for everything)</legend>${ssChecks('cats', CATS().map(c => [c, c]), sl.cats)}</fieldset><p class="small mut">If the list is long it is split across several slides by itself. Prices follow your live promotions.</p>`;
+  else if (t === 'list') body = `<label>How to show the prices<select name="style" id="ss-lst">${SS_LIST_STYLES.map(([k, v]) => `<option value="${k}" ${ssListStyle(sl) === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label><p class="small mut" id="ss-lsth">${esc(SS_LIST_STYLES.find(x => x[0] === ssListStyle(sl))[2])}</p><fieldset><legend>Categories to show (leave all empty for everything)</legend>${ssChecks('cats', CATS().map(c => [c, c]), sl.cats)}</fieldset><p class="small mut">If the list is long it is split across several slides by itself. Prices follow your live promotions.</p>`;
   else if (t === 'qr') body = `<label>Web address the code opens<input name="url" value="${esc(sl.url || STORE_URL)}"></label><label>Title<input name="title" value="${esc(sl.title || 'Scan to *shop*')}"></label><label>Line under the title<input name="text" value="${esc(sl.text || 'Browse every fragrance and order from your phone')}"></label><label class="check"><input type="checkbox" name="phone" ${sl.phone !== false ? 'checked' : ''}> Show my WhatsApp number (${esc(ssPhone() || 'add it in Settings')})</label>`;
   else if (t === 'pic') body = `<label>Picture (a flyer or photo, the wider the better; 1920 × 1080 fits the screen exactly)<input type="file" name="pic" accept="image/*" ${S.images['ss_' + sl.id] ? '' : 'required'}></label>${S.images['ss_' + sl.id] ? `<img src="${S.images['ss_' + sl.id].data}" alt="" style="max-width:260px;border-radius:8px;border:1px solid var(--line)"><p class="small mut">Leave the file empty to keep this picture.</p>` : ''}<p class="small mut">Tip: in <b>Marketing › Flyers &amp; adverts</b> you can design a flyer and download it as a picture to use here.</p>`;
   else if (t === 'txt') body = `<label>Small heading (optional)<input name="eyebrow" value="${esc(sl.eyebrow || '')}"></label><label>Title (put *stars* around a word to highlight it)<input name="title" value="${esc(sl.title || '')}"></label><label>Message<textarea name="text" rows="3">${esc(sl.text || '')}</textarea></label><label>Web address for a QR code (optional)<input name="url" value="${esc(sl.url || '')}" placeholder="https://"></label><label>Words under the QR code (optional)<input name="cap" value="${esc(sl.cap || '')}"></label>`;
@@ -8177,7 +8363,7 @@ function ssSlideForm(sid, type){
     if (t === 'best') Object.assign(o, {title:d.title, eyebrow:d.eyebrow, n:num(d.n) || 4, needImg:!!f.elements.needImg.checked});
     if (t === 'promo') Object.assign(o, {promoId:d.promoId, title:d.title, text:d.text, eyebrow:d.eyebrow, pids:pick('pids').slice(0, 3)});
     if (t === 'season') Object.assign(o, {fest:d.fest, title:d.title, text:d.text, pids:pick('pids').slice(0, 3)});
-    if (t === 'list') Object.assign(o, {cats:pick('cats')});
+    if (t === 'list') Object.assign(o, {cats:pick('cats'), style:SS_LIST_STYLES.some(x => x[0] === d.style) ? d.style : 'rows'});
     if (t === 'qr') Object.assign(o, {url:(d.url || '').trim(), title:d.title, text:d.text, phone:!!f.elements.phone.checked});
     if (t === 'txt') { if (!d.title && !d.text) throw Error('Type a title or a message.'); Object.assign(o, {eyebrow:d.eyebrow, title:d.title, text:d.text, url:(d.url || '').trim(), cap:d.cap}); }
     if (t === 'pic') { const file = f.elements.pic.files[0]; if (file) { const data = await shrinkImage(file, 1920, 600000); await put('images', {id:'ss_' + sl.id, data}); } else if (!S.images['ss_' + sl.id]) throw Error('Choose a picture.'); }
@@ -8200,11 +8386,15 @@ Object.assign(ACT, {
   ssMove: async d => { await ssSave(c => { const s = c.screens.find(x => x.id === UI.ssSel), i = s.slides.findIndex(x => x.id === d.id), j = i + num(d.d); if (i < 0 || j < 0 || j >= s.slides.length) return; [s.slides[i], s.slides[j]] = [s.slides[j], s.slides[i]]; }); render(true); },
   ssPv: (d, b) => { if (!SS.pv) return; if (d.c === 'prev') SS.pv.prev(); else if (d.c === 'next') SS.pv.next(); else { SS.pv.pause(SS.pv.playing); b.textContent = SS.pv.playing ? 'Pause' : 'Play'; } },
   ssProject: d => ssStart(d.id), ssExtStop: () => ssExtStop({shell:true}), ssExtCmd: d => { try { DESK.projSend({type:'cmd', cmd:d.c}); } catch(e) {} }, ssVideo: d => ssVideoForm(d.id), ssVideoGo: d => ssVideoGo(d.id), ssVideoStop: () => { if (SSV.busy) SSV.abort.v = true; else closeModal(); },
+  ssPolishAll: () => { const ids = sortedProds().filter(p => (p.status || 'active') !== 'inactive' && imgOf(p.id) && !S.images['hd_' + p.id]).map(p => p.id); if (ids.length) ssPolishRun(ids); },
+  ssPolishOne: d => ssPolishRun([d.id]), ssPolishStop: () => { SSP.abort.v = true; },
   ssHdDel: d => confirmBox('Remove the HD photo? The standard photo is used again.', async () => { await del('images', 'hd_' + d.id); render(true); }, 'Remove')
 });
 document.addEventListener('change', async e => {
   const t = e.target; if (!t.dataset) return;
-  if (t.dataset.ssHd) { const f = t.files && t.files[0]; if (!f) return; try { const data = await shrinkImage(f, 1800, 450000); await put('images', {id:'hd_' + t.dataset.ssHd, data}); toast('HD photo saved'); render(true); } catch(x) { toast(x.message || 'Could not save the photo', true); } t.value = ''; return; }
+  if (t.dataset.ssg === 'polish') { await ssSave(c => { c.polish = t.checked; }); return; }
+  if (t.id === 'ss-lst') { const h = document.getElementById('ss-lsth'), x = SS_LIST_STYLES.find(y => y[0] === t.value); if (h && x) h.textContent = x[2]; return; }
+  if (t.dataset.ssHd) { const f = t.files && t.files[0]; if (!f) return; try { toast('Preparing the photo…'); const r = await ssHdFromFile(f); await put('images', {id:'hd_' + t.dataset.ssHd, ...r}); toast(r.polished ? 'Photo saved and polished' : 'HD photo saved (kept as it is: it is not on a white background)'); render(true); } catch(x) { toast(x.message || 'Could not save the photo', true); } t.value = ''; return; }
   if (!t.dataset.ssf) return; const k = t.dataset.ssf, sc = ssScr(UI.ssSel); if (!sc) return;
   if (k === 'where') { try { localStorage.setItem('if-ss-where', t.value); } catch(x) {} return; }
   if (k === 'prevFest') { UI.ssFest = t.value; TOOLS.shopscreen.refresh(); return; }
@@ -8216,6 +8406,365 @@ document.addEventListener('change', async e => {
   render(true);
 });
 /*SS-JS:END*/
+/*SB-JS:BEGIN*/
+/* ======================= 2.25: Shop builder (plan, fit out and manage shops, kiosks and sites) ======================= */
+const SB_KINDS = {kiosk:['Market stall or kiosk', 'about 6–10 m²'], small:['Small shop', 'about 15–25 m²'], boutique:['Boutique or mall unit', '30 m² and up'], home:['Reseller home display corner', 'a shelf, table or car boot']};
+const SB_STATUS = [['prospect', 'Prospect (looking)', 'warn', '#e08a00'], ['negotiating', 'Negotiating', 'acc', '#2b6cdf'], ['secured', 'Secured', 'good', '#12896b'], ['fitting', 'Fitting out', 'acc', '#8a4fc7'], ['open', 'Open', 'good', '#1b7f4c'], ['dropped', 'Dropped', '', '#8a8a8a']];
+const SB_TENURE = {unknown:'Not decided', rent:'Rented', own:'Owned', free:'Free or lent'};
+const SB_MATST = [['plan', 'To buy'], ['quote', 'Quote asked'], ['ordered', 'Ordered'], ['bought', 'Bought']];
+const SB_CATS = ['Structure & furniture', 'Display & shelving', 'Lighting & power', 'Signage & branding', 'Equipment & tech', 'Storage', 'Packaging & supplies', 'Licences & fees', 'Other'];
+const sbSt = k => SB_STATUS.find(x => x[0] === k) || SB_STATUS[0];
+const sbK = n => 'K' + Math.round(num(n)).toLocaleString('en-US');
+const sbCfg = () => { const c = S.settings.sb; return c && Array.isArray(c.sites) ? c : {sites:[], swot:{}}; };
+async function sbSave(mut){ const cfg = clean(sbCfg()); if (!Array.isArray(cfg.sites)) cfg.sites = []; if (!cfg.swot) cfg.swot = {}; mut(cfg); await putSettings({sb:cfg}); }
+const sbGet = id => sbCfg().sites.find(x => x.id === id) || null;
+const sbEdit = (id, mut) => sbSave(c => { const s = c.sites.find(x => x.id === id); if (s) mut(s); });
+const sbHasLoc = s => s && isFinite(parseFloat(s.lat)) && isFinite(parseFloat(s.lng)) && String(s.lat) !== '' && String(s.lng) !== '';
+const sbScore = s => { const q = s.sc || {}; const v = ['f', 'v', 's', 'a', 'p'].map(k => num(q[k])); return v.some(x => x > 0) ? v.reduce((t, x) => t + x, 0) : 0; };
+const sbMatTotal = s => (s.mat || []).reduce((t, m) => t + num(m.qty) * num(m.cost), 0);
+const sbMatPaid = s => (s.mat || []).filter(m => m.st === 'bought').reduce((t, m) => t + (m.paid !== '' && m.paid != null ? num(m.paid) : num(m.qty) * num(m.cost)), 0);
+const sbDirUrl = s => `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(s.lat + ',' + s.lng)}`;
+const sbViewUrl = s => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.lat + ',' + s.lng)}`;
+
+/* ---------- ready lists: [category, item, how many, estimated price in Kwacha each]. Only starting estimates; the owner replaces them with real quotes ---------- */
+const SB_MAT = {
+  kiosk: [['Structure & furniture', 'Kiosk or stall (steel or timber)', 1, 6000], ['Structure & furniture', 'Counter or table with glass top', 1, 2500], ['Structure & furniture', 'Stool or chair', 1, 250],
+    ['Display & shelving', 'Wall shelf units', 3, 450], ['Display & shelving', 'Tabletop display stands', 2, 300], ['Display & shelving', 'Mirror', 1, 250],
+    ['Lighting & power', 'LED strip lights', 1, 450], ['Lighting & power', 'Extension lead or power board', 1, 250], ['Lighting & power', 'Solar light or power bank (backup)', 1, 600],
+    ['Signage & branding', 'Signboard', 1, 1200], ['Signage & branding', 'Vinyl banner', 1, 500], ['Signage & branding', 'Price tags and stands', 1, 200],
+    ['Equipment & tech', 'Phone or tablet for sales (POS)', 1, 2500], ['Equipment & tech', 'Receipt printer (optional)', 1, 800],
+    ['Storage', 'Lockable storage chest', 1, 1500], ['Storage', 'Padlock and chain', 2, 150],
+    ['Packaging & supplies', 'Carrier bags', 200, 2.5], ['Packaging & supplies', 'Perfume testers and blotter strips', 1, 300], ['Packaging & supplies', 'Cleaning cloth and glass cleaner', 1, 100],
+    ['Licences & fees', 'Market or council trading fee (check the amount)', 1, 500], ['Licences & fees', 'Fire extinguisher', 1, 700]],
+  small: [['Structure & furniture', 'Shop counter', 1, 4500], ['Structure & furniture', 'Painting and repairs', 1, 5000], ['Structure & furniture', 'Door lock and security gate (if needed)', 1, 3500], ['Structure & furniture', 'Chairs', 2, 350],
+    ['Display & shelving', 'Wall shelves', 8, 450], ['Display & shelving', 'Glass display cabinets', 2, 4500], ['Display & shelving', 'Display island or table', 1, 3500], ['Display & shelving', 'Mirrors', 2, 300], ['Display & shelving', 'Testing bar with tray', 1, 1200],
+    ['Lighting & power', 'LED spotlights and strips', 1, 2500], ['Lighting & power', 'Wiring and sockets', 1, 1500], ['Lighting & power', 'Backup power (inverter or solar)', 1, 6000],
+    ['Signage & branding', 'Fascia sign (lit)', 1, 4000], ['Signage & branding', 'Window vinyl', 1, 1200], ['Signage & branding', 'Wall posters', 4, 150], ['Signage & branding', 'Price tags and shelf labels', 1, 400], ['Signage & branding', 'A-frame sign', 1, 600],
+    ['Equipment & tech', 'Phone, tablet or PC for sales (POS)', 1, 3500], ['Equipment & tech', 'Receipt printer', 1, 1000], ['Equipment & tech', 'TV for the shop screen (43 inch)', 1, 5500], ['Equipment & tech', 'CCTV (2 cameras)', 1, 4500], ['Equipment & tech', 'Wi-Fi router and data', 1, 800],
+    ['Storage', 'Stock room shelving', 2, 1200], ['Storage', 'Lockable cabinet', 1, 2500], ['Storage', 'Storage boxes', 10, 90],
+    ['Packaging & supplies', 'Carrier bags', 500, 2], ['Packaging & supplies', 'Gift boxes and ribbon', 50, 15], ['Packaging & supplies', 'Testers and blotter strips', 1, 600], ['Packaging & supplies', 'Cleaning supplies', 1, 200],
+    ['Licences & fees', 'Council trading licence (check the amount)', 1, 1500], ['Licences & fees', 'Fire extinguisher', 1, 700], ['Licences & fees', 'Signage permit (if needed)', 1, 500],
+    ['Other', 'Uniforms or aprons', 2, 250]],
+  boutique: [['Structure & furniture', 'Counter (premium finish)', 1, 9000], ['Structure & furniture', 'Shopfitting: partition, paint, ceiling', 1, 20000], ['Structure & furniture', 'Flooring', 1, 8000], ['Structure & furniture', 'Security door or gate', 1, 4500], ['Structure & furniture', 'Seating', 2, 900],
+    ['Display & shelving', 'Wall shelves with lighting', 10, 900], ['Display & shelving', 'Lit glass cabinets', 4, 6500], ['Display & shelving', 'Display island', 1, 6000], ['Display & shelving', 'Testing bar', 1, 3000], ['Display & shelving', 'Mirrors', 3, 400],
+    ['Lighting & power', 'Lighting (spots or track)', 1, 6000], ['Lighting & power', 'Wiring and sockets', 1, 3500], ['Lighting & power', 'Backup power', 1, 9000], ['Lighting & power', 'Air conditioner or fans', 1, 6000],
+    ['Signage & branding', 'Lit fascia sign', 1, 7000], ['Signage & branding', 'Window vinyl', 1, 2000], ['Signage & branding', 'Wall graphics', 1, 3500], ['Signage & branding', 'Price cards and shelf labels', 1, 800], ['Signage & branding', 'Branded shopping bags', 300, 8],
+    ['Equipment & tech', 'POS computer or tablet', 1, 5000], ['Equipment & tech', 'Receipt printer', 1, 1200], ['Equipment & tech', 'TV for the shop screen (50 inch)', 1, 7500], ['Equipment & tech', 'CCTV (4 cameras)', 1, 7500], ['Equipment & tech', 'Router and data', 1, 1000], ['Equipment & tech', 'Mobile money QR stands', 1, 300],
+    ['Storage', 'Stock room racks', 3, 1500], ['Storage', 'Lockable cabinet', 1, 3000], ['Storage', 'Storage boxes', 20, 90],
+    ['Packaging & supplies', 'Gift boxes and ribbon', 100, 15], ['Packaging & supplies', 'Testers and blotter strips', 1, 900], ['Packaging & supplies', 'Cleaning supplies', 1, 300],
+    ['Licences & fees', 'Trading licence (check the amount)', 1, 2500], ['Licences & fees', 'Fire extinguishers', 2, 700], ['Licences & fees', 'Shop insurance (first premium)', 1, 3000],
+    ['Other', 'Uniforms', 3, 300], ['Other', 'Opening event or launch offer', 1, 3000]],
+  home: [['Display & shelving', 'Display shelf or table', 1, 600], ['Display & shelving', 'Tabletop stand', 1, 250], ['Display & shelving', 'Mirror', 1, 200], ['Lighting & power', 'Lights', 1, 250],
+    ['Storage', 'Lockable storage box', 1, 400], ['Signage & branding', 'Price tags and stands', 1, 150], ['Signage & branding', 'Poster (make it in Flyers & adverts)', 1, 80],
+    ['Packaging & supplies', 'Carrier bags', 100, 2.5], ['Packaging & supplies', 'Testers and blotter strips', 1, 200], ['Equipment & tech', 'Phone stand for photos', 1, 100]]
+};
+const SB_CHECK = [['The site', [['s1', 'Viewed the place and took photos'], ['s2', 'Checked power, water, security and toilets'], ['s3', 'Agreed the rent and deposit'], ['s4', 'Lease or agreement signed'], ['s5', 'Landlord’s contacts saved in this file']]],
+  ['Papers and licences', [['l1', 'Business registered (PACRA)'], ['l2', 'TPIN from ZRA'], ['l3', 'Trading licence from the council (ask what they need)'], ['l4', 'Other permits checked with the council or the market office'], ['l5', 'Insurance decided']]],
+  ['Fitting out', [['f1', 'Shop design chosen'], ['f2', 'Materials priced and ordered'], ['f3', 'Shelves and furniture in place'], ['f4', 'Lighting and power done'], ['f5', 'Signs and posters up'], ['f6', 'Locks, gate or CCTV done']]],
+  ['Stock and systems', [['k1', 'Opening stock sent to the shop'], ['k2', 'Shop added in Shops, with a shopkeeper login and PIN'], ['k3', 'A test sale done on the shop phone'], ['k4', 'Prices and photos on the shop screen'], ['k5', 'Mobile money number set']]],
+  ['People', [['p1', 'Shopkeeper chosen'], ['p2', 'Shopkeeper trained'], ['p3', 'Uniform or name badge']]],
+  ['Opening', [['o1', 'Opening offer planned'], ['o2', 'Flyers and WhatsApp status posted'], ['o3', 'Opening day done']]]];
+const SB_UNITS = [['Wall shelf', 'shelf', 80, 20, 4], ['Glass display cabinet', 'cabinet', 90, 35, 4], ['Counter display', 'counter', 100, 40, 2], ['Stock room rack', 'rack', 120, 45, 4], ['Storage box', 'box', 60, 40, 3], ['Drawer', 'drawer', 50, 40, 2]];
+const SB_FOOT = {'30': [4.5, 4], '50': [5.5, 4.5], '100': [6.5, 5]};   // space one boxed bottle takes on a shelf (cm), width x depth
+const sbUnitCap = u => { if (num(u.cap) > 0) return Math.round(num(u.cap)); const f = SB_FOOT[String(u.size || '100')] || SB_FOOT['100']; return Math.max(0, Math.floor(num(u.w) / f[0]) * Math.floor(num(u.d) / f[1]) * Math.max(1, Math.round(num(u.lv) || 1))); };
+
+const SB = {m:null, pm:null, sig:'', view:null};
+
+/* ---------- a small map (OpenStreetMap pictures; the pins still work without the internet) ---------- */
+const sbProj = (lat, lng, z) => { const s = 256 * 2 ** z, la = Math.max(-85, Math.min(85, lat)) * Math.PI / 180; return {x:(lng + 180) / 360 * s, y:(1 - Math.log(Math.tan(la) + 1 / Math.cos(la)) / Math.PI) / 2 * s}; };
+const sbUnproj = (x, y, z) => { const s = 256 * 2 ** z, n = Math.PI - 2 * Math.PI * y / s; return {lat:180 / Math.PI * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n))), lng:x / s * 360 - 180}; };
+function sbMap(host, o = {}){
+  const v0 = o.view || SB.view || {lat:-13.3, lng:27.9, z:6}, st = {lat:v0.lat, lng:v0.lng, z:v0.z, W:0, H:0, tiles:new Map(), pins:[], pe:[], mk:null, me:null};
+  host.innerHTML = '<div class="sbm-t"></div><div class="sbm-p"></div><div class="sbm-c"><button type="button" data-z="1" aria-label="Zoom in">+</button><button type="button" data-z="-1" aria-label="Zoom out">−</button><button type="button" data-fit="1" aria-label="Show all pins" title="Show all pins">⤢</button><button type="button" data-me="1" aria-label="My location" title="My location">◎</button></div><div class="sbm-n">The map pictures need the internet. Your pins are still in the right place.</div><div class="sbm-a">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></div>';
+  const T = host.querySelector('.sbm-t'), P = host.querySelector('.sbm-p'), ac = new AbortController(), sg = {signal:ac.signal};
+  const wrap = l => ((l + 180) % 360 + 360) % 360 - 180;
+  const place = (el, lat, lng, ox, oy, z) => { const p = sbProj(lat, lng, z), n = 256 * 2 ** z; let x = p.x - ox; if (x < -n / 2 + st.W / 2 - 1) x += n; else if (x > n / 2 + st.W / 2 + 1) x -= n; el.style.transform = `translate(${x}px,${p.y - oy}px)`; };
+  const draw = () => {
+    const r = host.getBoundingClientRect(); st.W = r.width || 300; st.H = r.height || 300;
+    const z = st.z, n = 2 ** z, c = sbProj(st.lat, st.lng, z), ox = c.x - st.W / 2, oy = c.y - st.H / 2;
+    const x0 = Math.floor(ox / 256), x1 = Math.floor((ox + st.W) / 256), y0 = Math.max(0, Math.floor(oy / 256)), y1 = Math.min(n - 1, Math.floor((oy + st.H) / 256)), want = new Set();
+    for (let tx = x0; tx <= x1; tx++) for (let ty = y0; ty <= y1; ty++) { const wx = ((tx % n) + n) % n, key = `${z}/${wx}/${ty}@${tx}`; want.add(key); let im = st.tiles.get(key);
+      if (!im) { im = new Image(); im.alt = ''; im.draggable = false; im.className = 'sbm-tile'; im.onload = () => { im.classList.add('ok'); host.classList.remove('sbm-off'); }; im.onerror = () => host.classList.add('sbm-off'); im.src = `https://tile.openstreetmap.org/${z}/${wx}/${ty}.png`; T.appendChild(im); st.tiles.set(key, im); }
+      im.style.transform = `translate(${tx * 256 - ox}px,${ty * 256 - oy}px)`; }
+    for (const [k, im] of st.tiles) if (!want.has(k)) { im.remove(); st.tiles.delete(k); }
+    st.pins.forEach((p, i) => place(st.pe[i], p.lat, p.lng, ox, oy, z)); if (st.mk) place(st.mk.el, st.mk.lat, st.mk.lng, ox, oy, z); if (st.me) place(st.me.el, st.me.lat, st.me.lng, ox, oy, z);
+    if (o.persist) SB.view = {lat:st.lat, lng:st.lng, z:st.z};
+  };
+  const at = (px, py) => { const c = sbProj(st.lat, st.lng, st.z); return sbUnproj(c.x - st.W / 2 + px, c.y - st.H / 2 + py, st.z); };
+  const zoom = (dz, px, py) => { const nz = Math.max(3, Math.min(19, st.z + dz)); if (nz === st.z) return; px = px ?? st.W / 2; py = py ?? st.H / 2; const ll = at(px, py), p = sbProj(ll.lat, ll.lng, nz), c = sbUnproj(p.x - (px - st.W / 2), p.y - (py - st.H / 2), nz); st.z = nz; st.lat = Math.max(-84, Math.min(84, c.lat)); st.lng = wrap(c.lng); draw(); };
+  const center = (lat, lng, z) => { st.lat = lat; st.lng = lng; if (z) st.z = z; draw(); };
+  const fit = () => {
+    const ps = st.pins; if (!ps.length) { center(-13.3, 27.9, 6); return; }
+    if (ps.length === 1) { center(ps[0].lat, ps[0].lng, 14); return; }
+    const la = ps.map(p => p.lat), ln = ps.map(p => p.lng), cl = (Math.min(...la) + Math.max(...la)) / 2, cn = (Math.min(...ln) + Math.max(...ln)) / 2; st.W = host.clientWidth || 300; st.H = host.clientHeight || 300;
+    let z = 17; for (; z > 3; z--) { const a = sbProj(Math.max(...la), Math.min(...ln), z), b = sbProj(Math.min(...la), Math.max(...ln), z); if (Math.abs(b.x - a.x) < st.W * 0.7 && Math.abs(b.y - a.y) < st.H * 0.65) break; }
+    center(cl, cn, z);
+  };
+  const ptr = new Map(); let moved = 0, pinch = null, lastWheel = 0;
+  host.addEventListener('pointerdown', e => { if (e.target.closest('.sbm-c,.sbm-a')) return; const onPin = !!e.target.closest('.sbm-pin'); if (!onPin) { try { host.setPointerCapture(e.pointerId); } catch(x) {} } ptr.set(e.pointerId, {x:e.clientX, y:e.clientY, pin:onPin, cap:!onPin}); if (ptr.size === 1) moved = 0; if (ptr.size === 2) { const [a, b] = [...ptr.values()]; pinch = Math.hypot(a.x - b.x, a.y - b.y); } }, sg);
+  host.addEventListener('pointermove', e => { const p = ptr.get(e.pointerId); if (!p) return; const dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY; moved += Math.abs(dx) + Math.abs(dy);
+    if (ptr.size === 2 && pinch) { const [a, b] = [...ptr.values()], d = Math.hypot(a.x - b.x, a.y - b.y), r = host.getBoundingClientRect(); if (d / pinch > 1.5) { zoom(1, (a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top); pinch = d; } else if (d / pinch < 0.66) { zoom(-1, (a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top); pinch = d; } return; }
+    if (ptr.size === 1) { if (p.pin && !p.cap) { if (moved < 7) return; try { host.setPointerCapture(e.pointerId); } catch(x) {} p.cap = true; } const c = sbProj(st.lat, st.lng, st.z), n = sbUnproj(c.x - dx, c.y - dy, st.z); st.lat = Math.max(-84, Math.min(84, n.lat)); st.lng = wrap(n.lng); draw(); } }, sg);
+  const up = e => { const pp = ptr.get(e.pointerId), had = !!pp, only = ptr.size === 1; ptr.delete(e.pointerId); if (ptr.size < 2) pinch = null; if (had && only && moved < 7 && o.onTap && !pp.pin) { const r = host.getBoundingClientRect(); o.onTap(at(e.clientX - r.left, e.clientY - r.top)); } };
+  host.addEventListener('pointerup', up, sg); host.addEventListener('pointercancel', e => { ptr.delete(e.pointerId); pinch = null; }, sg);
+  host.addEventListener('wheel', e => { e.preventDefault(); const t = Date.now(); if (t - lastWheel < 220) return; lastWheel = t; const r = host.getBoundingClientRect(); zoom(e.deltaY < 0 ? 1 : -1, e.clientX - r.left, e.clientY - r.top); }, {signal:ac.signal, passive:false});
+  host.addEventListener('dblclick', e => { if (e.target.closest('.sbm-c,.sbm-pin')) return; const r = host.getBoundingClientRect(); zoom(1, e.clientX - r.left, e.clientY - r.top); }, sg);
+  host.addEventListener('click', e => { const b = e.target.closest('button'); if (!b || !host.contains(b)) return;
+    if (b.dataset.z) zoom(+b.dataset.z); else if (b.dataset.fit) fit();
+    else if (b.dataset.me) locate();
+    else if (b.classList.contains('sbm-pin') && o.onPin) o.onPin(b.dataset.id); }, sg);
+  function locate(){ if (!navigator.geolocation) return toast('This device cannot find your location.', true); toast('Finding your location…'); navigator.geolocation.getCurrentPosition(p => { setMe(p.coords.latitude, p.coords.longitude); center(p.coords.latitude, p.coords.longitude, Math.max(st.z, 15)); if (o.onMe) o.onMe({lat:p.coords.latitude, lng:p.coords.longitude}); }, () => toast('Could not get your location. Allow location for this app and try again.', true), {enableHighAccuracy:true, timeout:15000}); }
+  function setMe(lat, lng){ if (!st.me) { const el = document.createElement('div'); el.className = 'sbm-me'; P.appendChild(el); st.me = {el}; } st.me.lat = lat; st.me.lng = lng; draw(); }
+  const api = {
+    setPins(list){ P.querySelectorAll('.sbm-pin').forEach(x => x.remove()); st.pins = list.filter(x => isFinite(x.lat) && isFinite(x.lng)); st.pe = st.pins.map(p => { const b = document.createElement('button'); b.type = 'button'; b.className = 'sbm-pin'; b.dataset.id = p.id; b.style.setProperty('--c', p.color || '#d0507e'); b.innerHTML = `<i></i><span>${esc(p.label || '')}</span>`; b.setAttribute('aria-label', p.label || 'Shop'); P.appendChild(b); return b; }); draw(); },
+    setMarker(lat, lng){ if (!isFinite(lat) || !isFinite(lng)) { if (st.mk) { st.mk.el.remove(); st.mk = null; } return; } if (!st.mk) { const el = document.createElement('div'); el.className = 'sbm-mk'; el.innerHTML = '<i></i>'; P.appendChild(el); st.mk = {el}; } st.mk.lat = lat; st.mk.lng = lng; draw(); },
+    center, fit, locate, setMe, redraw:draw, destroy(){ ac.abort(); st.tiles.clear(); }
+  };
+  if (o.pins) api.setPins(o.pins); if (o.marker) api.setMarker(o.marker.lat, o.marker.lng);
+  if (o.fit) fit(); else draw();
+  if (window.ResizeObserver) { const ro = new ResizeObserver(() => draw()); ro.observe(host); ac.signal.addEventListener('abort', () => ro.disconnect()); }
+  return api;
+}
+/* pull a position out of "-15.41, 28.28", a Google Maps link, or "geo:" text */
+function sbParseLoc(t){
+  t = decodeURIComponent(String(t || '').trim()); if (!t) return null;
+  const ok = (a, b) => { a = parseFloat(a); b = parseFloat(b); return isFinite(a) && isFinite(b) && Math.abs(a) <= 90 && Math.abs(b) <= 180 ? {lat:a, lng:b} : null; };
+  let m = t.match(/!3d(-?\d+\.?\d*)!4d(-?\d+\.?\d*)/) || t.match(/@(-?\d+\.?\d*),\s*(-?\d+\.?\d*)/) || t.match(/[?&](?:q|ll|query|destination|center)=(-?\d+\.?\d*)[,+ ]+\s*(-?\d+\.?\d*)/) || t.match(/geo:(-?\d+\.?\d*),(-?\d+\.?\d*)/) || t.match(/^\(?\s*(-?\d+\.?\d*)\s*[,; ]\s*(-?\d+\.?\d*)\s*\)?$/);
+  return m ? ok(m[1], m[2]) : null;
+}
+
+/* ---------- the page ---------- */
+const sbPins = () => sbCfg().sites.filter(sbHasLoc).map(s => ({id:s.id, lat:parseFloat(s.lat), lng:parseFloat(s.lng), label:s.name, color:sbSt(s.status)[3]}));
+const sbTown = s => [s.town, s.address].filter(Boolean).join(', ');
+const sbRent = s => num(s.rent) > 0 ? `${SB_TENURE[s.tenure] || 'Rented'} · ${sbK(s.rent)} a month` : (SB_TENURE[s.tenure] || '');
+function sbSiteCard(s){
+  const st = sbSt(s.status), tot = sbMatTotal(s), paid = sbMatPaid(s), sc = sbScore(s);
+  return `<div class="card sb-card"><div class="sb-top"><b>${esc(s.name)}</b> <span class="pill ${st[2]}">${st[1]}</span></div>
+    <div class="small mut">${esc((SB_KINDS[s.kind] || SB_KINDS.small)[0])}${sbTown(s) ? ' · ' + esc(sbTown(s)) : ''}${sbRent(s) ? ' · ' + esc(sbRent(s)) : ''}</div>
+    <div class="small" style="margin-top:4px">${sc ? `Site score ${sc}/25 · ` : ''}${tot ? `Set-up ${sbK(tot)} planned${paid ? `, ${sbK(paid)} spent` : ''}` : 'No materials list yet'}${sbHasLoc(s) ? '' : ' · <span class="mut">not on the map yet</span>'}</div>
+    <div class="actions" style="margin-top:8px">${btn('Open file', 'sbOpen', {id:s.id}, 'sm pri')}${sbHasLoc(s) ? `<a class="btn sm" target="_blank" rel="noopener" href="${sbDirUrl(s)}">Directions</a>` : btn('Put on map', 'sbLoc', {id:s.id}, 'sm')}${s.lphone ? `<a class="btn sm ghost" href="tel:${esc(String(s.lphone).replace(/[^\d+]/g, ''))}">Call ${esc(s.tenure === 'own' ? 'contact' : 'landlord')}</a>` : ''}</div></div>`;
+}
+function sbOverview(C){
+  const cf = sbCfg(), sites = cf.sites, linked = new Set(sites.map(s => s.shopId).filter(Boolean)), shops = (S.settings.locations || []).filter(l => !linked.has(l.id));
+  const live = sites.filter(s => s.status !== 'dropped'), pipe = sites.filter(s => ['prospect', 'negotiating', 'secured', 'fitting'].includes(s.status)), setup = live.filter(s => s.status !== 'open');
+  const planned = setup.reduce((t, s) => t + sbMatTotal(s), 0), spent = live.reduce((t, s) => t + sbMatPaid(s), 0);
+  const groups = SB_STATUS.map(([k, l, c]) => [k, l, sites.filter(s => s.status === k).sort((a, b) => String(a.name).localeCompare(b.name))]).filter(g => g[2].length);
+  return `<div class="tiles"><div class="tile"><div class="small mut">Shops open</div><div class="big">${sites.filter(s => s.status === 'open').length + shops.length}</div></div>
+    <div class="tile"><div class="small mut">In the pipeline</div><div class="big">${pipe.length}</div></div>
+    <div class="tile"><div class="small mut">Set-up planned</div><div class="big">${sbK(planned)}</div></div>
+    <div class="tile"><div class="small mut">Spent so far</div><div class="big">${sbK(spent)}</div></div></div>
+  <div class="card"><div class="sb-maphead"><h2 style="margin:0">Map of shops and sites</h2><div class="sb-legend">${SB_STATUS.map(x => `<span><i style="background:${x[3]}"></i>${x[1].replace(' (looking)', '')}</span>`).join('')}</div></div>
+    <div class="sbm" id="sbm-main"></div><div id="sbm-info" class="sb-info"></div>
+    <p class="hint" style="margin:8px 0 0">${sbPins().length ? 'Tap a pin to see the site. Drag the map to move and pinch or use + and − to zoom.' : 'No site has a place on the map yet. Open a site file and tap <b>Put on map</b>.'}</p></div>
+  ${shops.length ? `<div class="card"><h2 style="margin-top:0">Your shops that have no file yet</h2><p class="hint">Make a file to keep the rent, landlord, materials, storage and map pin for a shop you already have.</p><ul class="list">${shops.map(l => `<li><span><b>${esc(l.name)}</b></span>${btn('Make a file', 'sbFromShop', {id:l.id}, 'sm')}</li>`).join('')}</ul></div>` : ''}
+  ${sites.length ? groups.map(([k, l, list]) => k === 'dropped' ? `<details class="card"><summary><b>Dropped sites</b> <span class="pill">${list.length}</span></summary><div style="margin-top:10px">${list.map(sbSiteCard).join('')}</div></details>` : `<h3 class="sb-gh">${l} <span class="pill">${list.length}</span></h3>${list.map(sbSiteCard).join('')}`).join('') : empty('No sites yet. Tap <b>+ New site or shop</b> to add a prospect shop you could rent, a place you plan to open, or a shop you already run.')}`;
+}
+const sbTabs = (cf, cur) => `<div class="seg"><button type="button" data-act="sbTab" data-t="map" class="${cur === 'map' ? 'on' : ''}">Map and sites</button><button type="button" data-act="sbTab" data-t="file" class="${cur === 'file' ? 'on' : ''}">Shop file</button><button type="button" data-act="sbTab" data-t="swot" class="${cur === 'swot' ? 'on' : ''}">SWOT</button></div>`;
+PAGES.shopbuild = C => {
+  const cf = sbCfg(); let tab = UI.sbTab || 'map'; if (tab === 'file' && !sbGet(UI.sbSite)) { UI.sbSite = (cf.sites[0] || {}).id; if (!UI.sbSite) tab = 'map'; }
+  const body = tab === 'file' ? sbFile(C, sbGet(UI.sbSite)) : tab === 'swot' ? sbSwot(C) : sbOverview(C);
+  return head('Shop builder', 'Plan, fit out and manage shops, kiosks and sites: where they are, what they cost, what to buy, where the stock goes, and how the business is placed.', btn('+ New site or shop', 'sbNew', {}, 'pri')) + sbTabs(cf, tab) + body;
+};
+TOOLS.shopbuild = {
+  mount(){ SB.sig = JSON.stringify(sbCfg()); SB.m = null; const h = $('#sbm-main'); if (h) { const pins = sbPins(); SB.m = sbMap(h, {pins, persist:true, fit:!SB.view && pins.length > 0, onPin: sbPinShow}); }
+    const one = $('#sbm-one'), cur = sbGet(UI.sbSite); if (one && cur && sbHasLoc(cur)) sbMap(one, {view:{lat:parseFloat(cur.lat), lng:parseFloat(cur.lng), z:16}, pins:[{id:cur.id, lat:parseFloat(cur.lat), lng:parseFloat(cur.lng), label:cur.name, color:sbSt(cur.status)[3]}]}); },
+  refresh(){ const m = $('#modal'); if (m && !m.hidden) return; const a = document.activeElement; if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return; if (JSON.stringify(sbCfg()) !== SB.sig) render(true); }
+};
+function sbPinShow(id){ const s = sbGet(id), box = $('#sbm-info'); if (!s || !box) return; const st = sbSt(s.status); box.innerHTML = `<div class="sb-pop"><div><b>${esc(s.name)}</b> <span class="pill ${st[2]}">${st[1]}</span><div class="small mut">${esc((SB_KINDS[s.kind] || SB_KINDS.small)[0])}${sbTown(s) ? ' · ' + esc(sbTown(s)) : ''}${sbRent(s) ? ' · ' + esc(sbRent(s)) : ''}</div></div><div class="actions">${btn('Open file', 'sbOpen', {id:s.id}, 'sm pri')}<a class="btn sm" target="_blank" rel="noopener" href="${sbDirUrl(s)}">Directions</a></div></div>`; }
+
+/* ---------- one shop's file ---------- */
+const SB_SUBS = [['site', 'Site and rent'], ['mat', 'Materials and budget'], ['store', 'Storage'], ['pay', 'Will it pay?'], ['check', 'Opening checklist']];
+function sbFile(C, s){
+  if (!s) return empty('Pick or add a site first.');
+  const cf = sbCfg(), sub = SB_SUBS.some(x => x[0] === UI.sbSub) ? UI.sbSub : 'site', st = sbSt(s.status);
+  const pick = `<div class="sb-pick"><select data-sbf="pick" aria-label="Choose a shop file">${cf.sites.map(x => `<option value="${x.id}" ${x.id === s.id ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select><span class="pill ${st[2]}">${st[1]}</span>${btn('Edit details', 'sbEditSite', {id:s.id}, 'sm')}${btn('Delete', 'sbDelSite', {id:s.id}, 'sm ghost')}</div>`;
+  const subs = `<div class="seg">${SB_SUBS.map(([k, l]) => `<button type="button" data-act="sbSub" data-t="${k}" class="${k === sub ? 'on' : ''}">${l}</button>`).join('')}</div>`;
+  return pick + subs + (sub === 'mat' ? sbMat(s) : sub === 'store' ? sbStore(C, s) : sub === 'pay' ? sbPay(C, s) : sub === 'check' ? sbCheck(s) : sbSiteTab(s));
+}
+function sbSiteTab(s){
+  const sc = s.sc || {}, rate = [['f', 'People passing (footfall)'], ['v', 'Easy to see from the road'], ['s', 'Safe and secure'], ['a', 'Easy to reach and park'], ['p', 'Good value for the rent']];
+  const area = num(s.w) > 0 && num(s.l) > 0 ? Math.round(num(s.w) * num(s.l) * 10) / 10 : 0;
+  return `<div class="tiles"><div class="tile"><div class="small mut">Type</div><div><b>${esc((SB_KINDS[s.kind] || SB_KINDS.small)[0])}</b></div></div>
+      <div class="tile"><div class="small mut">${esc(SB_TENURE[s.tenure] || 'Not decided')}</div><div class="big">${num(s.rent) > 0 ? sbK(s.rent) : '—'}</div><div class="small mut">a month${num(s.deposit) > 0 ? ` · deposit ${sbK(s.deposit)}` : ''}</div></div>
+      <div class="tile"><div class="small mut">Size</div><div class="big">${area ? area + ' m²' : '—'}</div><div class="small mut">${num(s.w) > 0 && num(s.l) > 0 ? `${num(s.w)} m × ${num(s.l)} m` : 'Add width and length'}</div></div>
+      <div class="tile"><div class="small mut">Site score</div><div class="big">${sbScore(s) ? sbScore(s) + '/25' : '—'}</div></div></div>
+  <div class="cols"><div class="card"><h2 style="margin-top:0">${s.tenure === 'own' ? 'Owner / contact' : 'Landlord or owner'}</h2>${s.lname || s.lphone || s.lmail ? `<p style="margin:0 0 6px"><b>${esc(s.lname || 'No name saved')}</b></p><div class="small">${s.lphone ? `Phone: ${esc(s.lphone)}<br>` : ''}${s.lmail ? `Email: ${esc(s.lmail)}<br>` : ''}</div><div class="actions" style="margin-top:8px">${s.lphone ? `<a class="btn sm pri" href="tel:${esc(String(s.lphone).replace(/[^\d+]/g, ''))}">Call</a><a class="btn sm" target="_blank" rel="noopener" href="${waLink(s.lphone, `Hello ${s.lname || ''}, about the shop space${s.address ? ' at ' + s.address : ''}.`)}">WhatsApp</a>` : ''}${s.lmail ? `<a class="btn sm" href="mailto:${esc(s.lmail)}">Email</a>` : ''}</div>` : `<p class="mut" style="margin:0">No contact saved. Tap <b>Edit details</b> to add it.</p>`}
+      ${s.view ? `<p class="small" style="margin:10px 0 0">Viewing: <b>${fmtDate(s.view)}</b></p>` : ''}${num(s.lease) > 0 ? `<p class="small" style="margin:4px 0 0">Lease: ${num(s.lease)} months${s.utils ? ' · utilities included' : ''}</p>` : (s.utils ? '<p class="small" style="margin:4px 0 0">Utilities included</p>' : '')}</div>
+    <div class="card"><h2 style="margin-top:0">Where it is</h2>${sbTown(s) ? `<p style="margin:0 0 6px">${esc(sbTown(s))}</p>` : ''}${sbHasLoc(s) ? `<p class="small mut" style="margin:0 0 8px">Pin at ${(+s.lat).toFixed(5)}, ${(+s.lng).toFixed(5)}</p><div class="sbm sbm-sm" id="sbm-one"></div><div class="actions" style="margin-top:8px"><a class="btn sm pri" target="_blank" rel="noopener" href="${sbDirUrl(s)}">Directions</a><a class="btn sm" target="_blank" rel="noopener" href="${sbViewUrl(s)}">Open in Google Maps</a>${btn('Move pin', 'sbLoc', {id:s.id}, 'sm ghost')}</div>` : `<p class="mut" style="margin:0 0 8px">Not on the map yet.</p>${btn('Put on map', 'sbLoc', {id:s.id}, 'sm pri')}`}</div></div>
+  <div class="card"><h2 style="margin-top:0">Is it a good site?</h2><div class="sb-rate">${rate.map(([k, l]) => `<label>${l}<select data-sbf="score" data-k="${k}">${[0, 1, 2, 3, 4, 5].map(n => `<option value="${n}" ${num(sc[k]) === n ? 'selected' : ''}>${n ? n + ' of 5' : 'Not rated'}</option>`).join('')}</select></label>`).join('')}</div>
+    ${s.pros || s.cons ? `<div class="grid2" style="margin-top:8px"><div><b class="good">Good things</b><p class="small" style="white-space:pre-wrap;margin:4px 0">${esc(s.pros || '—')}</p></div><div><b class="neg">Worries</b><p class="small" style="white-space:pre-wrap;margin:4px 0">${esc(s.cons || '—')}</p></div></div>` : ''}${s.notes ? `<p class="small" style="white-space:pre-wrap;margin:8px 0 0"><b>Notes:</b> ${esc(s.notes)}</p>` : ''}
+    <div class="sb-grid" style="margin-top:10px"><label>Status<select data-sbf="status">${SB_STATUS.map(([k, l]) => `<option value="${k}" ${s.status === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>${S.settings.locations && S.settings.locations.length ? `<label>Same as this shop in Shops<select data-sbf="shop"><option value="">None</option>${S.settings.locations.map(l => `<option value="${l.id}" ${s.shopId === l.id ? 'selected' : ''}>${esc(l.name)}</option>`).join('')}</select></label>` : ''}</div></div>
+  <div class="card"><h2 style="margin-top:0">Photos</h2><div class="sb-photos">${(s.photos || []).filter(id => S.images[id]).map(id => `<div class="sb-ph"><img src="${S.images[id].data}" alt="" data-act="sbPhotoView" data-pid="${id}"><button type="button" class="x" data-act="sbPhotoDel" data-pid="${id}" aria-label="Remove photo">×</button></div>`).join('')}${(s.photos || []).length < 8 ? `<label class="sb-ph sb-add"><span>+ Add photo</span><input type="file" accept="image/*" hidden data-sbphoto="${s.id}"></label>` : ''}</div><p class="hint" style="margin:8px 0 0">Take photos of the front, inside, the power points, and the street. Up to 8.</p></div>`;
+}
+function sbSiteForm(id){
+  const s = id ? sbGet(id) : {kind:'small', status:'prospect', tenure:'unknown', sc:{}}; if (id && !s) return; const sc = s.sc || {};
+  modal(id ? 'Edit shop details' : 'New site or shop', `<label>Name<input name="name" value="${esc(s.name || '')}" required placeholder="e.g. Cairo Road kiosk, Kabwe market stall"></label>
+    <div class="grid2"><label>Type<select name="kind">${Object.entries(SB_KINDS).map(([k, v]) => `<option value="${k}" ${s.kind === k ? 'selected' : ''}>${v[0]} (${v[1]})</option>`).join('')}</select></label>
+    <label>Where are you with it?<select name="status">${SB_STATUS.map(([k, l]) => `<option value="${k}" ${s.status === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+    <label>Rented or owned?<select name="tenure">${Object.entries(SB_TENURE).map(([k, v]) => `<option value="${k}" ${s.tenure === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
+    <label>Town<input name="town" value="${esc(s.town || '')}" placeholder="e.g. Lusaka"></label></div>
+    <label>Address or landmark<input name="address" value="${esc(s.address || '')}" placeholder="e.g. Next to the bus station, Stall 14"></label>
+    <div class="grid2"><label>Rent a month (K)<input name="rent" type="number" min="0" step="any" value="${esc(s.rent ?? '')}"></label><label>Deposit (K)<input name="deposit" type="number" min="0" step="any" value="${esc(s.deposit ?? '')}"></label>
+    <label>Lease length (months)<input name="lease" type="number" min="0" step="1" value="${esc(s.lease ?? '')}"></label><label class="check" style="align-self:end"><input type="checkbox" name="utils" ${s.utils ? 'checked' : ''}> Water and power are included in the rent</label>
+    <label>Width (metres)<input name="w" type="number" min="0" step="any" value="${esc(s.w ?? '')}"></label><label>Length (metres)<input name="l" type="number" min="0" step="any" value="${esc(s.l ?? '')}"></label></div>
+    <fieldset><legend>Landlord or owner</legend><div class="grid2"><label>Name<input name="lname" value="${esc(s.lname || '')}"></label><label>Phone or WhatsApp<input name="lphone" type="tel" value="${esc(s.lphone || '')}"></label><label>Email<input name="lmail" type="email" value="${esc(s.lmail || '')}"></label><label>Viewing date<input name="view" type="date" value="${esc(s.view || '')}"></label></div></fieldset>
+    <label>Good things about it<textarea name="pros" rows="2">${esc(s.pros || '')}</textarea></label><label>Worries<textarea name="cons" rows="2">${esc(s.cons || '')}</textarea></label><label>Notes<textarea name="notes" rows="2">${esc(s.notes || '')}</textarea></label>`,
+  async d => {
+    const name = String(d.name || '').trim(); if (!name) throw Error('Give the shop a name.');
+    const f = {name, kind:d.kind, status:d.status, tenure:d.tenure, town:String(d.town || '').trim(), address:String(d.address || '').trim(), rent:d.rent === '' ? '' : num(d.rent), deposit:d.deposit === '' ? '' : num(d.deposit), lease:d.lease === '' ? '' : num(d.lease), utils:d.utils === 'on', w:d.w === '' ? '' : num(d.w), l:d.l === '' ? '' : num(d.l), lname:String(d.lname || '').trim(), lphone:String(d.lphone || '').trim(), lmail:String(d.lmail || '').trim(), view:d.view || '', pros:String(d.pros || '').trim(), cons:String(d.cons || '').trim(), notes:String(d.notes || '').trim()};
+    let nid = id;
+    await sbSave(c => { if (id) { const t = c.sites.find(x => x.id === id); if (t) Object.assign(t, f); } else { nid = uid(); c.sites.push({id:nid, createdAt:nowISO(), sc:{}, mat:[], store:[], photos:[], chk:{}, ...f}); } });
+    if (!id) { UI.sbSite = nid; UI.sbTab = 'file'; UI.sbSub = 'site'; }
+    render(true); toast(id ? 'Saved' : 'Site added. You can now put it on the map and plan the materials.');
+  }, {wide:true});
+}
+function sbLocForm(id){
+  const s = sbGet(id); if (!s) return; const has = sbHasLoc(s);
+  modal('Put it on the map', `<div class="sbm" id="sbp-map" style="height:320px"></div>
+    <div class="grid2" style="margin-top:10px"><label>Latitude<input name="lat" id="sbp-lat" value="${has ? esc(s.lat) : ''}" inputmode="decimal"></label><label>Longitude<input name="lng" id="sbp-lng" value="${has ? esc(s.lng) : ''}" inputmode="decimal"></label></div>
+    <label>Paste a Google Maps link or the numbers<input id="sbp-paste" placeholder="e.g. -15.4167, 28.2833"></label>
+    <div class="actions"><button type="button" class="btn sm" data-act="sbMe">Use my location now</button>${has ? '<button type="button" class="btn sm ghost" data-act="sbClearLoc">Take it off the map</button>' : ''}</div>
+    <p class="hint" style="margin-top:8px">Tap the map where the shop is. Standing at the shop is the easiest: tap <b>Use my location now</b>. In Google Maps you can also press and hold a spot, copy the numbers and paste them above.</p>`,
+  async d => { const la = String(d.lat || '').trim(), ln = String(d.lng || '').trim(); const ok = la !== '' && ln !== '' && Math.abs(parseFloat(la)) <= 90 && Math.abs(parseFloat(ln)) <= 180 && isFinite(parseFloat(la)) && isFinite(parseFloat(ln)); if (!ok && (la || ln)) throw Error('Those numbers are not a place. Tap the map or paste a link.'); await sbEdit(id, t => { t.lat = ok ? +parseFloat(la).toFixed(6) : ''; t.lng = ok ? +parseFloat(ln).toFixed(6) : ''; }); if (ok) { SB.view = {lat:parseFloat(la), lng:parseFloat(ln), z:15}; } render(true); toast(ok ? 'Pin saved' : 'Taken off the map'); }, {wide:true, nofocus:true});
+  const h = $('#sbp-map'); if (!h) return;
+  const set = (la, ln, move) => { $('#sbp-lat').value = (+la).toFixed(6); $('#sbp-lng').value = (+ln).toFixed(6); SB.pm.setMarker(+la, +ln); if (move) SB.pm.center(+la, +ln, Math.max(14, 15)); };
+  SB.pm = sbMap(h, {view:has ? {lat:+s.lat, lng:+s.lng, z:16} : (SB.view || undefined), marker:has ? {lat:+s.lat, lng:+s.lng} : null, onTap: ll => set(ll.lat, ll.lng, false), onMe: ll => set(ll.lat, ll.lng, true)});
+}
+/* ---------- materials and budget ---------- */
+function sbMat(s){
+  const items = s.mat || [], tot = sbMatTotal(s), paid = sbMatPaid(s), left = Math.max(0, tot - paid), bud = num(s.budget), over = bud > 0 && tot > bud;
+  const sup = [...new Set(Object.values(S.suppliers || {}).map(x => x.name).filter(Boolean))];
+  const cats = SB_CATS.filter(c => items.some(m => (m.cat || 'Other') === c)).concat([...new Set(items.map(m => m.cat || 'Other'))].filter(c => !SB_CATS.includes(c)));
+  const tpl = SB_MAT[s.kind] || SB_MAT.small, have = new Set(items.map(m => String(m.name).toLowerCase())), more = tpl.filter(t => !have.has(t[1].toLowerCase())).length;
+  return `<div class="tiles"><div class="tile"><div class="small mut">Planned total</div><div class="big">${sbK(tot)}</div></div><div class="tile"><div class="small mut">Bought so far</div><div class="big">${sbK(paid)}</div></div><div class="tile"><div class="small mut">Still to buy</div><div class="big">${sbK(left)}</div></div>
+    <div class="tile"><div class="small mut">Your budget</div><div><input class="sb-bud" data-sbf="budget" type="number" min="0" step="any" value="${bud || ''}" placeholder="Set a budget" aria-label="Set-up budget in Kwacha"></div><div class="small ${over ? 'neg' : 'mut'}">${bud ? (over ? `Over by ${sbK(tot - bud)}` : `${sbK(bud - tot)} to spare`) : 'Optional'}</div></div></div>
+  ${bud > 0 ? `<div class="sb-bar" title="Planned against budget"><i style="width:${Math.min(100, tot / bud * 100)}%" class="${over ? 'over' : ''}"></i></div>` : ''}
+  <div class="card"><div class="sb-matbar"><h2 style="margin:0">What you need for the ${esc((SB_KINDS[s.kind] || SB_KINDS.small)[0].toLowerCase())}</h2><div class="actions">${btn('+ Add item', 'sbMatAdd', {id:s.id}, 'sm pri')}${more ? btn(items.length ? `Add ${more} more from the ready list` : 'Fill from the ready list', 'sbMatTpl', {id:s.id}, 'sm') : ''}${items.some(m => m.st === 'bought' && !m.exp) ? btn('Log bought items as expenses', 'sbMatLogAll', {id:s.id}, 'sm') : ''}</div></div>
+    <p class="hint"><b>The ready list prices are only rough estimates.</b> Replace them with real quotes from your suppliers. Mark an item <b>Bought</b> when you have paid, and log it as an expense so your books stay right.</p>
+    ${items.length ? cats.map(c => { const rows = items.filter(m => (m.cat || 'Other') === c); return `<h3 class="sb-gh">${esc(c)} <span class="small mut">${sbK(rows.reduce((t, m) => t + num(m.qty) * num(m.cost), 0))}</span></h3><ul class="list sb-mats">${rows.map(m => `<li class="${m.st === 'bought' ? 'sb-done' : ''}"><span><b>${esc(m.name)}</b><div class="small mut">${num(m.qty)} × ${sbK(m.cost)} = <b>${sbK(num(m.qty) * num(m.cost))}</b>${m.sup ? ' · ' + esc(m.sup) : ''}${m.exp ? ' · <span class="good">in expenses</span>' : ''}${m.note ? '<br>' + esc(m.note) : ''}</div></span><span class="sb-mact"><select data-sbf="matst" data-i="${m.id}" aria-label="Status of ${esc(m.name)}">${SB_MATST.map(([k, l]) => `<option value="${k}" ${(m.st || 'plan') === k ? 'selected' : ''}>${l}</option>`).join('')}</select>${btn('Edit', 'sbMatEdit', {id:s.id, i:m.id}, 'sm')}${m.st === 'bought' && !m.exp ? btn('Log expense', 'sbMatLog', {id:s.id, i:m.id}, 'sm') : ''}${btn('×', 'sbMatDel', {id:s.id, i:m.id}, 'sm ghost" aria-label="Remove')}</span></li>`).join('')}</ul>`; }).join('') : empty('Nothing on the list yet. Tap <b>Fill from the ready list</b> to start with the usual things for this type of shop, or add your own.')}
+  </div><datalist id="sb-sup">${sup.map(x => `<option value="${esc(x)}">`).join('')}</datalist>`;
+}
+function sbMatForm(sid, mid){
+  const s = sbGet(sid); if (!s) return; const m = mid ? (s.mat || []).find(x => x.id === mid) : {cat:'Other', qty:1, st:'plan'}; if (!m) return;
+  const sup = [...new Set(Object.values(S.suppliers || {}).map(x => x.name).filter(Boolean))];
+  modal(mid ? 'Edit item' : 'Add an item', `<label>What is it?<input name="name" value="${esc(m.name || '')}" required placeholder="e.g. Glass display cabinet"></label>
+    <div class="grid2"><label>Group<select name="cat">${SB_CATS.map(c => `<option ${(m.cat || 'Other') === c ? 'selected' : ''}>${c}</option>`).join('')}</select></label><label>Status<select name="st">${SB_MATST.map(([k, l]) => `<option value="${k}" ${(m.st || 'plan') === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+    <label>How many<input name="qty" type="number" min="0" step="any" value="${esc(m.qty ?? 1)}" required></label><label>Price each (K)<input name="cost" type="number" min="0" step="any" value="${esc(m.cost ?? '')}" required></label>
+    <label>Supplier<input name="sup" list="sb-sup2" value="${esc(m.sup || '')}"><datalist id="sb-sup2">${sup.map(x => `<option value="${esc(x)}">`).join('')}</datalist></label><label>Actually paid (K, when bought)<input name="paid" type="number" min="0" step="any" value="${esc(m.paid ?? '')}"></label></div>
+    <label>Note<input name="note" value="${esc(m.note || '')}" placeholder="e.g. quote from Mr Banda, valid till Friday"></label>`,
+  async d => { const name = String(d.name || '').trim(); if (!name) throw Error('Say what the item is.'); const f = {name, cat:d.cat, st:d.st, qty:num(d.qty), cost:num(d.cost), sup:String(d.sup || '').trim(), paid:d.paid === '' ? '' : num(d.paid), note:String(d.note || '').trim()}; await sbEdit(sid, t => { t.mat = t.mat || []; if (mid) { const x = t.mat.find(y => y.id === mid); if (x) Object.assign(x, f); } else t.mat.push({id:uid(), ...f}); }); render(true); });
+}
+function sbLogForm(sid, ids){
+  const s = sbGet(sid); if (!s) return; const rows = (s.mat || []).filter(m => ids.includes(m.id) && !m.exp); if (!rows.length) return toast('Nothing to log.');
+  const total = rows.reduce((t, m) => t + (m.paid !== '' && m.paid != null ? num(m.paid) : num(m.qty) * num(m.cost)), 0);
+  modal('Log as expense', `<p style="margin-top:0">${rows.length === 1 ? `<b>${esc(rows[0].name)}</b>` : `<b>${rows.length} items</b> bought for ${esc(s.name)}`}: <b>${sbK(total)}</b></p><div class="grid2">${fDate()}<label for="f-ch">Paid from<select id="f-ch" name="channel">${chOptions('cash')}</select></label></div>
+    <p class="hint">${rows.length === 1 ? 'One' : 'One'} entry is added to Expenses under <b>Shop set-up</b> for each item, so you can see them in the cash book and the reports.</p>`,
+  async d => { for (const m of rows) { const amt = m.paid !== '' && m.paid != null ? num(m.paid) : num(m.qty) * num(m.cost); if (amt <= 0) continue; const c = await put('cash', {kind:'out', date:d.date, channel:d.channel, amount:amt, category:'Expense', expType:'Shop set-up', resellerId:'', supplier:m.sup || '', description:`Shop set-up (${s.name}): ${m.name}${num(m.qty) !== 1 ? ' × ' + num(m.qty) : ''}`}); await sbEdit(sid, t => { const x = (t.mat || []).find(y => y.id === m.id); if (x) { x.exp = c.id; x.paid = amt; x.st = 'bought'; } }); } render(true); toast('Logged in Expenses'); }, {label:'Log it'});
+}
+/* ---------- storage and stock room ---------- */
+function sbStore(C, s){
+  const units = s.store || [], cap = units.reduce((t, u) => t + sbUnitCap(u), 0), loc = s.shopId ? (C.storeLoc[s.shopId] || {}) : null, onHand = loc ? Object.values(loc).reduce((t, q) => t + Math.max(0, q), 0) : 0, keep = num(s.keep) || onHand;
+  const fits = cap - keep;
+  return `<div class="tiles"><div class="tile"><div class="small mut">Room for</div><div class="big">${cap} bottles</div><div class="small mut">${units.length} place${units.length === 1 ? '' : 's'} to keep stock</div></div>
+    <div class="tile"><div class="small mut">Bottles you plan to keep</div><div><input class="sb-bud" data-sbf="keep" type="number" min="0" step="1" value="${num(s.keep) || ''}" placeholder="${onHand || 'How many?'}" aria-label="Bottles to keep"></div><div class="small mut">${loc ? `${onHand} in this shop now` : 'Type a number'}</div></div>
+    <div class="tile"><div class="small mut">${fits >= 0 ? 'Spare room' : 'Short of room'}</div><div class="big ${fits < 0 ? 'neg' : ''}">${keep ? Math.abs(fits) + ' bottles' : '—'}</div></div></div>
+  ${keep && cap ? `<div class="sb-bar"><i style="width:${Math.min(100, keep / cap * 100)}%" class="${keep > cap ? 'over' : ''}"></i></div>` : ''}
+  <div class="card"><div class="sb-matbar"><h2 style="margin:0">Shelves, cabinets and stock room</h2><div class="actions">${btn('+ Add a place', 'sbUnitAdd', {id:s.id}, 'sm pri')}</div></div>
+    <p class="hint">Room is worked out from the size of the shelf and a boxed bottle. 100 ml takes about 6.5 × 5 cm of shelf, 50 ml about 5.5 × 4.5 cm, 30 ml about 4.5 × 4 cm. If you know better, type the room yourself.</p>
+    ${units.length ? `<ul class="list">${units.map(u => `<li><span><b>${esc(u.name)}</b><div class="small mut">${num(u.w)} × ${num(u.d)} cm · ${num(u.lv) || 1} level${(num(u.lv) || 1) === 1 ? '' : 's'} · ${esc(u.size || '100')} ml bottles${u.note ? ' · ' + esc(u.note) : ''}</div></span><span class="sb-mact"><b>${sbUnitCap(u)} bottles</b>${btn('Edit', 'sbUnitEdit', {id:s.id, i:u.id}, 'sm')}${btn('×', 'sbUnitDel', {id:s.id, i:u.id}, 'sm ghost" aria-label="Remove')}</span></li>`).join('')}</ul>` : empty('No storage places yet. Add the shelves, cabinets and boxes you plan to have.')}
+    <h3 class="sb-gh">Quick add</h3><div class="actions">${SB_UNITS.map((u, i) => btn('+ ' + u[0], 'sbUnitAdd', {id:s.id, p:i}, 'sm')).join('')}</div></div>`;
+}
+function sbUnitForm(sid, uid_, preset){
+  const s = sbGet(sid); if (!s) return; const p = SB_UNITS[preset]; const u = uid_ ? (s.store || []).find(x => x.id === uid_) : (p ? {name:p[0], w:p[2], d:p[3], lv:p[4], size:'100'} : {name:'', w:80, d:30, lv:3, size:'100'}); if (!u) return;
+  modal(uid_ ? 'Edit this place' : 'Add a place to keep stock', `<label>Name<input name="name" value="${esc(u.name || '')}" required placeholder="e.g. Wall shelf behind the counter"></label>
+    <div class="grid2"><label>Width (cm)<input name="w" type="number" min="1" step="any" value="${esc(u.w ?? '')}" required></label><label>Depth (cm)<input name="d" type="number" min="1" step="any" value="${esc(u.d ?? '')}" required></label>
+    <label>Shelves or layers<input name="lv" type="number" min="1" step="1" value="${esc(u.lv ?? 1)}" required></label><label>Bottle size kept here<select name="size">${['100', '50', '30'].map(x => `<option value="${x}" ${String(u.size || '100') === x ? 'selected' : ''}>${x} ml</option>`).join('')}</select></label></div>
+    <label>Room (bottles), only if you want to type it yourself<input name="cap" type="number" min="0" step="1" value="${esc(u.cap ?? '')}" placeholder="Leave empty to work it out"></label><label>Note<input name="note" value="${esc(u.note || '')}" placeholder="e.g. women’s perfumes"></label>`,
+  async d => { const f = {name:String(d.name || '').trim(), w:num(d.w), d:num(d.d), lv:Math.max(1, Math.round(num(d.lv))), size:d.size, cap:d.cap === '' ? '' : num(d.cap), note:String(d.note || '').trim()}; if (!f.name) throw Error('Give it a name.'); await sbEdit(sid, t => { t.store = t.store || []; if (uid_) { const x = t.store.find(y => y.id === uid_); if (x) Object.assign(x, f); } else t.store.push({id:uid(), ...f}); }); render(true); });
+}
+/* ---------- will it pay? ---------- */
+function sbAvgProfit(){ const ps = sortedProds().filter(p => (p.status || 'active') !== 'inactive' && num(p.sellPrice) > 0 && num(p.costPrice) > 0); return ps.length ? Math.round(ps.reduce((t, p) => t + num(p.sellPrice) - num(p.costPrice), 0) / ps.length) : 0; }
+function sbPay(C, s){
+  const b = s.biz || {}, fld = (k, l, ph) => `<label>${l}<input data-sbf="biz" data-k="${k}" type="number" min="0" step="any" value="${b[k] !== undefined && b[k] !== '' ? esc(b[k]) : ''}" placeholder="${esc(ph ?? '')}"></label>`;
+  const rent = b.rent !== undefined && b.rent !== '' ? num(b.rent) : num(s.rent), avg = sbAvgProfit(), profit = b.profit !== undefined && b.profit !== '' ? num(b.profit) : avg, bottles = num(b.bottles);
+  const monthly = rent + num(b.staff) + num(b.power) + num(b.transport) + num(b.other), setup = Math.max(sbMatTotal(s), 0), be = profit > 0 ? Math.ceil(monthly / profit) : 0;
+  const sc = [[0.5, 'Slow month'], [1, 'Expected month'], [1.5, 'Busy month']].map(([f, l]) => { const q = Math.round(bottles * f), net = q * profit - monthly; return [l, q, net, net > 0 && setup > 0 ? Math.ceil(setup / net) : 0]; });
+  return `<div class="cols"><div class="card"><h2 style="margin-top:0">Costs each month</h2><div class="sb-grid">${fld('rent', 'Rent (K)', num(s.rent) || '')}${fld('staff', 'Shopkeeper pay (K)')}${fld('power', 'Power, water, data (K)')}${fld('transport', 'Transport and delivery (K)')}${fld('other', 'Other (K)')}</div><p style="margin:6px 0 0"><b>Total: ${sbK(monthly)} a month</b></p></div>
+    <div class="card"><h2 style="margin-top:0">What a bottle earns</h2><div class="sb-grid">${fld('profit', 'Profit on an average bottle (K)', avg || '')}${fld('bottles', 'Bottles you hope to sell a month')}</div><p class="hint" style="margin:6px 0 0">${avg ? `Your perfumes make about <b>${sbK(avg)}</b> a bottle on average (selling price minus cost). Change it if your shop sells mostly cheaper or dearer perfumes.` : 'Add cost and selling prices to your perfumes and this fills in by itself.'}</p></div></div>
+  <div class="card"><h2 style="margin-top:0">The answer</h2>${monthly > 0 && profit > 0 ? `<p style="margin:0 0 8px">To cover its costs this shop must sell <b>${be} bottles a month</b>${be ? ` (about ${Math.max(1, Math.ceil(be / 26))} a day)` : ''}.</p>` : '<p class="mut" style="margin:0 0 8px">Fill in the costs and the profit on a bottle to see how many bottles the shop must sell.</p>'}
+    ${bottles > 0 && profit > 0 ? `<div class="tw"><table class="t"><thead><tr><th></th><th class="n">Bottles</th><th class="n">Left after costs</th><th class="n">Set-up paid back in</th></tr></thead><tbody>${sc.map(([l, q, net, pb]) => `<tr><td>${l}</td><td class="n">${q}</td><td class="n ${net < 0 ? 'neg' : 'good'}">${net < 0 ? '−' : ''}${sbK(Math.abs(net))}</td><td class="n">${net <= 0 ? 'Not paid back' : setup > 0 ? pb + ' month' + (pb === 1 ? '' : 's') : '—'}</td></tr>`).join('')}</tbody></table></div><p class="hint" style="margin:8px 0 0">Set-up cost used: ${sbK(setup)} (your planned materials total). Rough guide only: it does not include tax, losses or the cost of stock.</p>` : ''}</div>`;
+}
+/* ---------- opening checklist ---------- */
+function sbCheck(s){
+  const chk = s.chk || {}, extra = s.custom || [], all = SB_CHECK.flatMap(g => g[1]).concat(extra.map(x => [x.id, x.t])), done = all.filter(([k]) => chk[k]).length;
+  return `<div class="card"><div class="sb-matbar"><h2 style="margin:0">Getting ${esc(s.name)} ready to open</h2><b>${done} of ${all.length} done</b></div><div class="sb-bar"><i style="width:${all.length ? done / all.length * 100 : 0}%"></i></div>
+    <p class="hint" style="margin-top:8px">A simple list to keep you on track. Ask the council and the market office which papers a shop of this kind needs, because rules can differ by town.</p>
+    ${SB_CHECK.map(([g, items], gi) => `<h3 class="sb-gh">${g}</h3>${items.map(([k, t]) => `<label class="check sb-chk"><input type="checkbox" data-sbf="chk" data-k="${k}" ${chk[k] ? 'checked' : ''}> ${esc(t)}</label>`).join('')}${gi === SB_CHECK.length - 1 ? extra.map(x => `<label class="check sb-chk"><input type="checkbox" data-sbf="chk" data-k="${x.id}" ${chk[x.id] ? 'checked' : ''}> ${esc(x.t)} <button type="button" class="x" data-act="sbChkDel" data-id="${s.id}" data-k="${x.id}" aria-label="Remove">×</button></label>`).join('') : ''}`).join('')}
+    <div class="actions" style="margin-top:10px">${btn('+ Add my own step', 'sbChkAdd', {id:s.id}, 'sm')}</div></div>`;
+}
+/* ---------- SWOT ---------- */
+const SB_SWOT = [['s', 'Strengths', 'What we do well and what we have', 'good'], ['w', 'Weaknesses', 'What holds us back', 'bad'], ['o', 'Opportunities', 'Chances outside the business we can use', 'acc'], ['t', 'Threats', 'Things outside the business that could hurt us', 'warn']];
+function sbSwotIdeas(q){
+  const nr = Object.keys(S.resellers || {}).length, nt = Object.keys(S.towns || {}).length, np = sortedProds().filter(p => (p.status || 'active') !== 'inactive').length, shops = (S.settings.locations || []).length;
+  const base = {
+    s:[nr ? `${nr} resellers in ${nt || 'several'} town${nt === 1 ? '' : 's'}, selling for us` : 'Resellers in different towns selling for us', np ? `${np} perfumes at different prices` : 'A wide choice of perfumes at different prices', 'Our own app for stock, sales, receipts and reports', 'Resellers can start without paying first (consignment)', 'Professional look: shop screen, flyers, catalogues'],
+    w:[shops < 2 ? 'Few shops of our own, so we depend on resellers' : 'Each new shop adds rent and wages', 'Stock is tied up with resellers until they settle', 'Perfumes come from a few suppliers', 'Small marketing budget', 'Many jobs depend on the owner'],
+    o:['Kiosks in busy markets, bus stations and malls', 'Gift seasons: Valentine’s Day, Mother’s Day, Christmas', 'Online shop with delivery and mobile money', 'Selling in bulk to salons and boutiques', 'Towns where we have no reseller yet'],
+    t:['Fake or cheap copies of popular perfumes', 'Kwacha exchange rate making stock dearer', 'Competitors selling cheaper', 'Late payments or lost stock from resellers', 'Rent going up, or losing a good site'],
+    a:['Open one kiosk as a pilot and measure sales for 3 months', 'Get written prices from two suppliers', 'Finish business registration before signing a lease', 'Choose the best two prospect sites and visit them', 'Train a shopkeeper on the shop app before opening']
+  };
+  const have = new Set(((sbCfg().swot || {})[q] || []).map(x => x.t.toLowerCase())); return base[q].filter(t => !have.has(t.toLowerCase()));
+}
+function sbSwot(C){
+  const sw = sbCfg().swot || {}, box = ([k, t, h, c]) => `<div class="card sb-sw sb-sw-${c}"><h2 style="margin-top:0">${t}</h2><p class="hint">${h}</p>${(sw[k] || []).length ? `<ul class="list">${sw[k].map(x => `<li><span>${esc(x.t)}</span><span class="sb-mact">${btn('Edit', 'sbSwotEdit', {q:k, id:x.id}, 'sm ghost')}${btn('×', 'sbSwotDel', {q:k, id:x.id}, 'sm ghost" aria-label="Remove')}</span></li>`).join('')}</ul>` : '<p class="mut small">Nothing yet.</p>'}
+    <div class="actions">${btn('+ Add', 'sbSwotAdd', {q:k}, 'sm pri')}</div>${sbSwotIdeas(k).length ? `<details style="margin-top:8px"><summary class="small">Ideas to start with</summary><div class="sb-ideas">${sbSwotIdeas(k).map(t => `<button type="button" class="pill" data-act="sbSwotIdea" data-q="${k}" data-t="${esc(t)}">+ ${esc(t)}</button>`).join('')}</div></details>` : ''}</div>`;
+  const act = ['a', 'What we will do about it', 'Steps that use the strengths, fix the weaknesses, grab the chances and guard against the threats', 'acc'];
+  return `<p class="hint" style="margin-top:0">A SWOT is a simple picture of where the business stands. Look at it before you pick a site or sign a lease. The ideas below are only starting points: keep what is true for you and change the rest.</p><div class="cols">${SB_SWOT.map(box).join('')}</div><div style="margin-top:18px">${box(act)}</div>`;
+}
+function sbSwotForm(q, id){
+  const items = (sbCfg().swot || {})[q] || [], it = id ? items.find(x => x.id === id) : null, name = q === 'a' ? 'What we will do about it' : (SB_SWOT.find(x => x[0] === q) || [])[1];
+  modal((id ? 'Edit' : 'Add to') + ': ' + name, `<label>What is it?<textarea name="t" rows="3" required>${esc(it ? it.t : '')}</textarea></label>`, async d => { const t = String(d.t || '').trim(); if (!t) throw Error('Write something.'); await sbSave(c => { c.swot[q] = c.swot[q] || []; if (id) { const x = c.swot[q].find(y => y.id === id); if (x) x.t = t; } else c.swot[q].push({id:uid(), t}); }); render(true); });
+}
+/* ---------- actions ---------- */
+Object.assign(ACT, {
+  sbTab: d => { UI.sbTab = d.t; render(true); }, sbSub: d => { UI.sbSub = d.t; render(true); },
+  sbOpen: d => { UI.sbSite = d.id; UI.sbTab = 'file'; UI.sbSub = 'site'; render(true); window.scrollTo(0, 0); },
+  sbNew: () => sbSiteForm(), sbEditSite: d => sbSiteForm(d.id), sbLoc: d => sbLocForm(d.id),
+  sbFromShop: async d => { const l = (S.settings.locations || []).find(x => x.id === d.id); if (!l) return; let nid; await sbSave(c => { nid = uid(); c.sites.push({id:nid, createdAt:nowISO(), name:l.name, kind:'small', status:'open', tenure:'unknown', shopId:l.id, sc:{}, mat:[], store:[], photos:[], chk:{}}); }); UI.sbSite = nid; UI.sbTab = 'file'; UI.sbSub = 'site'; render(true); toast('File made. Add the rent, landlord and map pin.'); },
+  sbDelSite: d => { const s = sbGet(d.id); if (!s) return; confirmBox(`Delete the file for <b>${esc(s.name)}</b>, with its materials list, storage plan and photos? This cannot be undone. Expenses you already logged stay in the cash book.`, async () => { for (const p of (s.photos || [])) if (S.images[p]) await del('images', p); await sbSave(c => { c.sites = c.sites.filter(x => x.id !== d.id); }); UI.sbSite = ''; render(true); toast('Deleted'); }); },
+  sbMe: () => { if (SB.pm) SB.pm.locate(); }, sbClearLoc: () => { $('#sbp-lat').value = ''; $('#sbp-lng').value = ''; SB.pm && SB.pm.setMarker(NaN, NaN); toast('Press Save to take it off the map.'); },
+  sbPhotoView: d => { const im = S.images[d.pid]; if (im) modal('Photo', `<img src="${im.data}" alt="" style="width:100%;border-radius:8px">`, null, {wide:true}); },
+  sbPhotoDel: d => confirmBox('Remove this photo?', async () => { const sid = (sbCfg().sites.find(x => (x.photos || []).includes(d.pid)) || {}).id; if (S.images[d.pid]) await del('images', d.pid); if (sid) await sbEdit(sid, s => { s.photos = (s.photos || []).filter(p => p !== d.pid); }); render(true); }),
+  sbMatAdd: d => sbMatForm(d.id), sbMatEdit: d => sbMatForm(d.id, d.i),
+  sbMatDel: d => { const s = sbGet(d.id), m = s && (s.mat || []).find(x => x.id === d.i); if (!m) return; confirmBox(`Remove <b>${esc(m.name)}</b> from the list?${m.exp ? ' Its expense in the cash book stays.' : ''}`, async () => { await sbEdit(d.id, t => { t.mat = (t.mat || []).filter(x => x.id !== d.i); }); render(true); }); },
+  sbMatTpl: async d => { const s = sbGet(d.id); if (!s) return; const have = new Set((s.mat || []).map(m => String(m.name).toLowerCase())); const add = (SB_MAT[s.kind] || SB_MAT.small).filter(t => !have.has(t[1].toLowerCase())); await sbEdit(d.id, t => { t.mat = (t.mat || []).concat(add.map(([cat, name, qty, cost]) => ({id:uid(), cat, name, qty, cost, st:'plan', est:true}))); }); render(true); toast(`${add.length} items added. The prices are only estimates. Change them to your real quotes.`); },
+  sbMatLog: d => sbLogForm(d.id, [d.i]), sbMatLogAll: d => { const s = sbGet(d.id); if (s) sbLogForm(d.id, (s.mat || []).filter(m => m.st === 'bought' && !m.exp).map(m => m.id)); },
+  sbUnitAdd: d => sbUnitForm(d.id, '', d.p === undefined ? undefined : +d.p), sbUnitEdit: d => sbUnitForm(d.id, d.i),
+  sbUnitDel: d => confirmBox('Remove this place?', async () => { await sbEdit(d.id, t => { t.store = (t.store || []).filter(x => x.id !== d.i); }); render(true); }),
+  sbChkAdd: d => modal('Add your own step', '<label>What needs doing?<input name="t" required></label>', async f => { const t = String(f.t || '').trim(); if (!t) throw Error('Write the step.'); await sbEdit(d.id, s => { s.custom = (s.custom || []).concat([{id:'c' + uid(), t}]); }); render(true); }),
+  sbChkDel: d => sbEdit(d.id, s => { s.custom = (s.custom || []).filter(x => x.id !== d.k); if (s.chk) delete s.chk[d.k]; }).then(() => render(true)),
+  sbSwotAdd: d => sbSwotForm(d.q), sbSwotEdit: d => sbSwotForm(d.q, d.id),
+  sbSwotDel: async d => { await sbSave(c => { c.swot[d.q] = (c.swot[d.q] || []).filter(x => x.id !== d.id); }); render(true); },
+  sbSwotIdea: async d => { await sbSave(c => { c.swot[d.q] = c.swot[d.q] || []; c.swot[d.q].push({id:uid(), t:d.t}); }); render(true); }
+});
+document.addEventListener('change', async e => {
+  const t = e.target; if (!t || !t.dataset) return;
+  if (t.dataset.sbphoto) { const f = t.files && t.files[0], sid = t.dataset.sbphoto; t.value = ''; if (!f) return; try { toast('Adding the photo…'); const data = await shrinkImage(f, 1280, 220000), pid = 'sb_' + sid + '_' + uid(); await put('images', {id:pid, data, sbPhoto:true}); await sbEdit(sid, s => { s.photos = (s.photos || []).concat([pid]); }); render(true); toast('Photo added'); } catch(x) { toast(x.message || 'Could not add the photo.', true); } return; }
+  const k = t.dataset.sbf; if (!k) return; const sid = UI.sbSite;
+  if (k === 'pick') { UI.sbSite = t.value; render(true); return; }
+  if (k === 'status') await sbEdit(sid, s => { s.status = t.value; });
+  else if (k === 'shop') await sbEdit(sid, s => { s.shopId = t.value; });
+  else if (k === 'score') await sbEdit(sid, s => { s.sc = s.sc || {}; s.sc[t.dataset.k] = num(t.value); });
+  else if (k === 'budget') await sbEdit(sid, s => { s.budget = t.value === '' ? '' : num(t.value); });
+  else if (k === 'keep') await sbEdit(sid, s => { s.keep = t.value === '' ? '' : num(t.value); });
+  else if (k === 'biz') await sbEdit(sid, s => { s.biz = s.biz || {}; s.biz[t.dataset.k] = t.value === '' ? '' : num(t.value); });
+  else if (k === 'chk') await sbEdit(sid, s => { s.chk = s.chk || {}; s.chk[t.dataset.k] = t.checked; });
+  else if (k === 'matst') await sbEdit(sid, s => { const m = (s.mat || []).find(x => x.id === t.dataset.i); if (m) m.st = t.value; });
+  else return;
+  render(true);
+}, true);
+document.addEventListener('input', e => { const t = e.target; if (t && t.id === 'sbp-paste') { const ll = sbParseLoc(t.value); if (ll && SB.pm) { $('#sbp-lat').value = ll.lat.toFixed(6); $('#sbp-lng').value = ll.lng.toFixed(6); SB.pm.setMarker(ll.lat, ll.lng); SB.pm.center(ll.lat, ll.lng, 16); } } else if (t && (t.id === 'sbp-lat' || t.id === 'sbp-lng') && SB.pm) { const la = parseFloat($('#sbp-lat').value), ln = parseFloat($('#sbp-lng').value); if (isFinite(la) && isFinite(ln) && Math.abs(la) <= 90 && Math.abs(ln) <= 180) { SB.pm.setMarker(la, ln); SB.pm.center(la, ln); } } });
+/*SB-JS:END*/
 /* ======================= 2.21: messages (inbox, chats, groups, announcements, CC) ======================= */
 const MSG = {me:null, key:'', list:[], unsub:null, mUnsub:null, mTid:'', msgs:[], mLoad:false, primed:false, err:'', view:'inbox', tid:'', filter:'all', q:'', c:null, rt:{}, ph:'', cache:{}, n:0, linkSig:'', stick:false, mt:0, cleaned:false};
 const MSG_WIN = 600000, MSG_KEEP = 365 * 86400000;
