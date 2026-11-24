@@ -1,20 +1,20 @@
 {
- "version": "2.25.0",
+ "version": "2.26.0",
  "date": "2026-11-24",
  "notes": [
-  "New: Shop builder under Shops. Map of shops and sites, a file for each site (rented or owned, rent, landlord contacts, photos, score)",
-  "Materials and budget with ready lists and estimated prices you can change, log purchases as expenses, storage planner, will it pay, opening checklist and SWOT"
+  "New in Shop builder: floor plans with ready designs you can drag, and send to materials and storage",
+  "New in Shop builder: branding kit (shop sign, window sticker, A-frame, price tags, poster, bag, name badges) and a PDF plan pack for builders"
  ],
  "android": {
-  "file": "android-2.25.0.html",
-  "sig": "MAcEAE3MH8olCaoVj7Ceh9WGzaGUrs/V11LSoWWhftxZIEFBJqCLZKmcPBbODtRzIH2bNNbGfmLK5p1QcTGjsg==",
-  "size": 2707191,
+  "file": "android-2.26.0.html",
+  "sig": "onEgFmdq8H/85ZCLGw84eUWCZOE3cl7HYzXM+PyiGTkBoskJIN2BhBBjaaHfhdx/eyGAEcmL5TXnDY/46q4LPg==",
+  "size": 2763937,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.25.0.html",
-  "sig": "jhKyUGS9XOGbOyN835ZwMC5y5eTOV+z6MHKXj8Af799bpnFiK/7ej0AQGgMOHd9LmM7ZGHX4kw+Q5G1jRXualg==",
-  "size": 2702179,
+  "file": "desktop-2.26.0.html",
+  "sig": "zZqlwBMfq6kqS4r08hCjJlhexvj98/lkRCvohZT2Dvuv2AwMCVR1dmPC4n93i1XNF3dsb/UphyaqFPPBwcN+Jw==",
+  "size": 2758925,
   "minShell": "2.5.0"
  },
  "apk": {
