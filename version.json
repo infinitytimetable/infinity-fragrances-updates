@@ -1,20 +1,22 @@
 {
- "version": "2.26.1",
+ "version": "2.26.2",
  "date": "2026-11-24",
  "notes": [
-  "Point of sale: shows where it sells from, no more false 'Only 0'",
-  "Perfumes kept in another store stay visible with where they are"
+  "Online orders with a total lower than today's prices are marked 'Check price'",
+  "Receipt numbers can no longer repeat across devices that share records",
+  "Saving works for names with / and other signs",
+  "iPhone: the last change is kept when the app is closed straight away"
  ],
  "android": {
-  "file": "android-2.26.1.html",
-  "sig": "QdfVzaxbpmIVAf5GWtdCNKJgKP9ynd0t5Kf00U0XiYSE06a2vrBv/0wYsCjIi+L8sAjnGaKbRRkcIjqnMkmAWg==",
-  "size": 2767853,
+  "file": "android-2.26.2.html",
+  "sig": "edrGO1ExWRVHe5lLXz2UVaY1nZayE6+/d2C3tf5KszDGZnDxHw9Gk+xdBnnfyUGxmEb115+V1wWXrEebUTFX+g==",
+  "size": 2770148,
   "minShell": "2.5.0"
  },
  "desktop": {
-  "file": "desktop-2.26.1.html",
-  "sig": "kj8vDaxKQk2TBYG/UgdEBvZKgNQxiQdmNM4QytBweoWBwIhvVNm/AO2W9eRJcq2cB7gVwRz7LbTYHv2L0RgCmA==",
-  "size": 2762841,
+  "file": "desktop-2.26.2.html",
+  "sig": "+StEYBErOJ1TrxPT56IqSUTI8pzsci0mVs7hrSVoJqIExWuTbDm5JVLgw3M5zPBIESbqZXWF6sf0PLDKVItpoA==",
+  "size": 2765136,
   "minShell": "2.5.0"
  },
  "apk": {
