@@ -12,7 +12,9 @@ function updSigOk(html, b64) {
 async function officialSig() { const r = await fetch(UPD_URL + 'version.json?t=' + Date.now(), { cache: 'no-store' }); const m = await r.json(); return (m && m.desktop && m.desktop.sig) || ''; }
 app.setName(NAME);
 if (process.platform === 'win32') app.setAppUserModelId('zm.infinityfragrances.hub');
-if (!app.requestSingleInstanceLock()) { app.quit(); }
+/* Only one copy runs; a second copy just brings the first one forward and does nothing else. */
+const FIRST = app.requestSingleInstanceLock();
+if (!FIRST) app.quit();
 
 const cfgFile = () => path.join(app.getPath('userData'), 'config.json');
 function getCfg() { try { return JSON.parse(fs.readFileSync(cfgFile(), 'utf8')); } catch (e) { return {}; } }
@@ -25,11 +27,19 @@ const pad = n => String(n).padStart(2, '0');
 const stamp = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}_${pad(d.getHours())}-${pad(d.getMinutes())}-${pad(d.getSeconds())}`;
 function writeAtomic(file, text) { fs.mkdirSync(path.dirname(file), { recursive: true }); const tmp = file + '.tmp'; fs.writeFileSync(tmp, text); fs.renameSync(tmp, file); }
 function listBackups() { try { return fs.readdirSync(backupDir()).filter(f => /^data-.*\.json$/.test(f)).sort(); } catch (e) { return []; } }
+/* Backups made each time the app closes are kept apart (newest 10), so they never push out the daily, manual and before-update backups (newest 30). */
+const KEEP = { close: 10, other: 30 };
+const isClose = f => /-close\.json$/.test(f);
+function pruneBackups() {
+  const all = listBackups();
+  for (const [grp, n] of [[all.filter(isClose), KEEP.close], [all.filter(f => !isClose(f)), KEEP.other]])
+    grp.slice(0, Math.max(0, grp.length - n)).forEach(x => { try { fs.unlinkSync(path.join(backupDir(), x)); } catch (e) {} });
+}
 function backupNow(tag) {
   if (!fs.existsSync(dataFile())) return null;
   fs.mkdirSync(backupDir(), { recursive: true });
   const f = path.join(backupDir(), `data-${stamp()}${tag ? '-' + tag : ''}.json`); fs.copyFileSync(dataFile(), f);
-  const all = listBackups(); all.slice(0, Math.max(0, all.length - 30)).forEach(x => { try { fs.unlinkSync(path.join(backupDir(), x)); } catch (e) {} });
+  pruneBackups();
   return f;
 }
 const today = () => stamp().slice(0, 10);
@@ -78,17 +88,22 @@ let BASE_URL = '';
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json' };
 function startServer() {
   return new Promise(resolve => {
-    const srv = http.createServer((req, res) => {
-      let u = decodeURIComponent((req.url || '/').split('?')[0]);
+    const srv = http.createServer((req, res) => { try {
+      let u; try { u = decodeURIComponent((req.url || '/').split('?')[0]); } catch (e) { res.writeHead(400); return res.end(); }
       if (u === '/projector.html') { const d = PROJ ? PROJ.page() : ''; if (!d) { res.writeHead(404); return res.end(); } res.writeHead(200, { 'Content-Type': MIME['.html'], 'Cache-Control': 'no-store' }); return res.end(d); }
       if (u === '/' || u === '/index.html') { res.writeHead(200, { 'Content-Type': MIME['.html'], 'Cache-Control': 'no-store' }); return fs.createReadStream(uiFile()).pipe(res); }
       const f = path.join(__dirname, path.normalize(u).replace(/^([\\/])+/, ''));
       if (!f.startsWith(__dirname) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { res.writeHead(404); return res.end(); }
       res.writeHead(200, { 'Content-Type': MIME[path.extname(f)] || 'application/octet-stream' }); fs.createReadStream(f).pipe(res);
-    });
-    const go = port => srv.listen(port, '127.0.0.1', () => { BASE_URL = `http://127.0.0.1:${srv.address().port}/`; resolve(); });
-    srv.on('error', () => { srv.removeAllListeners('error'); go(0); });
-    go(47831);
+    } catch (e) { try { if (!res.headersSent) res.writeHead(500); res.end(); } catch (x) {} } });
+    /* The page's web address (and with it the browser storage that keeps online sign-in) depends on the port,
+       so always try the same ports in the same order, starting with the one used last time. */
+    const saved = Number(getCfg().port) || 0, ports = [...new Set([saved, 47831, 47832, 47833, 47834, 47835, 47836, 47837, 47838, 47839, 47840].filter(Boolean))];
+    let k = 0;
+    const go = () => { const port = k < ports.length ? ports[k++] : 0; srv.listen(port, '127.0.0.1'); };
+    srv.on('listening', () => { const port = srv.address().port; BASE_URL = `http://127.0.0.1:${port}/`; if (port !== saved) setCfg({ port }); resolve(); });
+    srv.on('error', () => { if (!srv.listening) go(); });
+    go();
   });
 }
 
@@ -188,8 +203,9 @@ ipcMain.handle('relaunch', () => { app.relaunch(); app.exit(0); });
 ipcMain.handle('install', () => install());
 ipcMain.handle('uninstall', () => uninstall());
 
-app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
+if (FIRST) app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
 app.whenReady().then(async () => {
+  if (!FIRST) return;
   const c = getCfg(); if (!c.firstRun) setCfg({ firstRun: today() });
   menu();
   if (process.platform === 'win32' && !isInstalled() && !process.env.IF_NO_INSTALL) {
@@ -205,5 +221,5 @@ app.whenReady().then(async () => {
   await startServer();
   createWindow();
 });
-app.on('before-quit', () => { try { backupNow('close'); } catch (e) {} });
+app.on('before-quit', () => { if (FIRST) try { backupNow('close'); } catch (e) {} });
 app.on('window-all-closed', () => app.quit());
